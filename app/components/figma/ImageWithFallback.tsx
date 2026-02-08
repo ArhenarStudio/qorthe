@@ -22,8 +22,8 @@ export function ImageWithFallback({
 
   if (error) {
     return (
-      <div className={`bg-gray-200 flex items-center justify-center ${className}`}>
-        <span className="text-gray-400">Image not available</span>
+      <div className={`bg-sand-500 flex items-center justify-center ${className}`}>
+        <span className="text-taupe-600">Image not available</span>
       </div>
     );
   }

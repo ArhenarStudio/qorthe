@@ -188,11 +188,11 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-ebony-500' : 'bg-white'}`}>
       {/* Header Principal */}
       <header className={`fixed top-0 left-0 right-0 backdrop-blur-sm z-50 border-b transition-all duration-300 ${
         isDarkMode 
-          ? 'bg-[#0a0806]/95 border-[#3d2f23] text-[#f5f0e8]' 
+          ? 'bg-ebony-500/95 border-walnut-500 text-cream' 
           : 'bg-white/95 border-gray-200 text-gray-900'
       } ${isScrolled ? 'opacity-0 pointer-events-none -translate-y-4' : 'opacity-100'}`}>
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-4 md:py-6 flex items-center justify-between">
@@ -206,17 +206,17 @@ export default function App() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
             <Link href="/products" className={`transition-colors tracking-wide ${
-              isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+              isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
             }`}>
               {t.nav.products}
             </Link>
             <a href="#about" className={`transition-colors tracking-wide ${
-              isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+              isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
             }`}>
               {t.nav.about}
             </a>
             <a href="#contact" className={`transition-colors tracking-wide ${
-              isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+              isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
             }`}>
               {t.nav.contact}
             </a>
@@ -225,7 +225,7 @@ export default function App() {
             <button 
               onClick={toggleLanguage}
               className={`flex items-center gap-2 transition-colors tracking-wide ${
-                isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
               }`}
               aria-label="Change language"
             >
@@ -238,14 +238,14 @@ export default function App() {
               onClick={toggleDarkMode}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 ${
                 isDarkMode 
-                  ? 'bg-[#2d2419] border-[#4a3a2a] text-[#f5f0e8]' 
+                  ? 'bg-walnut-600 border-amber-700 text-cream' 
                   : 'bg-white border-gray-300 text-gray-700'
               }`}
               aria-label="Toggle theme"
             >
               <Sun className={`w-3.5 h-3.5 transition-all duration-300 ${isDarkMode ? 'scale-75 opacity-50' : 'scale-100 opacity-100'}`} />
-              <div className={`relative w-9 h-4.5 rounded-full ${isDarkMode ? 'bg-[#1a1512]' : 'bg-gray-200'}`}>
-                <div className={`absolute top-0.5 left-0.5 w-3.5 h-3.5 rounded-full ${isDarkMode ? 'bg-[#8b6f47]' : 'bg-[#8b6f47]'} transition-transform duration-300 ${isDarkMode ? 'translate-x-4.5' : 'translate-x-0'}`}></div>
+              <div className={`relative w-9 h-4.5 rounded-full ${isDarkMode ? 'bg-ebony-50' : 'bg-gray-200'}`}>
+                <div className={`absolute top-0.5 left-0.5 w-3.5 h-3.5 rounded-full ${isDarkMode ? 'bg-amber-500' : 'bg-amber-500'} transition-transform duration-300 ${isDarkMode ? 'translate-x-4.5' : 'translate-x-0'}`}></div>
               </div>
               <Moon className={`w-3.5 h-3.5 transition-all duration-300 ${isDarkMode ? 'scale-100 opacity-100' : 'scale-75 opacity-50'}`} />
             </button>
@@ -257,7 +257,7 @@ export default function App() {
             <button 
               onClick={toggleLanguage}
               className={`flex items-center gap-1.5 transition-colors ${
-                isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
               }`}
               aria-label="Change language"
             >
@@ -269,7 +269,7 @@ export default function App() {
             <button
               onClick={toggleDarkMode}
               className={`p-2 rounded-full transition-colors ${
-                isDarkMode ? 'hover:bg-[#2d2419]' : 'hover:bg-gray-100'
+                isDarkMode ? 'hover:bg-walnut-600' : 'hover:bg-gray-100'
               }`}
               aria-label="Toggle theme"
             >
@@ -288,13 +288,13 @@ export default function App() {
             >
               <div className="relative w-6 h-5 flex flex-col justify-center items-center">
                 <span className={`absolute w-6 h-0.5 transition-all duration-300 ease-in-out ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70' : 'bg-gray-600'
+                  isDarkMode ? 'bg-cream/70' : 'bg-gray-600'
                 } ${isMobileMenuOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'}`}></span>
                 <span className={`absolute w-6 h-0.5 transition-all duration-300 ease-in-out ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70' : 'bg-gray-600'
+                  isDarkMode ? 'bg-cream/70' : 'bg-gray-600'
                 } ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`}></span>
                 <span className={`absolute w-6 h-0.5 transition-all duration-300 ease-in-out ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70' : 'bg-gray-600'
+                  isDarkMode ? 'bg-cream/70' : 'bg-gray-600'
                 } ${isMobileMenuOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'}`}></span>
               </div>
             </button>
@@ -306,7 +306,7 @@ export default function App() {
       <div className={`hidden lg:block fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ${isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
         <div className={`backdrop-blur-sm border rounded-full px-6 py-2.5 shadow-lg ${
           isDarkMode 
-            ? 'bg-[#0a0806]/95 border-[#3d2f23] text-[#f5f0e8]' 
+            ? 'bg-ebony-500/95 border-walnut-500 text-cream' 
             : 'bg-white/95 border-gray-200 text-gray-900'
         }`}>
           <nav className="flex items-center gap-4">
@@ -316,29 +316,29 @@ export default function App() {
             </Link>
             
             {/* Divisor */}
-            <div className={`w-px h-5 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`}></div>
+            <div className={`w-px h-5 ${isDarkMode ? 'bg-walnut-500' : 'bg-gray-200'}`}></div>
             
             {/* Navigation Links */}
             <div className="flex items-center gap-4">
               <Link href="/products" className={`transition-colors text-sm tracking-wide ${
-                isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
               }`}>
                 {t.nav.products}
               </Link>
               <a href="#about" className={`transition-colors text-sm tracking-wide ${
-                isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
               }`}>
                 {t.nav.about}
               </a>
               <a href="#contact" className={`transition-colors text-sm tracking-wide ${
-                isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
               }`}>
                 {t.nav.contact}
               </a>
             </div>
             
             {/* Divisor */}
-            <div className={`w-px h-5 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`}></div>
+            <div className={`w-px h-5 ${isDarkMode ? 'bg-walnut-500' : 'bg-gray-200'}`}></div>
             
             {/* Controls Group */}
             <div className="flex items-center gap-3">
@@ -346,7 +346,7 @@ export default function App() {
               <button 
                 onClick={toggleLanguage}
                 className={`flex items-center gap-1.5 transition-colors ${
-                  isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                  isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
                 }`}
                 aria-label="Change language"
               >
@@ -359,14 +359,14 @@ export default function App() {
                 onClick={toggleDarkMode}
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-all duration-300 ${
                   isDarkMode 
-                    ? 'bg-[#2d2419] border-[#4a3a2a] text-[#f5f0e8]' 
+                    ? 'bg-walnut-600 border-amber-700 text-cream' 
                     : 'bg-white border-gray-300 text-gray-700'
                 }`}
                 aria-label="Toggle theme"
               >
                 <Sun className={`w-3 h-3 transition-all duration-300 ${isDarkMode ? 'scale-75 opacity-50' : 'scale-100 opacity-100'}`} />
-                <div className={`relative w-7 h-3.5 rounded-full ${isDarkMode ? 'bg-[#1a1512]' : 'bg-gray-200'}`}>
-                  <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full ${isDarkMode ? 'bg-[#8b6f47]' : 'bg-[#8b6f47]'} transition-transform duration-300 ${isDarkMode ? 'translate-x-3.5' : 'translate-x-0'}`}></div>
+                <div className={`relative w-7 h-3.5 rounded-full ${isDarkMode ? 'bg-ebony-50' : 'bg-gray-200'}`}>
+                  <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full ${isDarkMode ? 'bg-amber-500' : 'bg-amber-500'} transition-transform duration-300 ${isDarkMode ? 'translate-x-3.5' : 'translate-x-0'}`}></div>
                 </div>
                 <Moon className={`w-3 h-3 transition-all duration-300 ${isDarkMode ? 'scale-100 opacity-100' : 'scale-75 opacity-50'}`} />
               </button>
@@ -379,7 +379,7 @@ export default function App() {
       <div className={`lg:hidden fixed top-4 left-1/2 -translate-x-1/2 z-40 transition-all duration-300 ${isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
         <div className={`backdrop-blur-sm border rounded-full shadow-lg ${
           isDarkMode 
-            ? 'bg-[#0a0806]/95 border-[#3d2f23] text-[#f5f0e8]' 
+            ? 'bg-ebony-500/95 border-walnut-500 text-cream' 
             : 'bg-white/95 border-gray-200 text-gray-900'
         }`}>
           <nav className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5">
@@ -390,13 +390,13 @@ export default function App() {
             </Link>
             
             {/* Divisor */}
-            <div className={`w-px h-3 md:h-3.5 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`}></div>
+            <div className={`w-px h-3 md:h-3.5 ${isDarkMode ? 'bg-walnut-500' : 'bg-gray-200'}`}></div>
             
             {/* Language Toggle - más compacto */}
             <button 
               onClick={toggleLanguage}
               className={`flex items-center gap-0.5 transition-colors px-1.5 ${
-                isDarkMode ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                isDarkMode ? 'text-cream/70 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
               }`}
               aria-label="Change language"
             >
@@ -405,13 +405,13 @@ export default function App() {
             </button>
             
             {/* Divisor */}
-            <div className={`w-px h-3 md:h-3.5 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`}></div>
+            <div className={`w-px h-3 md:h-3.5 ${isDarkMode ? 'bg-walnut-500' : 'bg-gray-200'}`}></div>
             
             {/* Theme Toggle Mobile - solo ícono */}
             <button
               onClick={toggleDarkMode}
               className={`p-1.5 md:p-2 rounded-full transition-colors ${
-                isDarkMode ? 'hover:bg-[#2d2419]' : 'hover:bg-gray-100'
+                isDarkMode ? 'hover:bg-walnut-600' : 'hover:bg-gray-100'
               }`}
               aria-label="Toggle theme"
             >
@@ -423,7 +423,7 @@ export default function App() {
             </button>
             
             {/* Divisor */}
-            <div className={`w-px h-3 md:h-3.5 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`}></div>
+            <div className={`w-px h-3 md:h-3.5 ${isDarkMode ? 'bg-walnut-500' : 'bg-gray-200'}`}></div>
             
             {/* Mobile Menu Toggle - más pequeño */}
             <button
@@ -433,13 +433,13 @@ export default function App() {
             >
               <div className="relative w-3.5 h-3 flex flex-col justify-center items-center">
                 <span className={`absolute w-3.5 h-0.5 transition-all duration-300 ease-in-out ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70' : 'bg-gray-600'
+                  isDarkMode ? 'bg-cream/70' : 'bg-gray-600'
                 } ${isMobileMenuOpen ? 'rotate-45 translate-y-0' : '-translate-y-1'}`}></span>
                 <span className={`absolute w-3.5 h-0.5 transition-all duration-300 ease-in-out ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70' : 'bg-gray-600'
+                  isDarkMode ? 'bg-cream/70' : 'bg-gray-600'
                 } ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`}></span>
                 <span className={`absolute w-3.5 h-0.5 transition-all duration-300 ease-in-out ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70' : 'bg-gray-600'
+                  isDarkMode ? 'bg-cream/70' : 'bg-gray-600'
                 } ${isMobileMenuOpen ? '-rotate-45 translate-y-0' : 'translate-y-1'}`}></span>
               </div>
             </button>
@@ -454,7 +454,7 @@ export default function App() {
         {/* Backdrop con blur */}
         <div 
           className={`absolute inset-0 backdrop-blur-md ${
-            isDarkMode ? 'bg-[#0a0806]/80' : 'bg-white/80'
+            isDarkMode ? 'bg-ebony-500/80' : 'bg-white/80'
           }`}
           onClick={toggleMobileMenu}
         ></div>
@@ -463,12 +463,12 @@ export default function App() {
         <div 
           className={`absolute right-0 top-0 bottom-0 w-full sm:w-96 border-l shadow-2xl transition-transform duration-500 ease-out ${
             isDarkMode 
-              ? 'bg-[#0a0806] border-[#3d2f23] text-[#f5f0e8]' 
+              ? 'bg-ebony-500 border-walnut-500 text-cream' 
               : 'bg-white border-gray-200 text-gray-900'
           } ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
           <div className={`px-6 md:px-8 py-6 flex items-center justify-between border-b ${
-            isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'
+            isDarkMode ? 'border-walnut-500' : 'border-gray-200'
           }`}>
             {/* Logo */}
             <div className="flex items-center">
@@ -485,10 +485,10 @@ export default function App() {
             >
               <div className="relative w-6 h-6 flex items-center justify-center">
                 <span className={`absolute w-6 h-0.5 rotate-45 transition-all duration-300 ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70 group-hover:bg-[#f5f0e8]' : 'bg-gray-600 group-hover:bg-gray-900'
+                  isDarkMode ? 'bg-cream/70 group-hover:bg-cream' : 'bg-gray-600 group-hover:bg-gray-900'
                 }`}></span>
                 <span className={`absolute w-6 h-0.5 -rotate-45 transition-all duration-300 ${
-                  isDarkMode ? 'bg-[#f5f0e8]/70 group-hover:bg-[#f5f0e8]' : 'bg-gray-600 group-hover:bg-gray-900'
+                  isDarkMode ? 'bg-cream/70 group-hover:bg-cream' : 'bg-gray-600 group-hover:bg-gray-900'
                 }`}></span>
               </div>
             </button>
@@ -500,7 +500,7 @@ export default function App() {
               href="/products" 
               className={`text-3xl transition-all duration-300 py-4 border-b tracking-wide ${
                 isDarkMode 
-                  ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8] border-[#3d2f23]/50' 
+                  ? 'text-cream/70 hover:text-cream border-walnut-500/50' 
                   : 'text-gray-600 hover:text-gray-900 border-gray-200'
               } ${isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
               style={{ transitionDelay: isMobileMenuOpen ? '100ms' : '0ms' }}
@@ -512,7 +512,7 @@ export default function App() {
               href="#about" 
               className={`text-3xl transition-all duration-300 py-4 border-b tracking-wide ${
                 isDarkMode 
-                  ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8] border-[#3d2f23]/50' 
+                  ? 'text-cream/70 hover:text-cream border-walnut-500/50' 
                   : 'text-gray-600 hover:text-gray-900 border-gray-200'
               } ${isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
               style={{ transitionDelay: isMobileMenuOpen ? '200ms' : '0ms' }}
@@ -524,7 +524,7 @@ export default function App() {
               href="#contact" 
               className={`text-3xl transition-all duration-300 py-4 border-b tracking-wide ${
                 isDarkMode 
-                  ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8] border-[#3d2f23]/50' 
+                  ? 'text-cream/70 hover:text-cream border-walnut-500/50' 
                   : 'text-gray-600 hover:text-gray-900 border-gray-200'
               } ${isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
               style={{ transitionDelay: isMobileMenuOpen ? '300ms' : '0ms' }}
@@ -538,7 +538,7 @@ export default function App() {
               onClick={toggleLanguage}
               className={`flex items-center gap-3 text-2xl transition-all duration-300 py-6 mt-8 tracking-wide ${
                 isDarkMode 
-                  ? 'text-[#f5f0e8]/70 hover:text-[#f5f0e8]' 
+                  ? 'text-cream/70 hover:text-cream' 
                   : 'text-gray-600 hover:text-gray-900'
               } ${isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
               style={{ transitionDelay: isMobileMenuOpen ? '400ms' : '0ms' }}
@@ -546,7 +546,7 @@ export default function App() {
             >
               <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-colors ${
                 isDarkMode 
-                  ? 'border-[#f5f0e8]/20 hover:border-[#f5f0e8]/40' 
+                  ? 'border-cream/20 hover:border-cream/40' 
                   : 'border-gray-300 hover:border-gray-400'
               }`}>
                 <Globe className="w-6 h-6" />
@@ -570,7 +570,7 @@ export default function App() {
                   {t.hero.title.map(line => <span key={line}>{line}<br /></span>)}
                 </h2>
                 <p className={`text-base md:text-lg lg:text-xl leading-relaxed max-w-lg mx-auto lg:mx-0 ${
-                  isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                  isDarkMode ? 'text-taupe-500' : 'text-gray-600'
                 }`}>
                   {t.hero.description}
                 </p>
@@ -579,7 +579,7 @@ export default function App() {
               <Link 
                 href="/products" 
                 className={`inline-block px-8 md:px-10 py-3 md:py-4 hover:opacity-90 transition-opacity tracking-wide ${
-                  isDarkMode ? 'bg-[#8b6f47] text-white' : 'bg-[#3d2f23] text-white'
+                  isDarkMode ? 'bg-amber-500 text-white' : 'bg-walnut-500 text-white'
                 }`}
               >
                 {t.hero.cta}
@@ -598,7 +598,7 @@ export default function App() {
               
               {/* Decorative element */}
               <div className={`hidden lg:block absolute -bottom-8 -left-8 w-64 h-64 -z-10 ${
-                isDarkMode ? 'bg-[#8b6f47]/10' : 'bg-[#d4c4b0]/30'
+                isDarkMode ? 'bg-amber-500/10' : 'bg-sand-500/30'
               }`}></div>
             </div>
           </div>
@@ -606,7 +606,7 @@ export default function App() {
       </section>
 
       {/* Colecciones Destacadas */}
-      <section id="productos" className="py-12 md:py-16 lg:py-24 bg-[#3d2f23] text-white">
+      <section id="productos" className="py-12 md:py-16 lg:py-24 bg-walnut-500 text-white">
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12">
           <div className="text-center mb-10 md:mb-12 lg:mb-16 space-y-3 md:space-y-4">
             <h3 className="text-3xl md:text-4xl lg:text-5xl tracking-tight text-white">{t.collections.title}</h3>
@@ -680,7 +680,7 @@ export default function App() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="hidden lg:block absolute -top-8 -right-8 w-64 h-64 bg-[#8b6f47]/20 -z-10"></div>
+              <div className="hidden lg:block absolute -top-8 -right-8 w-64 h-64 bg-amber-500/20 -z-10"></div>
             </div>
 
             {/* Content */}
@@ -691,7 +691,7 @@ export default function App() {
                 {t.process.title.map(line => <span key={line}>{line}<br /></span>)}
               </h3>
               <div className={`space-y-4 md:space-y-6 text-base md:text-lg leading-relaxed ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 <p>
                   {t.process.paragraph1}
@@ -709,7 +709,7 @@ export default function App() {
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}>25+</div>
                   <div className={`text-xs md:text-sm tracking-wide ${
-                    isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                    isDarkMode ? 'text-taupe-500' : 'text-gray-600'
                   }`}>{t.process.stats.years}</div>
                 </div>
                 <div>
@@ -717,7 +717,7 @@ export default function App() {
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}>100%</div>
                   <div className={`text-xs md:text-sm tracking-wide ${
-                    isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                    isDarkMode ? 'text-taupe-500' : 'text-gray-600'
                   }`}>{t.process.stats.handmade}</div>
                 </div>
                 <div>
@@ -725,7 +725,7 @@ export default function App() {
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}>500+</div>
                   <div className={`text-xs md:text-sm tracking-wide ${
-                    isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                    isDarkMode ? 'text-taupe-500' : 'text-gray-600'
                   }`}>{t.process.stats.pieces}</div>
                 </div>
               </div>
@@ -736,7 +736,7 @@ export default function App() {
 
       {/* Testimonios */}
       <section className={`py-12 md:py-16 lg:py-24 ${
-        isDarkMode ? 'bg-[#1a1512]' : 'bg-gray-50'
+        isDarkMode ? 'bg-ebony-50' : 'bg-gray-50'
       }`}>
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12">
           <div className="text-center mb-10 md:mb-12 lg:mb-16 space-y-3 md:space-y-4">
@@ -747,71 +747,71 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <div className={`p-6 md:p-8 lg:p-10 space-y-4 md:space-y-6 ${
-              isDarkMode ? 'bg-[#0a0806] border border-[#3d2f23]' : 'bg-white border border-gray-200'
+              isDarkMode ? 'bg-ebony-500 border border-walnut-500' : 'bg-white border border-gray-200'
             }`}>
               <div className="flex gap-1">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className={`w-4 h-4 md:w-5 md:h-5 ${isDarkMode ? 'fill-[#8b6f47]' : 'fill-[#d4c4b0]'}`} viewBox="0 0 20 20">
+                  <svg key={i} className={`w-4 h-4 md:w-5 md:h-5 ${isDarkMode ? 'fill-amber-500' : 'fill-sand-500'}`} viewBox="0 0 20 20">
                     <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                   </svg>
                 ))}
               </div>
               <p className={`leading-relaxed text-sm md:text-base ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 {t.testimonials.testimonial1.text}
               </p>
-              <div className={`pt-4 border-t ${isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'}`}>
+              <div className={`pt-4 border-t ${isDarkMode ? 'border-walnut-500' : 'border-gray-200'}`}>
                 <div className={`tracking-wide text-sm md:text-base ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>{t.testimonials.testimonial1.name}</div>
-                <div className={`text-xs md:text-sm ${isDarkMode ? 'text-[#b8a99a]' : 'text-gray-500'}`}>{t.testimonials.testimonial1.location}</div>
+                <div className={`text-xs md:text-sm ${isDarkMode ? 'text-taupe-500' : 'text-gray-500'}`}>{t.testimonials.testimonial1.location}</div>
               </div>
             </div>
 
             <div className={`p-6 md:p-8 lg:p-10 space-y-4 md:space-y-6 ${
-              isDarkMode ? 'bg-[#0a0806] border border-[#3d2f23]' : 'bg-white border border-gray-200'
+              isDarkMode ? 'bg-ebony-500 border border-walnut-500' : 'bg-white border border-gray-200'
             }`}>
               <div className="flex gap-1">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className={`w-4 h-4 md:w-5 md:h-5 ${isDarkMode ? 'fill-[#8b6f47]' : 'fill-[#d4c4b0]'}`} viewBox="0 0 20 20">
+                  <svg key={i} className={`w-4 h-4 md:w-5 md:h-5 ${isDarkMode ? 'fill-amber-500' : 'fill-sand-500'}`} viewBox="0 0 20 20">
                     <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                   </svg>
                 ))}
               </div>
               <p className={`leading-relaxed text-sm md:text-base ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 {t.testimonials.testimonial2.text}
               </p>
-              <div className={`pt-4 border-t ${isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'}`}>
+              <div className={`pt-4 border-t ${isDarkMode ? 'border-walnut-500' : 'border-gray-200'}`}>
                 <div className={`tracking-wide text-sm md:text-base ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>{t.testimonials.testimonial2.name}</div>
-                <div className={`text-xs md:text-sm ${isDarkMode ? 'text-[#b8a99a]' : 'text-gray-500'}`}>{t.testimonials.testimonial2.location}</div>
+                <div className={`text-xs md:text-sm ${isDarkMode ? 'text-taupe-500' : 'text-gray-500'}`}>{t.testimonials.testimonial2.location}</div>
               </div>
             </div>
 
             <div className={`p-6 md:p-8 lg:p-10 space-y-4 md:space-y-6 ${
-              isDarkMode ? 'bg-[#0a0806] border border-[#3d2f23]' : 'bg-white border border-gray-200'
+              isDarkMode ? 'bg-ebony-500 border border-walnut-500' : 'bg-white border border-gray-200'
             }`}>
               <div className="flex gap-1">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className={`w-4 h-4 md:w-5 md:h-5 ${isDarkMode ? 'fill-[#8b6f47]' : 'fill-[#d4c4b0]'}`} viewBox="0 0 20 20">
+                  <svg key={i} className={`w-4 h-4 md:w-5 md:h-5 ${isDarkMode ? 'fill-amber-500' : 'fill-sand-500'}`} viewBox="0 0 20 20">
                     <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                   </svg>
                 ))}
               </div>
               <p className={`leading-relaxed text-sm md:text-base ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 {t.testimonials.testimonial3.text}
               </p>
-              <div className={`pt-4 border-t ${isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'}`}>
+              <div className={`pt-4 border-t ${isDarkMode ? 'border-walnut-500' : 'border-gray-200'}`}>
                 <div className={`tracking-wide text-sm md:text-base ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>{t.testimonials.testimonial3.name}</div>
-                <div className={`text-xs md:text-sm ${isDarkMode ? 'text-[#b8a99a]' : 'text-gray-500'}`}>{t.testimonials.testimonial3.location}</div>
+                <div className={`text-xs md:text-sm ${isDarkMode ? 'text-taupe-500' : 'text-gray-500'}`}>{t.testimonials.testimonial3.location}</div>
               </div>
             </div>
           </div>
@@ -822,21 +822,21 @@ export default function App() {
       <section className="py-12 md:py-16 lg:py-24">
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12">
           <div className={`px-6 md:px-12 lg:px-20 py-12 md:py-16 lg:py-24 text-center space-y-6 md:space-y-8 ${
-            isDarkMode ? 'bg-[#8b6f47] text-white' : 'bg-[#d4c4b0] text-[#3d2f23]'
+            isDarkMode ? 'bg-amber-500 text-white' : 'bg-sand-500 text-walnut-500'
           }`}>
             <h3 className={`text-3xl md:text-4xl lg:text-5xl tracking-tight ${
-              isDarkMode ? 'text-white' : 'text-[#3d2f23]'
+              isDarkMode ? 'text-white' : 'text-walnut-500'
             }`}>
               {t.cta.title}
             </h3>
             <p className={`text-base md:text-lg lg:text-xl opacity-90 max-w-2xl mx-auto ${
-              isDarkMode ? 'text-white' : 'text-[#3d2f23]'
+              isDarkMode ? 'text-white' : 'text-walnut-500'
             }`}>
               {t.cta.description}
             </p>
             <Link 
               href="/products" 
-              className={`inline-block px-8 md:px-10 py-3 md:py-4 hover:opacity-90 transition-opacity tracking-wide bg-[#3d2f23] text-white`}
+              className={`inline-block px-8 md:px-10 py-3 md:py-4 hover:opacity-90 transition-opacity tracking-wide bg-walnut-500 text-white`}
             >
               {t.cta.button}
             </Link>
@@ -846,7 +846,7 @@ export default function App() {
 
       {/* Footer */}
       <footer id="contact" className={`border-t ${
-        isDarkMode ? 'bg-[#0a0806] border-[#3d2f23]' : 'bg-white border-gray-200'
+        isDarkMode ? 'bg-ebony-500 border-walnut-500' : 'bg-white border-gray-200'
       }`}>
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-8 md:py-10 lg:py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 lg:gap-12 mb-8 md:mb-10 lg:mb-12">
@@ -858,7 +858,7 @@ export default function App() {
                 <span className="font-bold">DavidSon´s</span> <span className="font-normal">Design</span>
               </h4>
               <p className={`leading-relaxed max-w-md text-sm md:text-base ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 {t.footer.description}
               </p>
@@ -871,22 +871,22 @@ export default function App() {
               }`}>{t.footer.navigation}</h5>
               <nav className="flex flex-col gap-2 md:gap-3">
                 <Link href="/products" className={`transition-colors text-sm md:text-base ${
-                  isDarkMode ? 'text-[#b8a99a] hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                  isDarkMode ? 'text-taupe-500 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
                 }`}>
                   {t.nav.products}
                 </Link>
                 <a href="#about" className={`transition-colors text-sm md:text-base ${
-                  isDarkMode ? 'text-[#b8a99a] hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                  isDarkMode ? 'text-taupe-500 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
                 }`}>
                   {t.nav.about}
                 </a>
                 <a href="#contact" className={`transition-colors text-sm md:text-base ${
-                  isDarkMode ? 'text-[#b8a99a] hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                  isDarkMode ? 'text-taupe-500 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
                 }`}>
                   {t.nav.contact}
                 </a>
                 <Link href="/products" className={`transition-colors text-sm md:text-base ${
-                  isDarkMode ? 'text-[#b8a99a] hover:text-[#f5f0e8]' : 'text-gray-600 hover:text-gray-900'
+                  isDarkMode ? 'text-taupe-500 hover:text-cream' : 'text-gray-600 hover:text-gray-900'
                 }`}>
                   {t.footer.catalog}
                 </Link>
@@ -899,10 +899,10 @@ export default function App() {
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>{t.footer.contactTitle}</h5>
               <div className={`flex flex-col gap-2 md:gap-3 text-sm md:text-base ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 <a href="mailto:soporte@davidsonsdesign.com" className={`transition-colors ${
-                  isDarkMode ? 'hover:text-[#f5f0e8]' : 'hover:text-gray-900'
+                  isDarkMode ? 'hover:text-cream' : 'hover:text-gray-900'
                 }`}>
                   soporte@davidsonsdesign.com
                 </a>
@@ -913,11 +913,11 @@ export default function App() {
 
           {/* Bottom Bar */}
           <div className={`pt-6 md:pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 ${
-            isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'
+            isDarkMode ? 'border-walnut-500' : 'border-gray-200'
           }`}>
             <div className="flex items-center gap-4">
               <p className={`text-xs md:text-sm text-center md:text-left ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 {t.footer.copyright}
               </p>
@@ -927,14 +927,14 @@ export default function App() {
                 onClick={toggleDarkMode}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 ${
                   isDarkMode 
-                    ? 'bg-[#2d2419] border-[#4a3a2a] text-[#f5f0e8]' 
+                    ? 'bg-walnut-600 border-amber-700 text-cream' 
                     : 'bg-white border-gray-300 text-gray-700'
                 }`}
                 aria-label="Toggle theme"
               >
                 <Sun className={`w-3.5 h-3.5 transition-all duration-300 ${isDarkMode ? 'scale-75 opacity-50' : 'scale-100 opacity-100'}`} />
-                <div className={`relative w-10 h-5 rounded-full ${isDarkMode ? 'bg-[#1a1512]' : 'bg-gray-200'}`}>
-                  <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full ${isDarkMode ? 'bg-[#8b6f47]' : 'bg-[#8b6f47]'} transition-transform duration-300 ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                <div className={`relative w-10 h-5 rounded-full ${isDarkMode ? 'bg-ebony-50' : 'bg-gray-200'}`}>
+                  <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full ${isDarkMode ? 'bg-amber-500' : 'bg-amber-500'} transition-transform duration-300 ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}`}></div>
                 </div>
                 <Moon className={`w-3.5 h-3.5 transition-all duration-300 ${isDarkMode ? 'scale-100 opacity-100' : 'scale-75 opacity-50'}`} />
               </button>
@@ -942,21 +942,21 @@ export default function App() {
             
             <div className="flex flex-col items-center md:items-end gap-3">
               <div className={`flex gap-6 md:gap-8 text-xs md:text-sm ${
-                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                isDarkMode ? 'text-taupe-500' : 'text-gray-600'
               }`}>
                 <a href="#" className={`transition-colors ${
-                  isDarkMode ? 'hover:text-[#f5f0e8]' : 'hover:text-gray-900'
+                  isDarkMode ? 'hover:text-cream' : 'hover:text-gray-900'
                 }`}>
                   {t.footer.privacy}
                 </a>
                 <a href="#" className={`transition-colors ${
-                  isDarkMode ? 'hover:text-[#f5f0e8]' : 'hover:text-gray-900'
+                  isDarkMode ? 'hover:text-cream' : 'hover:text-gray-900'
                 }`}>
                   {t.footer.terms}
                 </a>
               </div>
               <p className={`text-xs ${
-                isDarkMode ? 'text-[#b8a99a]/60' : 'text-gray-500'
+                isDarkMode ? 'text-taupe-500/60' : 'text-gray-500'
               }`}>
                 Powered by RockStage
               </p>

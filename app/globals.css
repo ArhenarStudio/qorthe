@@ -1,19 +1,72 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #171717;
-  --primary-foreground: #ffffff;
-  --accent: #f5f0e8;
-  --accent-foreground: #171717;
-  --muted: #737373;
-  --muted-foreground: #737373;
-  --border: #e5e5e5;
-  --secondary: #d4af37;
+  /* Paleta oficial Davidson's Design */
+  --background: #f5f0e8; /* cream / sand-50 */
+  --foreground: #0a0806; /* ebony-500 */
+  --primary: #0a0806; /* ebony-500 */
+  --primary-foreground: #f5f0e8; /* cream */
+  --accent: #f5f0e8; /* cream */
+  --accent-foreground: #0a0806; /* ebony-500 */
+  --muted: #7d7264; /* taupe-700 */
+  --muted-foreground: #7d7264; /* taupe-700 */
+  --border: #ebe4d8; /* sand-100 */
+  --secondary: #8b6f47; /* amber-500 */
 }
 
+/* 🎨 PALETA OFICIAL DAVIDSON'S DESIGN */
 @theme inline {
+  /* Ebony - fondos oscuros */
+  --color-ebony-50: #1a1512;
+  --color-ebony-100: #151310;
+  --color-ebony-500: #0a0806;
+  --color-ebony-600: #070604;
+  --color-ebony-700: #050403;
+  --color-ebony-900: #020201;
+
+  /* Walnut - botones, headers */
+  --color-walnut-50: #6d5645;
+  --color-walnut-100: #554334;
+  --color-walnut-500: #3d2f23;
+  --color-walnut-600: #2d2419;
+  --color-walnut-700: #1f1812;
+  --color-walnut-900: #100c09;
+
+  /* Amber - acentos premium */
+  --color-amber-50: #c9b594;
+  --color-amber-100: #a68658;
+  --color-amber-500: #8b6f47;
+  --color-amber-600: #6f5739;
+  --color-amber-700: #4a3a2a;
+  --color-amber-900: #2e2319;
+
+  /* Sand - fondos suaves */
+  --color-sand-50: #f5f0e8;
+  --color-sand-100: #ebe4d8;
+  --color-sand-500: #d4c4b0;
+  --color-sand-600: #c0ae98;
+  --color-sand-700: #a69780;
+  --color-sand-900: #8c8068;
+
+  /* Taupe - texto secundario */
+  --color-taupe-50: #d9d0c5;
+  --color-taupe-100: #c8bcaf;
+  --color-taupe-500: #b8a99a;
+  --color-taupe-600: #9a8d7e;
+  --color-taupe-700: #7d7264;
+  --color-taupe-900: #5f5649;
+
+  /* Slate - badge logo, nav premium */
+  --color-slate-50: #3d5468;
+  --color-slate-100: #2c3f50;
+  --color-slate-500: #1a2938;
+  --color-slate-600: #14202c;
+  --color-slate-700: #0e161f;
+  --color-slate-900: #070c13;
+
+  /* Cream - texto claro modo oscuro */
+  --color-cream: #f5f0e8;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
@@ -30,8 +83,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a0806; /* ebony-500 */
+    --foreground: #f5f0e8; /* cream */
   }
 }
 
