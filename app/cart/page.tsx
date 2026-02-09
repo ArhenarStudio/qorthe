@@ -46,7 +46,7 @@ export default function CartPageRoute() {
       items={items}
       onUpdateQuantity={handleUpdateQuantity}
       onRemoveItem={handleRemoveItem}
-      onCheckout={() => console.log("Checkout")}
+      onCheckout={() => (window.location.href = "/checkout")}
     />
   );
 }

@@ -1,0 +1,122 @@
+{
+  "version": "v2",
+  "description": "Mapeo de archivos Figma V2 a módulos del proyecto",
+  "updatedAt": "2026-02-09",
+  "mapping": {
+    "footer": {
+      "figma": "DSD V2/src/app/components/Footer.tsx",
+      "module": "src/modules/footer/components/Footer.tsx",
+      "backup": "src/modules/footer/versions/Footer.v1.tsx",
+      "applied": "V2 aplicado 2026-02-09"
+    },
+    "header": {
+      "figma": "DSD V2/src/app/components/Header.tsx",
+      "module": "src/modules/header/components/Header.tsx",
+      "versionFile": "src/modules/header/versions/Header.v2.tsx"
+    },
+    "landing": {
+      "figma": "DSD V2/src/app/components/LandingPage.tsx",
+      "module": "src/modules/landing/components/LandingPage.tsx",
+      "backup": "src/modules/landing/versions/LandingPage.v1.tsx",
+      "versionFile": "src/modules/landing/versions/LandingPage.v2.tsx",
+      "applied": "Migrado 2026-02-09 con animaciones V2 (motion + AnimatedSection)."
+    },
+    "AnimatedSection": {
+      "figma": "DSD V2/src/app/components/AnimatedSection.tsx",
+      "module": "src/components/shared/AnimatedSection.tsx",
+      "applied": "V2 aplicado 2026-02-09"
+    },
+    "product": {
+      "ProductBreadcrumb": {
+        "figma": "DSD V2/src/app/components/ProductBreadcrumb.tsx",
+        "module": "src/modules/product/components/ProductBreadcrumb.tsx",
+        "backup": "src/modules/product/versions/ProductBreadcrumb.v1.tsx"
+      },
+      "ProductGallery": {
+        "figma": "DSD V2/src/app/components/ProductGallery.tsx",
+        "module": "src/modules/product/components/ProductGallery.tsx",
+        "backup": "src/modules/product/versions/ProductGallery.v1.tsx"
+      },
+      "ProductInfo": {
+        "figma": "DSD V2/src/app/components/ProductInfo.tsx",
+        "module": "src/modules/product/components/ProductInfo.tsx",
+        "backup": "src/modules/product/versions/ProductInfo.v1.tsx"
+      },
+      "ProductTabs": {
+        "figma": "DSD V2/src/app/components/ProductTabs.tsx",
+        "module": "src/modules/product/components/ProductTabs.tsx",
+        "backup": "src/modules/product/versions/ProductTabs.v1.tsx"
+      },
+      "ProductDetail": {
+        "figma": "DSD V2/src/app/components/ProductDetail.tsx",
+        "module": "src/modules/product/components/ProductDetail.tsx",
+        "backup": "src/modules/product/versions/ProductDetail.v1.tsx"
+      },
+      "ProductCatalog": {
+        "figma": "DSD V2/src/app/components/ProductCatalog.tsx",
+        "module": "src/modules/product/components/ProductCatalog.tsx",
+        "backup": "src/modules/product/versions/ProductCatalog.v1.tsx"
+      }
+    },
+    "checkout": {
+      "CheckoutPage": {
+        "figma": "DSD V2/src/app/components/CheckoutPage.tsx",
+        "module": "src/modules/checkout/components/CheckoutPage.tsx",
+        "backup": "src/modules/checkout/versions/CheckoutPage.v1.tsx"
+      },
+      "PaymentPage": {
+        "figma": "DSD V2/src/app/components/PaymentPage.tsx",
+        "module": "src/modules/checkout/components/PaymentPage.tsx",
+        "backup": "src/modules/checkout/versions/PaymentPage.v1.tsx"
+      },
+      "OrderConfirmationPage": {
+        "figma": "DSD V2/src/app/components/OrderConfirmationPage.tsx",
+        "module": "src/modules/checkout/components/OrderConfirmationPage.tsx",
+        "backup": "src/modules/checkout/versions/OrderConfirmationPage.v1.tsx"
+      }
+    },
+    "customer-account": {
+      "LoginPage": {
+        "figma": "DSD V2/src/app/components/LoginPage.tsx",
+        "module": "src/modules/customer-account/components/LoginPage.tsx",
+        "backup": "src/modules/customer-account/versions/LoginPage.v1.tsx"
+      },
+      "RegisterPage": {
+        "figma": "DSD V2/src/app/components/RegisterPage.tsx",
+        "module": "src/modules/customer-account/components/RegisterPage.tsx",
+        "backup": "src/modules/customer-account/versions/RegisterPage.v1.tsx"
+      },
+      "AccountDashboard": {
+        "figma": "DSD V2/src/app/components/AccountDashboard.tsx",
+        "module": "src/modules/customer-account/components/AccountDashboard.tsx",
+        "backup": "src/modules/customer-account/versions/AccountDashboard.v1.tsx"
+      },
+      "AddressModal": {
+        "figma": "DSD V2/src/app/components/AddressModal.tsx",
+        "module": "src/modules/customer-account/components/AddressModal.tsx",
+        "backup": "src/modules/customer-account/versions/AddressModal.v1.tsx"
+      },
+      "AddressesPage": {
+        "figma": "DSD V2/src/app/components/AddressesPage.tsx",
+        "module": "src/modules/customer-account/components/AddressesPage.tsx",
+        "backup": "src/modules/customer-account/versions/AddressesPage.v1.tsx"
+      },
+      "OrdersPage": {
+        "figma": "DSD V2/src/app/components/OrdersPage.tsx",
+        "module": "src/modules/customer-account/components/OrdersPage.tsx",
+        "backup": "src/modules/customer-account/versions/OrdersPage.v1.tsx"
+      },
+      "OrderDetailPage": {
+        "figma": "DSD V2/src/app/components/OrderDetailPage.tsx",
+        "module": "src/modules/customer-account/components/OrderDetailPage.tsx",
+        "backup": "src/modules/customer-account/versions/OrderDetailPage.v1.tsx"
+      },
+      "WishlistPage": {
+        "figma": "DSD V2/src/app/components/WishlistPage.tsx",
+        "module": "src/modules/customer-account/components/WishlistPage.tsx",
+        "backup": "src/modules/customer-account/versions/WishlistPage.v1.tsx"
+      }
+    }
+  },
+  "notes": "Footer, AnimatedSection, Landing, Product, Checkout y Customer Account (8 componentes) mapeados."
+}

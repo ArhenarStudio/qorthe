@@ -1,3 +1,6 @@
+/**
+ * Backup V1 - 2026-02-09. Componente activo en components/ProductInfo.tsx
+ */
 "use client";
 
 import { useState } from "react";

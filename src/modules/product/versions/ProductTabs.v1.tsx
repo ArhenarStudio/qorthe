@@ -1,3 +1,6 @@
+/**
+ * Backup V1 - 2026-02-09. Componente activo en components/ProductTabs.tsx
+ */
 "use client";
 
 import Image from "next/image";
@@ -87,11 +90,18 @@ export function ProductTabs({
               {description.title}
             </h3>
             {description.paragraphs.map((p, i) => (
-              <p key={i} className="mb-4 text-taupe-600" dangerouslySetInnerHTML={{ __html: p }} />
+              <p
+                key={i}
+                className="mb-4 text-taupe-600"
+                dangerouslySetInnerHTML={{ __html: p }}
+              />
             ))}
             {description.note && (
               <div className="my-6 border-l-4 border-amber-500 bg-amber-50 p-4">
-                <p className="text-sm text-amber-900" dangerouslySetInnerHTML={{ __html: description.note }} />
+                <p
+                  className="text-sm text-amber-900"
+                  dangerouslySetInnerHTML={{ __html: description.note }}
+                />
               </div>
             )}
           </div>
@@ -105,33 +115,25 @@ export function ProductTabs({
             </h3>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               <div className="rounded bg-sand-50 p-4">
-                <div className="mb-1 text-xs uppercase text-taupe-500">
-                  Largo
-                </div>
+                <div className="mb-1 text-xs uppercase text-taupe-500">Largo</div>
                 <div className="text-lg font-semibold text-walnut-500">
                   {specifications.length}
                 </div>
               </div>
               <div className="rounded bg-sand-50 p-4">
-                <div className="mb-1 text-xs uppercase text-taupe-500">
-                  Ancho
-                </div>
+                <div className="mb-1 text-xs uppercase text-taupe-500">Ancho</div>
                 <div className="text-lg font-semibold text-walnut-500">
                   {specifications.width}
                 </div>
               </div>
               <div className="rounded bg-sand-50 p-4">
-                <div className="mb-1 text-xs uppercase text-taupe-500">
-                  Alto
-                </div>
+                <div className="mb-1 text-xs uppercase text-taupe-500">Alto</div>
                 <div className="text-lg font-semibold text-walnut-500">
                   {specifications.height}
                 </div>
               </div>
               <div className="rounded bg-sand-50 p-4">
-                <div className="mb-1 text-xs uppercase text-taupe-500">
-                  Peso
-                </div>
+                <div className="mb-1 text-xs uppercase text-taupe-500">Peso</div>
                 <div className="text-lg font-semibold text-walnut-500">
                   {specifications.weight}
                 </div>
@@ -177,9 +179,7 @@ export function ProductTabs({
                 </ul>
               </div>
               <div>
-                <h4 className="mb-3 font-semibold text-walnut-500">
-                  Evitar:
-                </h4>
+                <h4 className="mb-3 font-semibold text-walnut-500">Evitar:</h4>
                 <ul className="space-y-2 text-taupe-600">
                   {care.avoid.map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
@@ -220,7 +220,9 @@ export function ProductTabs({
                   width={300}
                   height={400}
                   className="w-full rounded-lg shadow-md"
-                  unoptimized={artist.imageUrl.startsWith("https://via.placeholder")}
+                  unoptimized={artist.imageUrl.startsWith(
+                    "https://via.placeholder"
+                  )}
                 />
               </div>
               <div className="space-y-4 md:w-2/3">
@@ -233,16 +235,19 @@ export function ProductTabs({
                   </p>
                 ))}
                 <div className="rounded-lg border-l-4 border-walnut-500 bg-sand-50 p-6">
-                  <p className="italic text-taupe-700">&quot;{artist.quote}&quot;</p>
-                  <p className="mt-2 text-sm text-taupe-500">
-                    — {artist.name}
+                  <p className="italic text-taupe-700">
+                    &quot;{artist.quote}&quot;
                   </p>
+                  <p className="mt-2 text-sm text-taupe-500">— {artist.name}</p>
                 </div>
                 <div className="border-t border-sand-100 pt-4">
                   <h5 className="mb-3 font-semibold text-walnut-500">
                     Garantía:
                   </h5>
-                  <p className="text-taupe-600" dangerouslySetInnerHTML={{ __html: artist.warrantyText }} />
+                  <p
+                    className="text-taupe-600"
+                    dangerouslySetInnerHTML={{ __html: artist.warrantyText }}
+                  />
                 </div>
               </div>
             </div>

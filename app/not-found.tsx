@@ -108,6 +108,7 @@ export default function NotFound() {
         onNavigatePrivacy={() => (window.location.href = "/privacy")}
         onNavigateTerms={() => (window.location.href = "/terms")}
         onNavigateCookies={() => (window.location.href = "/cookies")}
+        onNavigateCatalog={() => (window.location.href = "/products")}
         translations={t}
       />
     </div>

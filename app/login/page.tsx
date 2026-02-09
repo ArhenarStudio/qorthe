@@ -13,9 +13,9 @@ export default function LoginRoute() {
       isDarkMode={isDarkMode}
       onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
       onToggleDarkMode={() => setIsDarkMode((m) => !m)}
-      onLogin={(email) => {
-        console.log("Login:", email);
+      onLogin={(_email, _password) => {
         // TODO: Implementar lógica de login con Shopify
+        window.location.href = "/account";
       }}
       onNavigateRegister={() => (window.location.href = "/register")}
       onNavigateHome={() => (window.location.href = "/")}

@@ -451,6 +451,8 @@ export function RegisterPage({
         language={language}
         isDarkMode={isDarkMode}
         onToggleDarkMode={onToggleDarkMode}
+        onNavigateCookies={() => (window.location.href = "/cookies")}
+        onNavigateCatalog={() => (window.location.href = "/products")}
         translations={t}
       />
     </div>

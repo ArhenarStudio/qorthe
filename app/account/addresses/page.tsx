@@ -1,0 +1,49 @@
+"use client";
+
+import { useState } from "react";
+import { AddressesPage } from "@/modules/customer-account";
+
+const mockAddresses = [
+  {
+    id: "addr-1",
+    name: "Casa",
+    street: "Calle Principal 123",
+    city: "Hermosillo",
+    state: "Sonora",
+    zipCode: "83000",
+    phone: "662 123 4567",
+    isDefault: true,
+  },
+];
+
+export default function AddressesRoute() {
+  const [language, setLanguage] = useState<"es" | "en">("es");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [addresses, setAddresses] = useState(mockAddresses);
+
+  return (
+    <AddressesPage
+      language={language}
+      isDarkMode={isDarkMode}
+      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
+      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
+      onNavigateHome={() => (window.location.href = "/")}
+      onNavigateProducts={() => (window.location.href = "/products")}
+      onNavigateDashboard={() => (window.location.href = "/account")}
+      onNavigateOrders={() => (window.location.href = "/account/orders")}
+      onNavigateWishlist={() => (window.location.href = "/account/wishlist")}
+      onLogout={() => (window.location.href = "/")}
+      userName="David Pérez"
+      userEmail="david@example.com"
+      addresses={addresses}
+      onAddAddress={() => (window.location.href = "/account")}
+      onEditAddress={(id) => (window.location.href = `/account?edit=${id}`)}
+      onDeleteAddress={(id) => setAddresses((a) => a.filter((x) => x.id !== id))}
+      onSetDefaultAddress={(id) =>
+        setAddresses((a) =>
+          a.map((x) => ({ ...x, isDefault: x.id === id }))
+        )
+      }
+    />
+  );
+}

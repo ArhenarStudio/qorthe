@@ -1,0 +1,18 @@
+{
+  "version": "v1",
+  "description": "Mapeo de archivos Figma V1 a módulos del proyecto",
+  "updatedAt": "2026-02-09",
+  "mapping": {
+    "footer": {
+      "figma": "DSD V1/src/app/components/Footer.tsx",
+      "module": "src/modules/footer/components/Footer.tsx",
+      "backup": "src/modules/footer/versions/Footer.v1.tsx"
+    },
+    "header": {
+      "figma": "DSD V1/src/app/components/Header.tsx",
+      "module": "src/modules/header/components/Header.tsx",
+      "backup": "src/modules/header/versions/Header.v1.tsx"
+    }
+  },
+  "notes": "Rutas Figma relativas al proyecto DavidSons Design - Figma. Rutas module/backup relativas a davidsons-design."
+}

@@ -1,3 +1,6 @@
+/**
+ * Backup V1 - 2026-02-09. Componente activo en components/ProductBreadcrumb.tsx
+ */
 import Link from "next/link";
 
 interface ProductBreadcrumbProps {

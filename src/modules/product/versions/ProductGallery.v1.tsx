@@ -1,3 +1,6 @@
+/**
+ * Backup V1 - 2026-02-09. Componente activo en components/ProductGallery.tsx
+ */
 "use client";
 
 import Image from "next/image";
@@ -49,9 +52,7 @@ export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
               type="button"
               onClick={() => setActiveIndex(index)}
               className={`aspect-square w-full cursor-pointer overflow-hidden rounded-lg border-2 transition-all hover:opacity-70 ${
-                isActive
-                  ? "border-walnut-500"
-                  : "border-sand-600"
+                isActive ? "border-walnut-500" : "border-sand-600"
               }`}
               aria-label={`Ver ${img.alt}`}
             >

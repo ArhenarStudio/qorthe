@@ -1,0 +1,204 @@
+# ═══════════════════════════════════════════════════════════════
+# DAVIDSONS DESIGN – CURSOR RULES
+# Flujo automatizado: Figma → Diff → Migración → Deploy
+# ═══════════════════════════════════════════════════════════════
+
+## CONTEXTO DEL PROYECTO
+
+Este es un e-commerce de muebles artesanales construido con:
+- **Framework:** Next.js 16+ (App Router)
+- **Estilos:** Tailwind CSS v4
+- **Backend:** Shopify Headless (Hydrogen React)
+- **Arquitectura:** Sistema modular (cada feature es un módulo independiente)
+
+### Rutas críticas:
+- **Proyecto Next.js:** ~/Documents/davidsons-design/
+- **Exports de Figma:** ~/Documents/DavidSons Design - Figma/
+- **Módulos activos:** src/modules/{nombre}/components/
+- **Backups/Versiones:** src/modules/{nombre}/versions/
+- **Mappings Figma:** src/figma-versions/
+- **Logs de migración:** src/figma-versions/migration-logs/
+- **Componentes UI:** src/components/ui/ (shadcn)
+- **Componentes compartidos:** src/components/shared/
+
+### Módulos existentes:
+- header → src/modules/header/
+- footer → src/modules/footer/
+- product → src/modules/product/
+- cart → src/modules/cart/
+- checkout → src/modules/checkout/
+- customer-account → src/modules/customer-account/
+
+---
+
+## COMANDO: "Actualiza mi sitio" / "Migra la nueva versión de Figma"
+
+Cuando el usuario diga cualquier variación de "actualiza mi sitio", "migra figma", 
+"aplica los cambios de figma", o "nueva versión de figma", ejecuta este flujo COMPLETO:
+
+### PASO 1 — DETECTAR VERSIONES
+1. Lista las carpetas en: ~/Documents/DavidSons Design - Figma/
+2. Identifica todas las versiones existentes (DSD V1, DSD V2, DSD V3...)
+3. Toma las DOS más recientes como OLD y NEW
+4. Confirma al usuario: "Detecté DSD V[X] (anterior) y DSD V[Y] (nueva). ¿Procedo?"
+
+### PASO 2 — DIFF AUTOMÁTICO
+Compara OLD vs NEW archivo por archivo dentro de src/app/components/:
+
+1. **Archivos nuevos:** Existen en NEW pero no en OLD
+2. **Archivos eliminados:** Existen en OLD pero no en NEW
+3. **Archivos modificados:** Existen en ambos pero contenido diferente
+4. **Sin cambios:** Idénticos en ambas versiones
+
+Para cada archivo MODIFICADO, analiza:
+- Qué líneas cambiaron (diff real del contenido)
+- Si es un componente TSX: qué sección cambió (imports, JSX, styles, lógica)
+- Genera un resumen en lenguaje natural del cambio
+
+### PASO 3 — GENERAR REPORTE
+Crea el archivo: src/figma-versions/migration-logs/diff-V[X]-vs-V[Y]-[fecha].md
+
+Formato:
+```markdown
+# Diff Report: DSD V[X] → DSD V[Y]
+**Fecha:** YYYY-MM-DD
+**Generado por:** Cursor (automático)
+
+## Resumen
+- Archivos nuevos: X
+- Archivos eliminados: X
+- Archivos modificados: X
+- Sin cambios: X
+
+## 🆕 Archivos Nuevos
+| Archivo | Descripción |
+|---------|-------------|
+| AnimatedSection.tsx | Nuevo componente de animación |
+
+## ✏️ Archivos Modificados
+### Footer.tsx
+- **Cambio detectado:** Icono de Instagram reemplazado por icono de TikTok
+- **Líneas afectadas:** 45-52
+- **Sección:** JSX (zona de redes sociales)
+
+### Header.tsx
+- Sin cambios ✅
+
+## ✅ Sin Cambios (X archivos)
+[lista completa]
+```
+
+### PASO 4 — PRESENTAR Y CONFIRMAR
+Muestra el reporte al usuario y pregunta:
+"Estos son los cambios detectados entre V[X] y V[Y]. ¿Aplico estos cambios al proyecto Next.js?"
+
+NUNCA apliques cambios sin confirmación del usuario.
+
+### PASO 5 — APLICAR CAMBIOS (solo tras confirmación)
+
+Para cada archivo MODIFICADO o NUEVO, sigue estas reglas:
+
+#### Mapeo Figma → Módulo:
+| Archivo Figma | Módulo Next.js |
+|---------------|----------------|
+| Header.tsx | src/modules/header/components/Header.tsx |
+| Footer.tsx | src/modules/footer/components/Footer.tsx |
+| ProductDetail.tsx | src/modules/product/components/ProductDetail.tsx |
+| ProductCatalog.tsx | src/modules/product/components/ProductCatalog.tsx |
+| CartDrawer.tsx | src/modules/cart/components/CartDrawer.tsx |
+| CartPage.tsx | src/modules/cart/components/CartPage.tsx |
+| CheckoutPage.tsx | src/modules/checkout/components/CheckoutPage.tsx |
+| PaymentPage.tsx | src/modules/checkout/components/PaymentPage.tsx |
+| OrderConfirmationPage.tsx | src/modules/checkout/components/OrderConfirmationPage.tsx |
+| LoginPage.tsx | src/modules/customer-account/components/LoginPage.tsx |
+| RegisterPage.tsx | src/modules/customer-account/components/RegisterPage.tsx |
+| AccountDashboard.tsx | src/modules/customer-account/components/AccountDashboard.tsx |
+| AddressModal.tsx | src/modules/customer-account/components/AddressModal.tsx |
+| AddressesPage.tsx | src/modules/customer-account/components/AddressesPage.tsx |
+| OrdersPage.tsx | src/modules/customer-account/components/OrdersPage.tsx |
+| OrderDetailPage.tsx | src/modules/customer-account/components/OrderDetailPage.tsx |
+| WishlistPage.tsx | src/modules/customer-account/components/WishlistPage.tsx |
+| LandingPage.tsx | src/modules/landing/components/LandingPage.tsx |
+| CookiePolicy.tsx | src/modules/legal/components/CookiePolicy.tsx |
+| PrivacyPolicy.tsx | src/modules/legal/components/PrivacyPolicy.tsx |
+| TermsAndConditions.tsx | src/modules/legal/components/TermsAndConditions.tsx |
+| Componentes en ui/ | src/components/ui/ |
+| ImageWithFallback.tsx | src/components/shared/ImageWithFallback.tsx |
+
+#### Reglas de migración:
+1. **ANTES de modificar**, copia el componente activo actual como backup:
+   - Ej: Footer.tsx → versions/Footer.v[X].tsx
+2. **Aplica SOLO los cambios detectados en el diff**, NO reemplaces el archivo completo
+3. **Adapta el código de Figma (Vite/React)** a Next.js:
+   - Reemplaza `<a href>` por `<Link href>` de Next.js
+   - Reemplaza `<img>` por `<Image>` de Next.js o ImageWithFallback
+   - Mantén imports relativos correctos para la estructura de módulos
+   - Conserva cualquier integración con Shopify que ya exista
+   - Conserva hooks, lógica de estado, y funcionalidad existente
+4. **NO toques** archivos que el diff marcó como "Sin cambios"
+5. **Archivos nuevos** que no tienen módulo asignado: pregunta al usuario dónde ubicarlos
+
+### PASO 6 — ACTUALIZAR MAPPINGS
+Actualiza src/figma-versions/v[Y]-mapping.json con los nuevos mapeos.
+Si no existe el archivo de mapping para la nueva versión, créalo.
+
+### PASO 7 — ACTUALIZAR CHANGELOGS
+Para cada módulo modificado, actualiza su CHANGELOG:
+src/modules/{nombre}/versions/CHANGELOG.md
+
+Formato:
+```markdown
+## V[Y] - YYYY-MM-DD
+### Cambios desde V[X]
+- [descripción del cambio aplicado]
+### Archivos afectados
+- components/[Nombre].tsx (actualizado)
+- versions/[Nombre].v[X].tsx (backup creado)
+```
+
+### PASO 8 — VERIFICACIÓN
+1. Verifica que el proyecto compila: `npm run build`
+2. Si hay errores, corrígelos
+3. Muestra resumen final al usuario
+
+### PASO 9 — DEPLOY (solo si el usuario lo pide)
+Si el usuario dice "haz push" o "sube los cambios":
+1. `git add .`
+2. `git commit -m "feat: migrate Figma DSD V[Y] changes - [resumen de cambios]"`
+3. `git push`
+
+---
+
+## REGLAS GENERALES
+
+### Lo que SÍ debes hacer:
+- Siempre mostrar el diff ANTES de aplicar cambios
+- Siempre crear backups antes de modificar
+- Siempre adaptar código Vite → Next.js
+- Siempre mantener la arquitectura modular
+- Siempre actualizar changelogs y mappings
+
+### Lo que NUNCA debes hacer:
+- Reemplazar archivos completos cuando solo cambió una línea
+- Aplicar cambios sin confirmación del usuario
+- Modificar archivos que el diff marcó como sin cambios
+- Romper integraciones existentes con Shopify
+- Crear módulos nuevos sin consultar al usuario
+- Ignorar la estructura modular y poner código fuera de src/modules/
+
+### Convenciones de código:
+- TypeScript estricto
+- Tailwind CSS v4 para estilos
+- Componentes funcionales con hooks
+- Imports con alias @ cuando estén configurados
+- Nombres de archivo en PascalCase para componentes
+
+---
+
+## COLORES OFICIALES (Figma Design System)
+- Background: #FAF8F5
+- Accent/Primary: #8B7355
+- Secondary: #D4C5B0
+- Text Primary: #2C2C2C
+- Text Secondary: #6B6B6B
+- Tipografía: ITC Avant Garde Gothic Pro
