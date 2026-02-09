@@ -46,6 +46,12 @@
       ],
       "@/lib/shopify/*": [
         "./src/lib/shopify/*"
+      ],
+      "@/lib/supabase": [
+        "./src/lib/supabase"
+      ],
+      "@/lib/supabase/*": [
+        "./src/lib/supabase/*"
       ]
     }
   },

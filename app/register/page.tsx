@@ -13,14 +13,10 @@ export default function RegisterRoute() {
       isDarkMode={isDarkMode}
       onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
       onToggleDarkMode={() => setIsDarkMode((m) => !m)}
-      onRegister={(name, email) => {
-        console.log("Register:", { name, email });
-        // TODO: Implementar registro con Shopify
-      }}
       onNavigateLogin={() => (window.location.href = "/login")}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
-      onNavigateAccount={() => (window.location.href = "/login")}
+      onNavigateAccount={() => (window.location.href = "/account")}
     />
   );
 }

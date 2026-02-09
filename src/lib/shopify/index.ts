@@ -20,6 +20,14 @@ export {
   setStoredCartId,
 } from "./cart";
 export type { ShopifyCart, CartLineNode, CartCost } from "./cart";
+export {
+  createShopifyCustomer,
+  getShopifyCustomerToken,
+} from "./customer";
+export type {
+  CreateShopifyCustomerResult,
+  GetShopifyCustomerTokenResult,
+} from "./customer";
 
 /** Obtiene el valor de un metafield por namespace y key. */
 export function getMetafield(

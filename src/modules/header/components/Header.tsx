@@ -14,6 +14,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useCart } from "@/modules/cart";
+import { useAuth } from "@/modules/auth";
 
 interface HeaderProps {
   isScrolled: boolean;
@@ -64,12 +65,24 @@ export function Header({
   onNavigateAddresses,
   onLogout,
   cartItemsCount: cartItemsCountProp,
-  isAuthenticated = false,
+  isAuthenticated: _isAuthenticatedProp = false,
   userName,
   translations: t,
 }: HeaderProps) {
   const { cartCount } = useCart();
+  const { isAuthenticated, user, signOut } = useAuth();
+  const displayName = userName ?? user?.firstName ?? (language === "es" ? "Mi Cuenta" : "My Account");
   const cartItemsCount = cartItemsCountProp ?? cartCount;
+
+  const handleAccountClick = () => {
+    if (isAuthenticated) window.location.href = "/account";
+    else window.location.href = "/login";
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    window.location.href = "/";
+  };
 
   return (
     <>
@@ -167,11 +180,11 @@ export function Header({
 
               {/* User Icon */}
               <button
-                onClick={onNavigateAccount}
+                onClick={handleAccountClick}
                 className={`rounded-full p-2 transition-colors ${
                   isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
                 }`}
-                aria-label="Mi cuenta"
+                aria-label={isAuthenticated ? "Mi cuenta" : "Iniciar sesión"}
               >
                 <User className="h-4 w-4" />
               </button>
@@ -244,11 +257,11 @@ export function Header({
 
               {/* User Icon */}
               <button
-                onClick={onNavigateAccount}
+                onClick={handleAccountClick}
                 className={`rounded-full p-1.5 transition-colors md:p-2 ${
                   isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
                 }`}
-                aria-label="Mi cuenta"
+                aria-label={isAuthenticated ? "Mi cuenta" : "Iniciar sesión"}
               >
                 <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
               </button>
@@ -400,7 +413,7 @@ export function Header({
                     {language === "es" ? "Mi Cuenta" : "My Account"}
                   </p>
                 </div>
-                {userName && (
+                {(displayName || user?.email) && (
                   <div
                     className={`border-b px-6 py-4 ${
                       isDarkMode
@@ -420,13 +433,13 @@ export function Header({
                         isDarkMode ? "text-white" : "text-gray-900"
                       }`}
                     >
-                      {userName}
+                      {displayName}
                     </p>
                   </div>
                 )}
                 <button
                   onClick={() => {
-                    onNavigateDashboard?.();
+                    window.location.href = "/account";
                     onToggleMobileMenu();
                   }}
                   className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
@@ -440,7 +453,7 @@ export function Header({
                 </button>
                 <button
                   onClick={() => {
-                    onNavigateOrders?.();
+                    (onNavigateOrders ?? (() => (window.location.href = "/account/orders")))();
                     onToggleMobileMenu();
                   }}
                   className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
@@ -454,7 +467,7 @@ export function Header({
                 </button>
                 <button
                   onClick={() => {
-                    onNavigateWishlist?.();
+                    (onNavigateWishlist ?? (() => (window.location.href = "/account/wishlist")))();
                     onToggleMobileMenu();
                   }}
                   className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
@@ -468,8 +481,7 @@ export function Header({
                 </button>
                 <button
                   onClick={() => {
-                    onNavigateAddresses?.();
-                    onToggleMobileMenu();
+                    (onNavigateAddresses ?? (() => (window.location.href = "/account/addresses")))();
                   }}
                   className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
                     isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
@@ -482,7 +494,7 @@ export function Header({
                 </button>
                 <button
                   onClick={() => {
-                    onLogout?.();
+                    handleLogout();
                     onToggleMobileMenu();
                   }}
                   className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
@@ -509,7 +521,7 @@ export function Header({
                 />
                 <button
                   onClick={() => {
-                    onNavigateLogin?.();
+                    window.location.href = "/login";
                     onToggleMobileMenu();
                   }}
                   className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
+import { useAuth } from "@/modules/auth";
 import {
   User,
   Package,
@@ -40,9 +41,9 @@ interface AccountDashboardProps {
   onNavigateOrders: () => void;
   onNavigateAddresses: () => void;
   onNavigateWishlist: () => void;
-  onLogout: () => void;
-  userName: string;
-  userEmail: string;
+  onLogout?: () => void;
+  userName?: string;
+  userEmail?: string;
   recentOrders: Order[];
   favoriteProducts: FavoriteProduct[];
   stats: { activeOrders: number; totalOrders: number; favorites: number };
@@ -149,6 +150,19 @@ export function AccountDashboard({
   favoriteProducts,
   stats,
 }: AccountDashboardProps) {
+  const { user, signOut } = useAuth();
+  const displayName =
+    userName ??
+    (user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName}`.trim()
+      : user?.firstName ?? user?.email ?? "Usuario");
+  const displayEmail = userEmail ?? user?.email ?? "";
+
+  const handleLogout = async () => {
+    await signOut();
+    window.location.href = "/";
+  };
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -228,10 +242,10 @@ export function AccountDashboard({
                   </div>
                   <div className="min-w-0 flex-1">
                     <h2 className={`truncate text-lg ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-                      {userName}
+                      {displayName}
                     </h2>
                     <p className={`truncate text-sm ${isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}`}>
-                      {userEmail}
+                      {displayEmail}
                     </p>
                   </div>
                 </div>
@@ -256,7 +270,7 @@ export function AccountDashboard({
                     </button>
                   ))}
                   <button
-                    onClick={onLogout}
+                    onClick={() => (onLogout ? onLogout() : handleLogout())}
                     className={`flex w-full items-center gap-3 rounded px-4 py-3 text-sm transition-colors ${
                       isDarkMode
                         ? "text-[#b8a99a] hover:bg-red-900/20 hover:text-red-400"
@@ -277,7 +291,7 @@ export function AccountDashboard({
                     isDarkMode ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  {t.welcome} {userName.split(" ")[0]}
+                  {t.welcome} {displayName.split(" ")[0]}
                 </h1>
               </div>
 

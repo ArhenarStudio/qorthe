@@ -1,10 +1,12 @@
+/**
+ * Backup V2 - 2026-02-06. Antes de conectar Supabase Auth.
+ * Componente activo en components/LoginPage.tsx (con useAuth).
+ */
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
-import { useAuth } from "@/modules/auth";
 import { Mail, Lock, Eye, EyeOff, Loader } from "lucide-react";
 
 interface LoginPageProps {
@@ -16,6 +18,7 @@ interface LoginPageProps {
   onNavigateProducts: () => void;
   onNavigateAccount?: () => void;
   onNavigateRegister: () => void;
+  onLogin: (email: string, password: string) => void | Promise<void>;
 }
 
 const translations = {
@@ -34,8 +37,6 @@ const translations = {
     or: "o",
     noAccount: "¿No tienes cuenta?",
     registerLink: "Regístrate",
-    forgotSuccess: "Revisa tu correo para el enlace de restablecimiento.",
-    passwordUpdated: "Contraseña actualizada. Ya puedes iniciar sesión.",
     footer: {
       description:
         "Muebles artesanales premium elaborados con pasión y dedicación por maestros artesanos mexicanos desde 1998.",
@@ -63,8 +64,6 @@ const translations = {
     or: "or",
     noAccount: "Don't have an account?",
     registerLink: "Sign Up",
-    forgotSuccess: "Check your email for the reset link.",
-    passwordUpdated: "Password updated. You can sign in now.",
     footer: {
       description:
         "Premium handcrafted furniture made with passion and dedication by Mexican master artisans since 1998.",
@@ -88,12 +87,8 @@ export function LoginPage({
   onNavigateProducts,
   onNavigateAccount,
   onNavigateRegister,
+  onLogin,
 }: LoginPageProps) {
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") ?? "/account";
-  const message = searchParams.get("message");
-
-  const { signIn, resetPassword } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -103,9 +98,6 @@ export function LoginPage({
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [formError, setFormError] = useState("");
-  const [forgotSuccess, setForgotSuccess] = useState(false);
-  const [forgotLoading, setForgotLoading] = useState(false);
 
   const t = translations[language];
 
@@ -122,10 +114,8 @@ export function LoginPage({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError("");
     setEmailError("");
     setPasswordError("");
-    setForgotSuccess(false);
     let hasError = false;
     if (!email) {
       setEmailError(language === "es" ? "El correo es requerido" : "Email is required");
@@ -144,45 +134,11 @@ export function LoginPage({
     if (hasError) return;
     setIsLoading(true);
     try {
-      await signIn(email, password);
-      window.location.href = redirectTo;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      setFormError(
-        language === "es"
-          ? message || "Error al iniciar sesión. Revisa tus datos."
-          : message || "Sign in failed. Check your credentials."
-      );
+      await Promise.resolve(onLogin(email, password));
+    } catch (err) {
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    setFormError("");
-    setForgotSuccess(false);
-    if (!email.trim()) {
-      setEmailError(language === "es" ? "Ingresa tu correo primero" : "Enter your email first");
-      return;
-    }
-    if (!validateEmail(email)) {
-      setEmailError(language === "es" ? "Correo inválido" : "Invalid email");
-      return;
-    }
-    setEmailError("");
-    setForgotLoading(true);
-    try {
-      await resetPassword(email);
-      setForgotSuccess(true);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      setFormError(
-        language === "es"
-          ? message || "No se pudo enviar el enlace."
-          : message || "Could not send reset link."
-      );
-    } finally {
-      setForgotLoading(false);
     }
   };
 
@@ -226,32 +182,6 @@ export function LoginPage({
             </p>
           </div>
 
-          {message === "password_updated" && (
-            <div
-              className={`mb-6 rounded border p-4 text-sm ${
-                isDarkMode ? "border-green-800 bg-green-900/30 text-green-200" : "border-green-200 bg-green-50 text-green-800"
-              }`}
-            >
-              {t.passwordUpdated}
-            </div>
-          )}
-
-          {forgotSuccess && (
-            <div
-              className={`mb-6 rounded border p-4 text-sm ${
-                isDarkMode ? "border-green-800 bg-green-900/30 text-green-200" : "border-green-200 bg-green-50 text-green-800"
-              }`}
-            >
-              {t.forgotSuccess}
-            </div>
-          )}
-
-          {formError && (
-            <div className="mb-6 rounded border border-red-500 bg-red-50 p-4 text-sm text-red-700">
-              {formError}
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
@@ -281,7 +211,6 @@ export function LoginPage({
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setEmailError("");
-                    setFormError("");
                   }}
                   placeholder={t.emailPlaceholder}
                   className={`w-full border py-3.5 pl-12 pr-4 transition-colors focus:outline-none ${
@@ -324,7 +253,6 @@ export function LoginPage({
                   onChange={(e) => {
                     setPassword(e.target.value);
                     setPasswordError("");
-                    setFormError("");
                   }}
                   placeholder={t.passwordPlaceholder}
                   className={`w-full border py-3.5 pl-12 pr-12 transition-colors focus:outline-none ${
@@ -364,13 +292,11 @@ export function LoginPage({
               </label>
               <button
                 type="button"
-                onClick={handleForgotPassword}
-                disabled={forgotLoading}
                 className={`text-sm transition-colors ${
                   isDarkMode ? "text-[#b8a99a] hover:text-white" : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                {forgotLoading ? "…" : t.forgotPassword}
+                {t.forgotPassword}
               </button>
             </div>
 

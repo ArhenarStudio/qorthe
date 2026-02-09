@@ -28,3 +28,12 @@ Backups de los 8 componentes en `versions/*.v1.tsx`. Componentes activos en `com
 ### Diff Figma V1 → V2
 
 Según `src/figma-versions/migration-logs/diff-V1-vs-V2-2026-02-09.md`, **LoginPage**, **RegisterPage**, **AccountDashboard**, **AddressesPage**, **AddressModal**, **OrdersPage**, **OrderDetailPage** y **WishlistPage** figuran como **sin cambios** entre DSD V1 y DSD V2. No se aplicaron cambios de Figma.
+
+---
+
+## V2 - 2026-02-06 – Supabase Auth
+
+- **LoginPage:** Conectado a `useAuth()`. Formulario llama a `signIn(email, password)`; redirección a `?redirect=` o `/account`; "¿Olvidaste tu contraseña?" llama a `resetPassword(email)` y muestra confirmación; mensaje tras actualizar contraseña (`?message=password_updated`). Backups: `LoginPage.v2.tsx`.
+- **RegisterPage:** Conectado a `useAuth()`. Formulario con nombre, apellido, email, teléfono (opcional), contraseña y confirmar; `signUp(email, password, { firstName, lastName, phone })`; validaciones client-side (email, contraseña ≥8, coincidencia, nombre/apellido requeridos); tras éxito se muestra mensaje de email de confirmación. Backups: `RegisterPage.v2.tsx`.
+- Rutas **app/login** y **app/register** sin mocks; auth manejada dentro de los componentes.
+- Nuevas rutas: **app/forgot-password** (formulario email + `resetPassword`) y **app/update-password** (`supabase.auth.updateUser({ password })` → redirección a `/login?message=password_updated`).
