@@ -1,22 +1,7 @@
-"use client";
+import LoginRouteClient from "./LoginRouteClient";
 
-import { useState } from "react";
-import { LoginPage } from "@/modules/customer-account";
+export const dynamic = "force-dynamic";
 
-export default function LoginRoute() {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  return (
-    <LoginPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
-      onNavigateRegister={() => (window.location.href = "/register")}
-      onNavigateHome={() => (window.location.href = "/")}
-      onNavigateProducts={() => (window.location.href = "/products")}
-      onNavigateAccount={() => (window.location.href = "/account")}
-    />
-  );
+export default function LoginPage() {
+  return <LoginRouteClient />;
 }

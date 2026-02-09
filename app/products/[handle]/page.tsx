@@ -8,6 +8,8 @@ import {
 import { storefrontQuery, getMetafield, type ShopifyProduct } from "@/lib/shopify";
 import { ProductDetailLayout } from "./ProductDetailLayout";
 
+export const dynamic = "force-dynamic";
+
 const PRODUCT_QUERY = `
   query GetProduct($handle: String!) {
     product(handle: $handle) {

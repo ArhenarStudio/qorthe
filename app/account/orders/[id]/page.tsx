@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import OrderDetailRouteClient from "./OrderDetailRouteClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrderDetailRoute({
   params,
 }: {

@@ -2,6 +2,8 @@ import { storefrontQuery, PRODUCTS_QUERY } from "@/lib/shopify";
 import type { CatalogProduct } from "@/modules/product";
 import { ProductsCatalogClient } from "./ProductsCatalogClient";
 
+export const dynamic = "force-dynamic";
+
 interface ProductsResponse {
   products: {
     nodes: Array<{

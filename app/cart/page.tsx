@@ -1,24 +1,7 @@
-"use client";
+import CartPageRouteClient from "./CartPageRouteClient";
 
-import { useState } from "react";
-import { CartPage } from "@/modules/cart";
+export const dynamic = "force-dynamic";
 
-export default function CartPageRoute() {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  return (
-    <CartPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() =>
-        setLanguage((lang) => (lang === "es" ? "en" : "es"))
-      }
-      onToggleDarkMode={() => setIsDarkMode((mode) => !mode)}
-      onNavigateHome={() => (window.location.href = "/")}
-      onNavigateProducts={() => (window.location.href = "/products")}
-      onNavigateAccount={() => (window.location.href = "/login")}
-      onContinueShopping={() => (window.location.href = "/products")}
-    />
-  );
+export default function CartPage() {
+  return <CartPageRouteClient />;
 }
