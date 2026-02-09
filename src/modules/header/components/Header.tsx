@@ -13,6 +13,7 @@ import {
   MapPin,
   LogOut,
 } from "lucide-react";
+import { useCart } from "@/modules/cart";
 
 interface HeaderProps {
   isScrolled: boolean;
@@ -62,11 +63,14 @@ export function Header({
   onNavigateWishlist,
   onNavigateAddresses,
   onLogout,
-  cartItemsCount,
+  cartItemsCount: cartItemsCountProp,
   isAuthenticated = false,
   userName,
   translations: t,
 }: HeaderProps) {
+  const { cartCount } = useCart();
+  const cartItemsCount = cartItemsCountProp ?? cartCount;
+
   return (
     <>
       {/* Header Principal */}

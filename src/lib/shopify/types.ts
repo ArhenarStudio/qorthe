@@ -19,11 +19,18 @@ export interface ShopifyProductVariant {
   image: ShopifyImage | null;
 }
 
+export interface ShopifyMetafield {
+  namespace: string;
+  key: string;
+  value: string;
+}
+
 export interface ShopifyProduct {
   id: string;
   title: string;
   handle: string;
   description: string;
+  productType?: string;
   featuredImage: ShopifyImage | null;
   variants: {
     nodes: ShopifyProductVariant[];
@@ -31,6 +38,7 @@ export interface ShopifyProduct {
   priceRange: {
     minVariantPrice: ShopifyMoney;
   };
+  metafields?: ShopifyMetafield[];
 }
 
 export interface ShopifyCollection {

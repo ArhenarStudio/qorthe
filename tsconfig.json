@@ -40,6 +40,12 @@
       ],
       "@/components/shared/*": [
         "./src/components/shared/*"
+      ],
+      "@/lib/shopify": [
+        "./src/lib/shopify"
+      ],
+      "@/lib/shopify/*": [
+        "./src/lib/shopify/*"
       ]
     }
   },

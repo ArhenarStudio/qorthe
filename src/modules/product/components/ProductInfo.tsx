@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useCart } from "@/modules/cart";
 
 interface ProductInfoProps {
   title: string;
@@ -17,6 +18,8 @@ interface ProductInfoProps {
   fabricationTime?: string;
   warranty?: number;
   artistName?: string;
+  /** Shopify ProductVariant GID (e.g. gid://shopify/ProductVariant/xxx). Required for Add to Cart. */
+  variantId?: string;
 }
 
 function CheckIcon() {
@@ -48,8 +51,10 @@ export function ProductInfo({
   fabricationTime = "3 días",
   warranty = 1,
   artistName = "David Pérez Muro",
+  variantId,
 }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
+  const { addItem, actionLoading } = useCart();
 
   const formatPrice = (value: number) =>
     new Intl.NumberFormat("es-MX", {
@@ -156,9 +161,13 @@ export function ProductInfo({
       {/* Botón Principal */}
       <button
         type="button"
-        className="mb-4 w-full rounded-lg bg-walnut-500 px-8 py-4 font-semibold text-cream transition-colors hover:bg-walnut-600"
+        disabled={!variantId || actionLoading}
+        onClick={() => {
+          if (variantId) addItem(variantId, quantity);
+        }}
+        className="mb-4 w-full rounded-lg bg-walnut-500 px-8 py-4 font-semibold text-cream transition-colors hover:bg-walnut-600 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Agregar al Carrito
+        {actionLoading ? "Agregando…" : "Agregar al Carrito"}
       </button>
 
       {/* Info Adicional */}

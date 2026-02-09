@@ -177,9 +177,6 @@ export function LandingPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<
-    { id: string; name: string; price: number; quantity: number; image: string }[]
-  >([]);
 
   const t = translations[language];
 
@@ -211,7 +208,6 @@ export function LandingPage() {
           onNavigateCart={() => setIsCartOpen(true)}
           onNavigateAccount={() => (window.location.href = "/login")}
           translations={t}
-          cartItemsCount={cartItems.reduce((s, i) => s + i.quantity, 0)}
         />
 
         {/* Hero */}
@@ -597,16 +593,6 @@ export function LandingPage() {
         onClose={() => setIsCartOpen(false)}
         isDarkMode={isDarkMode}
         language={language}
-        items={cartItems}
-        onUpdateQuantity={(id, qty) => {
-          setCartItems((prev) =>
-            prev.map((i) => (i.id === id ? { ...i, quantity: qty } : i))
-          );
-        }}
-        onRemoveItem={(id) =>
-          setCartItems((prev) => prev.filter((i) => i.id !== id))
-        }
-        onCheckout={() => (window.location.href = "/cart")}
         onContinueShopping={() => setIsCartOpen(false)}
       />
     </div>

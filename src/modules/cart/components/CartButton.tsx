@@ -1,18 +1,16 @@
 "use client";
 
 import { ShoppingCart } from "lucide-react";
+import { useCart } from "../hooks/useCart";
 
 interface CartButtonProps {
-  itemCount: number;
   onClick: () => void;
   isDarkMode?: boolean;
 }
 
-export function CartButton({
-  itemCount,
-  onClick,
-  isDarkMode,
-}: CartButtonProps) {
+export function CartButton({ onClick, isDarkMode }: CartButtonProps) {
+  const { cartCount } = useCart();
+
   return (
     <button
       onClick={onClick}
@@ -24,9 +22,9 @@ export function CartButton({
       aria-label="Carrito de compras"
     >
       <ShoppingCart className="h-5 w-5" />
-      {itemCount > 0 && (
+      {cartCount > 0 && (
         <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#8b6f47] text-xs font-medium text-white">
-          {itemCount}
+          {cartCount}
         </span>
       )}
     </button>

@@ -6,6 +6,7 @@ export const PRODUCTS_QUERY = `
         title
         handle
         description
+        productType
         featuredImage {
           url
           altText

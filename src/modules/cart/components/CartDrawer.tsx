@@ -2,25 +2,14 @@
 
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import { useCart } from "../hooks/useCart";
 
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   isDarkMode: boolean;
   language: "es" | "en";
-  items: CartItem[];
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemoveItem: (id: string) => void;
-  onCheckout: () => void;
-  onContinueShopping: () => void;
+  onContinueShopping?: () => void;
 }
 
 const translations = {
@@ -51,18 +40,31 @@ export function CartDrawer({
   onClose,
   isDarkMode,
   language,
-  items,
-  onUpdateQuantity,
-  onRemoveItem,
-  onCheckout,
   onContinueShopping,
 }: CartDrawerProps) {
+  const {
+    cartItems,
+    subtotal,
+    checkoutUrl,
+    actionLoading,
+    updateItem,
+    removeItem,
+  } = useCart();
+
   const t = translations[language];
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const handleContinue = () => {
+    (onContinueShopping ?? (() => (window.location.href = "/products")))();
+    onClose();
+  };
+
+  const handleCheckout = () => {
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    } else {
+      window.location.href = "/cart";
+    }
+  };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -72,7 +74,6 @@ export function CartDrawer({
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className={`fixed inset-0 z-50 transition-opacity duration-300 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -82,14 +83,12 @@ export function CartDrawer({
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       </div>
 
-      {/* Drawer */}
       <div
         className={`fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[400px] transition-transform duration-300 ease-out ${
           isDarkMode ? "bg-[#0a0806]" : "bg-white"
         } ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div
             className={`flex items-center justify-between px-6 py-5 border-b ${
               isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
@@ -117,10 +116,8 @@ export function CartDrawer({
             </button>
           </div>
 
-          {/* Content */}
           <div className="flex-1 overflow-y-auto">
-            {items.length === 0 ? (
-              // Empty State
+            {cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full px-6 text-center">
                 <div
                   className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${
@@ -148,10 +145,7 @@ export function CartDrawer({
                   {t.emptyDescription}
                 </p>
                 <button
-                  onClick={() => {
-                    onContinueShopping();
-                    onClose();
-                  }}
+                  onClick={handleContinue}
                   className={`px-6 py-3 transition-opacity tracking-wide ${
                     isDarkMode
                       ? "bg-[#8b6f47] text-white hover:opacity-90"
@@ -162,16 +156,14 @@ export function CartDrawer({
                 </button>
               </div>
             ) : (
-              // Cart Items
               <div className="px-6 py-4 space-y-4">
-                {items.map((item) => (
+                {cartItems.map((item) => (
                   <div
                     key={item.id}
                     className={`flex gap-4 pb-4 border-b ${
                       isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
                     }`}
                   >
-                    {/* Image */}
                     <div className="w-20 h-20 flex-shrink-0 overflow-hidden">
                       <ImageWithFallback
                         src={item.image}
@@ -180,7 +172,6 @@ export function CartDrawer({
                       />
                     </div>
 
-                    {/* Details */}
                     <div className="flex-1 flex flex-col">
                       <h4
                         className={`text-sm mb-1 ${
@@ -197,7 +188,6 @@ export function CartDrawer({
                         ${item.price.toLocaleString("es-MX")} MXN
                       </p>
 
-                      {/* Quantity Controls */}
                       <div className="flex items-center justify-between mt-auto">
                         <div
                           className={`flex items-center border rounded ${
@@ -208,11 +198,9 @@ export function CartDrawer({
                         >
                           <button
                             onClick={() =>
-                              onUpdateQuantity(
-                                item.id,
-                                Math.max(1, item.quantity - 1)
-                              )
+                              updateItem(item.id, Math.max(1, item.quantity - 1))
                             }
+                            disabled={actionLoading}
                             className={`p-1.5 transition-colors ${
                               isDarkMode
                                 ? "hover:bg-[#2d2419]"
@@ -236,9 +224,8 @@ export function CartDrawer({
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() =>
-                              onUpdateQuantity(item.id, item.quantity + 1)
-                            }
+                            onClick={() => updateItem(item.id, item.quantity + 1)}
+                            disabled={actionLoading}
                             className={`p-1.5 transition-colors ${
                               isDarkMode
                                 ? "hover:bg-[#2d2419]"
@@ -256,9 +243,9 @@ export function CartDrawer({
                           </button>
                         </div>
 
-                        {/* Remove Button */}
                         <button
-                          onClick={() => onRemoveItem(item.id)}
+                          onClick={() => removeItem(item.id)}
+                          disabled={actionLoading}
                           className={`p-1.5 rounded transition-colors ${
                             isDarkMode
                               ? "hover:bg-[#2d2419]"
@@ -277,7 +264,6 @@ export function CartDrawer({
                       </div>
                     </div>
 
-                    {/* Subtotal */}
                     <div
                       className={`text-sm ${
                         isDarkMode ? "text-white" : "text-gray-900"
@@ -291,8 +277,7 @@ export function CartDrawer({
             )}
           </div>
 
-          {/* Footer - Only show when items exist */}
-          {items.length > 0 && (
+          {cartItems.length > 0 && (
             <div
               className={`border-t px-6 py-5 space-y-4 ${
                 isDarkMode
@@ -300,7 +285,6 @@ export function CartDrawer({
                   : "border-gray-200 bg-white"
               }`}
             >
-              {/* Subtotal */}
               <div className="flex items-center justify-between">
                 <span
                   className={`text-base ${
@@ -318,9 +302,9 @@ export function CartDrawer({
                 </span>
               </div>
 
-              {/* Checkout Button */}
               <button
-                onClick={onCheckout}
+                onClick={handleCheckout}
+                disabled={actionLoading}
                 className={`w-full px-6 py-3.5 transition-opacity tracking-wide text-center ${
                   isDarkMode
                     ? "bg-[#8b6f47] text-white hover:opacity-90"
@@ -330,12 +314,8 @@ export function CartDrawer({
                 {t.checkout}
               </button>
 
-              {/* Continue Shopping Link */}
               <button
-                onClick={() => {
-                  onContinueShopping();
-                  onClose();
-                }}
+                onClick={handleContinue}
                 className={`w-full text-center text-sm transition-colors ${
                   isDarkMode
                     ? "text-[#b8a99a] hover:text-white"

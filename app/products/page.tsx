@@ -1,62 +1,56 @@
-"use client";
+import { storefrontQuery, PRODUCTS_QUERY } from "@/lib/shopify";
+import type { CatalogProduct } from "@/modules/product";
+import { ProductsCatalogClient } from "./ProductsCatalogClient";
 
-import { useState } from "react";
-import { ProductCatalog, type CatalogProduct } from "@/modules/product";
+interface ProductsResponse {
+  products: {
+    nodes: Array<{
+      id: string;
+      title: string;
+      handle: string;
+      description: string;
+      productType?: string;
+      featuredImage: { url: string; altText: string | null } | null;
+      variants: {
+        nodes: Array<{
+          price: { amount: string; currencyCode: string };
+          image: { url: string } | null;
+        }>;
+      };
+      priceRange: {
+        minVariantPrice: { amount: string; currencyCode: string };
+      };
+    }>;
+  };
+}
 
-// Mock products - luego conectar con Shopify
-const mockProducts: CatalogProduct[] = [
-  {
-    id: "tabla-para-picar-y-charcuteria",
-    name: "Tabla para Picar y Charcutería",
-    category: "tables",
-    price: 850,
-    images: [
-      "https://images.unsplash.com/photo-1615799998603-7c6270a45196?w=600&h=600&fit=crop",
-    ],
-    description:
-      "Tabla artesanal elaborada con maderas nobles mexicanas. Perfecta para picar, servir o decorar.",
-  },
-  {
-    id: "mesa-nogal",
-    name: "Mesa de Nogal",
-    category: "tables",
-    price: 12000,
-    images: [
-      "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=600&h=600&fit=crop",
-    ],
-    description: "Mesa de comedor en nogal macizo, diseño atemporal.",
-  },
-  {
-    id: "silla-artesanal",
-    name: "Silla Artesanal",
-    category: "chairs",
-    price: 4500,
-    images: [
-      "https://images.unsplash.com/photo-1604988082740-e0d6a0ad7c6f?w=600&h=600&fit=crop",
-    ],
-    description: "Silla de respaldo alto, hecha a mano con maderas mexicanas.",
-  },
-];
+function mapShopifyToCatalog(node: ProductsResponse["products"]["nodes"][0]): CatalogProduct {
+  const price =
+    node.priceRange?.minVariantPrice ?? node.variants?.nodes?.[0]?.price;
+  const amount = price ? parseFloat(price.amount) : 0;
+  const image =
+    node.featuredImage?.url ?? node.variants?.nodes?.[0]?.image?.url ?? "";
+  return {
+    id: node.handle,
+    name: node.title,
+    category: node.productType ?? "products",
+    price: amount,
+    images: image ? [image] : [],
+    description: node.description ?? "",
+  };
+}
 
-export default function ProductsPage() {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [cartItemsCount] = useState(0);
+export default async function ProductsPage() {
+  let products: CatalogProduct[] = [];
 
-  return (
-    <ProductCatalog
-      products={mockProducts}
-      onViewProduct={(productId) =>
-        (window.location.href = `/products/${productId}`)
-      }
-      onBackToHome={() => (window.location.href = "/")}
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
-      cartItemsCount={cartItemsCount}
-      onNavigateCart={() => (window.location.href = "/cart")}
-      onNavigateAccount={() => (window.location.href = "/login")}
-    />
-  );
+  try {
+    const data = await storefrontQuery<ProductsResponse>(PRODUCTS_QUERY, {
+      first: 50,
+    });
+    products = (data.products?.nodes ?? []).map(mapShopifyToCatalog);
+  } catch {
+    products = [];
+  }
+
+  return <ProductsCatalogClient products={products} />;
 }

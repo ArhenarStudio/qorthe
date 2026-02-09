@@ -5,15 +5,7 @@ import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
 import { Plus, Minus, Trash2, ShoppingBag, Tag, Truck } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-  description?: string;
-}
+import { useCart } from "../hooks/useCart";
 
 interface CartPageProps {
   language: "es" | "en";
@@ -24,10 +16,6 @@ interface CartPageProps {
   onNavigateProducts: () => void;
   onNavigateAccount?: () => void;
   onContinueShopping?: () => void;
-  items: CartItem[];
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemoveItem: (id: string) => void;
-  onCheckout: () => void;
 }
 
 const translations = {
@@ -129,11 +117,16 @@ export function CartPage({
   onNavigateProducts,
   onNavigateAccount,
   onContinueShopping,
-  items,
-  onUpdateQuantity,
-  onRemoveItem,
-  onCheckout,
 }: CartPageProps) {
+  const {
+    cartItems: items,
+    subtotal: cartSubtotal,
+    checkoutUrl,
+    actionLoading,
+    updateItem: onUpdateQuantity,
+    removeItem: onRemoveItem,
+  } = useCart();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -143,15 +136,20 @@ export function CartPage({
 
   const t = translations[language];
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const subtotal = cartSubtotal;
   const shippingCost =
     shippingOption === "free" ? 0 : shippingOption === "standard" ? 299 : 599;
   const total = subtotal + shippingCost;
 
   const handleContinueShopping = onContinueShopping ?? onNavigateProducts;
+
+  const handleCheckout = () => {
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    } else {
+      window.location.href = "/checkout";
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -361,6 +359,7 @@ export function CartPage({
                                     Math.max(1, item.quantity - 1)
                                   )
                                 }
+                                disabled={actionLoading}
                                 className={`p-2 transition-colors ${
                                   isDarkMode
                                     ? "hover:bg-[#2d2419]"
@@ -389,6 +388,7 @@ export function CartPage({
                                 onClick={() =>
                                   onUpdateQuantity(item.id, item.quantity + 1)
                                 }
+                                disabled={actionLoading}
                                 className={`p-2 transition-colors ${
                                   isDarkMode
                                     ? "hover:bg-[#2d2419]"
@@ -434,6 +434,7 @@ export function CartPage({
                           </div>
                           <button
                             onClick={() => onRemoveItem(item.id)}
+                            disabled={actionLoading}
                             className={`flex items-center gap-2 text-sm transition-colors ${
                               isDarkMode
                                 ? "text-[#b8a99a] hover:text-white"
@@ -623,7 +624,8 @@ export function CartPage({
 
                   {/* Checkout Button */}
                   <button
-                    onClick={onCheckout}
+                    onClick={handleCheckout}
+                    disabled={actionLoading}
                     className={`w-full px-6 py-3.5 tracking-wide transition-opacity ${
                       isDarkMode
                         ? "bg-[#8b6f47] text-white hover:opacity-90"
