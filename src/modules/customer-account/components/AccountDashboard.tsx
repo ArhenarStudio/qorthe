@@ -36,6 +36,7 @@ interface AccountDashboardProps {
   onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
+  onNavigateAccount?: () => void;
   onNavigateOrders: () => void;
   onNavigateAddresses: () => void;
   onNavigateWishlist: () => void;
@@ -137,6 +138,7 @@ export function AccountDashboard({
   onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
+  onNavigateAccount,
   onNavigateOrders,
   onNavigateAddresses,
   onNavigateWishlist,
@@ -199,6 +201,7 @@ export function AccountDashboard({
         onNavigateProducts={onNavigateProducts}
         onNavigateHome={onNavigateHome}
         onNavigateCart={() => (window.location.href = "/cart")}
+        onNavigateAccount={onNavigateAccount ?? (() => (window.location.href = "/account"))}
         translations={t}
       />
 

@@ -26,6 +26,7 @@ interface ProductCatalogProps {
   isAuthenticated?: boolean;
   userName?: string;
   onNavigateCart: () => void;
+  onNavigateAccount: () => void;
   onNavigateLogin?: () => void;
   onNavigateDashboard?: () => void;
   onNavigateOrders?: () => void;
@@ -104,6 +105,7 @@ export function ProductCatalog({
   isAuthenticated,
   userName,
   onNavigateCart,
+  onNavigateAccount,
   onNavigateLogin,
   onNavigateDashboard,
   onNavigateOrders,
@@ -171,6 +173,7 @@ export function ProductCatalog({
         onNavigateProducts={handleNavigateProducts}
         onNavigateHome={onBackToHome}
         onNavigateCart={onNavigateCart}
+        onNavigateAccount={onNavigateAccount}
         translations={t}
         cartItemsCount={cartItemsCount}
         isAuthenticated={isAuthenticated}

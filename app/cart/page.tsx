@@ -41,6 +41,7 @@ export default function CartPageRoute() {
       onToggleDarkMode={() => setIsDarkMode((mode) => !mode)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
+      onNavigateAccount={() => (window.location.href = "/login")}
       onContinueShopping={() => (window.location.href = "/products")}
       items={items}
       onUpdateQuantity={handleUpdateQuantity}

@@ -25,6 +25,7 @@ interface HeaderProps {
   onNavigateProducts: () => void;
   onNavigateHome: () => void;
   onNavigateCart: () => void;
+  onNavigateAccount: () => void;
   onNavigateLogin?: () => void;
   onNavigateDashboard?: () => void;
   onNavigateOrders?: () => void;
@@ -54,6 +55,7 @@ export function Header({
   onNavigateProducts,
   onNavigateHome,
   onNavigateCart,
+  onNavigateAccount,
   onNavigateLogin,
   onNavigateDashboard,
   onNavigateOrders,
@@ -161,11 +163,11 @@ export function Header({
 
               {/* User Icon */}
               <button
-                onClick={isAuthenticated ? onNavigateDashboard : onNavigateLogin}
+                onClick={onNavigateAccount}
                 className={`rounded-full p-2 transition-colors ${
                   isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
                 }`}
-                aria-label="User account"
+                aria-label="Mi cuenta"
               >
                 <User className="h-4 w-4" />
               </button>
@@ -238,11 +240,11 @@ export function Header({
 
               {/* User Icon */}
               <button
-                onClick={isAuthenticated ? onNavigateDashboard : onNavigateLogin}
+                onClick={onNavigateAccount}
                 className={`rounded-full p-1.5 transition-colors md:p-2 ${
                   isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
                 }`}
-                aria-label="User account"
+                aria-label="Mi cuenta"
               >
                 <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
               </button>

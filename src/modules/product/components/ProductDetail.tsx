@@ -198,6 +198,7 @@ export function ProductDetail({
         onNavigateProducts={handleNavigateProducts}
         onNavigateHome={onBackToHome}
         onNavigateCart={onNavigateCart ?? (() => (window.location.href = "/cart"))}
+        onNavigateAccount={() => (window.location.href = "/login")}
         translations={t}
       />
 

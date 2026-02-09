@@ -25,6 +25,7 @@ export default function AccountRoute() {
       onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
+      onNavigateAccount={() => (window.location.href = "/account")}
       onNavigateOrders={() => (window.location.href = "/account/orders")}
       onNavigateAddresses={() => (window.location.href = "/account/addresses")}
       onNavigateWishlist={() => (window.location.href = "/account/wishlist")}

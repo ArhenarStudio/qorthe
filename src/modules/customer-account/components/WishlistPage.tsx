@@ -164,6 +164,7 @@ export function WishlistPage({
         onNavigateProducts={onNavigateProducts}
         onNavigateHome={onNavigateHome}
         onNavigateCart={() => (window.location.href = '/cart')}
+        onNavigateAccount={() => (window.location.href = '/login')}
         translations={t}
       />
 

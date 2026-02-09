@@ -22,6 +22,7 @@ interface CartPageProps {
   onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
+  onNavigateAccount?: () => void;
   onContinueShopping?: () => void;
   items: CartItem[];
   onUpdateQuantity: (id: string, quantity: number) => void;
@@ -126,6 +127,7 @@ export function CartPage({
   onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
+  onNavigateAccount,
   onContinueShopping,
   items,
   onUpdateQuantity,
@@ -183,6 +185,7 @@ export function CartPage({
         onNavigateProducts={onNavigateProducts}
         onNavigateHome={onNavigateHome}
         onNavigateCart={() => (window.location.href = "/cart")}
+        onNavigateAccount={onNavigateAccount ?? (() => (window.location.href = "/login"))}
         translations={t}
       />
 

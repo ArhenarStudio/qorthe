@@ -12,6 +12,7 @@ interface RegisterPageProps {
   onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
+  onNavigateAccount?: () => void;
   onNavigateLogin: () => void;
   onRegister: (name: string, email: string, password: string) => void | Promise<void>;
 }
@@ -88,6 +89,7 @@ export function RegisterPage({
   onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
+  onNavigateAccount,
   onNavigateLogin,
   onRegister,
 }: RegisterPageProps) {
@@ -195,6 +197,7 @@ export function RegisterPage({
         onNavigateProducts={onNavigateProducts}
         onNavigateHome={onNavigateHome}
         onNavigateCart={() => (window.location.href = "/cart")}
+        onNavigateAccount={onNavigateAccount ?? (() => (window.location.href = "/login"))}
         translations={t}
       />
 

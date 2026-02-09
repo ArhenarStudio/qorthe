@@ -201,6 +201,7 @@ export default function HomePage() {
           onNavigateHome={() => (window.location.href = "/")}
           onNavigateProducts={goProducts}
           onNavigateCart={() => setIsCartOpen(true)}
+          onNavigateAccount={() => (window.location.href = "/login")}
           translations={t}
           cartItemsCount={cartItems.reduce((s, i) => s + i.quantity, 0)}
         />

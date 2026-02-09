@@ -12,6 +12,7 @@ interface LoginPageProps {
   onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
+  onNavigateAccount?: () => void;
   onNavigateRegister: () => void;
   onLogin: (email: string, password: string) => void | Promise<void>;
 }
@@ -80,6 +81,7 @@ export function LoginPage({
   onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
+  onNavigateAccount,
   onNavigateRegister,
   onLogin,
 }: LoginPageProps) {
@@ -153,6 +155,7 @@ export function LoginPage({
         onNavigateProducts={onNavigateProducts}
         onNavigateHome={onNavigateHome}
         onNavigateCart={() => (window.location.href = "/cart")}
+        onNavigateAccount={onNavigateAccount ?? (() => (window.location.href = "/login"))}
         translations={t}
       />
 

@@ -72,6 +72,7 @@ export function ProductDetailLayout({
           onNavigateHome={() => (window.location.href = "/")}
           onNavigateProducts={() => (window.location.href = "/products")}
           onNavigateCart={() => (window.location.href = "/cart")}
+          onNavigateAccount={() => (window.location.href = "/login")}
           translations={t}
         />
         <div className="pt-20 md:pt-24">{children}</div>

@@ -56,6 +56,7 @@ export default function ProductsPage() {
       onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       cartItemsCount={cartItemsCount}
       onNavigateCart={() => (window.location.href = "/cart")}
+      onNavigateAccount={() => (window.location.href = "/login")}
     />
   );
 }

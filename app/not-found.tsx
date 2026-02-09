@@ -65,6 +65,7 @@ export default function NotFound() {
         onNavigateHome={() => (window.location.href = "/")}
         onNavigateProducts={() => (window.location.href = "/products")}
         onNavigateCart={() => {}}
+        onNavigateAccount={() => (window.location.href = "/login")}
         translations={t}
       />
 

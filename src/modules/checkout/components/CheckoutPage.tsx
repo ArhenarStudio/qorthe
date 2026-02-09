@@ -206,6 +206,7 @@ export function CheckoutPage({
         onNavigateProducts={onNavigateProducts}
         onNavigateHome={onNavigateHome}
         onNavigateCart={() => (window.location.href = '/cart')}
+        onNavigateAccount={() => (window.location.href = '/login')}
         translations={t}
       />
 

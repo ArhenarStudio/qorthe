@@ -20,6 +20,7 @@ export default function RegisterRoute() {
       onNavigateLogin={() => (window.location.href = "/login")}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
+      onNavigateAccount={() => (window.location.href = "/login")}
     />
   );
 }
