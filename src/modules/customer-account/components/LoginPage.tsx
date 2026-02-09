@@ -144,7 +144,15 @@ export function LoginPage({
     if (hasError) return;
     setIsLoading(true);
     try {
-      await signIn(email, password);
+      const { data, error } = await signIn(email, password);
+      if (error) throw error;
+      if (!data?.session) {
+        throw new Error(
+          language === "es"
+            ? "No se pudo crear la sesión"
+            : "Could not create session"
+        );
+      }
       window.location.href = redirectTo;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);

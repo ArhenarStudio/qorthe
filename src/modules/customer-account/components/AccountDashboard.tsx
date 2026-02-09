@@ -72,11 +72,14 @@ const translations = {
       order: "Pedido",
       items: "artículos",
       status: { processing: "En Proceso", shipped: "Enviado", delivered: "Entregado" },
+      empty: "Aún no tienes pedidos. ¡Explora nuestro catálogo!",
+      exploreCatalog: "Ver catálogo",
     },
     favoritesSection: {
       title: "Tus Favoritos",
       viewAll: "Ver Todos",
       addToCart: "Agregar al Carrito",
+      empty: "Aún no tienes favoritos.",
     },
     footer: {
       description:
@@ -112,11 +115,14 @@ const translations = {
       order: "Order",
       items: "items",
       status: { processing: "Processing", shipped: "Shipped", delivered: "Delivered" },
+      empty: "You have no orders yet. Explore our catalog!",
+      exploreCatalog: "View catalog",
     },
     favoritesSection: {
       title: "Your Favorites",
       viewAll: "View All",
       addToCart: "Add to Cart",
+      empty: "You have no favorites yet.",
     },
     footer: {
       description:
@@ -382,41 +388,63 @@ export function AccountDashboard({
                   </button>
                 </div>
                 <div className="space-y-4">
-                  {recentOrders.slice(0, 3).map((order) => (
+                  {recentOrders.length === 0 ? (
                     <div
-                      key={order.id}
-                      onClick={onNavigateOrders}
-                      className={`cursor-pointer border p-6 transition-colors ${
+                      className={`border p-6 text-center ${
                         isDarkMode
-                          ? "border-[#3d2f23] bg-[#1a1512] hover:border-[#8b6f47]"
-                          : "border-gray-200 bg-white hover:border-gray-400"
+                          ? "border-[#3d2f23] bg-[#1a1512] text-[#b8a99a]"
+                          : "border-gray-200 bg-gray-50 text-gray-600"
                       }`}
                     >
-                      <div className="mb-4 flex items-center justify-between">
-                        <div>
-                          <div className={`mb-1 text-sm ${isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}`}>
-                            {t.recentOrders.order} #{order.id}
-                          </div>
-                          <div className={`text-xs ${isDarkMode ? "text-[#b8a99a]/70" : "text-gray-500"}`}>
-                            {order.date}
-                          </div>
-                        </div>
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs ${getStatusColor(order.status)}`}
-                        >
-                          {t.recentOrders.status[order.status as keyof typeof t.recentOrders.status]}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className={`text-sm ${isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}`}>
-                          {order.items} {t.recentOrders.items}
-                        </span>
-                        <span className={`text-lg ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-                          ${order.total.toLocaleString("es-MX")} MXN
-                        </span>
-                      </div>
+                      <p className="mb-4">{t.recentOrders.empty}</p>
+                      <a
+                        href="/products"
+                        className={`inline-block px-4 py-2 text-sm font-medium transition-colors ${
+                          isDarkMode
+                            ? "bg-[#8b6f47] text-white hover:opacity-90"
+                            : "bg-[#3d2f23] text-white hover:opacity-90"
+                        }`}
+                      >
+                        {t.recentOrders.exploreCatalog}
+                      </a>
                     </div>
-                  ))}
+                  ) : (
+                    recentOrders.slice(0, 3).map((order) => (
+                      <div
+                        key={order.id}
+                        onClick={onNavigateOrders}
+                        className={`cursor-pointer border p-6 transition-colors ${
+                          isDarkMode
+                            ? "border-[#3d2f23] bg-[#1a1512] hover:border-[#8b6f47]"
+                            : "border-gray-200 bg-white hover:border-gray-400"
+                        }`}
+                      >
+                        <div className="mb-4 flex items-center justify-between">
+                          <div>
+                            <div className={`mb-1 text-sm ${isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}`}>
+                              {t.recentOrders.order} #{order.id}
+                            </div>
+                            <div className={`text-xs ${isDarkMode ? "text-[#b8a99a]/70" : "text-gray-500"}`}>
+                              {order.date}
+                            </div>
+                          </div>
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs ${getStatusColor(order.status)}`}
+                          >
+                            {t.recentOrders.status[order.status as keyof typeof t.recentOrders.status]}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm ${isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}`}>
+                            {order.items} {t.recentOrders.items}
+                          </span>
+                          <span className={`text-lg ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                            ${order.total.toLocaleString("es-MX")} MXN
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -439,43 +467,55 @@ export function AccountDashboard({
                   </button>
                 </div>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-                  {favoriteProducts.slice(0, 4).map((product) => (
+                  {favoriteProducts.length === 0 ? (
                     <div
-                      key={product.id}
-                      className={`group cursor-pointer border ${
-                        isDarkMode ? "border-[#3d2f23] bg-[#1a1512]" : "border-gray-200 bg-white"
+                      className={`col-span-full border p-8 text-center ${
+                        isDarkMode
+                          ? "border-[#3d2f23] bg-[#1a1512] text-[#b8a99a]"
+                          : "border-gray-200 bg-gray-50 text-gray-600"
                       }`}
                     >
-                      <div className="mb-3 aspect-square overflow-hidden">
-                        <ImageWithFallback
-                          src={product.image}
-                          alt={product.name}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="px-3 pb-3">
-                        <h3
-                          className={`mb-2 truncate text-sm ${
-                            isDarkMode ? "text-white" : "text-gray-900"
-                          }`}
-                        >
-                          {product.name}
-                        </h3>
-                        <p className={`mb-3 text-sm ${isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}`}>
-                          ${product.price.toLocaleString("es-MX")}
-                        </p>
-                        <button
-                          className={`w-full px-3 py-2 text-xs transition-opacity ${
-                            isDarkMode
-                              ? "bg-[#8b6f47] text-white hover:opacity-90"
-                              : "bg-[#3d2f23] text-white hover:opacity-90"
-                          }`}
-                        >
-                          {t.favoritesSection.addToCart}
-                        </button>
-                      </div>
+                      {t.favoritesSection.empty}
                     </div>
-                  ))}
+                  ) : (
+                    favoriteProducts.slice(0, 4).map((product) => (
+                      <div
+                        key={product.id}
+                        className={`group cursor-pointer border ${
+                          isDarkMode ? "border-[#3d2f23] bg-[#1a1512]" : "border-gray-200 bg-white"
+                        }`}
+                      >
+                        <div className="mb-3 aspect-square overflow-hidden">
+                          <ImageWithFallback
+                            src={product.image}
+                            alt={product.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="px-3 pb-3">
+                          <h3
+                            className={`mb-2 truncate text-sm ${
+                              isDarkMode ? "text-white" : "text-gray-900"
+                            }`}
+                          >
+                            {product.name}
+                          </h3>
+                          <p className={`mb-3 text-sm ${isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}`}>
+                            ${product.price.toLocaleString("es-MX")}
+                          </p>
+                          <button
+                            className={`w-full px-3 py-2 text-xs transition-opacity ${
+                              isDarkMode
+                                ? "bg-[#8b6f47] text-white hover:opacity-90"
+                                : "bg-[#3d2f23] text-white hover:opacity-90"
+                            }`}
+                          >
+                            {t.favoritesSection.addToCart}
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </main>

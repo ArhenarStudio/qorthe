@@ -82,12 +82,10 @@ export function useAuth() {
 
   const signIn = useCallback(
     async (email: string, password: string) => {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      return supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
-      return data;
     },
     [supabase.auth]
   );

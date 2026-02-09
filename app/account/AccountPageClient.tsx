@@ -3,15 +3,8 @@
 import { useState } from "react";
 import { AccountDashboard } from "@/modules/customer-account";
 
-const recentOrders = [
-  { id: "ORD-001", date: "2025-02-05", status: "shipped", total: 2500, items: 3 },
-  { id: "ORD-002", date: "2025-01-28", status: "delivered", total: 1800, items: 2 },
-];
-
-const favoriteProducts = [
-  { id: "1", name: "Tabla Premium", price: 850, image: "https://via.placeholder.com/200" },
-  { id: "2", name: "Set Cubiertos", price: 1200, image: "https://via.placeholder.com/200" },
-];
+const recentOrders: { id: string; date: string; status: string; total: number; items: number }[] = [];
+const favoriteProducts: { id: string; name: string; price: number; image: string }[] = [];
 
 export function AccountPageClient() {
   const [language, setLanguage] = useState<"es" | "en">("es");
@@ -31,7 +24,7 @@ export function AccountPageClient() {
       onNavigateWishlist={() => (window.location.href = "/account/wishlist")}
       recentOrders={recentOrders}
       favoriteProducts={favoriteProducts}
-      stats={{ activeOrders: 1, totalOrders: 12, favorites: 8 }}
+      stats={{ activeOrders: 0, totalOrders: 0, favorites: 0 }}
     />
   );
 }
