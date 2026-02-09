@@ -1,48 +1,61 @@
-import Link from "next/link";
-import { storefrontQuery } from "@/lib/shopify";
-import { PRODUCTS_QUERY } from "@/lib/queries";
-import type { ShopifyProduct } from "@/lib/types";
-import { ProductCard } from "@/components/ProductCard";
+"use client";
 
-interface ProductsResponse {
-  products: {
-    nodes: ShopifyProduct[];
-  };
-}
+import { useState } from "react";
+import { ProductCatalog, type CatalogProduct } from "@/modules/product";
 
-export default async function ProductsPage() {
-  const { products } = await storefrontQuery<ProductsResponse>(PRODUCTS_QUERY, {
-    first: 24,
-  });
+// Mock products - luego conectar con Shopify
+const mockProducts: CatalogProduct[] = [
+  {
+    id: "tabla-para-picar-y-charcuteria",
+    name: "Tabla para Picar y Charcutería",
+    category: "tables",
+    price: 850,
+    images: [
+      "https://images.unsplash.com/photo-1615799998603-7c6270a45196?w=600&h=600&fit=crop",
+    ],
+    description:
+      "Tabla artesanal elaborada con maderas nobles mexicanas. Perfecta para picar, servir o decorar.",
+  },
+  {
+    id: "mesa-nogal",
+    name: "Mesa de Nogal",
+    category: "tables",
+    price: 12000,
+    images: [
+      "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=600&h=600&fit=crop",
+    ],
+    description: "Mesa de comedor en nogal macizo, diseño atemporal.",
+  },
+  {
+    id: "silla-artesanal",
+    name: "Silla Artesanal",
+    category: "chairs",
+    price: 4500,
+    images: [
+      "https://images.unsplash.com/photo-1604988082740-e0d6a0ad7c6f?w=600&h=600&fit=crop",
+    ],
+    description: "Silla de respaldo alto, hecha a mano con maderas mexicanas.",
+  },
+];
+
+export default function ProductsPage() {
+  const [language, setLanguage] = useState<"es" | "en">("es");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [cartItemsCount] = useState(0);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Todos los productos
-          </h1>
-          <p className="mt-2 text-lg text-foreground/70">
-            Explora nuestra colección de diseño
-          </p>
-        </div>
-
-        {products.nodes.length === 0 ? (
-          <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-12 text-center">
-            <p className="text-lg text-foreground/70">
-              No hay productos disponibles en este momento.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {products.nodes.map((product) => (
-              <Link key={product.id} href={`/products/${product.handle}`}>
-                <ProductCard product={product} />
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+    <ProductCatalog
+      products={mockProducts}
+      onViewProduct={(productId) =>
+        (window.location.href = `/products/${productId}`)
+      }
+      onBackToHome={() => (window.location.href = "/")}
+      language={language}
+      isDarkMode={isDarkMode}
+      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
+      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
+      cartItemsCount={cartItemsCount}
+      onNavigateCart={() => (window.location.href = "/cart")}
+    />
   );
 }

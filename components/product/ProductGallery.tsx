@@ -25,16 +25,15 @@ export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
     <div>
       {/* Imagen Principal */}
       <div className="mb-4">
-        <div className="aspect-square w-full overflow-hidden rounded-lg bg-sand-50">
+        <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-sand-50">
           {mainImage && mainSrc ? (
             <Image
               src={mainSrc}
               alt={mainImage.alt || productTitle}
-              width={800}
-              height={800}
-              className="h-full w-full object-cover"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
               priority
-              unoptimized={mainSrc.startsWith("https://via.placeholder")}
             />
           ) : null}
         </div>

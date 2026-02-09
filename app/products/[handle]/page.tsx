@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
-import { ProductBreadcrumb } from "@/components/product/ProductBreadcrumb";
-import { ProductGallery } from "@/components/product/ProductGallery";
-import { ProductInfo } from "@/components/product/ProductInfo";
-import { ProductTabs } from "@/components/product/ProductTabs";
+import {
+  ProductBreadcrumb,
+  ProductGallery,
+  ProductInfo,
+  ProductTabs,
+} from "@/modules/product";
 import { storefrontQuery } from "@/lib/shopify";
 import type { ShopifyProduct } from "@/lib/types";
+import { ProductDetailLayout } from "./ProductDetailLayout";
 
 const PRODUCT_QUERY = `
   query GetProduct($handle: String!) {
@@ -62,24 +65,20 @@ const productDataV1 = {
     "Tabla artesanal elaborada con maderas nobles mexicanas (Cedro, Rosa Morada y Parota). Perfecta para picar, servir o decorar. Acabado con aceite mineral grado alimenticio y cera de abeja.",
   images: [
     {
-      url: "https://via.placeholder.com/800x800?text=Tabla+Principal",
+      url: "https://images.unsplash.com/photo-1615799998603-7c6270a45196?w=800&h=800&fit=crop",
       alt: "Vista principal",
     },
     {
-      url: "https://via.placeholder.com/200x200?text=Vista+1",
-      alt: "Vista 1",
+      url: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=800&h=800&fit=crop",
+      alt: "Vista lateral",
     },
     {
-      url: "https://via.placeholder.com/200x200?text=Vista+2",
-      alt: "Vista 2",
+      url: "https://images.unsplash.com/photo-1604988082740-e0d6a0ad7c6f?w=800&h=800&fit=crop",
+      alt: "Detalle",
     },
     {
-      url: "https://via.placeholder.com/200x200?text=Vista+3",
-      alt: "Vista 3",
-    },
-    {
-      url: "https://via.placeholder.com/200x200?text=Vista+4",
-      alt: "Vista 4",
+      url: "https://images.unsplash.com/photo-1615799998818-097e0a0f5a8c?w=800&h=800&fit=crop",
+      alt: "Vista superior",
     },
   ],
   features: [
@@ -160,18 +159,12 @@ export default async function ProductPage({
 
   if (useV1Design) {
     const d = productDataV1;
-    const mainImage = { url: d.images[0]!.url, alt: d.images[0]!.alt };
-    const thumbImages = [
-      { url: "https://via.placeholder.com/200x200?text=Vista+1", alt: "Vista 1" },
-      { url: "https://via.placeholder.com/200x200?text=Vista+2", alt: "Vista 2" },
-      { url: "https://via.placeholder.com/200x200?text=Vista+3", alt: "Vista 3" },
-      { url: "https://via.placeholder.com/200x200?text=Vista+4", alt: "Vista 4" },
-    ];
-    const galleryImages = [mainImage, ...thumbImages];
+    const galleryImages = d.images;
 
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <ProductBreadcrumb
+      <ProductDetailLayout>
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <ProductBreadcrumb
           category={d.category}
           categoryHref={d.categoryHref}
           productName={d.title}
@@ -202,7 +195,8 @@ export default async function ProductPage({
           care={d.care}
           artist={d.artist}
         />
-      </div>
+        </div>
+      </ProductDetailLayout>
     );
   }
 
@@ -242,52 +236,54 @@ export default async function ProductPage({
   const priceNum = price ? parseFloat(price.amount) : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <ProductBreadcrumb
-        category="Productos"
-        categoryHref="/products"
-        productName={product.title}
-      />
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-        <ProductGallery images={images} productTitle={product.title} />
-        <ProductInfo
-          title={product.title}
-          price={priceNum}
-          description={product.description ?? ""}
-          features={[]}
-          dimensions={{ length: "—", width: "—", height: "—" }}
+    <ProductDetailLayout>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <ProductBreadcrumb
+          category="Productos"
+          categoryHref="/products"
+          productName={product.title}
         />
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+          <ProductGallery images={images} productTitle={product.title} />
+          <ProductInfo
+            title={product.title}
+            price={priceNum}
+            description={product.description ?? ""}
+            features={[]}
+            dimensions={{ length: "—", width: "—", height: "—" }}
+          />
+        </div>
+
+        {product.description && (
+          <ProductTabs
+            description={{
+              title: product.title,
+              paragraphs: [product.description],
+            }}
+            specifications={{
+              length: "—",
+              width: "—",
+              height: "—",
+              weight: "—",
+              wood: "—",
+              finish: "—",
+            }}
+            care={{
+              cleaning: [],
+              avoid: [],
+              maintenance: [],
+            }}
+            artist={{
+              name: "Davidsons Design",
+              imageUrl: "https://via.placeholder.com/300x400?text=Artesano",
+              bio: [],
+              quote: "",
+              warrantyText: "",
+            }}
+          />
+        )}
       </div>
-
-      {product.description && (
-        <ProductTabs
-          description={{
-            title: product.title,
-            paragraphs: [product.description],
-          }}
-          specifications={{
-            length: "—",
-            width: "—",
-            height: "—",
-            weight: "—",
-            wood: "—",
-            finish: "—",
-          }}
-          care={{
-            cleaning: [],
-            avoid: [],
-            maintenance: [],
-          }}
-          artist={{
-            name: "Davidsons Design",
-            imageUrl: "https://via.placeholder.com/300x400?text=Artesano",
-            bio: [],
-            quote: "",
-            warrantyText: "",
-          }}
-        />
-      )}
-    </div>
+    </ProductDetailLayout>
   );
 }

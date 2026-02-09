@@ -1,91 +1,78 @@
 @import "tailwindcss";
 
+/* Paleta oficial DavidSons Design (Figma) */
 :root {
-  /* Paleta oficial Davidson's Design */
-  --background: #f5f0e8; /* cream / sand-50 */
-  --foreground: #0a0806; /* ebony-500 */
-  --primary: #0a0806; /* ebony-500 */
-  --primary-foreground: #f5f0e8; /* cream */
-  --accent: #f5f0e8; /* cream */
-  --accent-foreground: #0a0806; /* ebony-500 */
-  --muted: #7d7264; /* taupe-700 */
-  --muted-foreground: #7d7264; /* taupe-700 */
-  --border: #ebe4d8; /* sand-100 */
-  --secondary: #8b6f47; /* amber-500 */
+  --font-size: 16px;
+  --font-family: "ITC Avant Garde Gothic Pro", sans-serif;
+  --background: #faf8f5;
+  --foreground: #1a1a1a;
+  --primary: #1a1a1a;
+  --primary-foreground: #faf8f5;
+  --secondary: #d4c5b0;
+  --secondary-foreground: #1a1a1a;
+  --accent: #8b7355;
+  --accent-foreground: #faf8f5;
+  --muted: #e8e2d8;
+  --muted-foreground: #6b5e4f;
+  --border: rgba(107, 94, 79, 0.2);
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --radius: 0.625rem;
 }
 
-/* 🎨 PALETA OFICIAL DAVIDSON'S DESIGN */
+.dark {
+  --background: #1a1a1a;
+  --foreground: #faf8f5;
+  --primary: #faf8f5;
+  --primary-foreground: #1a1a1a;
+  --secondary: #3d3d3d;
+  --secondary-foreground: #faf8f5;
+  --accent: #8b7355;
+  --accent-foreground: #faf8f5;
+  --muted: #4d4d4d;
+  --muted-foreground: #e8e2d8;
+  --border: #3d3d3d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #1a1a1a;
+    --foreground: #faf8f5;
+  }
+}
+
+/* Alias para compatibilidad con componentes existentes */
 @theme inline {
-  /* Ebony - fondos oscuros */
-  --color-ebony-50: #1a1512;
-  --color-ebony-100: #151310;
-  --color-ebony-500: #0a0806;
-  --color-ebony-600: #070604;
-  --color-ebony-700: #050403;
-  --color-ebony-900: #020201;
-
-  /* Walnut - botones, headers */
-  --color-walnut-50: #6d5645;
-  --color-walnut-100: #554334;
-  --color-walnut-500: #3d2f23;
-  --color-walnut-600: #2d2419;
-  --color-walnut-700: #1f1812;
-  --color-walnut-900: #100c09;
-
-  /* Amber - acentos premium */
-  --color-amber-50: #c9b594;
-  --color-amber-100: #a68658;
-  --color-amber-500: #8b6f47;
-  --color-amber-600: #6f5739;
-  --color-amber-700: #4a3a2a;
-  --color-amber-900: #2e2319;
-
-  /* Sand - fondos suaves */
-  --color-sand-50: #f5f0e8;
-  --color-sand-100: #ebe4d8;
-  --color-sand-500: #d4c4b0;
-  --color-sand-600: #c0ae98;
-  --color-sand-700: #a69780;
-  --color-sand-900: #8c8068;
-
-  /* Taupe - texto secundario */
-  --color-taupe-50: #d9d0c5;
-  --color-taupe-100: #c8bcaf;
-  --color-taupe-500: #b8a99a;
-  --color-taupe-600: #9a8d7e;
-  --color-taupe-700: #7d7264;
-  --color-taupe-900: #5f5649;
-
-  /* Slate - badge logo, nav premium */
-  --color-slate-50: #3d5468;
-  --color-slate-100: #2c3f50;
-  --color-slate-500: #1a2938;
-  --color-slate-600: #14202c;
-  --color-slate-700: #0e161f;
-  --color-slate-900: #070c13;
-
-  /* Cream - texto claro modo oscuro */
-  --color-cream: #f5f0e8;
-
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --color-secondary: var(--secondary);
+  --color-cream: #faf8f5;
+  --color-walnut: #8b7355;
+  --color-walnut-500: #8b7355;
+  --color-walnut-600: #6b5e4f;
+  --color-sand: #d4c5b0;
+  --color-sand-50: #e8e2d8;
+  --color-sand-100: #e8e2d8;
+  --color-sand-600: #6b5e4f;
+  --color-taupe: #6b5e4f;
+  --color-taupe-500: #6b5e4f;
+  --color-taupe-600: #6b5e4f;
+  --color-taupe-700: #5f5649;
+  --color-amber-500: #8b7355;
+  --color-amber-600: #6b5e4f;
+  --color-amber-50: #f5f1eb;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0806; /* ebony-500 */
-    --foreground: #f5f0e8; /* cream */
-  }
 }
 
 html {
@@ -96,6 +83,6 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-family), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }

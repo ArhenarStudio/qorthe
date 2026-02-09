@@ -1,19 +1,51 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+"use client";
 
-export default function CartPage() {
+import { useState } from "react";
+import { CartPage } from "@/modules/cart";
+
+export default function CartPageRoute() {
+  const [language, setLanguage] = useState<"es" | "en">("es");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Mock data - después conectar con Shopify
+  const [items, setItems] = useState([
+    {
+      id: "1",
+      name: "Tabla de Cortar Artesanal",
+      price: 850,
+      quantity: 2,
+      image: "https://via.placeholder.com/120",
+      description: "Tabla artesanal de madera de nogal",
+    },
+  ]);
+
+  const handleUpdateQuantity = (id: string, quantity: number) => {
+    setItems(
+      items.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setItems(items.filter((item) => item.id !== id));
+  };
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">
-        Carrito
-      </h1>
-      <p className="mt-4 text-foreground/70">
-        Tu carrito está vacío. Explora nuestros productos para comenzar.
-      </p>
-      </main>
-      <Footer />
-    </div>
+    <CartPage
+      language={language}
+      isDarkMode={isDarkMode}
+      onToggleLanguage={() =>
+        setLanguage((lang) => (lang === "es" ? "en" : "es"))
+      }
+      onToggleDarkMode={() => setIsDarkMode((mode) => !mode)}
+      onNavigateHome={() => (window.location.href = "/")}
+      onNavigateProducts={() => (window.location.href = "/products")}
+      onContinueShopping={() => (window.location.href = "/products")}
+      items={items}
+      onUpdateQuantity={handleUpdateQuantity}
+      onRemoveItem={handleRemoveItem}
+      onCheckout={() => console.log("Checkout")}
+    />
   );
 }
