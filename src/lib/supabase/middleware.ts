@@ -6,11 +6,12 @@ import { NextResponse, type NextRequest } from "next/server";
  * Call from Next.js middleware.
  */
 export async function updateSession(request: NextRequest) {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
     console.error("Supabase env vars missing in middleware");
+    return NextResponse.next({ request });
   }
 
   let response = NextResponse.next({ request });
@@ -19,8 +20,8 @@ export async function updateSession(request: NextRequest) {
   const isAccountRoute = pathname.startsWith("/account");
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
