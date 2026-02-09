@@ -27,6 +27,10 @@ export default function UpdatePasswordPage() {
     setIsLoading(true);
     try {
       const supabase = createClient();
+      if (!supabase) {
+        setError("Servicio no disponible. Intenta más tarde.");
+        return;
+      }
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
       router.push("/login?message=password_updated");

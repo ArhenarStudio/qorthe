@@ -19,6 +19,8 @@ function mapUser(user: User | null): AuthUser | null {
   };
 }
 
+const NOT_CONFIGURED = "Supabase is not configured (missing env vars).";
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -27,6 +29,11 @@ export function useAuth() {
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     const init = async () => {
       const {
         data: { session: initialSession },
@@ -46,10 +53,11 @@ export function useAuth() {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase]);
 
   const signUp = useCallback(
     async (email: string, password: string, metadata?: SignUpData["metadata"]) => {
+      if (!supabase) throw new Error(NOT_CONFIGURED);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -77,25 +85,27 @@ export function useAuth() {
 
       return data;
     },
-    [supabase.auth]
+    [supabase]
   );
 
   const signIn = useCallback(
     async (email: string, password: string) => {
+      if (!supabase) throw new Error(NOT_CONFIGURED);
       return supabase.auth.signInWithPassword({
         email,
         password,
       });
     },
-    [supabase.auth]
+    [supabase]
   );
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
-  }, [supabase.auth]);
+    if (supabase) await supabase.auth.signOut();
+  }, [supabase]);
 
   const resetPassword = useCallback(
     async (email: string) => {
+      if (!supabase) throw new Error(NOT_CONFIGURED);
       const origin = typeof window !== "undefined" ? window.location.origin : "";
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${origin}/update-password`,
@@ -103,7 +113,7 @@ export function useAuth() {
       if (error) throw error;
       return data;
     },
-    [supabase.auth]
+    [supabase]
   );
 
   return {
