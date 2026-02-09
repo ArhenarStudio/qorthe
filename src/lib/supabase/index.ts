@@ -1,4 +1,4 @@
 export { createClient } from "./client";
 export { createClient as createBrowserClient } from "./client";
-export { createClient as createServerClient } from "./server";
-export { updateSession } from "./middleware";
+// Server Components must import directly: import { createClient } from "@/lib/supabase/server"
+// Do not re-export server here (uses next/headers, server-only).
