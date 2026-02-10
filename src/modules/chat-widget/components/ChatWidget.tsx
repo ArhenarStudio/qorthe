@@ -99,7 +99,7 @@ export function ChatWidget({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 rounded-full bg-[#8b6f47] p-4 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-[#a68760] md:right-8"
+        className="fixed bottom-6 right-6 z-50 rounded-full bg-[#8b6f47] p-4 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-[#a68760]"
         aria-label="Open chat"
       >
         <MessageCircle className="h-6 w-6" />
@@ -109,7 +109,7 @@ export function ChatWidget({
 
   if (isMinimized) {
     return (
-      <div className="fixed bottom-6 right-6 z-50 md:right-8">
+      <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsMinimized(false)}
           className={`flex items-center gap-3 rounded-full border px-4 py-3 shadow-2xl transition-all ${
@@ -137,7 +137,7 @@ export function ChatWidget({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] md:right-8">
+    <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)]">
       <div
         className={`overflow-hidden rounded-2xl border-2 shadow-2xl ${
           isDarkMode

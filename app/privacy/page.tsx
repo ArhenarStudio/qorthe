@@ -578,7 +578,6 @@ export default function PrivacyPage() {
         <Footer
           language={language}
           isDarkMode={isDarkMode}
-          onToggleDarkMode={() => setIsDarkMode((m) => !m)}
           onNavigatePrivacy={() => (window.location.href = "/privacy")}
           onNavigateTerms={() => (window.location.href = "/terms")}
           onNavigateCookies={() => (window.location.href = "/cookies")}

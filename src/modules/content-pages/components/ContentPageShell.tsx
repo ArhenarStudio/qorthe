@@ -86,7 +86,6 @@ export function ContentPageShell({ children }: ContentPageShellProps) {
         <Footer
           language={language}
           isDarkMode={isDarkMode}
-          onToggleDarkMode={() => setIsDarkMode((m) => !m)}
           onNavigatePrivacy={nav("/privacy")}
           onNavigateTerms={nav("/terms")}
           onNavigateCookies={nav("/cookies")}

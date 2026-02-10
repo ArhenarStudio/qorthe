@@ -12,6 +12,12 @@ import {
   Heart,
   MapPin,
   LogOut,
+  HelpCircle,
+  BookOpen,
+  Image,
+  Calendar,
+  GitCompare,
+  Calculator,
 } from "lucide-react";
 import { useCart } from "@/modules/cart";
 import { useAuth } from "@/modules/auth";
@@ -33,6 +39,12 @@ interface HeaderProps {
   onNavigateOrders?: () => void;
   onNavigateWishlist?: () => void;
   onNavigateAddresses?: () => void;
+  onNavigateFAQ?: () => void;
+  onNavigateBlog?: () => void;
+  onNavigateProjectGallery?: () => void;
+  onNavigateAppointment?: () => void;
+  onNavigateProductComparison?: () => void;
+  onNavigateFinancingCalculator?: () => void;
   onLogout?: () => void;
   cartItemsCount?: number;
   isAuthenticated?: boolean;
@@ -63,6 +75,12 @@ export function Header({
   onNavigateOrders,
   onNavigateWishlist,
   onNavigateAddresses,
+  onNavigateFAQ,
+  onNavigateBlog,
+  onNavigateProjectGallery,
+  onNavigateAppointment,
+  onNavigateProductComparison,
+  onNavigateFinancingCalculator,
   onLogout,
   cartItemsCount: cartItemsCountProp,
   isAuthenticated: _isAuthenticatedProp = false,
@@ -606,6 +624,111 @@ export function Header({
                   }`}
                 />
               </div>
+            </button>
+
+            {/* Enlaces Adicionales */}
+            <div
+              className={`border-t px-4 py-3 ${
+                isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
+              }`}
+            >
+              <p
+                className={`text-xs uppercase tracking-wider ${
+                  isDarkMode ? "text-[#b8a99a]/60" : "text-gray-500"
+                }`}
+              >
+                {language === "es" ? "Enlaces Adicionales" : "Additional Links"}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                (onNavigateFAQ ?? (() => (window.location.href = "/faq")))();
+                onToggleMobileMenu();
+              }}
+              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
+                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
+              }`}
+            >
+              <HelpCircle className="h-5 w-5" />
+              <span className="flex-1 text-left">
+                {language === "es" ? "Preguntas Frecuentes" : "FAQ"}
+              </span>
+            </button>
+            <button
+              onClick={() => {
+                (onNavigateBlog ?? (() => (window.location.href = "/blog")))();
+                onToggleMobileMenu();
+              }}
+              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
+                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
+              }`}
+            >
+              <BookOpen className="h-5 w-5" />
+              <span className="flex-1 text-left">
+                {language === "es" ? "Blog" : "Blog"}
+              </span>
+            </button>
+            <button
+              onClick={() => {
+                (onNavigateProjectGallery ??
+                  (() => (window.location.href = "/gallery")))();
+                onToggleMobileMenu();
+              }}
+              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
+                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
+              }`}
+            >
+              <Image className="h-5 w-5" />
+              <span className="flex-1 text-left">
+                {language === "es"
+                  ? "Galería de Proyectos"
+                  : "Project Gallery"}
+              </span>
+            </button>
+            <button
+              onClick={() => {
+                (onNavigateAppointment ??
+                  (() => (window.location.href = "/appointment")))();
+                onToggleMobileMenu();
+              }}
+              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
+                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
+              }`}
+            >
+              <Calendar className="h-5 w-5" />
+              <span className="flex-1 text-left">
+                {language === "es" ? "Cita" : "Appointment"}
+              </span>
+            </button>
+            <button
+              onClick={() => {
+                (onNavigateProductComparison ??
+                  (() => (window.location.href = "/compare")))();
+                onToggleMobileMenu();
+              }}
+              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
+                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
+              }`}
+            >
+              <GitCompare className="h-5 w-5" />
+              <span className="flex-1 text-left">
+                {language === "es" ? "Comparar" : "Compare"}
+              </span>
+            </button>
+            <button
+              onClick={() => {
+                (onNavigateFinancingCalculator ??
+                  (() => (window.location.href = "/certifications")))();
+                onToggleMobileMenu();
+              }}
+              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
+                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
+              }`}
+            >
+              <Calculator className="h-5 w-5" />
+              <span className="flex-1 text-left">
+                {language === "es" ? "Calculadora" : "Calculator"}
+              </span>
             </button>
           </div>
         </div>

@@ -1,15 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { WhatsAppButton } from "@/modules/whatsapp-button";
 import { ChatWidget } from "@/modules/chat-widget";
+import { SettingsModule } from "@/modules/settings";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { CookieConsent } from "@/components/shared/CookieConsent";
-import { WHATSAPP_PHONE, WHATSAPP_MESSAGE } from "@/modules/whatsapp-button/whatsapp-button.config";
+import { useAppState } from "@/modules/app-state";
+import {
+  WHATSAPP_PHONE,
+  WHATSAPP_MESSAGE,
+} from "@/modules/whatsapp-button/whatsapp-button.config";
 
 export function GlobalWidgets() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [language, setLanguage] = useState<"es" | "en">("es");
+  const {
+    isDarkMode,
+    language,
+    showWhatsApp,
+    showChat,
+    toggleDarkMode,
+    toggleLanguage,
+    toggleWhatsApp,
+    toggleChat,
+  } = useAppState();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -26,13 +39,13 @@ export function GlobalWidgets() {
         phoneNumber={WHATSAPP_PHONE}
         message={WHATSAPP_MESSAGE}
         isDarkMode={isDarkMode}
-        enabled
-        position="bottom-left"
+        enabled={showWhatsApp}
+        position="bottom-right"
       />
       <ChatWidget
         isDarkMode={isDarkMode}
         language={language}
-        enabled
+        enabled={showChat}
       />
       <ScrollToTop isDarkMode={isDarkMode} />
       <CookieConsent
@@ -45,6 +58,16 @@ export function GlobalWidgets() {
             window.location.href = "/cookies";
           }
         }}
+      />
+      <SettingsModule
+        language={language}
+        isDarkMode={isDarkMode}
+        showWhatsApp={showWhatsApp}
+        showChat={showChat}
+        onToggleLanguage={toggleLanguage}
+        onToggleDarkMode={toggleDarkMode}
+        onToggleWhatsApp={toggleWhatsApp}
+        onToggleChat={toggleChat}
       />
     </>
   );

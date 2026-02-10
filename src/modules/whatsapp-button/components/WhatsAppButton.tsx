@@ -29,11 +29,12 @@ export function WhatsAppButton({
   };
 
   const positionClasses =
-    position === "bottom-right" ? "right-6 md:right-8" : "left-6 md:left-8";
+    position === "bottom-right" ? "right-6" : "left-6 md:left-8";
+  const bottomClass = position === "bottom-right" ? "bottom-24" : "bottom-6 md:bottom-8";
 
   return (
     <div
-      className={`fixed bottom-24 md:bottom-28 ${positionClasses} z-50`}
+      className={`fixed ${bottomClass} ${positionClasses} z-50`}
     >
       <button
         onClick={handleClick}
