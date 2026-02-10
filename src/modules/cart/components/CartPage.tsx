@@ -3,15 +3,12 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
+import { useAppState } from "@/modules/app-state";
 import { Plus, Minus, Trash2, ShoppingBag, Tag, Truck } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { useCart } from "../hooks/useCart";
 
 interface CartPageProps {
-  language: "es" | "en";
-  isDarkMode: boolean;
-  onToggleLanguage: () => void;
-  onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
   onNavigateAccount?: () => void;
@@ -109,15 +106,12 @@ const translations = {
 };
 
 export function CartPage({
-  language,
-  isDarkMode,
-  onToggleLanguage,
-  onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
   onNavigateAccount,
   onContinueShopping,
 }: CartPageProps) {
+  const { language, isDarkMode } = useAppState();
   const {
     cartItems: items,
     subtotal: cartSubtotal,
@@ -172,20 +166,7 @@ export function CartPage({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header
-        isScrolled={isScrolled}
-        language={language}
-        isDarkMode={isDarkMode}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onToggleLanguage={onToggleLanguage}
-        onToggleDarkMode={onToggleDarkMode}
-        onToggleMobileMenu={handleToggleMobileMenu}
-        onNavigateProducts={onNavigateProducts}
-        onNavigateHome={onNavigateHome}
-        onNavigateCart={() => (window.location.href = "/cart")}
-        onNavigateAccount={onNavigateAccount ?? (() => (window.location.href = "/login"))}
-        translations={t}
-      />
+      <Header />
 
       <div className="pb-12 pt-28 md:pb-16 md:pt-32 lg:pb-20 lg:pt-40">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
@@ -346,7 +327,7 @@ export function CartPage({
                               {t.quantity}:
                             </span>
                             <div
-                              className={`flex items-center rounded border ${
+                              className={`flex items-center rounded-lg border ${
                                 isDarkMode
                                   ? "border-[#3d2f23]"
                                   : "border-gray-200"
@@ -650,7 +631,7 @@ export function CartPage({
                       {["VISA", "MC", "AMEX", "PP"].map((label) => (
                         <div
                           key={label}
-                          className={`flex h-6 w-10 items-center justify-center rounded border ${
+                          className={`flex h-6 w-10 items-center justify-center rounded-lg border ${
                             isDarkMode
                               ? "border-[#3d2f23]"
                               : "border-gray-300"
@@ -670,13 +651,7 @@ export function CartPage({
         </div>
       </div>
 
-      <Footer
-        language={language}
-        isDarkMode={isDarkMode}
-        onNavigateCookies={() => (window.location.href = "/cookies")}
-        onNavigateCatalog={() => (window.location.href = "/products")}
-        translations={t}
-      />
+      <Footer />
     </div>
   );
 }

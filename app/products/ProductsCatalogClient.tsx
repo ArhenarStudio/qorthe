@@ -8,8 +8,6 @@ interface ProductsCatalogClientProps {
 }
 
 export function ProductsCatalogClient({ products }: ProductsCatalogClientProps) {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [cartItemsCount] = useState(0);
 
   if (products.length === 0) {
@@ -35,10 +33,6 @@ export function ProductsCatalogClient({ products }: ProductsCatalogClientProps) 
         (window.location.href = `/products/${productId}`)
       }
       onBackToHome={() => (window.location.href = "/")}
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       cartItemsCount={cartItemsCount}
       onNavigateCart={() => (window.location.href = "/cart")}
       onNavigateAccount={() => (window.location.href = "/login")}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAppState } from "@/modules/app-state";
 import { motion } from "motion/react";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
@@ -172,8 +173,7 @@ const translations = {
 };
 
 export function LandingPage() {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { language, isDarkMode } = useAppState();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -195,20 +195,7 @@ export function LandingPage() {
           isDarkMode ? "bg-[#0a0806]" : "bg-white"
         }`}
       >
-        <Header
-          isScrolled={isScrolled}
-          language={language}
-          isDarkMode={isDarkMode}
-          isMobileMenuOpen={isMobileMenuOpen}
-          onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-          onToggleDarkMode={() => setIsDarkMode((m) => !m)}
-          onToggleMobileMenu={() => setIsMobileMenuOpen((m) => !m)}
-          onNavigateHome={() => (window.location.href = "/")}
-          onNavigateProducts={goProducts}
-          onNavigateCart={() => setIsCartOpen(true)}
-          onNavigateAccount={() => (window.location.href = "/login")}
-          translations={t}
-        />
+        <Header />
 
         {/* Hero */}
         <section className="pb-12 pt-20 md:pb-16 md:pt-24 lg:pb-20 lg:pt-32">
@@ -576,22 +563,12 @@ export function LandingPage() {
           </div>
         </section>
 
-        <Footer
-          language={language}
-          isDarkMode={isDarkMode}
-          onNavigatePrivacy={() => (window.location.href = "/privacy")}
-          onNavigateTerms={() => (window.location.href = "/terms")}
-          onNavigateCookies={() => (window.location.href = "/cookies")}
-          onNavigateCatalog={goProducts}
-          translations={t}
-        />
+        <Footer />
       </div>
 
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        isDarkMode={isDarkMode}
-        language={language}
         onContinueShopping={() => setIsCartOpen(false)}
       />
     </div>

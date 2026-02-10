@@ -30,16 +30,10 @@ export default function WishlistRouteClient() {
       ? `${user.firstName} ${user.lastName}`.trim()
       : user?.firstName ?? user?.email ?? "Usuario";
   const displayEmail = user?.email ?? "";
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [wishlistProducts, setWishlistProducts] = useState(mockWishlist);
 
   return (
     <WishlistPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
       onNavigateDashboard={() => (window.location.href = "/account")}

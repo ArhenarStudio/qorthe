@@ -39,6 +39,20 @@ const translations = {
         email: "ana@davidsonsdesign.com",
         linkedin: "#",
       },
+      {
+        name: "Roberto Silva",
+        role: "Coordinador de Proyectos",
+        bio: "Roberto asegura que cada proyecto se entregue a tiempo y cumpla con los más altos estándares de calidad.",
+        email: "roberto@davidsonsdesign.com",
+        linkedin: "#",
+      },
+      {
+        name: "Laura Jiménez",
+        role: "Atención al Cliente",
+        bio: "Laura es el enlace entre nuestros clientes y el taller, asegurando una comunicación fluida y satisfacción total.",
+        email: "laura@davidsonsdesign.com",
+        linkedin: "#",
+      },
     ],
   },
   en: {
@@ -75,22 +89,31 @@ const translations = {
         email: "ana@davidsonsdesign.com",
         linkedin: "#",
       },
+      {
+        name: "Roberto Silva",
+        role: "Project Coordinator",
+        bio: "Roberto ensures that every project is delivered on time and meets the highest quality standards.",
+        email: "roberto@davidsonsdesign.com",
+        linkedin: "#",
+      },
+      {
+        name: "Laura Jiménez",
+        role: "Customer Service",
+        bio: "Laura is the link between our clients and the workshop, ensuring smooth communication and total satisfaction.",
+        email: "laura@davidsonsdesign.com",
+        linkedin: "#",
+      },
     ],
   },
 };
 
 function TeamContent() {
-  const { language, isDarkMode, nav } = useContentPage();
+  const { language, isDarkMode } = useContentPage();
   const content = translations[language];
 
   return (
     <>
-      <Breadcrumbs
-        items={[{ label: content.title }]}
-        isDarkMode={isDarkMode}
-        language={language}
-        onNavigateHome={nav("/")}
-      />
+      <Breadcrumbs items={[{ label: content.title }]} />
       <div className="mx-auto max-w-[1440px] px-4 py-16 md:px-8 md:py-20 lg:px-12 lg:py-24">
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <h1

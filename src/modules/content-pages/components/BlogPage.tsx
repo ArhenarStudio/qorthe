@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Calendar, Clock } from "lucide-react";
+import Link from "next/link";
+import { Search, Calendar, Clock, ArrowRight, Tag } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { ContentPageShell, useContentPage } from "./ContentPageShell";
 
@@ -27,7 +28,7 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
       id: "1",
       title: "Tendencias 2026 en Diseño de Interiores: El Retorno de lo Artesanal",
       excerpt:
-        "Descubre cómo el diseño contemporáneo está volviendo a sus raíces artesanales, priorizando piezas únicas y técnicas tradicionales.",
+        "Descubre cómo el diseño contemporáneo está volviendo a sus raíces artesanales, priorizando piezas únicas y técnicas tradicionales sobre la producción masiva.",
       image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800",
       date: "8 de Febrero, 2026",
       readTime: "5 min",
@@ -38,7 +39,7 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
       id: "2",
       title: "Cómo Cuidar Muebles de Madera Maciza: Guía Completa",
       excerpt:
-        "Aprende los secretos para mantener tus muebles de madera en perfecto estado durante décadas.",
+        "Aprende los secretos para mantener tus muebles de madera en perfecto estado durante décadas. Tips de limpieza, aceites y mantenimiento preventivo.",
       image: "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=800",
       date: "5 de Febrero, 2026",
       readTime: "7 min",
@@ -47,9 +48,9 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
     },
     {
       id: "3",
-      title: "Maestros Artesanos: La Historia de Don Pedro",
+      title: "Maestros Artesanos: La Historia de Don Pedro y Sus 40 Años de Carpintería",
       excerpt:
-        "Conoce la inspiradora historia de uno de nuestros maestros carpinteros.",
+        "Conoce la inspiradora historia de uno de nuestros maestros carpinteros, quien ha dedicado su vida a perfeccionar el arte de trabajar la madera.",
       image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=800",
       date: "1 de Febrero, 2026",
       readTime: "6 min",
@@ -60,12 +61,34 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
       id: "4",
       title: "Maximiza Espacios Pequeños con Muebles Multifuncionales",
       excerpt:
-        "Descubre cómo nuestros diseños inteligentes pueden transformar espacios reducidos.",
+        "Descubre cómo nuestros diseños inteligentes pueden transformar espacios reducidos en ambientes funcionales y elegantes sin sacrificar estilo.",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800",
       date: "28 de Enero, 2026",
       readTime: "4 min",
       category: "Diseño",
       author: "Luis Hernández",
+    },
+    {
+      id: "5",
+      title: "Maderas Sustentables: Nuestro Compromiso con el Medio Ambiente",
+      excerpt:
+        "Conoce las certificaciones forestales que respaldan nuestros materiales y cómo aseguramos que cada pieza sea ecológicamente responsable.",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800",
+      date: "25 de Enero, 2026",
+      readTime: "5 min",
+      category: "Sustentabilidad",
+      author: "Roberto Silva",
+    },
+    {
+      id: "6",
+      title: "La Psicología del Color en el Diseño de Interiores",
+      excerpt:
+        "Explora cómo los tonos de madera y acabados pueden influir en el ambiente y estado de ánimo de tus espacios.",
+      image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=800",
+      date: "20 de Enero, 2026",
+      readTime: "6 min",
+      category: "Diseño",
+      author: "María González",
     },
   ],
   en: [
@@ -73,7 +96,7 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
       id: "1",
       title: "2026 Interior Design Trends: The Return of Craftsmanship",
       excerpt:
-        "Discover how contemporary design is returning to its artisanal roots.",
+        "Discover how contemporary design is returning to its artisanal roots, prioritizing unique pieces and traditional techniques over mass production.",
       image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800",
       date: "February 8, 2026",
       readTime: "5 min",
@@ -84,7 +107,7 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
       id: "2",
       title: "How to Care for Solid Wood Furniture: Complete Guide",
       excerpt:
-        "Learn the secrets to keeping your wood furniture in perfect condition.",
+        "Learn the secrets to keeping your wood furniture in perfect condition for decades. Cleaning tips, oils, and preventive maintenance.",
       image: "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=800",
       date: "February 5, 2026",
       readTime: "7 min",
@@ -93,9 +116,9 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
     },
     {
       id: "3",
-      title: "Master Artisans: The Story of Don Pedro",
+      title: "Master Artisans: The Story of Don Pedro and His 40 Years of Carpentry",
       excerpt:
-        "Meet the inspiring story of one of our master carpenters.",
+        "Meet the inspiring story of one of our master carpenters, who has dedicated his life to perfecting the art of woodworking.",
       image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=800",
       date: "February 1, 2026",
       readTime: "6 min",
@@ -106,12 +129,34 @@ const blogPosts: Record<"es" | "en", BlogPost[]> = {
       id: "4",
       title: "Maximize Small Spaces with Multifunctional Furniture",
       excerpt:
-        "Discover how our intelligent designs can transform small spaces.",
+        "Discover how our intelligent designs can transform small spaces into functional and elegant environments without sacrificing style.",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800",
       date: "January 28, 2026",
       readTime: "4 min",
       category: "Design",
       author: "Luis Hernández",
+    },
+    {
+      id: "5",
+      title: "Sustainable Woods: Our Commitment to the Environment",
+      excerpt:
+        "Learn about the forestry certifications backing our materials and how we ensure each piece is ecologically responsible.",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800",
+      date: "January 25, 2026",
+      readTime: "5 min",
+      category: "Sustainability",
+      author: "Roberto Silva",
+    },
+    {
+      id: "6",
+      title: "The Psychology of Color in Interior Design",
+      excerpt:
+        "Explore how wood tones and finishes can influence the atmosphere and mood of your spaces.",
+      image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=800",
+      date: "January 20, 2026",
+      readTime: "6 min",
+      category: "Design",
+      author: "María González",
     },
   ],
 };
@@ -253,57 +298,65 @@ function BlogContent() {
                     : "border-gray-200 bg-white hover:border-[#8b6f47]"
                 }`}
               >
-                <div className="aspect-[16/10] overflow-hidden">
-                  <ImageWithFallback
-                    src={post.image}
-                    alt={post.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="space-y-3 p-6">
-                  <div className="flex items-center gap-4 text-sm">
-                    <span
-                      className={`inline-flex items-center gap-1.5 ${
+                <Link href="/blog" className="block">
+                  <div className="aspect-[16/10] overflow-hidden">
+                    <ImageWithFallback
+                      src={post.image}
+                      alt={post.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="space-y-4 p-6">
+                    <div className="flex items-center gap-4 text-sm">
+                      <span
+                        className={`inline-flex items-center gap-1.5 ${
+                          isDarkMode ? "text-[#b8a99a]" : "text-gray-500"
+                        }`}
+                      >
+                        <Calendar className="h-4 w-4" />
+                        {post.date}
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1.5 ${
+                          isDarkMode ? "text-[#b8a99a]" : "text-gray-500"
+                        }`}
+                      >
+                        <Clock className="h-4 w-4" />
+                        {post.readTime}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-4 w-4 text-[#8b6f47]" />
+                      <span className="text-sm font-medium text-[#8b6f47]">
+                        {post.category}
+                      </span>
+                    </div>
+                    <h2
+                      className={`line-clamp-2 text-xl font-medium ${
+                        isDarkMode ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      {post.title}
+                    </h2>
+                    <p
+                      className={`line-clamp-3 text-sm ${
                         isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
                       }`}
                     >
-                      <Calendar className="h-4 w-4" />
-                      {post.date}
-                    </span>
+                      {post.excerpt}
+                    </p>
                     <span
-                      className={`inline-flex items-center gap-1.5 ${
-                        isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
+                      className={`inline-flex items-center gap-2 text-sm font-medium transition-colors ${
+                        isDarkMode
+                          ? "text-[#8b6f47] group-hover:text-[#b8a99a]"
+                          : "text-[#8b6f47] group-hover:text-[#6d5638]"
                       }`}
                     >
-                      <Clock className="h-4 w-4" />
-                      {post.readTime}
+                      {t.readMore}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
-                  <span className="inline-block rounded-full bg-[#8b6f47] px-3 py-1 text-xs text-white">
-                    {post.category}
-                  </span>
-                  <h2
-                    className={`text-xl font-medium ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {post.title}
-                  </h2>
-                  <p
-                    className={`line-clamp-2 text-sm ${
-                      isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
-                    }`}
-                  >
-                    {post.excerpt}
-                  </p>
-                  <span
-                    className={`inline-flex text-sm font-medium ${
-                      isDarkMode ? "text-[#8b6f47]" : "text-[#8b6f47]"
-                    }`}
-                  >
-                    {t.readMore} →
-                  </span>
-                </div>
+                </Link>
               </article>
             ))}
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAppState } from '@/modules/app-state';
 import { Header } from '@/modules/header';
 import { Footer } from '@/modules/footer';
 import { User, Package, MapPin, Heart, Settings, LogOut, ShoppingCart, X } from 'lucide-react';
@@ -16,10 +17,6 @@ interface WishlistProduct {
 }
 
 interface WishlistPageProps {
-  language: 'es' | 'en';
-  isDarkMode: boolean;
-  onToggleLanguage: () => void;
-  onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
   onNavigateDashboard: () => void;
@@ -107,10 +104,6 @@ const translations = {
 };
 
 export function WishlistPage({
-  language,
-  isDarkMode,
-  onToggleLanguage,
-  onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
   onNavigateDashboard,
@@ -123,6 +116,7 @@ export function WishlistPage({
   onRemoveFromWishlist,
   onAddToCart
 }: WishlistPageProps) {
+  const { language, isDarkMode } = useAppState();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -153,20 +147,7 @@ export function WishlistPage({
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
-      <Header
-        isScrolled={isScrolled}
-        language={language}
-        isDarkMode={isDarkMode}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onToggleLanguage={onToggleLanguage}
-        onToggleDarkMode={onToggleDarkMode}
-        onToggleMobileMenu={handleToggleMobileMenu}
-        onNavigateProducts={onNavigateProducts}
-        onNavigateHome={onNavigateHome}
-        onNavigateCart={() => (window.location.href = '/cart')}
-        onNavigateAccount={() => (window.location.href = '/login')}
-        translations={t}
-      />
+      <Header />
 
       <div className="pt-28 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20">
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12">
@@ -369,13 +350,7 @@ export function WishlistPage({
         </div>
       </div>
 
-      <Footer
-        language={language}
-        isDarkMode={isDarkMode}
-        onNavigateCookies={() => (window.location.href = "/cookies")}
-        onNavigateCatalog={() => (window.location.href = "/products")}
-        translations={t}
-      />
+      <Footer />
     </div>
   );
 }

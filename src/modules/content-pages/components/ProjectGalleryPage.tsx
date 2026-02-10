@@ -47,6 +47,7 @@ const projects: Record<"es" | "en", Project[]> = {
       images: [
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
         "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
+        "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=1200",
       ],
     },
     {
@@ -55,11 +56,54 @@ const projects: Record<"es" | "en", Project[]> = {
       location: "Ciudad de México",
       year: "2024",
       description:
-        "Espacios de trabajo colaborativo con mesas de juntas y escritorios ejecutivos. Diseño minimalista.",
+        "Espacios de trabajo colaborativo con mesas de juntas, escritorios ejecutivos y áreas de descanso. Diseño minimalista con toques cálidos.",
       category: "Comercial",
       images: [
         "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200",
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+        "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1200",
+      ],
+    },
+    {
+      id: "4",
+      title: "Hotel Boutique Casa del Sol",
+      location: "Álamos, Sonora",
+      year: "2024",
+      description:
+        "Mobiliario para 12 habitaciones y áreas comunes. Camas, mesas de noche, roperos y muebles de terraza con diseño colonial mexicano.",
+      category: "Hoteles",
+      images: [
+        "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1200",
+        "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200",
+        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1200",
+      ],
+    },
+    {
+      id: "5",
+      title: "Penthouse Zona Dorada",
+      location: "Mazatlán, Sinaloa",
+      year: "2024",
+      description:
+        "Interiorismo completo de penthouse frente al mar. Comedor para 12 personas, sala modular y terraza con muebles resistentes al clima.",
+      category: "Residencial",
+      images: [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
+        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=1200",
+      ],
+    },
+    {
+      id: "6",
+      title: "Cafetería Artesanal Origen",
+      location: "Guadalajara, Jalisco",
+      year: "2023",
+      description:
+        "Mobiliario completo para cafetería de especialidad. Barras, mesas altas, bancos y estantería expositora en nogal.",
+      category: "Restaurantes",
+      images: [
+        "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1200",
+        "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1200",
+        "https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1200",
       ],
     },
   ],
@@ -89,6 +133,7 @@ const projects: Record<"es" | "en", Project[]> = {
       images: [
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
         "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
+        "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=1200",
       ],
     },
     {
@@ -97,11 +142,54 @@ const projects: Record<"es" | "en", Project[]> = {
       location: "Mexico City",
       year: "2024",
       description:
-        "Collaborative work spaces with conference tables and executive desks. Minimalist design.",
+        "Collaborative work spaces with conference tables, executive desks and lounge areas. Minimalist design with warm touches.",
       category: "Commercial",
       images: [
         "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200",
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200",
+        "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1200",
+      ],
+    },
+    {
+      id: "4",
+      title: "Casa del Sol Boutique Hotel",
+      location: "Álamos, Sonora",
+      year: "2024",
+      description:
+        "Furniture for 12 rooms and common areas. Beds, nightstands, wardrobes and terrace furniture with Mexican colonial design.",
+      category: "Hotels",
+      images: [
+        "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1200",
+        "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200",
+        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1200",
+      ],
+    },
+    {
+      id: "5",
+      title: "Golden Zone Penthouse",
+      location: "Mazatlán, Sinaloa",
+      year: "2024",
+      description:
+        "Complete penthouse interior design overlooking the sea. Dining room for 12, modular living room and terrace with weather-resistant furniture.",
+      category: "Residential",
+      images: [
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
+        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=1200",
+      ],
+    },
+    {
+      id: "6",
+      title: "Origen Artisan Café",
+      location: "Guadalajara, Jalisco",
+      year: "2023",
+      description:
+        "Complete furniture for specialty café. Bars, high tables, benches and display shelving in walnut.",
+      category: "Restaurants",
+      images: [
+        "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1200",
+        "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1200",
+        "https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1200",
       ],
     },
   ],

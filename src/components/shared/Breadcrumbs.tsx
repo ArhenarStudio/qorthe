@@ -1,25 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
+import { useAppState } from "@/modules/app-state";
 
 interface BreadcrumbItem {
   label: string;
+  href?: string;
   onClick?: () => void;
 }
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
-  isDarkMode: boolean;
-  language: "es" | "en";
-  onNavigateHome: () => void;
 }
 
-export function Breadcrumbs({
-  items,
-  isDarkMode,
-  language,
-  onNavigateHome,
-}: BreadcrumbsProps) {
+export function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const { isDarkMode, language } = useAppState();
+
   return (
     <nav
       aria-label={
@@ -32,8 +29,8 @@ export function Breadcrumbs({
       <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
-            <button
-              onClick={onNavigateHome}
+            <Link
+              href="/"
               className={`flex items-center gap-1 text-sm transition-colors ${
                 isDarkMode
                   ? "text-[#b8a99a] hover:text-white"
@@ -43,7 +40,7 @@ export function Breadcrumbs({
             >
               <Home className="h-4 w-4" />
               <span>{language === "es" ? "Inicio" : "Home"}</span>
-            </button>
+            </Link>
           </li>
 
           {items.map((item, index) => (
@@ -53,7 +50,18 @@ export function Breadcrumbs({
                   isDarkMode ? "text-[#3d2f23]" : "text-gray-400"
                 }`}
               />
-              {item.onClick ? (
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className={`text-sm transition-colors ${
+                    isDarkMode
+                      ? "text-[#b8a99a] hover:text-white"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ) : item.onClick ? (
                 <button
                   onClick={item.onClick}
                   className={`text-sm transition-colors ${

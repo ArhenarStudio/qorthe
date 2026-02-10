@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Search, Package, Truck, CreditCard, Hammer, Shield, Phone } from "lucide-react";
+import {
+  ChevronDown,
+  Search,
+  Package,
+  Truck,
+  CreditCard,
+  Hammer,
+  Shield,
+  Phone,
+} from "lucide-react";
 import { ContentPageShell, useContentPage } from "./ContentPageShell";
 
 interface FAQItem {
@@ -34,37 +43,79 @@ const faqs: Record<"es" | "en", FAQItem[]> = {
     {
       question: "¿Cuánto tiempo tarda la elaboración de un mueble?",
       answer:
-        "Cada pieza es elaborada a mano bajo pedido. El tiempo varía según la complejidad: sillas y sillones de 3-4 semanas, mesas de comedor de 4-6 semanas, y recámaras completas de 6-8 semanas.",
+        "Cada pieza es elaborada a mano bajo pedido. El tiempo de elaboración varía según la complejidad: sillas y sillones toman de 3-4 semanas, mesas de comedor de 4-6 semanas, y recámaras completas de 6-8 semanas. Te mantendremos informado del progreso de tu pedido.",
       category: "products",
     },
     {
       question: "¿Qué tipos de madera utilizan?",
       answer:
-        "Trabajamos principalmente con maderas nobles mexicanas como nogal, parota, encino y cedro rojo. Todas provienen de fuentes sustentables certificadas.",
+        "Trabajamos principalmente con maderas nobles mexicanas como nogal, parota, encino y cedro rojo. Todas nuestras maderas provienen de fuentes sustentables certificadas y son seleccionadas cuidadosamente por su calidad y belleza natural.",
+      category: "products",
+    },
+    {
+      question: "¿Puedo personalizar un mueble?",
+      answer:
+        "Absolutamente. Ofrecemos servicio de personalización en dimensiones, acabados, tapizados y detalles específicos. Agenda una consulta gratuita con nuestros diseñadores para discutir tu proyecto.",
       category: "products",
     },
     {
       question: "¿Realizan envíos a toda la República Mexicana?",
       answer:
-        "Sí, realizamos envíos a todo México. El costo se calcula según destino y tamaño. Envío gratuito en compras mayores a $50,000 MXN.",
+        "Sí, realizamos envíos a todo México. Utilizamos empresas de paquetería especializadas en el manejo de muebles. El costo de envío se calcula según el destino y tamaño del pedido. El envío es gratuito en compras mayores a $50,000 MXN.",
+      category: "shipping",
+    },
+    {
+      question: "¿Cómo se embalan los muebles para el envío?",
+      answer:
+        "Cada pieza se protege con mantas especiales, plástico burbuja y esquineros de cartón. Los muebles se embalan en cajas de madera personalizadas para garantizar que lleguen en perfectas condiciones.",
+      category: "shipping",
+    },
+    {
+      question: "¿Cuánto tiempo tarda el envío?",
+      answer:
+        "Una vez completada la elaboración, el envío tarda de 5-10 días hábiles dependiendo del destino. Para Hermosillo y alrededores ofrecemos entrega personal sin costo adicional.",
       category: "shipping",
     },
     {
       question: "¿Qué métodos de pago aceptan?",
       answer:
-        "Aceptamos tarjetas de crédito y débito, transferencias bancarias y efectivo. Planes de financiamiento de 3, 6 y 12 meses sin intereses en compras mayores a $20,000 MXN.",
+        "Aceptamos tarjetas de crédito y débito (Visa, Mastercard, American Express), transferencias bancarias y efectivo. También ofrecemos planes de financiamiento de 3, 6 y 12 meses sin intereses en compras mayores a $20,000 MXN.",
+      category: "payments",
+    },
+    {
+      question: "¿Se requiere anticipo?",
+      answer:
+        "Sí, solicitamos un anticipo del 50% al confirmar el pedido. El saldo restante se paga antes del envío. Para pedidos personalizados, el anticipo es del 60%.",
       category: "payments",
     },
     {
       question: "¿Qué garantía tienen los muebles?",
       answer:
-        "Garantía de por vida en la estructura de madera contra defectos de fabricación. Acabados y tapizados tienen garantía de 2 años.",
+        "Todos nuestros muebles cuentan con garantía de por vida en la estructura de madera contra defectos de fabricación. Los acabados y tapizados tienen garantía de 2 años. La garantía no cubre daños por mal uso o desgaste natural.",
+      category: "warranty",
+    },
+    {
+      question: "¿Qué cuidados requieren los muebles?",
+      answer:
+        "Recomendamos limpiar con un paño suave y seco regularmente. Evitar exposición directa al sol y fuentes de calor. Los acabados con aceite natural requieren re-aplicación cada 6-12 meses (incluimos un kit de mantenimiento con cada compra).",
+      category: "warranty",
+    },
+    {
+      question: "¿Ofrecen servicio de reparación?",
+      answer:
+        "Sí, ofrecemos servicio de restauración y reparación para todos nuestros muebles, incluso fuera del período de garantía. Contáctanos para una evaluación.",
       category: "warranty",
     },
     {
       question: "¿Tienen showroom físico?",
       answer:
-        "Sí, nuestro showroom y taller están en Hermosillo, Sonora. Abrimos de lunes a sábado de 10:00 a 18:00 hrs. Recomendamos agendar una cita.",
+        "Sí, nuestro showroom y taller están ubicados en Hermosillo, Sonora. Abrimos de lunes a sábado de 10:00 a 18:00 hrs. Te recomendamos agendar una cita para una atención personalizada.",
+      category: "contact",
+    },
+    {
+      question: "¿Cómo puedo agendar una consulta de diseño?",
+      answer:
+        "Puedes agendar una consulta gratuita a través de nuestra página de Citas, por WhatsApp al +52 662 123 4567, o llamando a nuestro showroom. Las consultas pueden ser presenciales o virtuales.",
       category: "contact",
     },
   ],
@@ -72,37 +123,79 @@ const faqs: Record<"es" | "en", FAQItem[]> = {
     {
       question: "How long does furniture crafting take?",
       answer:
-        "Each piece is handcrafted to order. Time varies by complexity: chairs 3-4 weeks, dining tables 4-6 weeks, complete bedrooms 6-8 weeks.",
+        "Each piece is handcrafted to order. Crafting time varies by complexity: chairs and armchairs take 3-4 weeks, dining tables 4-6 weeks, and complete bedroom sets 6-8 weeks. We will keep you informed of your order progress.",
       category: "products",
     },
     {
       question: "What types of wood do you use?",
       answer:
-        "We primarily work with Mexican noble woods such as walnut, parota, oak, and red cedar. All from certified sustainable sources.",
+        "We primarily work with Mexican noble woods such as walnut, parota, oak, and red cedar. All our woods come from certified sustainable sources and are carefully selected for their quality and natural beauty.",
+      category: "products",
+    },
+    {
+      question: "Can I customize a piece of furniture?",
+      answer:
+        "Absolutely. We offer customization services for dimensions, finishes, upholstery, and specific details. Schedule a free consultation with our designers to discuss your project.",
       category: "products",
     },
     {
       question: "Do you ship throughout Mexico?",
       answer:
-        "Yes, we ship throughout Mexico. Cost is calculated by destination and size. Free shipping on purchases over $50,000 MXN.",
+        "Yes, we ship throughout Mexico. We use specialized furniture handling companies. Shipping cost is calculated based on destination and order size. Shipping is free on purchases over $50,000 MXN.",
+      category: "shipping",
+    },
+    {
+      question: "How are furniture items packed for shipping?",
+      answer:
+        "Each piece is protected with special blankets, bubble wrap, and cardboard corners. Furniture is packed in custom wooden crates to ensure perfect condition upon arrival.",
+      category: "shipping",
+    },
+    {
+      question: "How long does shipping take?",
+      answer:
+        "Once crafting is complete, shipping takes 5-10 business days depending on destination. For Hermosillo and surrounding areas, we offer personal delivery at no additional cost.",
       category: "shipping",
     },
     {
       question: "What payment methods do you accept?",
       answer:
-        "We accept credit and debit cards, bank transfers, and cash. 3, 6, and 12-month interest-free financing on purchases over $20,000 MXN.",
+        "We accept credit and debit cards (Visa, Mastercard, American Express), bank transfers, and cash. We also offer 3, 6, and 12-month interest-free financing plans on purchases over $20,000 MXN.",
+      category: "payments",
+    },
+    {
+      question: "Is a deposit required?",
+      answer:
+        "Yes, we require a 50% deposit when confirming the order. The remaining balance is paid before shipping. For custom orders, the deposit is 60%.",
       category: "payments",
     },
     {
       question: "What warranty do the furniture pieces have?",
       answer:
-        "Lifetime warranty on wood structure against manufacturing defects. Finishes and upholstery have a 2-year warranty.",
+        "All our furniture comes with a lifetime warranty on the wood structure against manufacturing defects. Finishes and upholstery have a 2-year warranty. Warranty does not cover damage from misuse or natural wear.",
+      category: "warranty",
+    },
+    {
+      question: "What care do the furniture pieces require?",
+      answer:
+        "We recommend cleaning with a soft, dry cloth regularly. Avoid direct sun exposure and heat sources. Natural oil finishes require reapplication every 6-12 months (we include a maintenance kit with each purchase).",
+      category: "warranty",
+    },
+    {
+      question: "Do you offer repair services?",
+      answer:
+        "Yes, we offer restoration and repair services for all our furniture, even outside the warranty period. Contact us for an evaluation.",
       category: "warranty",
     },
     {
       question: "Do you have a physical showroom?",
       answer:
-        "Yes, our showroom and workshop are in Hermosillo, Sonora. We are open Monday to Saturday from 10:00 AM to 6:00 PM. We recommend scheduling an appointment.",
+        "Yes, our showroom and workshop are located in Hermosillo, Sonora. We are open Monday to Saturday from 10:00 AM to 6:00 PM. We recommend scheduling an appointment for personalized attention.",
+      category: "contact",
+    },
+    {
+      question: "How can I schedule a design consultation?",
+      answer:
+        "You can schedule a free consultation through our Appointments page, via WhatsApp at +52 662 123 4567, or by calling our showroom. Consultations can be in-person or virtual.",
       category: "contact",
     },
   ],
@@ -111,7 +204,8 @@ const faqs: Record<"es" | "en", FAQItem[]> = {
 const pageTranslations = {
   es: {
     title: "Preguntas Frecuentes",
-    subtitle: "Encuentra respuestas a las preguntas más comunes sobre nuestros muebles artesanales",
+    subtitle:
+      "Encuentra respuestas a las preguntas más comunes sobre nuestros muebles artesanales",
     searchPlaceholder: "Buscar pregunta...",
     noResults: "No se encontraron preguntas que coincidan con tu búsqueda.",
     contactCTA: "¿No encuentras lo que buscas?",
@@ -119,7 +213,8 @@ const pageTranslations = {
   },
   en: {
     title: "Frequently Asked Questions",
-    subtitle: "Find answers to common questions about our handcrafted furniture",
+    subtitle:
+      "Find answers to common questions about our handcrafted furniture",
     searchPlaceholder: "Search question...",
     noResults: "No questions found matching your search.",
     contactCTA: "Can't find what you're looking for?",

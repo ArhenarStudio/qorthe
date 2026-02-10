@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { PaymentPage } from "@/modules/checkout";
 
 const mockCartItems = [
@@ -18,9 +17,6 @@ const shipping = 0;
 const total = 1700;
 
 export default function PaymentRoute() {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
   const handlePlaceOrder = async (_paymentData: unknown) => {
     // Simular procesamiento y redirigir a confirmación con orderId
     const orderId = "ORD-" + Date.now();
@@ -29,10 +25,6 @@ export default function PaymentRoute() {
 
   return (
     <PaymentPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
       onNavigateCheckout={() => (window.location.href = "/checkout")}

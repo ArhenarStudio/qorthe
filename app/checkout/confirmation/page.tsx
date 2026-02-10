@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { OrderConfirmationPage } from "@/modules/checkout";
 
@@ -27,9 +27,6 @@ function ConfirmationContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId") ?? "ORD-demo";
 
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
   const orderDate = new Date().toLocaleDateString("es-MX", {
     year: "numeric",
     month: "long",
@@ -43,10 +40,6 @@ function ConfirmationContent() {
 
   return (
     <OrderConfirmationPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
       onNavigateOrders={() => (window.location.href = "/account/orders")}

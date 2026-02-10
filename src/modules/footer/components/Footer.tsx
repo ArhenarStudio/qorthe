@@ -1,6 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Link from 'next/link';
+import { useAppState } from '@/modules/app-state';
+import { Newsletter } from '@/modules/newsletter';
 import {
   Facebook,
   Instagram,
@@ -12,383 +14,229 @@ import {
   Image,
   HelpCircle,
   BookOpen,
-} from "lucide-react";
-import { Newsletter } from "@/modules/newsletter";
+} from 'lucide-react';
 
-interface FooterProps {
-  language: "es" | "en";
-  isDarkMode: boolean;
-  /** @deprecated Theme toggle moved to SettingsModule */
-  onToggleDarkMode?: () => void;
-  onNavigatePrivacy?: () => void;
-  onNavigateTerms?: () => void;
-  onNavigateCookies?: () => void;
-  onNavigateCatalog?: () => void;
-  onNavigateFAQ?: () => void;
-  onNavigateBlog?: () => void;
-  onNavigateProjectGallery?: () => void;
-  onNavigateAppointment?: () => void;
-  onNavigateProductComparison?: () => void;
-  onNavigateFinancingCalculator?: () => void;
-  onNavigateMission?: () => void;
-  onNavigateAbout?: () => void;
-  translations: {
-    nav: {
-      products: string;
-      about: string;
-      contact: string;
-    };
-    footer: {
-      description: string;
-      navigation: string;
-      catalog: string;
-      contactTitle: string;
-      location: string;
-      copyright: string;
-      privacy: string;
-      terms: string;
-      cookies?: string;
-    };
-  };
-}
+export function Footer() {
+  const { isDarkMode, language } = useAppState();
 
-const linkClass = (isDark: boolean) =>
-  isDark
-    ? "text-base transition-colors text-[#b8a99a] hover:text-white"
-    : "text-base transition-colors text-gray-600 hover:text-gray-900";
+  const companyDescription = language === 'es'
+    ? "Una herencia sin nombre que hoy encuentra forma. Artesanía consciente, diseño sobrio y madera trabajada con precisión. Piezas de autor creadas desde la tradición, pensadas para el tiempo."
+    : "A nameless heritage that finds form today. Conscious craftsmanship, sober design and precisely worked wood. Author pieces created from tradition, designed for time.";
 
-export function Footer({
-  language,
-  isDarkMode,
-  onToggleDarkMode: _onToggleDarkMode,
-  onNavigatePrivacy,
-  onNavigateTerms,
-  onNavigateCookies,
-  onNavigateCatalog,
-  onNavigateFAQ,
-  onNavigateBlog,
-  onNavigateProjectGallery,
-  onNavigateAppointment,
-  onNavigateProductComparison,
-  onNavigateFinancingCalculator,
-  onNavigateMission,
-  onNavigateAbout,
-  translations: t,
-}: FooterProps) {
-  const companyDescription =
-    language === "es"
-      ? "Una herencia sin nombre que hoy encuentra forma. Artesanía consciente, diseño sobrio y madera trabajada con precisión. Piezas de autor creadas desde la tradición, pensadas para el tiempo."
-      : "A nameless heritage that finds form today. Conscious craftsmanship, sober design and precisely worked wood. Author pieces created from tradition, designed for time.";
+  const aboutTitle = language === 'es' ? 'Sobre Nosotros' : 'About Us';
+  const toolsTitle = language === 'es' ? 'Herramientas' : 'Tools';
+  const contactTitle = language === 'es' ? 'Contacto' : 'Contact';
+  const followUsTitle = language === 'es' ? 'Síguenos' : 'Follow Us';
+  const copyright = language === 'es'
+    ? '© 2026 Davidsons Design. Todos los derechos reservados.'
+    : '© 2026 Davidsons Design. All rights reserved.';
 
-  const toolsTitle = language === "es" ? "Herramientas" : "Tools";
-  const aboutTitle = language === "es" ? "Sobre Nosotros" : "About Us";
-
-  const tools = [
-    {
-      name: language === "es" ? "Agendar Cita" : "Schedule Appointment",
-      icon: Calendar,
-      href: "/appointment",
-      onClick: onNavigateAppointment,
-    },
-    {
-      name: language === "es" ? "Calculadora" : "Financing Calculator",
-      icon: Calculator,
-      href: "/certifications",
-      onClick: onNavigateFinancingCalculator,
-    },
-    {
-      name: language === "es" ? "Comparador" : "Product Comparison",
-      icon: GitCompare,
-      href: "/compare",
-      onClick: onNavigateProductComparison,
-    },
-    {
-      name: language === "es" ? "Galería de Proyectos" : "Project Gallery",
-      icon: Image,
-      href: "/gallery",
-      onClick: onNavigateProjectGallery,
-    },
-    {
-      name: language === "es" ? "Preguntas Frecuentes" : "FAQs",
-      icon: HelpCircle,
-      href: "/faq",
-      onClick: onNavigateFAQ,
-    },
-    {
-      name: language === "es" ? "Blog" : "Blog",
-      icon: BookOpen,
-      href: "/blog",
-      onClick: onNavigateBlog,
-    },
+  const aboutLinks = [
+    { name: language === 'es' ? 'Misión y Visión' : 'Mission & Vision', href: '/mission-vision' },
+    { name: language === 'es' ? 'Quiénes Somos' : 'About Us', href: '/about' },
+    { name: language === 'es' ? 'Nuestro Equipo' : 'Our Team', href: '/team' },
+    { name: language === 'es' ? 'Historia' : 'Timeline', href: '/timeline' },
+    { name: language === 'es' ? 'Certificaciones' : 'Certifications', href: '/certifications' },
   ];
 
-  const socialClass = isDarkMode
-    ? "rounded-lg p-2.5 transition-all duration-300 bg-[#2d2419] text-[#b8a99a] hover:bg-[#8b6f47] hover:text-white"
-    : "rounded-lg p-2.5 transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-[#8b6f47] hover:text-white";
+  const tools = [
+    { name: language === 'es' ? 'Agendar Cita' : 'Schedule Appointment', href: '/appointment', icon: Calendar },
+    { name: language === 'es' ? 'Calculadora' : 'Financing Calculator', href: '/financing-calculator', icon: Calculator },
+    { name: language === 'es' ? 'Comparador' : 'Product Comparison', href: '/compare', icon: GitCompare },
+    { name: language === 'es' ? 'Galería de Proyectos' : 'Project Gallery', href: '/gallery', icon: Image },
+    { name: language === 'es' ? 'Preguntas Frecuentes' : 'FAQs', href: '/faq', icon: HelpCircle },
+    { name: language === 'es' ? 'Blog' : 'Blog', href: '/blog', icon: BookOpen },
+  ];
+
+  const legalLinks = [
+    { name: language === 'es' ? 'Política de Privacidad' : 'Privacy Policy', href: '/privacy' },
+    { name: language === 'es' ? 'Términos y Condiciones' : 'Terms & Conditions', href: '/terms' },
+    { name: language === 'es' ? 'Política de Cookies' : 'Cookie Policy', href: '/cookies' },
+  ];
+
+  const socialLinks = [
+    { name: 'Facebook', href: 'https://facebook.com/davidsonsdesign', icon: Facebook },
+    { name: 'Instagram', href: 'https://instagram.com/davidsonsdesign', icon: Instagram },
+    { name: 'YouTube', href: 'https://youtube.com/davidsonsdesign', icon: Youtube },
+    { name: 'LinkedIn', href: 'https://linkedin.com/company/davidsonsdesign', icon: Linkedin },
+  ];
 
   return (
-    <footer
-      id="contact"
-      className={`border-t ${
-        isDarkMode ? "border-[#3d2f23] bg-[#0a0806]" : "border-gray-200 bg-white"
-      }`}
-    >
+    <footer id="contact" className={`border-t ${
+      isDarkMode ? 'bg-[#0a0806] border-[#3d2f23]' : 'bg-white border-gray-200'
+    }`}>
       {/* Newsletter Section */}
-      <div
-        className={`border-b ${
-          isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-        }`}
-      >
-        <Newsletter isDarkMode={isDarkMode} language={language} />
+      <div className={`border-b ${isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'}`}>
+        <Newsletter />
       </div>
 
-      <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12">
+
         {/* Main Footer Content */}
-        <div className="space-y-16 py-16 md:space-y-20 md:py-20 lg:py-24">
-          {/* Logo + Descripción */}
-          <div className="space-y-6 text-center">
-            <h4
-              className={`text-4xl tracking-tight md:text-5xl lg:text-6xl ${
-                isDarkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              <span className="font-bold">DavidSon´s</span>{" "}
+        <div className="py-16 md:py-20 lg:py-24 space-y-16 md:space-y-20">
+
+          {/* Logo + Description (Centered) */}
+          <div className="text-center space-y-6">
+            <h4 className={`text-4xl md:text-5xl lg:text-6xl tracking-tight ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
+              <span className="font-bold">DavidSon´s</span>{' '}
               <span className="font-normal">Design</span>
             </h4>
-            <p
-              className={`mx-auto max-w-3xl text-base leading-relaxed md:text-lg ${
-                isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
-              }`}
-            >
+            <p className={`text-base md:text-lg leading-relaxed max-w-3xl mx-auto ${
+              isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+            }`}>
               {companyDescription}
             </p>
           </div>
 
-          {/* 4 Columnas */}
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-8 lg:grid-cols-4 lg:gap-12">
-            {/* Columna 1: Sobre Nosotros */}
+          {/* 4 Columns Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 lg:gap-12">
+
+            {/* Column 1: About Us */}
             <div className="text-center md:text-left">
-              <h5
-                className={`mb-6 text-sm uppercase tracking-widest ${
-                  isDarkMode ? "text-white" : "text-gray-900"
-                }`}
-              >
+              <h5 className={`text-sm tracking-widest uppercase mb-6 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
                 {aboutTitle}
               </h5>
-              <nav className="flex flex-col items-center gap-3.5 md:items-start">
-                <Link
-                  href="/mission-vision"
-                  onClick={() => onNavigateMission?.()}
-                  className={linkClass(isDarkMode)}
-                >
-                  {language === "es" ? "Misión y Visión" : "Mission & Vision"}
-                </Link>
-                <Link
-                  href="/about"
-                  onClick={() => onNavigateAbout?.()}
-                  className={linkClass(isDarkMode)}
-                >
-                  {language === "es" ? "Quiénes Somos" : "Who We Are"}
-                </Link>
-                <Link
-                  href="/faq"
-                  onClick={() => onNavigateFAQ?.()}
-                  className={linkClass(isDarkMode)}
-                >
-                  {language === "es" ? "Preguntas Frecuentes" : "FAQs"}
-                </Link>
+              <nav className="flex flex-col items-center md:items-start gap-3.5">
+                {aboutLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-base transition-colors ${
+                      isDarkMode ? 'text-[#b8a99a] hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
               </nav>
             </div>
 
-            {/* Columna 2: Herramientas */}
+            {/* Column 2: Tools */}
             <div className="text-center md:text-left">
-              <h5
-                className={`mb-6 text-sm uppercase tracking-widest ${
-                  isDarkMode ? "text-white" : "text-gray-900"
-                }`}
-              >
+              <h5 className={`text-sm tracking-widest uppercase mb-6 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
                 {toolsTitle}
               </h5>
-              <nav className="flex flex-col items-center gap-3.5 md:items-start">
+              <nav className="flex flex-col items-center md:items-start gap-3.5">
                 {tools.map((tool) => {
                   const Icon = tool.icon;
                   return (
                     <Link
-                      key={tool.name}
+                      key={tool.href}
                       href={tool.href}
-                      onClick={() => tool.onClick?.()}
-                      className={`flex items-center gap-2.5 ${linkClass(
-                        isDarkMode
-                      )}`}
+                      className={`flex items-center gap-2 text-base transition-colors ${
+                        isDarkMode ? 'text-[#b8a99a] hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                      }`}
                     >
-                      <Icon className="h-4 w-4 flex-shrink-0" />
-                      <span>{tool.name}</span>
+                      <Icon className="w-4 h-4" />
+                      {tool.name}
                     </Link>
                   );
                 })}
               </nav>
             </div>
 
-            {/* Columna 3: Contacto */}
+            {/* Column 3: Contact */}
             <div className="text-center md:text-left">
-              <h5
-                className={`mb-6 text-sm uppercase tracking-widest ${
-                  isDarkMode ? "text-white" : "text-gray-900"
-                }`}
-              >
-                {t.footer.contactTitle}
+              <h5 className={`text-sm tracking-widest uppercase mb-6 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                {contactTitle}
               </h5>
-              <div className="flex flex-col items-center gap-3.5 md:items-start">
+              <div className="flex flex-col items-center md:items-start gap-3.5">
+                <p className={`text-base ${
+                  isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+                }`}>
+                  Hermosillo, Sonora.
+                </p>
                 <a
-                  href="mailto:soporte@davidsonsdesign.com"
-                  className={linkClass(isDarkMode)}
-                >
-                  soporte@davidsonsdesign.com
-                </a>
-                <p
-                  className={`text-base ${
-                    isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
+                  href="tel:+526621234567"
+                  className={`text-base transition-colors ${
+                    isDarkMode ? 'text-[#b8a99a] hover:text-white' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  {t.footer.location}
-                </p>
+                  +52 662 123 4567
+                </a>
+                <a
+                  href="mailto:contacto@davidsonsdesign.com"
+                  className={`text-base transition-colors ${
+                    isDarkMode ? 'text-[#b8a99a] hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  contacto@davidsonsdesign.com
+                </a>
               </div>
             </div>
 
-            {/* Columna 4: Redes Sociales */}
+            {/* Column 4: Social Networks */}
             <div className="text-center md:text-left">
-              <h5
-                className={`mb-6 text-sm uppercase tracking-widest ${
-                  isDarkMode ? "text-white" : "text-gray-900"
-                }`}
-              >
-                {language === "es" ? "Síguenos" : "Follow Us"}
+              <h5 className={`text-sm tracking-widest uppercase mb-6 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                {followUsTitle}
               </h5>
-              <div className="flex flex-wrap justify-center gap-2.5 md:justify-start">
-                <a
-                  href="https://facebook.com/davidsonsdesign"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialClass}
-                  aria-label="Facebook"
-                >
-                  <Facebook className="h-5 w-5" />
-                </a>
-                <a
-                  href="https://x.com/davidsonsdesign"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialClass}
-                  aria-label="X"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden
-                  >
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://instagram.com/davidsonsdesign"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialClass}
-                  aria-label="Instagram"
-                >
-                  <Instagram className="h-5 w-5" />
-                </a>
-                <a
-                  href="https://youtube.com/@davidsonsdesign"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialClass}
-                  aria-label="YouTube"
-                >
-                  <Youtube className="h-5 w-5" />
-                </a>
-                <a
-                  href="https://linkedin.com/company/davidsonsdesign"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialClass}
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-5 w-5" />
-                </a>
+              <div className="flex items-center justify-center md:justify-start gap-4">
+                {socialLinks.map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={social.name}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                        isDarkMode
+                          ? 'bg-[#2d2419] text-[#b8a99a] hover:bg-[#8b6f47] hover:text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-[#8b6f47] hover:text-white'
+                      }`}
+                      aria-label={social.name}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div
-          className={`border-t py-8 ${
-            isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-          }`}
-        >
-          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-            <p
-              id="footer-copyright"
-              className={`text-sm ${
-                isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
-              }`}
-            >
-              {t.footer.copyright}
+        <div className={`py-8 border-t ${
+          isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'
+        }`}>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Copyright */}
+            <p className={`text-sm ${
+              isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+            }`}>
+              {copyright}
             </p>
-            <span
-              className={`h-1 w-1 rounded-full ${
-                isDarkMode ? "bg-[#3d2f23]" : "bg-gray-300"
-              }`}
-            />
-            <Link
-              href="/privacy"
-              onClick={() => onNavigatePrivacy?.()}
-              className={`text-sm transition-colors ${
-                isDarkMode
-                  ? "text-[#b8a99a] hover:text-white"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              {t.footer.privacy}
-            </Link>
-            <span
-              className={`h-1 w-1 rounded-full ${
-                isDarkMode ? "bg-[#3d2f23]" : "bg-gray-300"
-              }`}
-            />
-            <Link
-              href="/terms"
-              onClick={() => onNavigateTerms?.()}
-              className={`text-sm transition-colors ${
-                isDarkMode
-                  ? "text-[#b8a99a] hover:text-white"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              {t.footer.terms}
-            </Link>
-            {t.footer.cookies != null && (
-              <>
-                <span
-                  className={`h-1 w-1 rounded-full ${
-                    isDarkMode ? "bg-[#3d2f23]" : "bg-gray-300"
-                  }`}
-                />
-                <Link
-                  href="/cookies"
-                  onClick={() => onNavigateCookies?.()}
-                  className={`text-sm transition-colors ${
-                    isDarkMode
-                      ? "text-[#b8a99a] hover:text-white"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
-                >
-                  {language === "es" ? "Cookies" : "Cookies"}
-                </Link>
-              </>
-            )}
+
+            {/* Legal Links */}
+            <nav className="flex items-center gap-6">
+              {legalLinks.map((link, index) => (
+                <div key={link.href} className="flex items-center gap-6">
+                  <Link
+                    href={link.href}
+                    className={`text-sm transition-colors ${
+                      isDarkMode ? 'text-[#b8a99a] hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                  {index < legalLinks.length - 1 && (
+                    <span className={`${isDarkMode ? 'text-[#3d2f23]' : 'text-gray-300'}`}>
+                      |
+                    </span>
+                  )}
+                </div>
+              ))}
+            </nav>
           </div>
         </div>
       </div>

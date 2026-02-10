@@ -5,10 +5,13 @@ import {
   useContext,
   useState,
   useCallback,
+  useEffect,
   type ReactNode,
 } from "react";
 
 type Language = "es" | "en";
+
+const STORAGE_KEY = "davidsons-app-state";
 
 interface AppState {
   isDarkMode: boolean;
@@ -31,10 +34,52 @@ const defaultState: AppState = {
   showChat: true,
 };
 
+function loadFromStorage(): AppState {
+  if (typeof window === "undefined") return defaultState;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<AppState>;
+      return {
+        ...defaultState,
+        ...parsed,
+        isDarkMode: parsed.isDarkMode ?? defaultState.isDarkMode,
+        language: parsed.language === "en" ? "en" : "es",
+        showWhatsApp: parsed.showWhatsApp ?? defaultState.showWhatsApp,
+        showChat: parsed.showChat ?? defaultState.showChat,
+      };
+    }
+  } catch {
+    /* ignore */
+  }
+  return defaultState;
+}
+
 const AppStateContext = createContext<AppStateContextValue | null>(null);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(defaultState);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setState(loadFromStorage());
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    document.documentElement.classList.toggle("dark", state.isDarkMode);
+    document.documentElement.setAttribute("lang", state.language);
+  }, [hydrated, state.isDarkMode, state.language]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      /* ignore */
+    }
+  }, [hydrated, state]);
 
   const toggleDarkMode = useCallback(() => {
     setState((s) => ({ ...s, isDarkMode: !s.isDarkMode }));

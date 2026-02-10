@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAppState } from '@/modules/app-state';
 import { Header } from '@/modules/header';
 import { Footer } from '@/modules/footer';
 import { MapPin, ShoppingBag, ChevronRight, Plus, Edit } from 'lucide-react';
@@ -26,10 +27,6 @@ interface Address {
 }
 
 interface CheckoutPageProps {
-  language: 'es' | 'en';
-  isDarkMode: boolean;
-  onToggleLanguage: () => void;
-  onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
   onNavigateCart: () => void;
@@ -144,10 +141,6 @@ const translations = {
 };
 
 export function CheckoutPage({
-  language,
-  isDarkMode,
-  onToggleLanguage,
-  onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
   onNavigateCart,
@@ -159,6 +152,7 @@ export function CheckoutPage({
   selectedAddressId,
   onSelectAddress
 }: CheckoutPageProps) {
+  const { language, isDarkMode } = useAppState();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<'free' | 'standard' | 'express'>('free');
@@ -195,20 +189,7 @@ export function CheckoutPage({
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
-      <Header
-        isScrolled={isScrolled}
-        language={language}
-        isDarkMode={isDarkMode}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onToggleLanguage={onToggleLanguage}
-        onToggleDarkMode={onToggleDarkMode}
-        onToggleMobileMenu={handleToggleMobileMenu}
-        onNavigateProducts={onNavigateProducts}
-        onNavigateHome={onNavigateHome}
-        onNavigateCart={() => (window.location.href = '/cart')}
-        onNavigateAccount={() => (window.location.href = '/login')}
-        translations={t}
-      />
+      <Header />
 
       <div className="pt-28 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 lg:px-12">
@@ -629,13 +610,7 @@ export function CheckoutPage({
         </div>
       </div>
 
-      <Footer
-        language={language}
-        isDarkMode={isDarkMode}
-        onNavigateCookies={() => (window.location.href = "/cookies")}
-        onNavigateCatalog={() => (window.location.href = "/products")}
-        translations={t}
-      />
+      <Footer />
     </div>
   );
 }

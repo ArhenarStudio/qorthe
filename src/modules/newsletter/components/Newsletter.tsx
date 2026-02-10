@@ -1,43 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, Check, Loader2 } from "lucide-react";
+import { useState } from 'react';
+import { useAppState } from '@/modules/app-state';
+import { Mail, Check, Loader2 } from 'lucide-react';
 
-interface NewsletterProps {
-  isDarkMode: boolean;
-  language: "es" | "en";
-}
-
-export function Newsletter({ isDarkMode, language }: NewsletterProps) {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
-  const [errorMessage, setErrorMessage] = useState("");
+export function Newsletter() {
+  const { isDarkMode, language } = useAppState();
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const translations = {
     es: {
-      title: "Suscríbete a Nuestro Newsletter",
-      description:
-        "Recibe las últimas novedades, promociones exclusivas y consejos de diseño.",
-      placeholder: "tu@email.com",
-      button: "Suscribirse",
-      loading: "Enviando...",
-      success: "¡Gracias por suscribirte!",
-      errorInvalid: "Por favor ingresa un email válido",
-      errorGeneral: "Ocurrió un error. Intenta de nuevo.",
+      title: 'Suscríbete a Nuestro Newsletter',
+      description: 'Recibe las últimas novedades, promociones exclusivas y consejos de diseño.',
+      placeholder: 'tu@email.com',
+      button: 'Suscribirse',
+      loading: 'Enviando...',
+      success: '¡Gracias por suscribirte!',
+      errorInvalid: 'Por favor ingresa un email válido',
+      errorGeneral: 'Ocurrió un error. Intenta de nuevo.'
     },
     en: {
-      title: "Subscribe to Our Newsletter",
-      description:
-        "Receive the latest news, exclusive promotions and design tips.",
-      placeholder: "your@email.com",
-      button: "Subscribe",
-      loading: "Sending...",
-      success: "Thank you for subscribing!",
-      errorInvalid: "Please enter a valid email",
-      errorGeneral: "An error occurred. Try again.",
-    },
+      title: 'Subscribe to Our Newsletter',
+      description: 'Receive the latest news, exclusive promotions and design tips.',
+      placeholder: 'your@email.com',
+      button: 'Subscribe',
+      loading: 'Sending...',
+      success: 'Thank you for subscribing!',
+      errorInvalid: 'Please enter a valid email',
+      errorGeneral: 'An error occurred. Try again.'
+    }
   };
 
   const t = translations[language];
@@ -45,107 +38,94 @@ export function Newsletter({ isDarkMode, language }: NewsletterProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setStatus("error");
+      setStatus('error');
       setErrorMessage(t.errorInvalid);
       return;
     }
 
-    setStatus("loading");
+    setStatus('loading');
 
+    // TODO: Replace with real API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      setStatus("success");
-      setEmail("");
+      setStatus('success');
+      setEmail('');
 
       setTimeout(() => {
-        setStatus("idle");
+        setStatus('idle');
       }, 3000);
     } catch {
-      setStatus("error");
+      setStatus('error');
       setErrorMessage(t.errorGeneral);
 
       setTimeout(() => {
-        setStatus("idle");
-        setErrorMessage("");
+        setStatus('idle');
+        setErrorMessage('');
       }, 3000);
     }
   };
 
   return (
-    <div
-      className={`border-t ${
-        isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-      }`}
-    >
-      <div className="mx-auto max-w-[1440px] px-4 py-12 md:px-8 md:py-16 lg:px-12">
-        <div className="mx-auto max-w-2xl space-y-6 text-center">
+    <div className={`border-t ${isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'}`}>
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-12 md:py-16">
+        <div className="max-w-2xl mx-auto text-center space-y-6">
           <div className="space-y-3">
-            <h3
-              className={`text-2xl tracking-tight md:text-3xl ${
-                isDarkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
+            <h3 className={`text-2xl md:text-3xl tracking-tight ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               {t.title}
             </h3>
-            <p
-              className={`text-base ${
-                isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
-              }`}
-            >
+            <p className={`text-base ${
+              isDarkMode ? 'text-[#b8a99a]' : 'text-gray-600'
+            }`}>
               {t.description}
             </p>
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-3 sm:flex-row"
-          >
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Mail
-                className={`absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 ${
-                  isDarkMode ? "text-[#b8a99a]" : "text-gray-400"
-                }`}
-              />
+              <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${
+                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-400'
+              }`} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t.placeholder}
-                disabled={status === "loading" || status === "success"}
-                className={`w-full rounded-lg border py-3.5 pl-12 pr-4 transition-all outline-none focus:ring-2 ${
+                disabled={status === 'loading' || status === 'success'}
+                className={`w-full pl-12 pr-4 py-3.5 rounded-lg border transition-all focus:outline-none focus:ring-2 ${
                   isDarkMode
-                    ? "border-[#3d2f23] bg-[#2d2419] text-white placeholder-[#b8a99a]/50 focus:border-[#8b6f47] focus:ring-[#8b6f47]"
-                    : "border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:border-[#8b6f47] focus:ring-[#8b6f47]"
-                } ${status === "error" ? "border-red-500" : ""}`}
+                    ? 'bg-[#2d2419] border-[#3d2f23] text-white placeholder-[#b8a99a]/50 focus:ring-[#8b6f47] focus:border-[#8b6f47]'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#8b6f47] focus:border-[#8b6f47]'
+                } ${status === 'error' ? 'border-red-500' : ''}`}
               />
             </div>
 
             <button
               type="submit"
-              disabled={status === "loading" || status === "success"}
-              className={`flex items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 py-3.5 font-medium transition-all ${
-                status === "success"
-                  ? "cursor-default bg-green-600 text-white"
-                  : "bg-[#8b6f47] text-white hover:bg-[#6d5638] disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={status === 'loading' || status === 'success'}
+              className={`px-8 py-3.5 rounded-lg font-medium transition-all whitespace-nowrap flex items-center justify-center gap-2 ${
+                status === 'success'
+                  ? 'bg-green-600 text-white cursor-default'
+                  : 'bg-[#8b6f47] text-white hover:bg-[#6d5638] disabled:opacity-50 disabled:cursor-not-allowed'
               }`}
             >
-              {status === "loading" && (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              )}
-              {status === "success" && <Check className="h-5 w-5" />}
+              {status === 'loading' && <Loader2 className="w-5 h-5 animate-spin" />}
+              {status === 'success' && <Check className="w-5 h-5" />}
 
-              {status === "idle" && t.button}
-              {status === "loading" && t.loading}
-              {status === "success" && t.success}
-              {status === "error" && t.button}
+              {status === 'idle' && t.button}
+              {status === 'loading' && t.loading}
+              {status === 'success' && t.success}
+              {status === 'error' && t.button}
             </button>
           </form>
 
-          {status === "error" && errorMessage && (
-            <p className="animate-fade-in text-sm text-red-500">
+          {status === 'error' && errorMessage && (
+            <p className="text-sm text-red-500 animate-in fade-in slide-in-from-top-1">
               {errorMessage}
             </p>
           )}

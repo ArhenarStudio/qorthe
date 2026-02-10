@@ -9,13 +9,12 @@ import {
 } from "react";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
+import { useAppState } from "@/modules/app-state";
 import { baseTranslations } from "../shared/translations";
 
 interface ContentPageContextValue {
   language: "es" | "en";
   isDarkMode: boolean;
-  setLanguage: (l: "es" | "en" | ((prev: "es" | "en") => "es" | "en")) => void;
-  setIsDarkMode: (m: boolean | ((prev: boolean) => boolean)) => void;
   nav: (path: string) => () => void;
 }
 
@@ -32,8 +31,7 @@ interface ContentPageShellProps {
 }
 
 export function ContentPageShell({ children }: ContentPageShellProps) {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, language } = useAppState();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -43,8 +41,6 @@ export function ContentPageShell({ children }: ContentPageShellProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const t = baseTranslations[language];
-
   const nav = useCallback((path: string) => () => {
     window.location.href = path;
   }, []);
@@ -52,8 +48,6 @@ export function ContentPageShell({ children }: ContentPageShellProps) {
   const value: ContentPageContextValue = {
     language,
     isDarkMode,
-    setLanguage,
-    setIsDarkMode,
     nav,
   };
 
@@ -64,34 +58,13 @@ export function ContentPageShell({ children }: ContentPageShellProps) {
           isDarkMode ? "bg-[#0a0806]" : "bg-white"
         }`}
       >
-        <Header
-          isScrolled={isScrolled}
-          language={language}
-          isDarkMode={isDarkMode}
-          isMobileMenuOpen={isMobileMenuOpen}
-          onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-          onToggleDarkMode={() => setIsDarkMode((m) => !m)}
-          onToggleMobileMenu={() => setIsMobileMenuOpen((m) => !m)}
-          onNavigateHome={nav("/")}
-          onNavigateProducts={nav("/products")}
-          onNavigateCart={nav("/cart")}
-          onNavigateAccount={nav("/login")}
-          translations={t}
-        />
+        <Header />
 
         <ContentPageContext.Provider value={value}>
           {children}
         </ContentPageContext.Provider>
 
-        <Footer
-          language={language}
-          isDarkMode={isDarkMode}
-          onNavigatePrivacy={nav("/privacy")}
-          onNavigateTerms={nav("/terms")}
-          onNavigateCookies={nav("/cookies")}
-          onNavigateCatalog={nav("/products")}
-          translations={t}
-        />
+        <Footer />
       </div>
     </div>
   );

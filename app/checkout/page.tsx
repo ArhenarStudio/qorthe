@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckoutPage } from "@/modules/checkout";
 
+// Mock data - replace with real cart/address data when integrating Shopify/Supabase
 const mockCartItems = [
   {
     id: "1",
@@ -27,16 +28,10 @@ const mockAddresses = [
 ];
 
 export default function CheckoutRoute() {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>("addr-1");
 
   return (
     <CheckoutPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
       onNavigateCart={() => (window.location.href = "/cart")}

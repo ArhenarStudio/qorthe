@@ -3,12 +3,11 @@
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { useCart } from "../hooks/useCart";
+import { useAppState } from "@/modules/app-state";
 
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  isDarkMode: boolean;
-  language: "es" | "en";
   onContinueShopping?: () => void;
 }
 
@@ -38,10 +37,9 @@ const translations = {
 export function CartDrawer({
   isOpen,
   onClose,
-  isDarkMode,
-  language,
   onContinueShopping,
 }: CartDrawerProps) {
+  const { isDarkMode, language } = useAppState();
   const {
     cartItems,
     subtotal,

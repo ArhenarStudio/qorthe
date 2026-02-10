@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { Users, Hammer, TreePine, Award } from "lucide-react";
 import { ContentPageShell, useContentPage } from "./ContentPageShell";
 
@@ -10,22 +11,22 @@ const translations = {
     story: {
       title: "Nuestra Historia",
       description:
-        "DavidSon's Design nace de la pasión por la madera y el diseño minimalista mexicano. Fundada en Hermosillo, Sonora, nuestra marca es el resultado de años de experiencia en carpintería artesanal y un profundo respeto por las tradiciones de nuestro país.",
+        "DavidSon's Design nace de la pasión por la madera y el diseño minimalista mexicano. Fundada en Hermosillo, Sonora, nuestra marca es el resultado de años de experiencia en carpintería artesanal y un profundo respeto por las tradiciones de nuestro país. Cada pieza que creamos lleva consigo una historia de dedicación, precisión y amor por el oficio.",
     },
     team: {
       title: "Nuestro Equipo",
       description:
-        "Contamos con un equipo de artesanos mexicanos altamente capacitados, diseñadores apasionados y profesionales comprometidos con la excelencia.",
+        "Contamos con un equipo de artesanos mexicanos altamente capacitados, diseñadores apasionados y profesionales comprometidos con la excelencia. Cada miembro aporta su experiencia y creatividad para dar vida a muebles que transforman espacios.",
     },
     process: {
       title: "Nuestro Proceso",
       description:
-        "Desde la selección de maderas nobles hasta el acabado final, cada paso de nuestro proceso está cuidadosamente pensado.",
+        "Desde la selección de maderas nobles hasta el acabado final, cada paso de nuestro proceso está cuidadosamente pensado. Combinamos técnicas tradicionales de carpintería con herramientas modernas, garantizando que cada pieza cumpla con los más altos estándares de calidad y diseño.",
     },
     commitment: {
       title: "Nuestro Compromiso",
       description:
-        "Nos comprometemos a crear muebles sostenibles, utilizando madera de fuentes responsables y procesos que minimizan nuestro impacto ambiental.",
+        "Nos comprometemos a crear muebles sostenibles, utilizando madera de fuentes responsables y procesos que minimizan nuestro impacto ambiental. Cada pieza está diseñada para durar generaciones, no solo por su calidad, sino también porque su diseño atemporal nunca pasa de moda.",
     },
     stats: [
       { number: "15+", label: "Años de Experiencia" },
@@ -40,22 +41,22 @@ const translations = {
     story: {
       title: "Our Story",
       description:
-        "DavidSon's Design is born from a passion for wood and Mexican minimalist design. Founded in Hermosillo, Sonora, our brand is the result of years of experience in artisanal carpentry and a deep respect for our country's traditions.",
+        "DavidSon's Design is born from a passion for wood and Mexican minimalist design. Founded in Hermosillo, Sonora, our brand is the result of years of experience in artisanal carpentry and a deep respect for our country's traditions. Each piece we create carries a story of dedication, precision, and love for the craft.",
     },
     team: {
       title: "Our Team",
       description:
-        "We have a team of highly skilled Mexican artisans, passionate designers, and professionals committed to excellence.",
+        "We have a team of highly skilled Mexican artisans, passionate designers, and professionals committed to excellence. Each member brings their experience and creativity to bring to life furniture that transforms spaces.",
     },
     process: {
       title: "Our Process",
       description:
-        "From the selection of noble woods to the final finish, every step of our process is carefully thought out.",
+        "From the selection of noble woods to the final finish, every step of our process is carefully thought out. We combine traditional carpentry techniques with modern tools, ensuring that each piece meets the highest standards of quality and design.",
     },
     commitment: {
       title: "Our Commitment",
       description:
-        "We are committed to creating sustainable furniture, using wood from responsible sources and processes that minimize our environmental impact.",
+        "We are committed to creating sustainable furniture, using wood from responsible sources and processes that minimize our environmental impact. Each piece is designed to last generations, not only because of its quality, but also because its timeless design never goes out of style.",
     },
     stats: [
       { number: "15+", label: "Years of Experience" },
@@ -83,7 +84,12 @@ function AboutContent() {
         }`}
       >
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
-          <div className="mx-auto max-w-4xl space-y-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mx-auto max-w-4xl space-y-6 text-center"
+          >
             <h1
               className={`text-4xl tracking-tight md:text-5xl lg:text-6xl ${
                 isDarkMode ? "text-white" : "text-gray-900"
@@ -98,13 +104,19 @@ function AboutContent() {
             >
               {t.subtitle}
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
-          <div className="mx-auto max-w-4xl space-y-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mx-auto max-w-4xl space-y-8 text-center"
+          >
             <Award
               className={`mx-auto h-16 w-16 ${
                 isDarkMode ? "text-[#8b6f47]" : "text-[#3d2f23]"
@@ -124,7 +136,7 @@ function AboutContent() {
             >
               {t.story.description}
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -136,7 +148,14 @@ function AboutContent() {
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
           <div className="grid grid-cols-2 gap-8 md:gap-12 lg:grid-cols-4">
             {t.stats.map((stat, index) => (
-              <div key={index} className="space-y-2 text-center">
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="space-y-2 text-center"
+              >
                 <div
                   className={`text-4xl font-bold md:text-5xl ${
                     isDarkMode ? "text-[#8b6f47]" : "text-[#3d2f23]"
@@ -151,7 +170,7 @@ function AboutContent() {
                 >
                   {stat.label}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -165,8 +184,12 @@ function AboutContent() {
               const isEven = index % 2 === 0;
 
               return (
-                <div
+                <motion.div
                   key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
                   className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
                 >
                   <div className={isEven ? "order-2 lg:order-1" : "order-2"}>
@@ -199,7 +222,7 @@ function AboutContent() {
                   >
                     <div className="aspect-square" />
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>

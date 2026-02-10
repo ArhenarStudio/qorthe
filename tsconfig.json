@@ -65,6 +65,8 @@
   ],
   "exclude": [
     "node_modules",
-    "src/modules/landing/versions/LandingPage.v2.tsx"
+    "src/modules/landing/versions/LandingPage.v2.tsx",
+    "src/**/versions/**",
+    "src/figma-versions/**"
   ]
 }

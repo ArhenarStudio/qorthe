@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { Target, Eye, Heart } from "lucide-react";
 import { ContentPageShell, useContentPage } from "./ContentPageShell";
 
@@ -10,12 +11,12 @@ const translations = {
     mission: {
       title: "Nuestra Misión",
       description:
-        "Crear muebles artesanales de diseño mexicano que combinen la tradición de la carpintería con el diseño contemporáneo. Nos comprometemos a ofrecer piezas únicas, elaboradas con materiales de la más alta calidad.",
+        "Crear muebles artesanales de diseño mexicano que combinen la tradición de la carpintería con el diseño contemporáneo. Nos comprometemos a ofrecer piezas únicas, elaboradas con materiales de la más alta calidad, que transformen espacios y perduren en el tiempo, valorando el trabajo artesanal y la sostenibilidad.",
     },
     vision: {
       title: "Nuestra Visión",
       description:
-        "Ser reconocidos como la marca líder en muebles artesanales premium en México, expandiendo nuestra presencia a nivel internacional.",
+        "Ser reconocidos como la marca líder en muebles artesanales premium en México, expandiendo nuestra presencia a nivel internacional. Aspiramos a ser un referente en diseño consciente, donde cada pieza cuente una historia y cada cliente encuentre en nuestros muebles la perfecta combinación entre funcionalidad, belleza y calidad excepcional.",
     },
     values: {
       title: "Nuestros Valores",
@@ -35,12 +36,12 @@ const translations = {
     mission: {
       title: "Our Mission",
       description:
-        "To create handcrafted furniture of Mexican design that combines traditional carpentry with contemporary design. We are committed to offering unique pieces made with the highest quality materials.",
+        "To create handcrafted furniture of Mexican design that combines traditional carpentry with contemporary design. We are committed to offering unique pieces, made with the highest quality materials, that transform spaces and endure over time, valuing artisanal work and sustainability.",
     },
     vision: {
       title: "Our Vision",
       description:
-        "To be recognized as the leading brand in premium handcrafted furniture in Mexico, expanding our presence internationally.",
+        "To be recognized as the leading brand in premium handcrafted furniture in Mexico, expanding our presence internationally. We aspire to be a benchmark in conscious design, where each piece tells a story and each client finds in our furniture the perfect combination of functionality, beauty, and exceptional quality.",
     },
     values: {
       title: "Our Values",
@@ -68,7 +69,12 @@ function MissionVisionContent() {
         }`}
       >
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
-          <div className="mx-auto max-w-4xl space-y-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mx-auto max-w-4xl space-y-6 text-center"
+          >
             <h1
               className={`text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl ${
                 isDarkMode ? "text-white" : "text-gray-900"
@@ -83,13 +89,19 @@ function MissionVisionContent() {
             >
               {t.subtitle}
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
+          >
             <div
               className={`rounded-2xl p-12 md:p-16 ${
                 isDarkMode ? "bg-[#2d2419]" : "bg-gray-50"
@@ -117,7 +129,7 @@ function MissionVisionContent() {
                 {t.mission.description}
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -127,7 +139,13 @@ function MissionVisionContent() {
         }`}
       >
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
+          >
             <div className="order-2 space-y-6 lg:order-1">
               <h2
                 className={`text-3xl tracking-tight md:text-4xl lg:text-5xl ${
@@ -155,13 +173,19 @@ function MissionVisionContent() {
                 }`}
               />
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="py-20 md:py-24 lg:py-32">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
-          <div className="mb-16 space-y-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mb-16 space-y-6 text-center"
+          >
             <Heart
               className={`mx-auto h-12 w-12 ${
                 isDarkMode ? "text-[#8b6f47]" : "text-[#3d2f23]"
@@ -174,11 +198,15 @@ function MissionVisionContent() {
             >
               {t.values.title}
             </h2>
-          </div>
+          </motion.div>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {t.values.items.map((value, index) => (
-              <div
+              <motion.div
                 key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
                 className={`rounded-xl border p-8 transition-colors duration-300 ${
                   isDarkMode
                     ? "border-[#3d2f23] bg-[#1a1512] hover:border-[#8b6f47]"
@@ -195,7 +223,7 @@ function MissionVisionContent() {
                 <p className={isDarkMode ? "text-[#b8a99a]" : "text-gray-600"}>
                   {value.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

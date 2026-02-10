@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
+import { useAppState } from "@/modules/app-state";
 
 const translations = {
   es: {
@@ -316,8 +317,7 @@ const translations = {
 };
 
 export default function CookiesPage() {
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { language, isDarkMode } = useAppState();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = translations[language];
@@ -342,20 +342,7 @@ export default function CookiesPage() {
           isDarkMode ? "bg-[#0a0806]" : "bg-white"
         }`}
       >
-        <Header
-          isScrolled={isScrolled}
-          language={language}
-          isDarkMode={isDarkMode}
-          isMobileMenuOpen={isMobileMenuOpen}
-          onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-          onToggleDarkMode={() => setIsDarkMode((m) => !m)}
-          onToggleMobileMenu={() => setIsMobileMenuOpen((m) => !m)}
-          onNavigateHome={() => (window.location.href = "/")}
-          onNavigateProducts={() => (window.location.href = "/products")}
-          onNavigateCart={() => {}}
-          onNavigateAccount={() => (window.location.href = "/login")}
-          translations={t}
-        />
+        <Header />
 
         <main className="mx-auto max-w-4xl px-6 py-16 md:px-8 md:py-20 lg:px-12 lg:py-24">
           <div className="mb-10 md:mb-12 lg:mb-16">
@@ -469,15 +456,7 @@ export default function CookiesPage() {
           </div>
         </main>
 
-        <Footer
-          language={language}
-          isDarkMode={isDarkMode}
-          onNavigatePrivacy={() => (window.location.href = "/privacy")}
-          onNavigateTerms={() => (window.location.href = "/terms")}
-          onNavigateCookies={() => (window.location.href = "/cookies")}
-          onNavigateCatalog={() => (window.location.href = "/products")}
-          translations={t}
-        />
+        <Footer />
       </div>
     </div>
   );

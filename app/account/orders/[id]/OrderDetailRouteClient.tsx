@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useParams } from "next/navigation";
 import { OrderDetailPage } from "@/modules/customer-account";
 
@@ -40,17 +39,10 @@ const mockOrderDetail = {
 export default function OrderDetailRouteClient() {
   const params = useParams();
   const orderId = (params?.id as string) ?? "ORD-001";
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
   const detail = { ...mockOrderDetail, id: orderId };
 
   return (
     <OrderDetailPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
       onNavigateOrders={() => (window.location.href = "/account/orders")}

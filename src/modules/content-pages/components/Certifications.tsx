@@ -156,17 +156,12 @@ const translations = {
 };
 
 function CertificationsContent() {
-  const { language, isDarkMode, nav } = useContentPage();
+  const { language, isDarkMode } = useContentPage();
   const content = translations[language];
 
   return (
     <>
-      <Breadcrumbs
-        items={[{ label: content.title }]}
-        isDarkMode={isDarkMode}
-        language={language}
-        onNavigateHome={nav("/")}
-      />
+      <Breadcrumbs items={[{ label: content.title }]} />
       <div className="mx-auto max-w-[1440px] px-4 py-16 md:px-8 md:py-20 lg:px-12 lg:py-24">
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <h1

@@ -1,735 +1,699 @@
 "use client";
 
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
+import { useAppState } from '@/modules/app-state';
+import { useAuth } from '@/modules/auth';
+import { useCart } from '@/modules/cart';
 import {
-  Globe,
-  Sun,
-  Moon,
   Menu,
+  X,
   ShoppingCart,
   User,
-  ChevronRight,
+  LogOut,
   Package,
   Heart,
   MapPin,
-  LogOut,
-  HelpCircle,
-  BookOpen,
-  Image,
+  Globe,
+  Moon,
+  Sun,
+  MessageCircle,
+  MessageSquare,
   Calendar,
-  GitCompare,
+  Image,
+  BookOpen,
+  HelpCircle,
   Calculator,
-} from "lucide-react";
-import { useCart } from "@/modules/cart";
-import { useAuth } from "@/modules/auth";
+  GitCompare,
+  Shield,
+  FileText,
+  Cookie,
+} from 'lucide-react';
 
-interface HeaderProps {
-  isScrolled: boolean;
-  language: "es" | "en";
-  isDarkMode: boolean;
-  isMobileMenuOpen: boolean;
-  onToggleLanguage: () => void;
-  onToggleDarkMode: () => void;
-  onToggleMobileMenu: () => void;
-  onNavigateProducts: () => void;
-  onNavigateHome: () => void;
-  onNavigateCart: () => void;
-  onNavigateAccount: () => void;
-  onNavigateLogin?: () => void;
-  onNavigateDashboard?: () => void;
-  onNavigateOrders?: () => void;
-  onNavigateWishlist?: () => void;
-  onNavigateAddresses?: () => void;
-  onNavigateFAQ?: () => void;
-  onNavigateBlog?: () => void;
-  onNavigateProjectGallery?: () => void;
-  onNavigateAppointment?: () => void;
-  onNavigateProductComparison?: () => void;
-  onNavigateFinancingCalculator?: () => void;
-  onLogout?: () => void;
-  cartItemsCount?: number;
-  isAuthenticated?: boolean;
-  userName?: string;
-  translations: {
-    nav: {
-      products: string;
-      about: string;
-      contact: string;
-    };
-  };
-}
-
-export function Header({
-  isScrolled,
-  language,
-  isDarkMode,
-  isMobileMenuOpen,
-  onToggleLanguage,
-  onToggleDarkMode,
-  onToggleMobileMenu,
-  onNavigateProducts,
-  onNavigateHome,
-  onNavigateCart,
-  onNavigateAccount,
-  onNavigateLogin,
-  onNavigateDashboard,
-  onNavigateOrders,
-  onNavigateWishlist,
-  onNavigateAddresses,
-  onNavigateFAQ,
-  onNavigateBlog,
-  onNavigateProjectGallery,
-  onNavigateAppointment,
-  onNavigateProductComparison,
-  onNavigateFinancingCalculator,
-  onLogout,
-  cartItemsCount: cartItemsCountProp,
-  isAuthenticated: _isAuthenticatedProp = false,
-  userName,
-  translations: t,
-}: HeaderProps) {
+export function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isDarkMode, language, showWhatsApp, showChat, toggleDarkMode, toggleLanguage, toggleWhatsApp, toggleChat } = useAppState();
+  const { user, isAuthenticated, signOut } = useAuth();
   const { cartCount } = useCart();
-  const { isAuthenticated, user, signOut } = useAuth();
-  const displayName = userName ?? user?.firstName ?? (language === "es" ? "Mi Cuenta" : "My Account");
-  const cartItemsCount = cartItemsCountProp ?? cartCount;
 
-  const handleAccountClick = () => {
-    if (isAuthenticated) window.location.href = "/account";
-    else window.location.href = "/login";
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Prevent scroll when menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
+  const cartItemsCount = cartCount || 0;
+
+  const translations = {
+    es: {
+      products: 'Productos',
+      about: 'Acerca de',
+      contact: 'Contacto',
+      login: 'Iniciar Sesión',
+      myAccount: 'Mi Cuenta',
+      dashboard: 'Panel de Control',
+      orders: 'Mis Pedidos',
+      wishlist: 'Lista de Deseos',
+      addresses: 'Direcciones',
+      logout: 'Cerrar Sesión',
+      // Servicios y Recursos
+      appointment: 'Agenda una Cita',
+      gallery: 'Galería de Proyectos',
+      blog: 'Blog',
+      faq: 'Preguntas Frecuentes',
+      // Herramientas
+      calculator: 'Calculadora de Financiamiento',
+      compare: 'Comparador de Productos',
+      // Configuración
+      settings: 'Configuración',
+      languageLabel: 'Idioma',
+      darkMode: 'Modo Oscuro',
+      whatsappButton: 'Botón WhatsApp',
+      liveChat: 'Chat en Vivo',
+      // Legal
+      legal: 'Legal',
+      privacy: 'Política de Privacidad',
+      terms: 'Términos y Condiciones',
+      cookies: 'Política de Cookies',
+    },
+    en: {
+      products: 'Products',
+      about: 'About',
+      contact: 'Contact',
+      login: 'Sign In',
+      myAccount: 'My Account',
+      dashboard: 'Dashboard',
+      orders: 'My Orders',
+      wishlist: 'Wishlist',
+      addresses: 'Addresses',
+      logout: 'Sign Out',
+      // Services & Resources
+      appointment: 'Schedule Appointment',
+      gallery: 'Project Gallery',
+      blog: 'Blog',
+      faq: 'FAQ',
+      // Tools
+      calculator: 'Financing Calculator',
+      compare: 'Product Comparison',
+      // Settings
+      settings: 'Settings',
+      languageLabel: 'Language',
+      darkMode: 'Dark Mode',
+      whatsappButton: 'WhatsApp Button',
+      liveChat: 'Live Chat',
+      // Legal
+      legal: 'Legal',
+      privacy: 'Privacy Policy',
+      terms: 'Terms & Conditions',
+      cookies: 'Cookie Policy',
+    },
   };
+
+  const t = translations[language];
 
   const handleLogout = async () => {
     await signOut();
-    window.location.href = "/";
+    router.push('/');
   };
 
   return (
     <>
-      {/* Header Principal */}
+      {/* Desktop/Tablet Header - Simplified Pill when scrolled */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-sm transition-all duration-300 ${
-          isDarkMode
-            ? "border-[#3d2f23] bg-[#0a0806]/95 text-[#f5f0e8]"
-            : "border-gray-200 bg-white/95 text-gray-900"
-        } ${isScrolled ? "-translate-y-4 opacity-0 pointer-events-none" : "opacity-100"}`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled
+            ? 'py-3'
+            : 'py-6'
+        }`}
       >
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 md:px-8 md:py-6 lg:px-12">
-          {/* Logo */}
-          <div className="flex items-center">
-            <h1 className="text-lg tracking-tight md:text-xl lg:text-2xl">
-              <span className="font-bold">DavidSon´s</span>{" "}
-              <span className="font-normal">Design</span>
-            </h1>
-          </div>
-
-          {/* Desktop - Menu Button */}
-          <div className="hidden lg:block">
-            <button
-              onClick={onToggleMobileMenu}
-              className={`flex items-center gap-2 rounded-lg px-4 py-2 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-              aria-label="Toggle menu"
+        <div className={`max-w-7xl mx-auto transition-all duration-500 ${
+          isScrolled ? 'px-4' : 'px-6 lg:px-8'
+        }`}>
+          <div
+            className={`flex items-center justify-between transition-all duration-500 ${
+              isScrolled
+                ? `rounded-full px-6 py-3 shadow-lg backdrop-blur-md ${
+                    isDarkMode
+                      ? 'bg-[#0a0806]/95 border border-[#3d2f23]'
+                      : 'bg-white/95 border border-gray-200'
+                  }`
+                : `px-4 py-2 ${
+                    isDarkMode
+                      ? 'bg-[#0a0806]/80 backdrop-blur-sm'
+                      : 'bg-white/80 backdrop-blur-sm'
+                  }`
+            }`}
+          >
+            {/* Logo */}
+            <Link
+              href="/"
+              className={`font-serif transition-all duration-300 ${
+                isScrolled ? 'text-2xl' : 'text-3xl'
+              } ${
+                isDarkMode ? 'text-[#f5f0e8]' : 'text-gray-900'
+              } hover:text-[#8b6f47]`}
             >
-              <Menu className="h-5 w-5" />
-            </button>
-          </div>
+              Davidsons Design
+            </Link>
 
-          {/* Mobile - Menu Button */}
-          <div className="lg:hidden">
-            <button
-              onClick={onToggleMobileMenu}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-              aria-label="Toggle menu"
-            >
-              <Menu className="h-4 w-4" />
-            </button>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
+              <Link
+                href="/products"
+                className={`transition-colors ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:text-[#8b6f47]'
+                    : 'text-gray-900 hover:text-[#8b6f47]'
+                }`}
+              >
+                {t.products}
+              </Link>
+              <Link
+                href="/about"
+                className={`transition-colors ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:text-[#8b6f47]'
+                    : 'text-gray-900 hover:text-[#8b6f47]'
+                }`}
+              >
+                {t.about}
+              </Link>
+              <a
+                href="#contact"
+                className={`transition-colors ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:text-[#8b6f47]'
+                    : 'text-gray-900 hover:text-[#8b6f47]'
+                }`}
+              >
+                {t.contact}
+              </a>
+            </nav>
+
+            {/* Actions */}
+            <div className="flex items-center gap-4">
+              {/* Language Toggle - Desktop */}
+              <button
+                onClick={toggleLanguage}
+                className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <Globe className="w-4 h-4" />
+                <span className="text-sm font-medium">{language.toUpperCase()}</span>
+              </button>
+
+              {/* Dark Mode Toggle - Desktop */}
+              <button
+                onClick={toggleDarkMode}
+                className={`hidden md:flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+
+              {/* Cart */}
+              <Link
+                href="/cart"
+                className={`relative flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartItemsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#8b6f47] text-white text-xs rounded-full flex items-center justify-center font-medium">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* User Menu - Desktop */}
+              {isAuthenticated ? (
+                <Link
+                  href="/account"
+                  className={`hidden md:flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                    isDarkMode
+                      ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                      : 'text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <User className="w-5 h-5" />
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="hidden md:block px-4 py-2 bg-[#8b6f47] text-white rounded-lg hover:bg-[#6d5838] transition-colors"
+                >
+                  {t.login}
+                </Link>
+              )}
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={toggleMobileMenu}
+                className={`md:hidden flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Header Sticky Desktop */}
-      <div
-        className={`fixed left-1/2 top-6 z-50 hidden -translate-x-1/2 transition-all duration-300 lg:block ${
-          isScrolled
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-4 opacity-0 pointer-events-none"
-        }`}
-      >
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
         <div
-          className={`rounded-full border shadow-lg backdrop-blur-sm ${
-            isDarkMode
-              ? "border-[#3d2f23] bg-[#0a0806]/95 text-[#f5f0e8]"
-              : "border-gray-200 bg-white/95 text-gray-900"
-          }`}
-        >
-          <nav className="flex items-center justify-between gap-6 px-6 py-2.5">
-            {/* Logo */}
-            <a
-              href="#"
-              className="whitespace-nowrap tracking-tight transition-opacity hover:opacity-80"
-            >
-              <span className="text-sm font-bold">DavidSon´s</span>
-              <span className="text-sm font-normal"> Design</span>
-            </a>
-
-            {/* Controls Group */}
-            <div className="flex items-center gap-2">
-              {/* Cart Icon with Count */}
-              <button
-                onClick={onNavigateCart}
-                className={`flex items-center gap-1.5 rounded-full p-2 transition-colors ${
-                  isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                }`}
-                aria-label="Shopping cart"
-              >
-                {cartItemsCount != null && cartItemsCount > 0 && (
-                  <span
-                    className={`text-xs font-medium ${
-                      isDarkMode ? "text-[#f5f0e8]" : "text-gray-900"
-                    }`}
-                  >
-                    {cartItemsCount}
-                  </span>
-                )}
-                <ShoppingCart className="h-4 w-4" />
-              </button>
-
-              {/* User Icon */}
-              <button
-                onClick={handleAccountClick}
-                className={`rounded-full p-2 transition-colors ${
-                  isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                }`}
-                aria-label={isAuthenticated ? "Mi cuenta" : "Iniciar sesión"}
-              >
-                <User className="h-4 w-4" />
-              </button>
-
-              {/* Menu Button */}
-              <button
-                onClick={onToggleMobileMenu}
-                className={`rounded-full p-2 transition-colors ${
-                  isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                }`}
-                aria-label="Toggle menu"
-              >
-                <Menu className="h-4 w-4" />
-              </button>
-            </div>
-          </nav>
-        </div>
-      </div>
-
-      {/* Header Sticky Mobile */}
-      <div
-        className={`fixed left-1/2 top-4 z-40 -translate-x-1/2 transition-all duration-300 lg:hidden ${
-          isScrolled
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-4 opacity-0 pointer-events-none"
-        }`}
-      >
-        <div
-          className={`rounded-full border shadow-lg backdrop-blur-sm ${
-            isDarkMode
-              ? "border-[#3d2f23] bg-[#0a0806]/95 text-[#f5f0e8]"
-              : "border-gray-200 bg-white/95 text-gray-900"
-          }`}
-        >
-          <nav className="flex w-full items-center justify-between gap-1 px-3 py-1.5 md:px-4 md:py-2">
-            {/* Logo - más compacto */}
-            <a
-              href="#"
-              className="flex items-center whitespace-nowrap tracking-tight transition-opacity hover:opacity-80"
-            >
-              <span className="text-[10px] font-bold md:text-xs">
-                DavidSon´s
-              </span>
-              <span className="ml-0.5 text-[10px] font-normal md:text-xs">
-                Design
-              </span>
-            </a>
-
-            {/* Controls Group - Más horizontal */}
-            <div className="flex items-center gap-1 md:gap-1.5">
-              {/* Cart Icon with Count */}
-              <button
-                onClick={onNavigateCart}
-                className={`flex items-center gap-1 rounded-full p-1.5 transition-colors md:gap-1.5 md:p-2 ${
-                  isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                }`}
-                aria-label="Shopping cart"
-              >
-                {cartItemsCount != null && cartItemsCount > 0 && (
-                  <span
-                    className={`text-[10px] font-medium md:text-xs ${
-                      isDarkMode ? "text-[#f5f0e8]" : "text-gray-900"
-                    }`}
-                  >
-                    {cartItemsCount}
-                  </span>
-                )}
-                <ShoppingCart className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </button>
-
-              {/* User Icon */}
-              <button
-                onClick={handleAccountClick}
-                className={`rounded-full p-1.5 transition-colors md:p-2 ${
-                  isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                }`}
-                aria-label={isAuthenticated ? "Mi cuenta" : "Iniciar sesión"}
-              >
-                <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </button>
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={onToggleMobileMenu}
-                className={`rounded-full p-1.5 transition-colors md:p-2 ${
-                  isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                }`}
-                aria-label="Toggle menu"
-              >
-                <Menu className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </button>
-            </div>
-          </nav>
-        </div>
-      </div>
-
-      {/* Menu Panel Lateral - Visible en todas las resoluciones */}
-      <div
-        className={`fixed inset-0 z-50 transition-opacity duration-300 ${
-          isMobileMenuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      >
-        {/* Backdrop con blur */}
-        <div
-          className={`absolute inset-0 backdrop-blur-md ${
-            isDarkMode ? "bg-[#0a0806]/80" : "bg-white/80"
-          }`}
-          onClick={onToggleMobileMenu}
-          onKeyDown={(e) => e.key === "Escape" && onToggleMobileMenu()}
-          role="button"
-          tabIndex={0}
-          aria-label="Close menu"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={toggleMobileMenu}
         />
+      )}
 
-        {/* Menu Panel deslizante desde la derecha */}
-        <div
-          className={`absolute right-0 top-0 bottom-0 w-full border-l shadow-2xl transition-transform duration-500 ease-out sm:w-96 ${
-            isDarkMode
-              ? "border-[#3d2f23] bg-[#0a0806] text-[#f5f0e8]"
-              : "border-gray-200 bg-white text-gray-900"
-          } ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
-        >
+      {/* Mobile Menu Sidebar */}
+      <div
+        className={`fixed top-0 right-0 h-full w-80 z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        } ${
+          isDarkMode ? 'bg-[#0a0806]' : 'bg-white'
+        } shadow-2xl overflow-y-auto`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Header */}
           <div
-            className={`flex items-center justify-between border-b px-6 py-6 md:px-8 ${
-              isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
+            className={`flex items-center justify-between p-6 border-b ${
+              isDarkMode ? 'border-[#3d2f23]' : 'border-gray-200'
             }`}
           >
-            {/* Logo */}
-            <a href="#" className="flex items-center">
-              <h1 className="text-lg tracking-tight md:text-xl">
-                <span className="font-bold">DavidSon´s</span>{" "}
-                <span className="font-normal">Design</span>
-              </h1>
-            </a>
-
-            {/* Close Button */}
-            <button
-              onClick={onToggleMobileMenu}
-              className="group relative flex h-8 w-8 items-center justify-center"
-              aria-label="Close menu"
+            <span
+              className={`font-serif text-xl ${
+                isDarkMode ? 'text-[#f5f0e8]' : 'text-gray-900'
+              }`}
             >
-              <div className="relative flex h-6 w-6 items-center justify-center">
-                <span
-                  className={`absolute h-0.5 w-6 rotate-45 transition-all duration-300 ${
-                    isDarkMode
-                      ? "bg-[#f5f0e8]/70 group-hover:bg-[#f5f0e8]"
-                      : "bg-gray-600 group-hover:bg-gray-900"
-                  }`}
-                />
-                <span
-                  className={`absolute h-0.5 w-6 -rotate-45 transition-all duration-300 ${
-                    isDarkMode
-                      ? "bg-[#f5f0e8]/70 group-hover:bg-[#f5f0e8]"
-                      : "bg-gray-600 group-hover:bg-gray-900"
-                  }`}
-                />
-              </div>
+              Menu
+            </span>
+            <button
+              onClick={toggleMobileMenu}
+              className={`flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                isDarkMode
+                  ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                  : 'text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <X className="w-6 h-6" />
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <div
-            className="overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 90px)" }}
-          >
-            {/* Navegación Principal */}
-            <div
-              className={`border-b px-4 py-3 ${
-                isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-              }`}
-            >
-              <p
-                className={`text-xs uppercase tracking-wider ${
-                  isDarkMode ? "text-[#b8a99a]/60" : "text-gray-500"
+          {/* Menu Content */}
+          <div className="flex-1 overflow-y-auto py-4">
+            {/* 1. NAVEGACIÓN */}
+            <div className="px-4 mb-6">
+              <Link
+                href="/products"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                {language === "es" ? "Navegación" : "Navigation"}
-              </p>
+                <span className="flex-1 text-left">{t.products}</span>
+              </Link>
+              <Link
+                href="/about"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <span className="flex-1 text-left">{t.about}</span>
+              </Link>
+              <a
+                href="#contact"
+                onClick={toggleMobileMenu}
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <span className="flex-1 text-left">{t.contact}</span>
+              </a>
             </div>
-            <button
-              onClick={() => {
-                onNavigateProducts();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center justify-between px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <span>{t.nav.products}</span>
-              <ChevronRight className="h-5 w-5" />
-            </button>
-            <a
-              href="#about"
-              onClick={onToggleMobileMenu}
-              className={`flex w-full items-center justify-between px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <span>{t.nav.about}</span>
-              <ChevronRight className="h-5 w-5" />
-            </a>
-            <a
-              href="#contact"
-              onClick={onToggleMobileMenu}
-              className={`flex w-full items-center justify-between px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <span>{t.nav.contact}</span>
-              <ChevronRight className="h-5 w-5" />
-            </a>
 
-            {/* Mi Cuenta Section (Solo si está autenticado) */}
-            {isAuthenticated && (
-              <>
-                <div
-                  className={`border-b border-t px-4 py-3 ${
-                    isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-                  }`}
-                >
-                  <p
-                    className={`text-xs uppercase tracking-wider ${
-                      isDarkMode ? "text-[#b8a99a]/60" : "text-gray-500"
-                    }`}
-                  >
-                    {language === "es" ? "Mi Cuenta" : "My Account"}
-                  </p>
-                </div>
-                {(displayName || user?.email) && (
-                  <div
-                    className={`border-b px-6 py-4 ${
-                      isDarkMode
-                        ? "border-[#3d2f23] bg-[#2d2419]/50"
-                        : "border-gray-200 bg-gray-50"
-                    }`}
-                  >
-                    <p
-                      className={`text-xs ${
-                        isDarkMode ? "text-[#b8a99a]" : "text-gray-600"
-                      }`}
-                    >
-                      {language === "es" ? "Hola," : "Hello,"}
-                    </p>
-                    <p
-                      className={`font-medium ${
-                        isDarkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      {displayName}
-                    </p>
-                  </div>
-                )}
-                <button
-                  onClick={() => {
-                    window.location.href = "/account";
-                    onToggleMobileMenu();
-                  }}
-                  className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                    isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                  }`}
-                >
-                  <User className="h-5 w-5" />
-                  <span className="flex-1 text-left">
-                    {language === "es" ? "Panel de Control" : "Dashboard"}
-                  </span>
-                </button>
-                <button
-                  onClick={() => {
-                    (onNavigateOrders ?? (() => (window.location.href = "/account/orders")))();
-                    onToggleMobileMenu();
-                  }}
-                  className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                    isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                  }`}
-                >
-                  <Package className="h-5 w-5" />
-                  <span className="flex-1 text-left">
-                    {language === "es" ? "Mis Pedidos" : "My Orders"}
-                  </span>
-                </button>
-                <button
-                  onClick={() => {
-                    (onNavigateWishlist ?? (() => (window.location.href = "/account/wishlist")))();
-                    onToggleMobileMenu();
-                  }}
-                  className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                    isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                  }`}
-                >
-                  <Heart className="h-5 w-5" />
-                  <span className="flex-1 text-left">
-                    {language === "es" ? "Lista de Deseos" : "Wishlist"}
-                  </span>
-                </button>
-                <button
-                  onClick={() => {
-                    (onNavigateAddresses ?? (() => (window.location.href = "/account/addresses")))();
-                  }}
-                  className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                    isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-                  }`}
-                >
-                  <MapPin className="h-5 w-5" />
-                  <span className="flex-1 text-left">
-                    {language === "es" ? "Direcciones" : "Addresses"}
-                  </span>
-                </button>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    onToggleMobileMenu();
-                  }}
-                  className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                    isDarkMode
-                      ? "text-red-400 hover:bg-[#2d2419]"
-                      : "text-red-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <LogOut className="h-5 w-5" />
-                  <span className="flex-1 text-left">
-                    {language === "es" ? "Cerrar Sesión" : "Logout"}
-                  </span>
-                </button>
-              </>
-            )}
+            {/* Divider */}
+            <div className={`h-px mx-4 mb-6 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`} />
 
-            {/* Login Button (Solo si NO está autenticado) */}
-            {!isAuthenticated && (
-              <>
-                <div
-                  className={`border-t px-4 py-3 ${
-                    isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-                  }`}
-                />
-                <button
-                  onClick={() => {
-                    window.location.href = "/login";
-                    onToggleMobileMenu();
-                  }}
-                  className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                    isDarkMode
-                      ? "bg-[#8b6f47] text-white hover:opacity-90"
-                      : "bg-[#3d2f23] text-white hover:opacity-90"
-                  }`}
+            {/* 2. AUTENTICACIÓN */}
+            <div className="px-4 mb-6">
+              {!isAuthenticated ? (
+                <Link
+                  href="/login"
+                  className="flex items-center justify-center gap-2 p-4 rounded-lg bg-[#8b6f47] text-white hover:bg-[#6d5838] transition-colors font-medium"
                 >
-                  <User className="h-5 w-5" />
-                  <span className="flex-1 text-left">
-                    {language === "es" ? "Iniciar Sesión" : "Sign In"}
-                  </span>
-                </button>
-              </>
-            )}
-
-            {/* Configuración */}
-            <div
-              className={`border-t px-4 py-3 ${
-                isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-              }`}
-            >
-              <p
-                className={`text-xs uppercase tracking-wider ${
-                  isDarkMode ? "text-[#b8a99a]/60" : "text-gray-500"
-                }`}
-              >
-                {language === "es" ? "Configuración" : "Settings"}
-              </p>
-            </div>
-            {/* Language Toggle */}
-            <button
-              onClick={() => {
-                onToggleLanguage();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <Globe className="h-5 w-5" />
-              <span className="flex-1 text-left">
-                {language === "es" ? "Idioma" : "Language"}
-              </span>
-              <span
-                className={`rounded px-2 py-1 text-sm font-medium ${
-                  isDarkMode ? "bg-[#8b6f47] text-white" : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                {language === "es" ? "ES" : "EN"}
-              </span>
-            </button>
-
-            {/* Theme Toggle */}
-            <button
-              onClick={() => {
-                onToggleDarkMode();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              {isDarkMode ? (
-                <Moon className="h-5 w-5" />
+                  <User className="w-5 h-5" />
+                  {t.login}
+                </Link>
               ) : (
-                <Sun className="h-5 w-5" />
+                <>
+                  <div className={`mb-3 px-2 text-xs font-medium uppercase tracking-wider ${
+                    isDarkMode ? 'text-[#b8a99a]' : 'text-gray-500'
+                  }`}>
+                    {t.myAccount}
+                  </div>
+                  <Link
+                    href="/account"
+                    className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                      isDarkMode
+                        ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                        : 'text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <User className="w-5 h-5" />
+                    <span className="flex-1 text-left">{t.dashboard}</span>
+                  </Link>
+                  <Link
+                    href="/account/orders"
+                    className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                      isDarkMode
+                        ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                        : 'text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Package className="w-5 h-5" />
+                    <span className="flex-1 text-left">{t.orders}</span>
+                  </Link>
+                  <Link
+                    href="/account/wishlist"
+                    className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                      isDarkMode
+                        ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                        : 'text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Heart className="w-5 h-5" />
+                    <span className="flex-1 text-left">{t.wishlist}</span>
+                  </Link>
+                  <Link
+                    href="/account/addresses"
+                    className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                      isDarkMode
+                        ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                        : 'text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <MapPin className="w-5 h-5" />
+                    <span className="flex-1 text-left">{t.addresses}</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                      isDarkMode
+                        ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                        : 'text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span className="flex-1 text-left">{t.logout}</span>
+                  </button>
+                </>
               )}
-              <span className="flex-1 text-left">
-                {isDarkMode
-                  ? language === "es"
-                    ? "Modo Oscuro"
-                    : "Dark Mode"
-                  : language === "es"
-                    ? "Modo Claro"
-                    : "Light Mode"}
-              </span>
-              <div className="relative h-6 w-11 rounded-full bg-[#8b6f47]">
-                <div
-                  className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${
-                    isDarkMode ? "right-1" : "left-1"
-                  }`}
-                />
-              </div>
-            </button>
+            </div>
 
-            {/* Enlaces Adicionales */}
-            <div
-              className={`border-t px-4 py-3 ${
-                isDarkMode ? "border-[#3d2f23]" : "border-gray-200"
-              }`}
-            >
-              <p
-                className={`text-xs uppercase tracking-wider ${
-                  isDarkMode ? "text-[#b8a99a]/60" : "text-gray-500"
+            {/* Divider */}
+            <div className={`h-px mx-4 mb-6 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`} />
+
+            {/* 3. SERVICIOS Y RECURSOS */}
+            <div className="px-4 mb-6">
+              <Link
+                href="/appointment"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                {language === "es" ? "Enlaces Adicionales" : "Additional Links"}
-              </p>
+                <Calendar className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.appointment}</span>
+              </Link>
+              <Link
+                href="/gallery"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <Image className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.gallery}</span>
+              </Link>
+              <Link
+                href="/blog"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <BookOpen className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.blog}</span>
+              </Link>
+              <Link
+                href="/faq"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <HelpCircle className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.faq}</span>
+              </Link>
             </div>
-            <button
-              onClick={() => {
-                (onNavigateFAQ ?? (() => (window.location.href = "/faq")))();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span className="flex-1 text-left">
-                {language === "es" ? "Preguntas Frecuentes" : "FAQ"}
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                (onNavigateBlog ?? (() => (window.location.href = "/blog")))();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <BookOpen className="h-5 w-5" />
-              <span className="flex-1 text-left">
-                {language === "es" ? "Blog" : "Blog"}
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                (onNavigateProjectGallery ??
-                  (() => (window.location.href = "/gallery")))();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <Image className="h-5 w-5" />
-              <span className="flex-1 text-left">
-                {language === "es"
-                  ? "Galería de Proyectos"
-                  : "Project Gallery"}
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                (onNavigateAppointment ??
-                  (() => (window.location.href = "/appointment")))();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <Calendar className="h-5 w-5" />
-              <span className="flex-1 text-left">
-                {language === "es" ? "Cita" : "Appointment"}
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                (onNavigateProductComparison ??
-                  (() => (window.location.href = "/compare")))();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <GitCompare className="h-5 w-5" />
-              <span className="flex-1 text-left">
-                {language === "es" ? "Comparar" : "Compare"}
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                (onNavigateFinancingCalculator ??
-                  (() => (window.location.href = "/certifications")))();
-                onToggleMobileMenu();
-              }}
-              className={`flex w-full items-center gap-3 px-6 py-4 transition-colors ${
-                isDarkMode ? "hover:bg-[#2d2419]" : "hover:bg-gray-100"
-              }`}
-            >
-              <Calculator className="h-5 w-5" />
-              <span className="flex-1 text-left">
-                {language === "es" ? "Calculadora" : "Calculator"}
-              </span>
-            </button>
+
+            {/* Divider */}
+            <div className={`h-px mx-4 mb-6 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`} />
+
+            {/* 4. HERRAMIENTAS */}
+            <div className="px-4 mb-6">
+              <Link
+                href="/financing-calculator"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <Calculator className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.calculator}</span>
+              </Link>
+              <Link
+                href="/compare"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <GitCompare className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.compare}</span>
+              </Link>
+            </div>
+
+            {/* Divider */}
+            <div className={`h-px mx-4 mb-6 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`} />
+
+            {/* 5. CONFIGURACIÓN */}
+            <div className="px-4 mb-6">
+              <div className={`mb-3 px-2 text-xs font-medium uppercase tracking-wider ${
+                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-500'
+              }`}>
+                {t.settings}
+              </div>
+
+              {/* Language Toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleLanguage();
+                }}
+                className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <Globe className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.languageLabel}</span>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  isDarkMode ? 'bg-[#2d2419] text-[#8b6f47]' : 'bg-gray-100 text-[#8b6f47]'
+                }`}>
+                  {language.toUpperCase()}
+                </span>
+              </button>
+
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDarkMode();
+                }}
+                className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                <span className="flex-1 text-left">{t.darkMode}</span>
+                <div
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    isDarkMode ? 'bg-[#8b6f47]' : 'bg-gray-300'
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      isDarkMode ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </div>
+              </button>
+
+              {/* WhatsApp Toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleWhatsApp();
+                }}
+                className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.whatsappButton}</span>
+                <div
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    showWhatsApp ? 'bg-[#8b6f47]' : isDarkMode ? 'bg-[#2d2419]' : 'bg-gray-300'
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      showWhatsApp ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </div>
+              </button>
+
+              {/* Chat Toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleChat();
+                }}
+                className={`w-full flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <MessageSquare className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.liveChat}</span>
+                <div
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    showChat ? 'bg-[#8b6f47]' : isDarkMode ? 'bg-[#2d2419]' : 'bg-gray-300'
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      showChat ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </div>
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className={`h-px mx-4 mb-6 ${isDarkMode ? 'bg-[#3d2f23]' : 'bg-gray-200'}`} />
+
+            {/* 6. LEGAL */}
+            <div className="px-4 mb-6">
+              <div className={`mb-3 px-2 text-xs font-medium uppercase tracking-wider ${
+                isDarkMode ? 'text-[#b8a99a]' : 'text-gray-500'
+              }`}>
+                {t.legal}
+              </div>
+              <Link
+                href="/privacy"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <Shield className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.privacy}</span>
+              </Link>
+              <Link
+                href="/terms"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <FileText className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.terms}</span>
+              </Link>
+              <Link
+                href="/cookies"
+                className={`flex items-center gap-3 p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'text-[#f5f0e8] hover:bg-[#2d2419]'
+                    : 'text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <Cookie className="w-5 h-5" />
+                <span className="flex-1 text-left">{t.cookies}</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

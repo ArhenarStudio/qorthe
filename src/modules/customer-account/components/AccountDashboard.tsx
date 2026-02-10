@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAppState } from "@/modules/app-state";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
 import { useAuth } from "@/modules/auth";
@@ -31,10 +32,6 @@ interface FavoriteProduct {
 }
 
 interface AccountDashboardProps {
-  language: "es" | "en";
-  isDarkMode: boolean;
-  onToggleLanguage: () => void;
-  onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
   onNavigateAccount?: () => void;
@@ -139,10 +136,6 @@ const translations = {
 };
 
 export function AccountDashboard({
-  language,
-  isDarkMode,
-  onToggleLanguage,
-  onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
   onNavigateAccount,
@@ -156,6 +149,7 @@ export function AccountDashboard({
   favoriteProducts,
   stats,
 }: AccountDashboardProps) {
+  const { language, isDarkMode } = useAppState();
   const { user, signOut } = useAuth();
   const displayName =
     userName ??
@@ -210,20 +204,7 @@ export function AccountDashboard({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header
-        isScrolled={isScrolled}
-        language={language}
-        isDarkMode={isDarkMode}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onToggleLanguage={onToggleLanguage}
-        onToggleDarkMode={onToggleDarkMode}
-        onToggleMobileMenu={handleToggleMobileMenu}
-        onNavigateProducts={onNavigateProducts}
-        onNavigateHome={onNavigateHome}
-        onNavigateCart={() => (window.location.href = "/cart")}
-        onNavigateAccount={onNavigateAccount ?? (() => (window.location.href = "/account"))}
-        translations={t}
-      />
+      <Header />
 
       <div className="pb-12 pt-28 md:pb-16 md:pt-32 lg:pb-20 lg:pt-40">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
@@ -523,13 +504,7 @@ export function AccountDashboard({
         </div>
       </div>
 
-      <Footer
-        language={language}
-        isDarkMode={isDarkMode}
-        onNavigateCookies={() => (window.location.href = "/cookies")}
-        onNavigateCatalog={() => (window.location.href = "/products")}
-        translations={t}
-      />
+      <Footer />
     </div>
   );
 }

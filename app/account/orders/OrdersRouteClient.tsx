@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { OrdersPage } from "@/modules/customer-account";
 import { useAuth } from "@/modules/auth";
 
@@ -32,15 +31,9 @@ export default function OrdersRouteClient() {
       ? `${user.firstName} ${user.lastName}`.trim()
       : user?.firstName ?? user?.email ?? "Usuario";
   const displayEmail = user?.email ?? "";
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   return (
     <OrdersPage
-      language={language}
-      isDarkMode={isDarkMode}
-      onToggleLanguage={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-      onToggleDarkMode={() => setIsDarkMode((m) => !m)}
       onNavigateHome={() => (window.location.href = "/")}
       onNavigateProducts={() => (window.location.href = "/products")}
       onNavigateDashboard={() => (window.location.href = "/account")}

@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAppState } from "@/modules/app-state";
 import { Header } from "@/modules/header";
 import { Footer } from "@/modules/footer";
 import { useAuth } from "@/modules/auth";
 import { Mail, Lock, Eye, EyeOff, User, Phone, Loader } from "lucide-react";
 
 interface RegisterPageProps {
-  language: "es" | "en";
-  isDarkMode: boolean;
-  onToggleLanguage: () => void;
-  onToggleDarkMode: () => void;
   onNavigateHome: () => void;
   onNavigateProducts: () => void;
   onNavigateAccount?: () => void;
@@ -93,15 +90,12 @@ const translations = {
 };
 
 export function RegisterPage({
-  language,
-  isDarkMode,
-  onToggleLanguage,
-  onToggleDarkMode,
   onNavigateHome,
   onNavigateProducts,
   onNavigateAccount,
   onNavigateLogin,
 }: RegisterPageProps) {
+  const { language, isDarkMode } = useAppState();
   const { signUp } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -218,20 +212,7 @@ export function RegisterPage({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header
-        isScrolled={isScrolled}
-        language={language}
-        isDarkMode={isDarkMode}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onToggleLanguage={onToggleLanguage}
-        onToggleDarkMode={onToggleDarkMode}
-        onToggleMobileMenu={handleToggleMobileMenu}
-        onNavigateProducts={onNavigateProducts}
-        onNavigateHome={onNavigateHome}
-        onNavigateCart={() => (window.location.href = "/cart")}
-        onNavigateAccount={onNavigateAccount ?? (() => (window.location.href = "/login"))}
-        translations={t}
-      />
+      <Header />
 
       <div className="pb-12 pt-28 md:pb-16 md:pt-32 lg:pb-20 lg:pt-40">
         <div className="mx-auto max-w-md px-4 md:px-8">
@@ -250,8 +231,8 @@ export function RegisterPage({
 
           {signUpSuccess && (
             <div
-              className={`mb-6 rounded border p-4 text-sm ${
-                isDarkMode ? "border-green-800 bg-green-900/30 text-green-200" : "border-green-200 bg-green-50 text-green-800"
+              className={`mb-6 rounded-lg border p-4 text-sm ${
+                isDarkMode ? "border-green-700/50 bg-green-950/30 text-green-200" : "border-green-200 bg-green-50 text-green-800"
               }`}
             >
               {t.confirmEmailMessage}
@@ -259,7 +240,13 @@ export function RegisterPage({
           )}
 
           {formError && (
-            <div className="mb-6 rounded border border-red-500 bg-red-50 p-4 text-sm text-red-700">
+            <div
+              className={`mb-6 rounded-lg border p-4 text-sm ${
+                isDarkMode
+                  ? "border-red-500/50 bg-red-950/30 text-red-200"
+                  : "border-red-500 bg-red-50 text-red-700"
+              }`}
+            >
               {formError}
             </div>
           )}
@@ -550,13 +537,7 @@ export function RegisterPage({
         </div>
       </div>
 
-      <Footer
-        language={language}
-        isDarkMode={isDarkMode}
-        onNavigateCookies={() => (window.location.href = "/cookies")}
-        onNavigateCatalog={() => (window.location.href = "/products")}
-        translations={t}
-      />
+      <Footer />
     </div>
   );
 }

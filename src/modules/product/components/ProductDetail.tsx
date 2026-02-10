@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAppState } from "@/modules/app-state";
 import { ChevronLeft } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Header } from "@/modules/header";
@@ -33,10 +34,6 @@ interface ProductDetailProps {
   onBack: () => void;
   onViewRelated: (productId: string) => void;
   onBackToHome: () => void;
-  language: "es" | "en";
-  isDarkMode: boolean;
-  onToggleLanguage: () => void;
-  onToggleDarkMode: () => void;
   onNavigateCart?: () => void;
 }
 
@@ -98,12 +95,9 @@ export function ProductDetail({
   onBack,
   onViewRelated,
   onBackToHome,
-  language,
-  isDarkMode,
-  onToggleLanguage,
-  onToggleDarkMode,
   onNavigateCart,
 }: ProductDetailProps) {
+  const { language, isDarkMode } = useAppState();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = translations[language];
@@ -187,20 +181,7 @@ export function ProductDetail({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header
-        isScrolled={isScrolled}
-        language={language}
-        isDarkMode={isDarkMode}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onToggleLanguage={onToggleLanguage}
-        onToggleDarkMode={onToggleDarkMode}
-        onToggleMobileMenu={handleToggleMobileMenu}
-        onNavigateProducts={handleNavigateProducts}
-        onNavigateHome={onBackToHome}
-        onNavigateCart={onNavigateCart ?? (() => (window.location.href = "/cart"))}
-        onNavigateAccount={() => (window.location.href = "/login")}
-        translations={t}
-      />
+      <Header />
 
       <div className="pb-12 pt-20 md:pb-16 md:pt-24 lg:pb-20 lg:pt-32">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
@@ -312,13 +293,7 @@ export function ProductDetail({
         </div>
       </div>
 
-      <Footer
-        language={language}
-        isDarkMode={isDarkMode}
-        onNavigateCookies={() => (window.location.href = "/cookies")}
-        onNavigateCatalog={() => (window.location.href = "/products")}
-        translations={t}
-      />
+      <Footer />
     </div>
   );
 }

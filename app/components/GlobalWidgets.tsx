@@ -38,8 +38,6 @@ export function GlobalWidgets() {
       <WhatsAppButton
         phoneNumber={WHATSAPP_PHONE}
         message={WHATSAPP_MESSAGE}
-        isDarkMode={isDarkMode}
-        enabled={showWhatsApp}
         position="bottom-right"
       />
       <ChatWidget

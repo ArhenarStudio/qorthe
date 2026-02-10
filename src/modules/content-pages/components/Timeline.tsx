@@ -69,6 +69,13 @@ const translations = {
         icon: Calendar,
       },
       {
+        year: "2024",
+        title: "Sostenibilidad",
+        description:
+          "Implementamos un programa completo de sustentabilidad y maderas certificadas.",
+        icon: Award,
+      },
+      {
         year: "2026",
         title: "El Futuro",
         description:
@@ -126,6 +133,13 @@ const translations = {
         icon: Calendar,
       },
       {
+        year: "2024",
+        title: "Sustainability",
+        description:
+          "We implement a complete sustainability program and certified woods.",
+        icon: Award,
+      },
+      {
         year: "2026",
         title: "The Future",
         description:
@@ -137,17 +151,12 @@ const translations = {
 };
 
 function TimelineContent() {
-  const { language, isDarkMode, nav } = useContentPage();
+  const { language, isDarkMode } = useContentPage();
   const content = translations[language];
 
   return (
     <>
-      <Breadcrumbs
-        items={[{ label: content.title }]}
-        isDarkMode={isDarkMode}
-        language={language}
-        onNavigateHome={nav("/")}
-      />
+      <Breadcrumbs items={[{ label: content.title }]} />
       <div className="mx-auto max-w-[1440px] px-4 py-16 md:px-8 md:py-20 lg:px-12 lg:py-24">
         <div className="mx-auto mb-20 max-w-3xl text-center">
           <h1
