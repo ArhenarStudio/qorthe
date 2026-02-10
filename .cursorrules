@@ -1,8 +1,90 @@
 # ═══════════════════════════════════════════════════════════════
-# DAVIDSONS DESIGN – CURSOR RULES
-# Flujo automatizado: Figma → Diff → Migración → Deploy
+# DAVIDSONS DESIGN – CURSOR RULES V3
+# Flujo automatizado: Figma → Conversión → Migración → Validación → Deploy
 # Preparado para RockStage Commerce SaaS
 # ═══════════════════════════════════════════════════════════════
+
+## ⚡ MIGRATION MAP (LEER PRIMERO)
+
+**Antes de cualquier migración, LEE el archivo MIGRATION_MAP.md en la raíz del proyecto.**
+
+Este archivo contiene:
+- Mapa exacto de cada archivo Figma → destino en producción
+- Clasificación: 🟢 Directo, 🟡 Convertir, 🔴 Protegido, ⚫ No migrar, 🔵 Nuevo
+- Conversiones Vite→Next.js requeridas
+- Verificación post-migración
+
+## ⚡ VALIDACIÓN OBLIGATORIA
+
+**Después de CADA migración, ejecutar:**
+```bash
+bash scripts/validate-migration.sh
+```
+Si hay errores, corregir ANTES de hacer commit.
+Si el Header no tiene 6/6 secciones, la migración está INCOMPLETA.
+
+## ⚡ CONVERSIÓN AUTOMÁTICA VITE → NEXT.JS
+
+Cuando migres un componente de Figma (Vite) al proyecto (Next.js),
+aplica TODAS estas transformaciones automáticamente:
+
+1. Agregar `"use client"` al inicio del archivo
+2. Reemplazar props de estado por contexto:
+   - `language` prop → `const { language } = useAppState()`
+   - `isDarkMode` prop → `const { isDarkMode } = useAppState()`
+   - `onToggleDarkMode` prop → `const { toggleDarkMode } = useAppState()`
+   - `onToggleLanguage` prop → `const { toggleLanguage } = useAppState()`
+   - `showWhatsApp` prop → `const { showWhatsApp } = useAppState()`
+   - `showChat` prop → `const { showChat } = useAppState()`
+3. Reemplazar navegación:
+   - `onNavigateXxx` props → `<Link href="/xxx">` de `next/link`
+   - `onClick={() => navigate('/path')}` → `<Link href="/path">`
+   - Eliminar todas las props `onNavigate*` del interface
+4. Reemplazar imports:
+   - `import { Footer } from './Footer'` → ELIMINAR (Footer viene de layout)
+   - `import { motion } from 'motion/react'` → verificar package.json
+   - `import { ImageWithFallback } from './figma/...'` → `import Image from 'next/image'`
+5. Reemplazar auth/cart mock por hooks reales:
+   - Props `isAuthenticated`, `userName` → `const { isAuthenticated, user } = useAuth()`
+   - Props `cartItemsCount` → `const { cart } = useCart()`
+6. Limpiar interface:
+   - Eliminar TODAS las props que ahora vienen del contexto
+   - Si el componente queda sin props, hacerlo `export function Componente()`
+
+## ⚡ PROTOCOLO DE VERIFICACIÓN (OBLIGATORIO)
+
+Después de CADA migración, ejecutar:
+
+```bash
+# 1. TypeScript compila sin errores
+npx tsc --noEmit
+
+# 2. Integraciones protegidas intactas
+grep -r "useCart" src/modules/cart/hooks/useCart.ts | head -5
+grep -r "signIn\|signUp" src/modules/auth/ | head -5
+grep -r "createClient" src/lib/shopify/client.ts | head -3
+
+# 3. Estado global conectado
+grep -r "useAppState" src/modules/header/components/Header.tsx
+grep -r "useAppState" src/modules/footer/components/Footer.tsx
+```
+
+Si algún check falla, DETENER y reportar antes de continuar.
+
+## ⚡ REGLA DE SECCIONES COMPLETAS
+
+Cuando migres un componente, verificar que TODAS las secciones del
+diseño de Figma estén presentes en el resultado final:
+
+- Contar secciones en archivo Figma
+- Contar secciones en archivo migrado
+- Si faltan secciones → ERROR, agregar las faltantes
+
+Ejemplo: Header Mobile Menu debe tener 6 secciones:
+1. Navegación, 2. Auth, 3. Servicios y Recursos,
+4. Herramientas, 5. Configuración (4 toggles), 6. Legal
+
+Si el resultado tiene menos de 6 → la migración está incompleta.
 
 ## CONTEXTO DEL PROYECTO
 
