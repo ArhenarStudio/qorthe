@@ -7,3 +7,5 @@ export { ProductGallery } from "./components/ProductGallery";
 export type { ProductImage } from "./components/ProductGallery";
 export { ProductInfo } from "./components/ProductInfo";
 export { ProductTabs } from "./components/ProductTabs";
+export { ProductSearch } from "./components/ProductSearch";
+export type { SearchFilters } from "./components/ProductSearch";
