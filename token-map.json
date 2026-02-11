@@ -1,0 +1,106 @@
+{
+  "_comment": "TOKEN MAP — Mapeo de colores hardcodeados de Figma → tokens del proyecto",
+  "_version": "1.0.0",
+  "_updated": "2026-02-11",
+  "_usage": "Leído por strip-figma.sh para convertir colores automáticamente",
+
+  "tailwindClasses": {
+    "_comment": "Reemplazos directos de clases Tailwind",
+
+    "backgrounds": {
+      "bg-white": "bg-background",
+      "bg-[#faf8f5]": "bg-background",
+      "bg-[#FAF8F5]": "bg-background",
+      "bg-[#0a0806]": "bg-background",
+      "bg-[#1a1a1a]": "bg-background",
+      "bg-[#1a1512]": "bg-background",
+      "bg-[#f5f0e8]": "bg-cream",
+      "bg-[#f5f1eb]": "bg-cream",
+      "bg-[#e8e2d8]": "bg-sand-50",
+      "bg-[#d4c4b0]": "bg-sand",
+      "bg-[#d4c5b0]": "bg-sand",
+      "bg-[#8b7355]": "bg-accent",
+      "bg-[#8b6f47]": "bg-accent",
+      "bg-[#6d5838]": "bg-walnut-600",
+      "bg-[#6d5638]": "bg-walnut-600",
+      "bg-[#6b5e4f]": "bg-taupe",
+      "bg-[#2d2419]": "bg-muted",
+      "bg-[#3d2f23]": "bg-border",
+      "bg-[#4d3f33]": "bg-muted",
+      "bg-gray-100": "bg-muted",
+      "bg-gray-200": "bg-muted",
+      "bg-gray-300": "bg-switch-background",
+      "bg-gray-800": "bg-muted",
+      "bg-gray-900": "bg-background"
+    },
+
+    "text": {
+      "text-white": "text-foreground",
+      "text-black": "text-foreground",
+      "text-[#f5f0e8]": "text-foreground",
+      "text-[#faf8f5]": "text-foreground",
+      "text-[#1a1a1a]": "text-foreground",
+      "text-[#b8a99a]": "text-muted-foreground",
+      "text-[#8b7355]": "text-accent",
+      "text-[#8b6f47]": "text-accent",
+      "text-[#6b5e4f]": "text-taupe",
+      "text-[#6d5638]": "text-walnut-600",
+      "text-[#3d2f23]": "text-border",
+      "text-gray-400": "text-muted-foreground",
+      "text-gray-500": "text-muted-foreground",
+      "text-gray-600": "text-muted-foreground",
+      "text-gray-700": "text-foreground",
+      "text-gray-800": "text-foreground",
+      "text-gray-900": "text-foreground"
+    },
+
+    "borders": {
+      "border-[#3d2f23]": "border-border",
+      "border-[#8b6f47]": "border-accent",
+      "border-[#8b7355]": "border-accent",
+      "border-[#b8a99a]": "border-muted-foreground",
+      "border-[#f5f0e8]": "border-foreground",
+      "border-[#0a0806]": "border-background",
+      "border-[#4a3a2a]": "border-border",
+      "border-gray-200": "border-border",
+      "border-gray-300": "border-border",
+      "border-gray-700": "border-border"
+    },
+
+    "hovers": {
+      "hover:bg-[#2d2419]": "hover:bg-muted",
+      "hover:bg-[#6d5838]": "hover:bg-walnut-600",
+      "hover:bg-[#6d5638]": "hover:bg-walnut-600",
+      "hover:bg-gray-100": "hover:bg-muted",
+      "hover:bg-gray-200": "hover:bg-muted",
+      "hover:text-[#8b6f47]": "hover:text-accent",
+      "hover:text-[#8b7355]": "hover:text-accent",
+      "hover:border-[#8b6f47]": "hover:border-accent"
+    },
+
+    "opacity_variants": {
+      "bg-[#0a0806]/95": "bg-background/95",
+      "bg-[#0a0806]/80": "bg-background/80",
+      "bg-[#0a0806]/90": "bg-background/90",
+      "bg-white/95": "bg-background/95",
+      "bg-white/80": "bg-background/80",
+      "bg-white/90": "bg-background/90",
+      "bg-black/50": "bg-black/50",
+      "bg-black/20": "bg-black/20"
+    }
+  },
+
+  "preserveColors": {
+    "_comment": "Colores que NO se convierten — son intencionales y no son del theme",
+    "colors": [
+      "#25D366",
+      "#128C7E",
+      "#d4183d",
+      "#ef4444",
+      "#22c55e",
+      "#f59e0b",
+      "#3b82f6"
+    ],
+    "note": "WhatsApp green, destructive red, success green, warning amber, info blue"
+  }
+}
