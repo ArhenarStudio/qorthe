@@ -100,16 +100,26 @@ fi
 
 # 6. Rutas existentes
 echo -e "\n${YELLOW}6. Rutas (page.tsx)${NC}"
-ROUTES=(about appointment blog cart certifications checkout compare cookies faq gallery login mission-vision privacy products register team terms timeline)
+# Rutas en (main) route group
+MAIN_ROUTES=(about appointment blog cart certifications compare cookies faq financing-calculator gallery login mission-vision privacy products register team terms timeline)
+# Rutas en (checkout) route group
+CHECKOUT_ROUTES=()
 MISSING_ROUTES=0
-for route in "${ROUTES[@]}"; do
-  if [ ! -f "app/$route/page.tsx" ]; then
-    echo -e "   ${RED}❌ Falta: app/$route/page.tsx${NC}"
+for route in "${MAIN_ROUTES[@]}"; do
+  if [ ! -f "app/(main)/$route/page.tsx" ]; then
+    echo -e "   ${RED}❌ Falta: app/(main)/$route/page.tsx${NC}"
     MISSING_ROUTES=$((MISSING_ROUTES + 1))
   fi
 done
+for route in "${CHECKOUT_ROUTES[@]}"; do
+  if [ ! -f "app/(checkout)/$route/page.tsx" ]; then
+    echo -e "   ${RED}❌ Falta: app/(checkout)/$route/page.tsx${NC}"
+    MISSING_ROUTES=$((MISSING_ROUTES + 1))
+  fi
+done
+TOTAL_ROUTES=$((${#MAIN_ROUTES[@]} + ${#CHECKOUT_ROUTES[@]}))
 if [ "$MISSING_ROUTES" -eq 0 ]; then
-  echo -e "   ${GREEN}✅ Todas las ${#ROUTES[@]} rutas presentes${NC}"
+  echo -e "   ${GREEN}✅ Todas las $TOTAL_ROUTES rutas presentes${NC}"
 else
   echo -e "   ${RED}❌ Faltan $MISSING_ROUTES rutas${NC}"
   ERRORS=$((ERRORS + 1))
