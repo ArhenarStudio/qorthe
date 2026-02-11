@@ -84,3 +84,41 @@ Tras cualquier cambio que afecte código del proyecto:
    y resumir si el build termina correctamente o con errores.
 
 El asistente debe proponer o ejecutar estas validaciones al finalizar tareas de código, salvo que el usuario indique lo contrario.
+
+---
+
+## Pipeline de migración Figma
+
+**3 archivos críticos en la raíz del proyecto:**
+
+1. **component-manifest.json** — Contrato diseño↔código. Define para CADA componente:
+   - `figmaAction`: STRIP_AND_REPLACE | DESIGN_ONLY | REPLACE_DESIGN_ONLY | SKIP
+   - `destination`: ruta exacta en producción
+   - `preserveLogic`: imports/funciones que NUNCA se modifican
+   - `stripFromExport`: qué eliminar del export de Figma
+   LEE ESTE ARCHIVO antes de tocar cualquier componente.
+
+2. **token-map.json** — Mapeo de colores hardcodeados → design tokens.
+   Si ves `bg-[#0a0806]` en un export, es `bg-background`.
+   Si ves `text-[#f5f0e8]`, es `text-foreground`.
+
+3. **MIGRATION_MAP.md** — Mapa detallado con contexto.
+
+**Scripts de migración:**
+- `bash scripts/strip-figma.sh V[N]` — Pre-procesa exports de Figma Make
+- `bash scripts/validate-migration.sh` — Verificación post-migración (OBLIGATORIO)
+
+**Regla de staging:** Si existe carpeta `staging/` con archivos pre-procesados:
+- `staging/exports/` → copiar directo al destino (ya están en Next.js + tokens)
+- `staging/converted/` → necesitan conversión de props→useAppState()
+- `staging/design-only/` → SOLO tomar CSS/layout, NUNCA lógica
+- `staging/layout-global/` → Header/Footer, verificar secciones completas
+
+SIEMPRE preferir archivos de staging/ sobre los exports crudos de Figma.
+
+**Después de CADA migración:**
+```bash
+bash scripts/validate-migration.sh
+```
+Si hay errores, corregir ANTES de hacer commit.
+Si el Header no tiene 6/6 secciones, la migración está INCOMPLETA.
