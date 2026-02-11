@@ -16,7 +16,7 @@ export function ProductDetailLayout({
           isDarkMode ? "bg-[#0a0806]" : "bg-white"
         }`}
       >
-        <div className="pt-20 md:pt-24">{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );

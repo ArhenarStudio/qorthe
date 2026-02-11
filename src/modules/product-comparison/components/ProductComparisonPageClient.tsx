@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { ProductComparison } from "./ProductComparison";
 import type { ComparisonProduct } from "../types";
 import type { CatalogProduct } from "@/modules/product";
+import { useAppState } from "@/modules/app-state";
 
 interface ProductComparisonPageClientProps {
   products: CatalogProduct[];
@@ -24,9 +24,7 @@ function catalogToComparison(p: CatalogProduct): ComparisonProduct {
 export function ProductComparisonPageClient({
   products,
 }: ProductComparisonPageClientProps) {
-  const router = useRouter();
-  const [language, setLanguage] = useState<"es" | "en">("es");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { language, isDarkMode } = useAppState();
   const [selectedProducts, setSelectedProducts] = useState<ComparisonProduct[]>(
     []
   );
@@ -81,30 +79,7 @@ export function ProductComparisonPageClient({
         isDarkMode ? "bg-[#0a0806] text-[#f5f0e8]" : "bg-white text-gray-900"
       }`}
     >
-      <header className="fixed left-0 right-0 top-0 z-40 flex items-center justify-between border-b border-sand-200 bg-sand-50/95 px-4 py-3 backdrop-blur dark:border-walnut-800 dark:bg-walnut-900/95">
-        <button
-          onClick={() => router.push("/")}
-          className="font-medium text-walnut-700 hover:text-walnut-800 dark:text-walnut-200 dark:hover:text-walnut-100"
-        >
-          Davidsons Design
-        </button>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setLanguage((l) => (l === "es" ? "en" : "es"))}
-            className="rounded px-3 py-1.5 text-sm text-walnut-600 hover:bg-walnut-100 dark:text-walnut-300 dark:hover:bg-walnut-800"
-          >
-            {language === "es" ? "EN" : "ES"}
-          </button>
-          <button
-            onClick={() => setIsDarkMode((m) => !m)}
-            className="rounded px-3 py-1.5 text-sm text-walnut-600 hover:bg-walnut-100 dark:text-walnut-300 dark:hover:bg-walnut-800"
-          >
-            {isDarkMode ? "☀️" : "🌙"}
-          </button>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-[1440px] px-4 pb-24 pt-32 md:px-8 lg:px-12">
+      <main className="mx-auto max-w-[1440px] px-4 pb-24 pt-0 md:px-8 lg:px-12">
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-3xl font-medium md:text-4xl lg:text-5xl">
             {t.title}

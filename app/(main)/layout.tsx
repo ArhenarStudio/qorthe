@@ -10,7 +10,7 @@ export default function MainLayout({
   return (
     <>
       <Header />
-      {children}
+      <div className="pt-20 md:pt-24">{children}</div>
       <Footer />
       <GlobalWidgets />
     </>

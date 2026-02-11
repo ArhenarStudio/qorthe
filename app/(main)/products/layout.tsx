@@ -16,7 +16,7 @@ export default function ProductsLayout({
           isDarkMode ? "bg-[#0a0806]" : "bg-white"
         }`}
       >
-        <main className="flex-1 pt-20 md:pt-24">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );
