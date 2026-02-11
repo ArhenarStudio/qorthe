@@ -1,509 +1,86 @@
-# ═══════════════════════════════════════════════════════════════
-# DAVIDSONS DESIGN – CURSOR RULES V3
-# Flujo automatizado: Figma → Conversión → Migración → Validación → Deploy
-# Preparado para RockStage Commerce SaaS
-# ═══════════════════════════════════════════════════════════════
+# Davidsons Design – Cursor Rules (Copiloto técnico)
 
-## ⚡ MIGRATION MAP (LEER PRIMERO)
+## Estructura obligatoria de TODOS los prompts
 
-**Antes de cualquier migración, LEE el archivo MIGRATION_MAP.md en la raíz del proyecto.**
+Todo prompt de ingeniería DEBE empezar con estas cuatro secciones. Si el usuario no las incluye, el asistente debe pedirlas o inferirlas antes de actuar:
 
-Este archivo contiene:
-- Mapa exacto de cada archivo Figma → destino en producción
-- Clasificación: 🟢 Directo, 🟡 Convertir, 🔴 Protegido, ⚫ No migrar, 🔵 Nuevo
-- Conversiones Vite→Next.js requeridas
-- Verificación post-migración
+1. **Ruta del proyecto**  
+   Ejemplo: `~/Documents/davidsons-design`
 
-## ⚡ VALIDACIÓN OBLIGATORIA
+2. **Objetivo claro**  
+   Qué se quiere lograr en una o dos frases.
 
-**Después de CADA migración, ejecutar:**
+3. **Archivos exactos a tocar**  
+   Lista explícita de archivos o rutas que se pueden modificar. Si no se especifica, no asumir.
+
+4. **Qué NO debe tocar**  
+   Lista de archivos, carpetas o dominios (código, layout, lógica) que no se deben modificar.
+
+---
+
+## Ruta base del proyecto
+
+La ruta base del repositorio es:
+
+```
+~/Documents/davidsons-design
+```
+
+Todas las referencias a archivos o rutas del proyecto deben ser relativas a esta raíz.
+
+---
+
+## Convención DSD V5 — Content Only
+
+- **Páginas (Content Only):** Las páginas en `app/**/page.tsx` y los componentes de contenido en `src/modules/**` NO deben renderizar `<Header />` ni `<Footer />`. Solo contienen el contenido de la página.
+- **Header y Footer solo en layouts:** `<Header />` y `<Footer />` se renderizan únicamente en layouts (por ejemplo `app/layout.tsx` o layouts de grupo de rutas), nunca dentro de un `page.tsx` ni dentro de componentes de módulo que representen una página de contenido.
+- **GlobalWidgets:** Se renderiza una sola vez desde el layout global (por ejemplo `app/layout.tsx`), no desde páginas ni desde otros layouts que ya estén bajo ese layout.
+
+Al proponer o modificar código, respetar siempre esta convención.
+
+---
+
+## Zonas protegidas — NO modificar sin instrucción explícita
+
+Estas rutas están protegidas. No modificar su lógica, integraciones ni estructura salvo que el prompt lo indique de forma explícita y acotada:
+
+- **`src/lib/shopify/**`** — Cliente Shopify, cart, customer, queries. No tocar.
+- **`src/lib/supabase/**`** — Cliente Supabase, server, middleware. No tocar.
+- **`src/modules/cart/**`** — Carrito (useCart, CartPage, CartDrawer, CartButton). No tocar lógica de carrito/checkout.
+- **`src/modules/auth/**`** — Autenticación (useAuth, config, tipos). No tocar.
+
+Cualquier cambio en estos ámbitos debe limitarse a lo que el usuario pida (por ejemplo “solo cambiar texto” o “solo esta función”) y no debe alterar integraciones con Shopify, Supabase o flujos de auth/cart.
+
+---
+
+## Comandos en terminal
+
+Todos los comandos que se ejecuten en el proyecto DEBEN ejecutarse desde la raíz del repositorio. Incluir siempre:
+
 ```bash
-bash scripts/validate-migration.sh
-```
-Si hay errores, corregir ANTES de hacer commit.
-Si el Header no tiene 6/6 secciones, la migración está INCOMPLETA.
-
-## ⚡ CONVERSIÓN AUTOMÁTICA VITE → NEXT.JS
-
-Cuando migres un componente de Figma (Vite) al proyecto (Next.js),
-aplica TODAS estas transformaciones automáticamente:
-
-1. Agregar `"use client"` al inicio del archivo
-2. Reemplazar props de estado por contexto:
-   - `language` prop → `const { language } = useAppState()`
-   - `isDarkMode` prop → `const { isDarkMode } = useAppState()`
-   - `onToggleDarkMode` prop → `const { toggleDarkMode } = useAppState()`
-   - `onToggleLanguage` prop → `const { toggleLanguage } = useAppState()`
-   - `showWhatsApp` prop → `const { showWhatsApp } = useAppState()`
-   - `showChat` prop → `const { showChat } = useAppState()`
-3. Reemplazar navegación:
-   - `onNavigateXxx` props → `<Link href="/xxx">` de `next/link`
-   - `onClick={() => navigate('/path')}` → `<Link href="/path">`
-   - Eliminar todas las props `onNavigate*` del interface
-4. Reemplazar imports:
-   - `import { Footer } from './Footer'` → ELIMINAR (Footer viene de layout)
-   - `import { motion } from 'motion/react'` → verificar package.json
-   - `import { ImageWithFallback } from './figma/...'` → `import Image from 'next/image'`
-5. Reemplazar auth/cart mock por hooks reales:
-   - Props `isAuthenticated`, `userName` → `const { isAuthenticated, user } = useAuth()`
-   - Props `cartItemsCount` → `const { cart } = useCart()`
-6. Limpiar interface:
-   - Eliminar TODAS las props que ahora vienen del contexto
-   - Si el componente queda sin props, hacerlo `export function Componente()`
-
-## ⚡ PROTOCOLO DE VERIFICACIÓN (OBLIGATORIO)
-
-Después de CADA migración, ejecutar:
-
-```bash
-# 1. TypeScript compila sin errores
-npx tsc --noEmit
-
-# 2. Integraciones protegidas intactas
-grep -r "useCart" src/modules/cart/hooks/useCart.ts | head -5
-grep -r "signIn\|signUp" src/modules/auth/ | head -5
-grep -r "createClient" src/lib/shopify/client.ts | head -3
-
-# 3. Estado global conectado
-grep -r "useAppState" src/modules/header/components/Header.tsx
-grep -r "useAppState" src/modules/footer/components/Footer.tsx
+cd ~/Documents/davidsons-design
 ```
 
-Si algún check falla, DETENER y reportar antes de continuar.
-
-## ⚡ REGLA DE SECCIONES COMPLETAS
-
-Cuando migres un componente, verificar que TODAS las secciones del
-diseño de Figma estén presentes en el resultado final:
-
-- Contar secciones en archivo Figma
-- Contar secciones en archivo migrado
-- Si faltan secciones → ERROR, agregar las faltantes
-
-Ejemplo: Header Mobile Menu debe tener 6 secciones:
-1. Navegación, 2. Auth, 3. Servicios y Recursos,
-4. Herramientas, 5. Configuración (4 toggles), 6. Legal
-
-Si el resultado tiene menos de 6 → la migración está incompleta.
-
-## CONTEXTO DEL PROYECTO
-
-Este es un e-commerce de muebles artesanales construido con:
-- **Framework:** Next.js 16+ (App Router)
-- **Estilos:** Tailwind CSS v4
-- **Backend:** Shopify Headless (Hydrogen React)
-- **Auth:** Supabase (login, registro, sesiones)
-- **Deploy:** Vercel (auto-deploy en push a main)
-- **Dominio:** davidsonsdesign.com
-- **Arquitectura:** Sistema modular (cada feature es un módulo/plugin independiente)
-
-### Rutas críticas:
-- **Proyecto Next.js:** ~/Documents/davidsons-design/
-- **Exports de Figma:** ~/Documents/DavidSons Design - Figma/
-- **Módulos activos:** src/modules/{nombre}/components/
-- **Backups/Versiones:** src/modules/{nombre}/versions/
-- **Mappings Figma:** src/figma-versions/
-- **Logs de migración:** src/figma-versions/migration-logs/
-- **Componentes UI:** src/components/ui/ (shadcn)
-- **Componentes compartidos:** src/components/shared/
-- **Shopify client:** src/lib/shopify/
-- **Supabase client:** src/lib/supabase/
-- **Auth module:** src/modules/auth/
-
-### Módulos existentes (V2):
-- header → src/modules/header/
-- footer → src/modules/footer/
-- landing → src/modules/landing/
-- product → src/modules/product/
-- cart → src/modules/cart/
-- checkout → src/modules/checkout/
-- customer-account → src/modules/customer-account/
-- auth → src/modules/auth/
-
-### Integraciones activas:
-- **Shopify Storefront API:** productos, carrito, checkout, metafields
-- **Supabase Auth:** login, registro, reset password, sesiones
-- **Shopify Customer API:** sync de usuarios al registrar
-- **useAuth hook:** estado de autenticación en toda la app
-- **useCart hook:** carrito real con Shopify Cart API
+antes del comando de negocio (por ejemplo `npm run build`, `npx tsc --noEmit`, etc.), o ejecutar el comando en un shell que ya tenga como directorio de trabajo `~/Documents/davidsons-design`.
 
 ---
 
-## SISTEMA DE CLASIFICACIÓN: MÓDULO vs PÁGINA
+## Reportes y validación
 
-### MÓDULO (src/modules/[nombre]/)
-Funcionalidad reutilizable que puede:
-- Aparecer en múltiples páginas
-- Tener su propia lógica/estado (hooks)
-- Ser activado/desactivado en el futuro (plugin SaaS)
-- Tener componentes, hooks, tipos propios
+Tras cualquier cambio que afecte código del proyecto:
 
-Estructura:
-```
-src/modules/[nombre]/
-├── components/
-│   └── [Componente].tsx
-├── hooks/ (si necesita estado)
-│   └── use[Nombre].ts
-├── types/
-│   └── index.ts
-├── index.ts (exports centralizados)
-└── versions/
-    └── CHANGELOG.md
-```
-
-### PÁGINA (app/[ruta]/page.tsx)
-Contenido único con una sola ruta:
-- No se reutiliza en otras partes
-- No tiene lógica compleja propia
-- Puede importar módulos existentes
-
----
-
-## MANIFEST DE VERSIONES
-
-### V3 — Clasificación de nuevos componentes:
-
-#### MÓDULOS NUEVOS:
-| Nombre en Figma | Módulo | Descripción | Ruta |
-|-----------------|--------|-------------|------|
-| WhatsAppButton | whatsapp-button | Widget flotante de contacto (va en layout global) | Sin ruta propia, se renderiza en layout.tsx |
-| Newsletter | newsletter | Sección de suscripción email | Sin ruta propia, se integra en landing/footer |
-| ProductReviews | product-reviews | Sistema de reseñas de productos | Se integra en página de producto |
-| FinancingCalculator + FinancingCalculatorPage | financing-calculator | Calculadora de financiamiento | /financing-calculator |
-| ProductComparison + ProductComparisonPage | product-comparison | Comparador de productos | /compare |
-
-#### PÁGINAS NUEVAS:
-| Nombre en Figma | Ruta | Descripción |
-|-----------------|------|-------------|
-| AppointmentPage | /appointment | Sistema de agendamiento de citas |
-| BlogPage | /blog | Blog con artículos |
-| ProjectGalleryPage | /gallery | Galería de proyectos realizados |
-| FAQPage | /faq | Preguntas frecuentes |
-
----
-
-## COMANDO: "Actualiza mi sitio a V[N]"
-
-Cuando el usuario diga cualquier variación de "actualiza mi sitio", 
-"migra a V3", "aplica V4", ejecuta este flujo COMPLETO:
-
-### PASO 1 — DETECTAR VERSIÓN Y EXPORTS
-1. Identifica V[N] del comando del usuario
-2. Busca carpeta: ~/Documents/DavidSons Design - Figma/DSD V[N]/
-3. Si no existe, pregunta al usuario dónde están los exports
-4. Busca la versión anterior V[N-1] para comparar
-5. Confirma: "Detecté DSD V[N]. Voy a comparar contra V[N-1]. ¿Procedo?"
-
-### PASO 2 — ESCANEAR Y CLASIFICAR
-Escanea todos los archivos en DSD V[N]/ y clasifica:
-
-1. **Revisar el MANIFEST arriba** — si el componente está listado, 
-   usar la clasificación definida (módulo o página)
-2. **Si NO está en el manifest** — clasificar por convención de nombre:
-   - Carpetas con prefijo `MODULE_` → módulo
-   - Carpetas con prefijo `PAGE_` → página
-   - Si no tiene prefijo → preguntar al usuario
-3. **Si ya existe en V[N-1]** → es una MODIFICACIÓN (comparar diff)
-
-### PASO 3 — DIFF AUTOMÁTICO
-Para archivos que ya existían en V[N-1]:
-- Compara contenido archivo por archivo
-- Categoriza: NUEVOS, MODIFICADOS, SIN CAMBIOS, ELIMINADOS
-- Para cada MODIFICADO, describe qué cambió en lenguaje natural
-
-Genera reporte: src/figma-versions/migration-logs/diff-V[N-1]-vs-V[N]-[fecha].md
-
-### PASO 4 — MOSTRAR PLAN DE MIGRACIÓN
-Antes de aplicar NADA, muestra:
-
-```
-📋 PLAN DE MIGRACIÓN V[N-1] → V[N]
-
-🆕 NUEVOS MÓDULOS:
-- whatsapp-button → src/modules/whatsapp-button/ (widget flotante)
-  → Se agrega en app/layout.tsx
-- newsletter → src/modules/newsletter/ (suscripción)
-  → Se integra en LandingPage y/o Footer
-- product-reviews → src/modules/product-reviews/ (reseñas)
-  → Se integra en página de producto
-- financing-calculator → src/modules/financing-calculator/
-  → Nueva ruta: /financing-calculator
-- product-comparison → src/modules/product-comparison/
-  → Nueva ruta: /compare
-
-📄 NUEVAS PÁGINAS:
-- /appointment → app/appointment/page.tsx
-- /blog → app/blog/page.tsx
-- /gallery → app/gallery/page.tsx
-- /faq → app/faq/page.tsx
-
-✏️ MODIFICACIONES:
-- [lista de componentes modificados con descripción del cambio]
-
-✅ SIN CAMBIOS: [N] archivos
-
-¿Procedo con la migración? (sí/no)
-```
-
-NUNCA apliques cambios sin confirmación del usuario.
-
-### PASO 5 — EJECUTAR MIGRACIÓN (solo tras confirmación)
-
-#### Para NUEVOS MÓDULOS:
-1. Crear estructura completa del módulo:
+1. **Reporte de cambios:** Indicar de forma breve qué archivos se modificaron y qué se añadió, quitó o cambió en cada uno.
+2. **Validación TypeScript:** Incluir la ejecución de:
+   ```bash
+   cd ~/Documents/davidsons-design
+   npx tsc --noEmit
    ```
-   src/modules/[nombre]/
-   ├── components/[Componente].tsx
-   ├── hooks/use[Nombre].ts (si necesita estado)
-   ├── types/index.ts
-   ├── index.ts
-   └── versions/CHANGELOG.md
+   e indicar si hay errores o warnings relevantes.
+3. **Build:** Si aplica, indicar que se ejecute (o ejecutar):
+   ```bash
+   cd ~/Documents/davidsons-design
+   npm run build
    ```
-2. Crear ruta si aplica: app/[ruta]/page.tsx
-3. Si usa Supabase o APIs externas → `export const dynamic = "force-dynamic"`
-4. Integrar donde corresponda (layout, producto, landing, etc.)
+   y resumir si el build termina correctamente o con errores.
 
-#### Para NUEVAS PÁGINAS:
-1. Crear app/[ruta]/page.tsx
-2. Si es contenido estático, no necesita force-dynamic
-3. Si necesita datos dinámicos → `export const dynamic = "force-dynamic"`
-
-#### Para MODIFICACIONES:
-1. Crear backup: versions/[Componente].v[N-1].tsx
-2. Aplicar SOLO los cambios del diff, NO reemplazar archivo completo
-3. Adaptar código Figma (Vite/React) → Next.js:
-   - `<a href>` → `<Link href>` de Next.js
-   - `<img>` → `<Image>` de Next.js o ImageWithFallback
-   - Mantener imports de módulos correctos
-   - Conservar integraciones Shopify/Supabase existentes
-   - Conservar hooks, lógica de estado, useAuth, useCart
-4. Actualizar CHANGELOG del módulo
-
-### PASO 6 — ACTUALIZAR REGISTROS
-1. Crear/actualizar mapping: src/figma-versions/v[N]-mapping.json
-2. Actualizar CHANGELOGs de cada módulo tocado
-3. Generar migration log completo
-
-### PASO 7 — VERIFICACIÓN
-1. `npx tsc --noEmit` (debe pasar sin errores)
-2. Resumen final de archivos creados/modificados
-3. NO hacer push automático
-
-### PASO 8 — DEPLOY (solo si el usuario lo pide)
-```bash
-git add .
-git commit -m "feat: migrate Figma DSD V[N] - [resumen de cambios]"
-git push
-# Vercel deploya automáticamente
-```
-
----
-
-## MAPEO FIGMA → MÓDULOS (componentes existentes)
-
-| Archivo Figma | Módulo Next.js |
-|---------------|----------------|
-| Header.tsx | src/modules/header/components/Header.tsx |
-| Footer.tsx | src/modules/footer/components/Footer.tsx |
-| LandingPage.tsx | src/modules/landing/components/LandingPage.tsx |
-| ProductDetail.tsx | src/modules/product/components/ProductDetail.tsx |
-| ProductCatalog.tsx | src/modules/product/components/ProductCatalog.tsx |
-| ProductInfo.tsx | src/modules/product/components/ProductInfo.tsx |
-| ProductGallery.tsx | src/modules/product/components/ProductGallery.tsx |
-| ProductTabs.tsx | src/modules/product/components/ProductTabs.tsx |
-| ProductBreadcrumb.tsx | src/modules/product/components/ProductBreadcrumb.tsx |
-| CartDrawer.tsx | src/modules/cart/components/CartDrawer.tsx |
-| CartPage.tsx | src/modules/cart/components/CartPage.tsx |
-| CartButton.tsx | src/modules/cart/components/CartButton.tsx |
-| CheckoutPage.tsx | src/modules/checkout/components/CheckoutPage.tsx |
-| PaymentPage.tsx | src/modules/checkout/components/PaymentPage.tsx |
-| OrderConfirmationPage.tsx | src/modules/checkout/components/OrderConfirmationPage.tsx |
-| LoginPage.tsx | src/modules/customer-account/components/LoginPage.tsx |
-| RegisterPage.tsx | src/modules/customer-account/components/RegisterPage.tsx |
-| AccountDashboard.tsx | src/modules/customer-account/components/AccountDashboard.tsx |
-| AddressModal.tsx | src/modules/customer-account/components/AddressModal.tsx |
-| AddressesPage.tsx | src/modules/customer-account/components/AddressesPage.tsx |
-| OrdersPage.tsx | src/modules/customer-account/components/OrdersPage.tsx |
-| OrderDetailPage.tsx | src/modules/customer-account/components/OrderDetailPage.tsx |
-| WishlistPage.tsx | src/modules/customer-account/components/WishlistPage.tsx |
-| CookiePolicy.tsx | src/modules/legal/components/CookiePolicy.tsx |
-| PrivacyPolicy.tsx | src/modules/legal/components/PrivacyPolicy.tsx |
-| TermsAndConditions.tsx | src/modules/legal/components/TermsAndConditions.tsx |
-
----
-
-## REGLAS CRÍTICAS
-
-### Arquitectura:
-- Módulos van en src/modules/
-- Componentes reutilizables van en src/components/shared/
-- Componentes UI (shadcn) van en src/components/ui/
-- NUNCA poner componentes sueltos en la raíz de src/
-
-### Next.js + Supabase:
-- NUNCA importar @/lib/supabase/server en Client Components
-- Client Components usan @/lib/supabase (que exporta solo el browser client)
-- Server Components importan directamente: import { createClient } from "@/lib/supabase/server"
-- Páginas con Supabase/Shopify fetch → export const dynamic = "force-dynamic"
-- Middleware solo corre en: /account/*, /login, /register
-
-### Integración:
-- Mantener useAuth y useCart funcionando en toda la app
-- Nuevos módulos que necesiten auth → importar useAuth de @/modules/auth
-- Nuevos módulos que necesiten carrito → importar useCart de @/modules/cart
-- Si necesita nuevas queries Shopify → agregarlas en src/lib/shopify/queries.ts
-
-### Convenciones:
-- TypeScript estricto
-- Tailwind CSS v4 para estilos
-- Componentes funcionales con hooks
-- Mantener idioma ES/EN con props language
-- Mantener dark mode con props isDarkMode
-- Imports con alias @/ configurados en tsconfig.json
-- Nombres de archivo en PascalCase para componentes
-
-### Deploy:
-- Push a main → Vercel deploya automáticamente
-- Variables de entorno nuevas → agregarlas en Vercel Settings
-- Después de agregar env vars en Vercel → Redeploy
-
----
-
-## COLORES OFICIALES (Figma Design System)
-- Background: #FAF8F5
-- Accent/Primary: #8B7355
-- Secondary: #D4C5B0
-- Text Primary: #2C2C2C
-- Text Secondary: #6B6B6B
-- Tipografía: ITC Avant Garde Gothic Pro
-
----
-
-## FUTURO: ROCKSTAGE COMMERCE SaaS
-Cada módulo creado aquí es un plugin reutilizable para otros sitios.
-La arquitectura modular permite:
-- Activar/desactivar módulos por cliente
-- Cada módulo es independiente y autocontenido
-- Supabase como auth centralizado multi-tenant
-- Shopify como backend de e-commerce
-
----
-
-## ⛔ PROTECCIÓN DE INTEGRACIONES — NO TOCAR EN MIGRACIONES
-
-Estos archivos tienen integraciones REALES con Shopify y Supabase.
-Durante migraciones de Figma, SOLO se puede actualizar el DISEÑO/UI,
-NUNCA reemplazar la lógica, hooks, o imports de estos archivos.
-
-### Archivos protegidos — Shopify Cart API:
-- src/modules/cart/hooks/useCart.ts (conectado a Shopify Cart API real)
-- src/modules/cart/components/CartDrawer.tsx (usa useCart real)
-- src/modules/cart/components/CartPage.tsx (usa useCart real)
-- src/modules/cart/components/CartButton.tsx (usa useCart real)
-
-### Archivos protegidos — Shopify Storefront API:
-- src/modules/product/components/ProductInfo.tsx (usa variantId real)
-- app/products/page.tsx (Server Component con fetch Shopify)
-- app/products/[handle]/page.tsx (Server Component con metafields)
-- app/products/ProductsCatalogClient.tsx (datos reales de Shopify)
-- src/lib/shopify/* (NUNCA modificar)
-
-### Archivos protegidos — Supabase Auth:
-- src/modules/auth/* (NUNCA modificar)
-- src/lib/supabase/* (NUNCA modificar)
-- src/modules/customer-account/components/LoginPage.tsx (usa signIn real)
-- src/modules/customer-account/components/RegisterPage.tsx (usa signUp real)
-- src/modules/customer-account/components/AccountDashboard.tsx (usa useAuth real)
-- src/modules/header/components/Header.tsx (usa useAuth para sesión)
-- middleware.ts (protección de rutas con Supabase)
-
-### Archivos protegidos — Checkout:
-- src/modules/checkout/* (redirige a Shopify Checkout real)
-
-### Archivos protegidos — Build/Deploy:
-- app/not-found.tsx (configurado para Vercel, sin Supabase)
-- Todas las pages con export const dynamic = "force-dynamic" — NO quitar
-
-### Regla de oro:
-Si un archivo de Figma V[N] tiene el MISMO NOMBRE que un archivo protegido:
-1. NO reemplazar el archivo
-2. Comparar SOLO los cambios de UI/diseño (clases CSS, JSX layout)
-3. Aplicar cambios de diseño MANUALMENTE preservando toda la lógica
-4. Si hay duda, PREGUNTAR al usuario antes de modificar
-
----
-
-## ⛔ NO INTEGRAR DE FIGMA V3 (ya existen con datos reales)
-
-Estos archivos de Figma V3 usan datos MOCK y NO deben reemplazar
-los archivos actuales que están conectados a APIs reales:
-
-| Archivo Figma V3 | Razón para NO integrar |
-|---|---|
-| hooks/useCart.ts | Ya existe conectado a Shopify Cart API |
-| hooks/useWishlist.ts | Ya existe en customer-account |
-| data/products.ts | Productos vienen de Shopify real |
-| LoginPage.tsx | Conectado a Supabase Auth |
-| RegisterPage.tsx | Conectado a Supabase Auth |
-| AccountDashboard.tsx | Conectado a Supabase user data |
-| Header.tsx (lógica) | Tiene useAuth integrado |
-| NotFound.tsx | Configurado para Vercel build |
-| ProductCatalog.tsx (lógica) | Conectado a Shopify API |
-| ProductDetail.tsx (lógica) | Conectado con metafields reales |
-| CartDrawer.tsx / CartPage.tsx (lógica) | Usan Shopify Cart API |
-| CheckoutPage.tsx / PaymentPage.tsx | Redirigen a Shopify Checkout |
-| OrderConfirmationPage.tsx | Flujo de Shopify |
-| modules/settings/SettingsModule.tsx | No aplica aún |
-
----
-
-## ✅ V3 — PLAN DE INTEGRACIÓN
-
-### Nuevos módulos a crear:
-| Módulo | Ruta src/modules/ | Ruta app/ | Notas |
-|---|---|---|---|
-| whatsapp-button | src/modules/whatsapp-button/ | Sin ruta, va en layout.tsx | Widget flotante global |
-| newsletter | src/modules/newsletter/ | Sin ruta, integrar en landing/footer | Suscripción email |
-| product-reviews | src/modules/product-reviews/ | Sin ruta, integrar en producto | Sistema de reseñas |
-| financing-calculator | src/modules/financing-calculator/ | /financing-calculator | Calculadora + página |
-| product-comparison | src/modules/product-comparison/ | /compare | Comparador + página |
-| chat-widget | src/modules/chat-widget/ | Sin ruta, va en layout.tsx | Chat flotante |
-
-### Nuevas páginas a crear:
-| Página | Ruta app/ | Notas |
-|---|---|---|
-| AppointmentPage | /appointment | Sistema de citas |
-| BlogPage | /blog | Blog con artículos |
-| ProjectGalleryPage | /gallery | Galería de proyectos |
-| FAQPage | /faq | Preguntas frecuentes |
-| AboutUs | /about | Acerca de nosotros |
-| MissionVision | /mission-vision | Misión y visión |
-| Team | /team | Equipo de trabajo |
-| Timeline | /timeline | Historia de la empresa |
-| Certifications | /certifications | Certificaciones y premios |
-
-### Componentes globales/shared a crear:
-| Componente | Destino | Notas |
-|---|---|---|
-| Toast + ToastContainer | src/components/shared/ | Sistema de notificaciones |
-| ScrollToTop | src/components/shared/ | Botón flotante, integrar en layout |
-| CookieConsent | src/components/shared/ | Banner GDPR, integrar en layout |
-| LoadingScreen | src/components/shared/ | Pantalla de carga inicial |
-| SkeletonLoader | src/components/shared/ | Loading placeholders |
-| ConfirmModal | src/components/shared/ | Modal de confirmación genérico |
-| MetaTags | src/components/shared/ | SEO tags dinámicos |
-| ProductSearch | src/modules/product/components/ | Buscador, usar queries Shopify |
-| Breadcrumbs (global) | src/components/shared/ | Ya existe en product, hacer global |
-
-### Componentes UI (shadcn) — solo agregar los que NO existan:
-Comparar src/components/ui/ actual vs DSD V3/src/app/components/ui/
-Solo copiar los que falten. NO reemplazar los existentes.
-
-### Archivos a ACTUALIZAR (solo diseño, NO lógica):
-| Archivo | Qué tomar de V3 | Qué preservar |
-|---|---|---|
-| Footer.tsx | Nuevos estilos, layout V3 | Lógica actual, imports |
-| LandingPage.tsx | Nuevas secciones de V3 | Animaciones V2, estructura |
-| WishlistPage.tsx | Diseño V3 | Conexión con módulo existente |
-| Páginas legales | Contenido actualizado V3 | Estructura Next.js |
+El asistente debe proponer o ejecutar estas validaciones al finalizar tareas de código, salvo que el usuario indique lo contrario.

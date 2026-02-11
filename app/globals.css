@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* ITC Avant Garde Gothic Pro - fuente de marca */
+@font-face {
+  font-family: "ITC Avant Garde Gothic Pro";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ITCAvantGardeGothicPro-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "ITC Avant Garde Gothic Pro";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ITCAvantGardeGothicPro-Bold.woff2") format("woff2");
+}
+
 /* Paleta oficial DavidSons Design (Figma) */
 :root {
   --font-size: 16px;

@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAppState } from '@/modules/app-state';
-import { Header } from '@/modules/header';
-import { Footer } from '@/modules/footer';
 import { ArrowLeft, MapPin, CreditCard, Truck, CheckCircle, Clock } from 'lucide-react';
 import { ImageWithFallback } from '@/components/shared/ImageWithFallback';
 
@@ -45,8 +43,6 @@ interface OrderDetail {
 }
 
 interface OrderDetailPageProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
   onNavigateOrders: () => void;
   orderDetail: OrderDetail;
 }
@@ -141,31 +137,16 @@ const translations = {
 };
 
 export function OrderDetailPage({
-  onNavigateHome,
-  onNavigateProducts,
   onNavigateOrders,
   orderDetail
 }: OrderDetailPageProps) {
   const { language, isDarkMode } = useAppState();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const t = translations[language];
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -184,8 +165,6 @@ export function OrderDetailPage({
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
-      <Header />
-
       <div className="pt-28 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 lg:px-12">
           {/* Back Button */}
@@ -463,8 +442,6 @@ export function OrderDetailPage({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

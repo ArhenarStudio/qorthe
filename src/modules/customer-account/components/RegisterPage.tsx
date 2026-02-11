@@ -2,15 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useAppState } from "@/modules/app-state";
-import { Header } from "@/modules/header";
-import { Footer } from "@/modules/footer";
 import { useAuth } from "@/modules/auth";
 import { Mail, Lock, Eye, EyeOff, User, Phone, Loader } from "lucide-react";
 
 interface RegisterPageProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
-  onNavigateAccount?: () => void;
   onNavigateLogin: () => void;
 }
 
@@ -89,16 +84,9 @@ const translations = {
   },
 };
 
-export function RegisterPage({
-  onNavigateHome,
-  onNavigateProducts,
-  onNavigateAccount,
-  onNavigateLogin,
-}: RegisterPageProps) {
+export function RegisterPage({ onNavigateLogin }: RegisterPageProps) {
   const { language, isDarkMode } = useAppState();
   const { signUp } = useAuth();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -122,12 +110,8 @@ export function RegisterPage({
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const handleScroll = () => setIsScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleToggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
   const validateEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -212,8 +196,6 @@ export function RegisterPage({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header />
-
       <div className="pb-12 pt-28 md:pb-16 md:pt-32 lg:pb-20 lg:pt-40">
         <div className="mx-auto max-w-md px-4 md:px-8">
           <div className="mb-8 text-center md:mb-10">
@@ -536,8 +518,6 @@ export function RegisterPage({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

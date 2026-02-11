@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAppState } from '@/modules/app-state';
-import { Header } from '@/modules/header';
-import { Footer } from '@/modules/footer';
 import { CreditCard, Wallet, Building2, ChevronRight, Lock, Loader } from 'lucide-react';
 import { ImageWithFallback } from '@/components/shared/ImageWithFallback';
 
@@ -16,8 +14,6 @@ interface CartItem {
 }
 
 interface PaymentPageProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
   onNavigateCheckout: () => void;
   onPlaceOrder: (paymentData: any) => Promise<void>;
   cartItems: CartItem[];
@@ -178,8 +174,6 @@ const translations = {
 };
 
 export function PaymentPage({
-  onNavigateHome,
-  onNavigateProducts,
   onNavigateCheckout,
   onPlaceOrder,
   cartItems,
@@ -188,8 +182,6 @@ export function PaymentPage({
   total
 }: PaymentPageProps) {
   const { language, isDarkMode } = useAppState();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal' | 'transfer'>('card');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -205,18 +197,7 @@ export function PaymentPage({
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
 
   const formatCardNumber = (value: string) => {
     const cleaned = value.replace(/\s/g, '');
@@ -285,8 +266,6 @@ export function PaymentPage({
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
-      <Header />
-
       <div className="pt-28 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 lg:px-12">
           {/* Header */}
@@ -781,8 +760,6 @@ export function PaymentPage({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

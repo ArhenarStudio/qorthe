@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { Header } from "@/modules/header";
-import { Footer } from "@/modules/footer";
 import { useAppState } from "@/modules/app-state";
 
 export interface CatalogProduct {
@@ -18,18 +16,6 @@ export interface CatalogProduct {
 interface ProductCatalogProps {
   products: CatalogProduct[];
   onViewProduct: (productId: string) => void;
-  onBackToHome: () => void;
-  cartItemsCount?: number;
-  isAuthenticated?: boolean;
-  userName?: string;
-  onNavigateCart: () => void;
-  onNavigateAccount: () => void;
-  onNavigateLogin?: () => void;
-  onNavigateDashboard?: () => void;
-  onNavigateOrders?: () => void;
-  onNavigateWishlist?: () => void;
-  onNavigateAddresses?: () => void;
-  onLogout?: () => void;
 }
 
 type CategoryFilter = "all" | "chairs" | "tables" | "bedrooms";
@@ -93,24 +79,10 @@ const translations = {
 export function ProductCatalog({
   products,
   onViewProduct,
-  onBackToHome,
-  cartItemsCount,
-  isAuthenticated,
-  userName,
-  onNavigateCart,
-  onNavigateAccount,
-  onNavigateLogin,
-  onNavigateDashboard,
-  onNavigateOrders,
-  onNavigateWishlist,
-  onNavigateAddresses,
-  onLogout,
 }: ProductCatalogProps) {
   const { language, isDarkMode } = useAppState();
   const [activeCategory, setActiveCategory] =
     useState<CategoryFilter>("all");
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = translations[language];
 
   const filteredProducts =
@@ -133,31 +105,12 @@ export function ProductCatalog({
     { id: "bedrooms", label: t.bedrooms },
   ];
 
-  const handleNavigateProducts = () => {
-    window.scrollTo(0, 0);
-  };
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen((prev) => !prev);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header />
-
       <div className="pb-12 pt-20 md:pb-16 md:pt-24 lg:pb-20 lg:pt-32">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
           {/* Header */}
@@ -269,8 +222,6 @@ export function ProductCatalog({
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

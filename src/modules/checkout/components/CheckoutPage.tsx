@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAppState } from '@/modules/app-state';
-import { Header } from '@/modules/header';
-import { Footer } from '@/modules/footer';
 import { MapPin, ShoppingBag, ChevronRight, Plus, Edit } from 'lucide-react';
 import { ImageWithFallback } from '@/components/shared/ImageWithFallback';
 
@@ -27,8 +25,6 @@ interface Address {
 }
 
 interface CheckoutPageProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
   onNavigateCart: () => void;
   onNavigatePayment: () => void;
   onAddAddress: () => void;
@@ -141,8 +137,6 @@ const translations = {
 };
 
 export function CheckoutPage({
-  onNavigateHome,
-  onNavigateProducts,
   onNavigateCart,
   onNavigatePayment,
   onAddAddress,
@@ -153,8 +147,6 @@ export function CheckoutPage({
   onSelectAddress
 }: CheckoutPageProps) {
   const { language, isDarkMode } = useAppState();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<'free' | 'standard' | 'express'>('free');
   const [error, setError] = useState('');
 
@@ -166,18 +158,7 @@ export function CheckoutPage({
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
 
   const handleContinueToPayment = () => {
     if (!selectedAddressId) {
@@ -189,8 +170,6 @@ export function CheckoutPage({
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
-      <Header />
-
       <div className="pt-28 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 lg:px-12">
           {/* Header */}
@@ -609,8 +588,6 @@ export function CheckoutPage({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

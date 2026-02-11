@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAppState } from '@/modules/app-state';
-import { Header } from '@/modules/header';
-import { Footer } from '@/modules/footer';
 import { User, Package, MapPin, Heart, Settings, LogOut, Truck } from 'lucide-react';
 import { ImageWithFallback } from '@/components/shared/ImageWithFallback';
 
@@ -22,8 +20,6 @@ interface Order {
 }
 
 interface OrdersPageProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
   onNavigateDashboard: () => void;
   onNavigateAddresses: () => void;
   onNavigateWishlist: () => void;
@@ -122,8 +118,6 @@ const translations = {
 };
 
 export function OrdersPage({
-  onNavigateHome,
-  onNavigateProducts,
   onNavigateDashboard,
   onNavigateAddresses,
   onNavigateWishlist,
@@ -134,26 +128,13 @@ export function OrdersPage({
   orders
 }: OrdersPageProps) {
   const { language, isDarkMode } = useAppState();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'all' | 'processing' | 'shipped' | 'delivered' | 'cancelled'>('all');
 
   const t = translations[language];
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
 
   const filteredOrders = activeFilter === 'all' 
     ? orders 
@@ -184,8 +165,6 @@ export function OrdersPage({
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
-      <Header />
-
       <div className="pt-28 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20">
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -300,7 +279,7 @@ export function OrdersPage({
                     {t.empty.description}
                   </p>
                   <button
-                    onClick={onNavigateProducts}
+                    onClick={() => (window.location.href = "/products")}
                     className={`px-8 py-3.5 transition-opacity tracking-wide ${
                       isDarkMode ? 'bg-[#8b6f47] text-white hover:opacity-90' : 'bg-[#3d2f23] text-white hover:opacity-90'
                     }`}
@@ -411,8 +390,6 @@ export function OrdersPage({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

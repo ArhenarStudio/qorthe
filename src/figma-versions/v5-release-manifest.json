@@ -1,0 +1,88 @@
+{
+  "version": "DSD V5",
+  "date": "2026-02-10",
+  "scope": "Naming + manifest + mapping; no romper imports",
+  "changes": {
+    "content_only_pages": [
+      "app/page.tsx",
+      "app/products/page.tsx",
+      "app/products/[handle]/page.tsx",
+      "app/cart/page.tsx",
+      "app/login/page.tsx",
+      "app/register/page.tsx",
+      "app/checkout/page.tsx",
+      "app/checkout/payment/page.tsx",
+      "app/checkout/confirmation/page.tsx"
+    ],
+    "modules": [
+      "src/modules/app-state",
+      "src/modules/auth",
+      "src/modules/cart",
+      "src/modules/chat-widget",
+      "src/modules/checkout",
+      "src/modules/content-pages",
+      "src/modules/customer-account",
+      "src/modules/financing-calculator",
+      "src/modules/footer",
+      "src/modules/header",
+      "src/modules/landing",
+      "src/modules/newsletter",
+      "src/modules/product",
+      "src/modules/product-comparison",
+      "src/modules/product-reviews",
+      "src/modules/settings",
+      "src/modules/whatsapp-button"
+    ],
+    "widgets": [
+      "app/components/GlobalWidgets.tsx",
+      "src/modules/whatsapp-button/components/WhatsAppButton.tsx",
+      "src/modules/chat-widget/components/ChatWidget.tsx",
+      "src/modules/settings/components/SettingsModule.tsx",
+      "src/components/shared/ScrollToTop.tsx",
+      "src/components/shared/CookieConsent.tsx",
+      "src/modules/cart/components/CartDrawer.tsx"
+    ],
+    "protected": [
+      "src/modules/auth",
+      "src/modules/auth/hooks/useAuth.ts",
+      "src/modules/auth/auth.config.ts",
+      "src/modules/cart",
+      "src/modules/cart/hooks/useCart.ts",
+      "src/modules/cart/components/CartPage.tsx",
+      "src/modules/cart/components/CartDrawer.tsx",
+      "src/modules/checkout",
+      "src/modules/checkout/components/CheckoutPage.tsx",
+      "src/modules/checkout/components/PaymentPage.tsx",
+      "src/modules/checkout/components/OrderConfirmationPage.tsx",
+      "src/lib/shopify",
+      "src/lib/shopify/client.ts",
+      "src/lib/shopify/cart.ts",
+      "src/lib/shopify/customer.ts",
+      "src/lib/shopify/queries.ts",
+      "src/lib/supabase",
+      "src/lib/supabase/client.ts",
+      "src/lib/supabase/server.ts",
+      "src/lib/supabase/middleware.ts"
+    ],
+    "callers_updated": [
+      "app/page.tsx",
+      "app/products/ProductsCatalogClient.tsx",
+      "app/cart/CartPageRouteClient.tsx",
+      "app/login/LoginRouteClient.tsx",
+      "app/register/RegisterRouteClient.tsx",
+      "app/checkout/page.tsx",
+      "app/checkout/payment/page.tsx",
+      "app/checkout/confirmation/page.tsx",
+      "app/account/AccountPageClient.tsx",
+      "app/account/orders/OrdersRouteClient.tsx",
+      "app/account/addresses/AddressesRouteClient.tsx",
+      "app/account/orders/[id]/OrderDetailRouteClient.tsx",
+      "app/account/wishlist/WishlistRouteClient.tsx"
+    ],
+    "notes": [
+      "V5 Content Only: páginas ya no renderizan Header/Footer; layout (app/layout.tsx) no los incluye globalmente; Header/Footer se usan en layouts de producto y legal (products/layout, terms, privacy, cookies).",
+      "Payment step redirige a Shopify checkoutUrl (useCart). OrderConfirmation sigue con datos mock/local.",
+      "GlobalWidgets: WhatsAppButton, ChatWidget, SettingsModule, ScrollToTop, CookieConsent."
+    ]
+  }
+}

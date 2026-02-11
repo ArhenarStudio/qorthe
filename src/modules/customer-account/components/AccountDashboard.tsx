@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useAppState } from "@/modules/app-state";
-import { Header } from "@/modules/header";
-import { Footer } from "@/modules/footer";
 import { useAuth } from "@/modules/auth";
 import {
   User,
@@ -32,9 +30,6 @@ interface FavoriteProduct {
 }
 
 interface AccountDashboardProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
-  onNavigateAccount?: () => void;
   onNavigateOrders: () => void;
   onNavigateAddresses: () => void;
   onNavigateWishlist: () => void;
@@ -136,9 +131,6 @@ const translations = {
 };
 
 export function AccountDashboard({
-  onNavigateHome,
-  onNavigateProducts,
-  onNavigateAccount,
   onNavigateOrders,
   onNavigateAddresses,
   onNavigateWishlist,
@@ -163,19 +155,12 @@ export function AccountDashboard({
     window.location.href = "/";
   };
 
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
   const t = translations[language];
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const handleScroll = () => setIsScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -204,8 +189,6 @@ export function AccountDashboard({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header />
-
       <div className="pb-12 pt-28 md:pb-16 md:pt-32 lg:pb-20 lg:pt-40">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
@@ -503,8 +486,6 @@ export function AccountDashboard({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

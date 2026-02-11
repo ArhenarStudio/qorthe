@@ -31,11 +31,12 @@ export type {
 
 /** Obtiene el valor de un metafield por namespace y key. */
 export function getMetafield(
-  product: { metafields?: Array<{ namespace: string; key: string; value: string }> },
+  product: { metafields?: Array<{ namespace: string; key: string; value: string } | null> },
   namespace: string,
   key: string
 ): string | undefined {
+  if (!namespace || !key) return undefined;
   const list = product.metafields ?? [];
-  const m = list.find((f) => f.namespace === namespace && f.key === key);
+  const m = list.find((f) => f && f.namespace === namespace && f.key === key);
   return m?.value;
 }

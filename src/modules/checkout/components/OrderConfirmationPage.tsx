@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppState } from '@/modules/app-state';
-import { Header } from '@/modules/header';
-import { Footer } from '@/modules/footer';
 import { CheckCircle, Package, Mail, Download, ArrowRight, MapPin, CreditCard } from 'lucide-react';
 import { ImageWithFallback } from '@/components/shared/ImageWithFallback';
 
@@ -25,7 +23,6 @@ interface ShippingAddress {
 }
 
 interface OrderConfirmationPageProps {
-  onNavigateHome: () => void;
   onNavigateProducts: () => void;
   onNavigateOrders: () => void;
   onNavigateOrderDetail: (orderId: string) => void;
@@ -163,7 +160,6 @@ const translations = {
 };
 
 export function OrderConfirmationPage({
-  onNavigateHome,
   onNavigateProducts,
   onNavigateOrders,
   onNavigateOrderDetail,
@@ -179,30 +175,15 @@ export function OrderConfirmationPage({
   userEmail
 }: OrderConfirmationPageProps) {
   const { language, isDarkMode } = useAppState();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const t = translations[language];
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0a0806]' : 'bg-white'}`}>
-      <Header />
-
       <div className="pt-28 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 lg:px-12">
           {/* Success Header */}
@@ -550,8 +531,6 @@ export function OrderConfirmationPage({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAppState } from "@/modules/app-state";
 import { motion } from "motion/react";
-import { Header } from "@/modules/header";
-import { Footer } from "@/modules/footer";
 import { CartDrawer } from "@/modules/cart";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import {
@@ -175,16 +173,8 @@ const translations = {
 export function LandingPage() {
   const { language, isDarkMode } = useAppState();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const t = translations[language];
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const goProducts = () => (window.location.href = "/products");
 
@@ -195,8 +185,6 @@ export function LandingPage() {
           isDarkMode ? "bg-[#0a0806]" : "bg-white"
         }`}
       >
-        <Header />
-
         {/* Hero */}
         <section className="pb-12 pt-20 md:pb-16 md:pt-24 lg:pb-20 lg:pt-32">
           <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
@@ -562,8 +550,6 @@ export function LandingPage() {
             </AnimatedSection>
           </div>
         </section>
-
-        <Footer />
       </div>
 
       <CartDrawer

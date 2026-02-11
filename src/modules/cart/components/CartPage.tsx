@@ -1,17 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Header } from "@/modules/header";
-import { Footer } from "@/modules/footer";
 import { useAppState } from "@/modules/app-state";
 import { Plus, Minus, Trash2, ShoppingBag, Tag, Truck } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { useCart } from "../hooks/useCart";
 
 interface CartPageProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
-  onNavigateAccount?: () => void;
   onContinueShopping?: () => void;
 }
 
@@ -105,12 +100,7 @@ const translations = {
   },
 };
 
-export function CartPage({
-  onNavigateHome,
-  onNavigateProducts,
-  onNavigateAccount,
-  onContinueShopping,
-}: CartPageProps) {
+export function CartPage({ onContinueShopping }: CartPageProps) {
   const { language, isDarkMode } = useAppState();
   const {
     cartItems: items,
@@ -121,8 +111,6 @@ export function CartPage({
     removeItem: onRemoveItem,
   } = useCart();
 
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [shippingOption, setShippingOption] = useState<
     "free" | "standard" | "express"
@@ -135,7 +123,8 @@ export function CartPage({
     shippingOption === "free" ? 0 : shippingOption === "standard" ? 299 : 599;
   const total = subtotal + shippingCost;
 
-  const handleContinueShopping = onContinueShopping ?? onNavigateProducts;
+  const handleContinueShopping =
+    onContinueShopping ?? (() => (window.location.href = "/products"));
 
   const handleCheckout = () => {
     if (checkoutUrl) {
@@ -147,18 +136,7 @@ export function CartPage({
 
   useEffect(() => {
     window.scrollTo(0, 0);
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen((prev) => !prev);
-  };
 
   return (
     <div
@@ -166,8 +144,6 @@ export function CartPage({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header />
-
       <div className="pb-12 pt-28 md:pb-16 md:pt-32 lg:pb-20 lg:pt-40">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
           {/* Header */}
@@ -650,8 +626,6 @@ export function CartPage({
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

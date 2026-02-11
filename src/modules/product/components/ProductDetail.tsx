@@ -1,11 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useAppState } from "@/modules/app-state";
 import { ChevronLeft } from "lucide-react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { Header } from "@/modules/header";
-import { Footer } from "@/modules/footer";
 import { ProductBreadcrumb } from "./ProductBreadcrumb";
 import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
@@ -33,8 +30,6 @@ interface ProductDetailProps {
   relatedProducts: DetailProduct[];
   onBack: () => void;
   onViewRelated: (productId: string) => void;
-  onBackToHome: () => void;
-  onNavigateCart?: () => void;
 }
 
 const translations = {
@@ -94,30 +89,9 @@ export function ProductDetail({
   relatedProducts,
   onBack,
   onViewRelated,
-  onBackToHome,
-  onNavigateCart,
 }: ProductDetailProps) {
   const { language, isDarkMode } = useAppState();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = translations[language];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen((prev) => !prev);
-  };
-
-  const handleNavigateProducts = () => {
-    onBack();
-    window.scrollTo(0, 0);
-  };
 
   const galleryImages = product.images.map((url, i) => ({
     url: url.replace("200x200", "800x800"),
@@ -181,8 +155,6 @@ export function ProductDetail({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header />
-
       <div className="pb-12 pt-20 md:pb-16 md:pt-24 lg:pb-20 lg:pt-32">
         <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
           {/* Back Button */}
@@ -292,8 +264,6 @@ export function ProductDetail({
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

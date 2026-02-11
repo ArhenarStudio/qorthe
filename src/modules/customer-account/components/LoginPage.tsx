@@ -3,15 +3,10 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAppState } from "@/modules/app-state";
-import { Header } from "@/modules/header";
-import { Footer } from "@/modules/footer";
 import { useAuth } from "@/modules/auth";
 import { Mail, Lock, Eye, EyeOff, Loader } from "lucide-react";
 
 interface LoginPageProps {
-  onNavigateHome: () => void;
-  onNavigateProducts: () => void;
-  onNavigateAccount?: () => void;
   onNavigateRegister: () => void;
 }
 
@@ -76,20 +71,13 @@ const translations = {
   },
 };
 
-export function LoginPage({
-  onNavigateHome,
-  onNavigateProducts,
-  onNavigateAccount,
-  onNavigateRegister,
-}: LoginPageProps) {
+export function LoginPage({ onNavigateRegister }: LoginPageProps) {
   const { language, isDarkMode } = useAppState();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? "/account";
   const message = searchParams.get("message");
 
   const { signIn, resetPassword } = useAuth();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -105,12 +93,7 @@ export function LoginPage({
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const handleScroll = () => setIsScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleToggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   const validateEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
@@ -194,8 +177,6 @@ export function LoginPage({
         isDarkMode ? "bg-[#0a0806]" : "bg-white"
       }`}
     >
-      <Header />
-
       <div className="pb-12 pt-28 md:pb-16 md:pt-32 lg:pb-20 lg:pt-40">
         <div className="mx-auto max-w-md px-4 md:px-8">
           <div className="mb-8 text-center md:mb-10">
@@ -416,8 +397,6 @@ export function LoginPage({
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }
