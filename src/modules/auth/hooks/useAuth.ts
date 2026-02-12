@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
 import type { AuthUser, SignUpData, SignInData } from "../types";
-import { createShopifyCustomer } from "@/lib/shopify/customer";
+import { commerce } from "@/lib/commerce";
 
 function mapUser(user: User | null): AuthUser | null {
   if (!user) return null;
@@ -71,15 +71,15 @@ export function useAuth() {
       });
       if (error) throw error;
 
-      // Sync customer to Shopify (non-blocking; user stays in Supabase on failure)
-      createShopifyCustomer(
+      // Sync customer to commerce backend (non-blocking; user stays in Supabase on failure)
+      commerce.createCustomer(
         email,
         password,
         metadata?.firstName,
         metadata?.lastName
       ).then((result) => {
         if (!result.success) {
-          console.warn("[auth] Shopify customer sync failed:", result.errors);
+          console.warn("[auth] Commerce customer sync failed:", result.errors);
         }
       });
 

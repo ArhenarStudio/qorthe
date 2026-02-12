@@ -47,6 +47,12 @@
       "@/lib/shopify/*": [
         "./src/lib/shopify/*"
       ],
+      "@/lib/commerce": [
+        "./src/lib/commerce"
+      ],
+      "@/lib/commerce/*": [
+        "./src/lib/commerce/*"
+      ],
       "@/lib/supabase": [
         "./src/lib/supabase"
       ],

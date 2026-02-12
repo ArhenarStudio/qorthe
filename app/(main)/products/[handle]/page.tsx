@@ -5,70 +5,10 @@ import {
   ProductInfo,
   ProductTabs,
 } from "@/modules/product";
-import { storefrontQuery, getMetafield, type ShopifyProduct } from "@/lib/shopify";
+import { commerce, getMetafield } from "@/lib/commerce";
 import { ProductDetailLayout } from "./ProductDetailLayout";
 
 export const dynamic = "force-dynamic";
-
-const PRODUCT_QUERY = `
-  query GetProduct($handle: String!) {
-    product(handle: $handle) {
-      id
-      title
-      handle
-      description
-      featuredImage {
-        url
-        altText
-        width
-        height
-      }
-      variants(first: 10) {
-        nodes {
-          id
-          title
-          availableForSale
-          price {
-            amount
-            currencyCode
-          }
-          image {
-            url
-            altText
-            width
-            height
-          }
-        }
-      }
-      priceRange {
-        minVariantPrice {
-          amount
-          currencyCode
-        }
-      }
-      metafields(identifiers: [
-        { namespace: "dimensions", key: "length" },
-        { namespace: "dimensions", key: "width" },
-        { namespace: "dimensions", key: "height" },
-        { namespace: "dimensions", key: "weight" },
-        { namespace: "materials", key: "primary_wood" },
-        { namespace: "materials", key: "finish" },
-        { namespace: "production", key: "fabrication_time" },
-        { namespace: "artist", key: "name" },
-        { namespace: "care", key: "warranty_years" },
-        { namespace: "care", key: "care_instructions" }
-      ]) {
-        namespace
-        key
-        value
-      }
-    }
-  }
-`;
-
-interface ProductResponse {
-  product: ShopifyProduct | null;
-}
 
 const fallback = (v: string | undefined, fallbackVal: string) =>
   (v != null && v.trim() !== "" ? v.trim() : fallbackVal);
@@ -80,24 +20,22 @@ export default async function ProductPage({
 }) {
   const { handle } = await params;
 
-  const { product } = await storefrontQuery<ProductResponse>(PRODUCT_QUERY, {
-    handle,
-  });
+  const product = await commerce.getProductByHandle(handle);
 
   if (!product) {
     notFound();
   }
 
-  const image = product.featuredImage ?? product.variants?.nodes?.[0]?.image;
+  const image = product.featuredImage ?? product.variants?.[0]?.image;
   const price =
     product.priceRange?.minVariantPrice ??
-    product.variants?.nodes?.[0]?.price;
-  const compareAt = product.variants?.nodes?.[0]?.compareAtPrice;
+    product.variants?.[0]?.price;
+  const compareAt = product.variants?.[0]?.compareAtPrice;
 
   const images = image
     ? [
         { url: image.url, alt: image.altText ?? product.title },
-        ...(product.variants?.nodes?.filter((v) => v.image?.url).slice(0, 4).map((v) => ({
+        ...(product.variants?.filter((v) => v.image?.url).slice(0, 4).map((v) => ({
           url: v.image!.url,
           alt: v.image!.altText ?? product.title,
         })) ?? []),
@@ -112,10 +50,10 @@ export default async function ProductPage({
     );
   }
 
-  const priceNum = price ? parseFloat(price.amount) : 0;
+  const priceNum = price ? price.amount : 0;
   const originalPriceNum =
-    compareAt && parseFloat(compareAt.amount) > priceNum
-      ? parseFloat(compareAt.amount)
+    compareAt && compareAt.amount > priceNum
+      ? compareAt.amount
       : undefined;
   const discount =
     originalPriceNum != null && originalPriceNum > 0
@@ -189,7 +127,7 @@ export default async function ProductPage({
             fabricationTime={fabricationTime === "—" ? undefined : fabricationTime}
             warranty={warrantyNum}
             artistName={artistName === "Davidsons Design" ? undefined : artistName}
-            variantId={product.variants?.nodes?.[0]?.id}
+            variantId={product.variants?.[0]?.id}
           />
         </div>
 

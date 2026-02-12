@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  createCart,
-  getCart,
-  addToCart,
-  updateCartLine,
-  removeFromCart,
-  getStoredCartId,
-  setStoredCartId,
-  type ShopifyCart,
-} from "@/lib/shopify";
+import { commerce, type CommerceCart } from "@/lib/commerce";
 
 export interface CartItem {
   id: string;
@@ -22,52 +13,38 @@ export interface CartItem {
   description?: string;
 }
 
-function mapCartToItems(cart: ShopifyCart | null): CartItem[] {
-  if (!cart?.lines?.nodes?.length) return [];
-  return cart.lines.nodes.map((line) => {
-    const merch = line.merchandise;
-    const product = "product" in merch ? merch.product : null;
-    const title = product?.title ?? "Product";
-    const price = merch.price?.amount ? parseFloat(merch.price.amount) : 0;
-    const image =
-      merch.image?.url ?? "https://via.placeholder.com/120?text=Product";
-    return {
-      id: line.id,
-      name: title,
-      price,
-      quantity: line.quantity,
-      image,
-      variantId: merch.id,
-      description: undefined,
-    };
-  });
-}
-
-function getSubtotal(cart: ShopifyCart | null): number {
-  if (!cart?.cost?.subtotalAmount?.amount) return 0;
-  return parseFloat(cart.cost.subtotalAmount.amount);
+function mapCartToItems(cart: CommerceCart | null): CartItem[] {
+  if (!cart?.lines?.length) return [];
+  return cart.lines.map((line) => ({
+    id: line.id,
+    name: line.merchandise.productTitle,
+    price: line.merchandise.price.amount,
+    quantity: line.quantity,
+    image: line.merchandise.image?.url ?? "https://via.placeholder.com/120?text=Product",
+    variantId: line.merchandise.id,
+    description: undefined,
+  }));
 }
 
 export function useCart() {
-  const [cart, setCart] = useState<ShopifyCart | null>(null);
+  const [cart, setCart] = useState<CommerceCart | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const cartId = getStoredCartId();
   const cartItems = mapCartToItems(cart);
   const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = getSubtotal(cart);
+  const subtotal = cart?.subtotal?.amount ?? 0;
   const checkoutUrl = cart?.checkoutUrl ?? null;
 
   const loadCart = useCallback(async (id: string) => {
     try {
-      const data = await getCart(id);
+      const data = await commerce.getCart(id);
       setCart(data);
       if (!data) {
-        setStoredCartId(null);
+        commerce.setStoredCartId(null);
       }
     } catch {
-      setStoredCartId(null);
+      commerce.setStoredCartId(null);
       setCart(null);
     } finally {
       setIsLoading(false);
@@ -75,7 +52,7 @@ export function useCart() {
   }, []);
 
   useEffect(() => {
-    const id = getStoredCartId();
+    const id = commerce.getStoredCartId();
     if (id) {
       loadCart(id);
     } else {
@@ -87,12 +64,12 @@ export function useCart() {
     async (variantId: string, quantity: number) => {
       setActionLoading(true);
       try {
-        let id = getStoredCartId();
+        let id = commerce.getStoredCartId();
         if (!id) {
-          id = await createCart();
-          setStoredCartId(id);
+          id = await commerce.createCart();
+          commerce.setStoredCartId(id);
         }
-        const updated = await addToCart(id, variantId, quantity);
+        const updated = await commerce.addToCart(id, variantId, quantity);
         setCart(updated);
       } catch (e) {
         console.error("addToCart failed", e);
@@ -106,11 +83,11 @@ export function useCart() {
 
   const updateItem = useCallback(
     async (lineId: string, quantity: number) => {
-      const id = getStoredCartId();
+      const id = commerce.getStoredCartId();
       if (!id) return;
       setActionLoading(true);
       try {
-        const updated = await updateCartLine(id, lineId, quantity);
+        const updated = await commerce.updateCartLine(id, lineId, quantity);
         setCart(updated);
       } catch (e) {
         console.error("updateCartLine failed", e);
@@ -123,14 +100,14 @@ export function useCart() {
   );
 
   const removeItem = useCallback(async (lineId: string) => {
-    const id = getStoredCartId();
+    const id = commerce.getStoredCartId();
     if (!id) return;
     setActionLoading(true);
     try {
-      const updated = await removeFromCart(id, lineId);
+      const updated = await commerce.removeFromCart(id, lineId);
       setCart(updated);
-      if (!updated.lines?.nodes?.length) {
-        setStoredCartId(null);
+      if (!updated.lines?.length) {
+        commerce.setStoredCartId(null);
       }
     } catch (e) {
       console.error("removeFromCart failed", e);
@@ -141,7 +118,7 @@ export function useCart() {
   }, []);
 
   const clearCart = useCallback(() => {
-    setStoredCartId(null);
+    commerce.setStoredCartId(null);
     setCart(null);
   }, []);
 
@@ -151,13 +128,13 @@ export function useCart() {
     subtotal,
     checkoutUrl,
     isLoading,
-    actionLoading: actionLoading,
+    actionLoading,
     addItem,
     updateItem,
     removeItem,
     clearCart,
     refreshCart: () => {
-      const id = getStoredCartId();
+      const id = commerce.getStoredCartId();
       if (id) {
         setIsLoading(true);
         loadCart(id);
