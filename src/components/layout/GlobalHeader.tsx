@@ -86,7 +86,7 @@ export const GlobalHeader = () => {
     "Usa el código DAVIDSON10 para 10% OFF"
   ];
 
-  const isAuthenticated = true;
+  const isAuthenticated = false;
   const cartItemsCount = 2; 
   
   const onNavigateHome = () => router.push('/');
