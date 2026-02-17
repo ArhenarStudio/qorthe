@@ -1,200 +1,166 @@
 @import "tailwindcss";
 
-/* ITC Avant Garde Gothic Pro - fuente de marca */
-@font-face {
-  font-family: "ITC Avant Garde Gothic Pro";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/ITCAvantGardeGothicPro-Regular.woff2") format("woff2");
-}
-@font-face {
-  font-family: "ITC Avant Garde Gothic Pro";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/fonts/ITCAvantGardeGothicPro-Bold.woff2") format("woff2");
-}
+@variant dark (&:where(.dark, .dark *));
 
-/* Paleta oficial DavidSons Design (Figma) */
-:root {
-  --font-size: 16px;
-  --font-family: "ITC Avant Garde Gothic Pro", sans-serif;
-  --background: #faf8f5;
-  --foreground: #1a1a1a;
-  --primary: #1a1a1a;
-  --primary-foreground: #faf8f5;
-  --secondary: #d4c5b0;
-  --secondary-foreground: #1a1a1a;
-  --accent: #8b7355;
-  --accent-foreground: #faf8f5;
-  --muted: #e8e2d8;
-  --muted-foreground: #6b5e4f;
-  --border: rgba(107, 94, 79, 0.2);
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --radius: 0.625rem;
-  --input: transparent;
-  --input-background: #f5f1eb;
-  --switch-background: #cbced4;
-  --ring: #8b7355;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-}
-
-.dark {
-  --background: #1a1a1a;
-  --foreground: #faf8f5;
-  --primary: #faf8f5;
-  --primary-foreground: #1a1a1a;
-  --secondary: #3d3d3d;
-  --secondary-foreground: #faf8f5;
-  --accent: #8b7355;
-  --accent-foreground: #faf8f5;
-  --muted: #4d4d4d;
-  --muted-foreground: #e8e2d8;
-  --border: #3d3d3d;
-  --input-background: #2d2419;
-  --switch-background: #3d3d3d;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --background: #1a1a1a;
-    --foreground: #faf8f5;
-  }
-}
-
-/* Alias para compatibilidad con componentes existentes */
-@theme inline {
+@theme {
+  /* Colors — DSD V1.1 Design System */
+  --color-wood-950: #1a140e;
+  --color-wood-900: #2d2419;
+  --color-wood-800: #4E342E;
+  --color-wood-700: #5D4037;
+  --color-wood-600: #795548;
+  --color-wood-500: #8D6E63;
+  --color-wood-400: #A1887F;
+  --color-wood-300: #BCAAA4;
+  --color-wood-200: #D7CCC8;
+  --color-wood-100: #EFEBE9;
+  --color-wood-50: #faf9f8;
+  
+  --color-sand-500: #D7CCC8;
+  --color-sand-400: #E0DBd5;
+  --color-sand-300: #EBE5DE;
+  --color-sand-200: #f0ebe5;
+  --color-sand-100: #f5f0e8;
+  --color-sand-50: #faf9f6;
+  
+  --color-accent-gold: #C5A065;
+  --color-accent-dark: #8D6E63;
+  
+  /* Semantic Colors for UI Components */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  
   --color-border: var(--border);
-  --color-cream: #faf8f5;
-  --color-walnut: #8b7355;
-  --color-walnut-500: #8b7355;
-  --color-walnut-600: #6b5e4f;
-  --color-sand: #d4c5b0;
-  --color-sand-50: #e8e2d8;
-  --color-sand-100: #e8e2d8;
-  --color-sand-600: #6b5e4f;
-  --color-taupe: #6b5e4f;
-  --color-taupe-500: #6b5e4f;
-  --color-taupe-600: #6b5e4f;
-  --color-taupe-700: #5f5649;
-  --color-amber-500: #8b7355;
-  --color-amber-600: #6b5e4f;
-  --color-amber-50: #f5f1eb;
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+  --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* Typography */
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+  
+  /* Animations */
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.7s ease-out;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
-html {
-  overflow-x: hidden;
-  -webkit-text-size-adjust: 100%;
-}
+@layer base {
+  :root {
+    --background: #f5f0e8;
+    --foreground: #2d2419;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-family), Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
-}
+    --card: #ffffff;
+    --card-foreground: #2d2419;
 
-/* Animaciones para componentes V3 */
-@keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(1rem);
+    --popover: #ffffff;
+    --popover-foreground: #2d2419;
+
+    --primary: #2d2419;
+    --primary-foreground: #f5f0e8;
+
+    --secondary: #EFEBE9;
+    --secondary-foreground: #2d2419;
+
+    --muted: #EFEBE9;
+    --muted-foreground: #8D6E63;
+
+    --accent: #EFEBE9;
+    --accent-foreground: #2d2419;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #faf9f6;
+
+    --border: #D7CCC8;
+    --input: #D7CCC8;
+    --ring: #2d2419;
+
+    --radius: 0.5rem;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
+  :root.dark {
+    --background: #1a140e;
+    --foreground: #f5f0e8;
+
+    --card: #2d2419;
+    --card-foreground: #f5f0e8;
+
+    --popover: #2d2419;
+    --popover-foreground: #f5f0e8;
+
+    --primary: #f5f0e8;
+    --primary-foreground: #2d2419;
+
+    --secondary: #4E342E;
+    --secondary-foreground: #f5f0e8;
+
+    --muted: #4E342E;
+    --muted-foreground: #E0DBd5;
+
+    --accent: #4E342E;
+    --accent-foreground: #f5f0e8;
+
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f5f0e8;
+
+    --border: #4E342E;
+    --input: #4E342E;
+    --ring: #E0DBd5;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    color: var(--foreground);
+  }
+  
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: var(--foreground);
   }
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
 }
 
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out forwards;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
-}
-
-.animate-fade-out {
-  animation: fade-out 0.3s ease-out forwards;
-}
-
-.animate-scale-in {
-  animation: scale-in 0.2s ease-out forwards;
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
 }

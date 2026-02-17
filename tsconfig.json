@@ -23,42 +23,14 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@/modules/*": [
-        "./src/modules/*"
-      ],
-      "@/lib/module-manager/*": [
-        "./src/lib/module-manager/*"
-      ],
-      "@/lib/module-manager": [
-        "./src/lib/module-manager"
-      ],
-      "@/components/ui/*": [
-        "./src/components/ui/*"
-      ],
-      "@/components/shared/*": [
-        "./src/components/shared/*"
-      ],
-      "@/lib/shopify": [
-        "./src/lib/shopify"
-      ],
-      "@/lib/shopify/*": [
-        "./src/lib/shopify/*"
-      ],
-      "@/lib/commerce": [
-        "./src/lib/commerce"
-      ],
-      "@/lib/commerce/*": [
-        "./src/lib/commerce/*"
-      ],
-      "@/lib/supabase": [
-        "./src/lib/supabase"
-      ],
-      "@/lib/supabase/*": [
-        "./src/lib/supabase/*"
-      ]
+      "@/*": ["./*"],
+      "@/components/*": ["./src/components/*"],
+      "@/contexts/*": ["./src/contexts/*"],
+      "@/data/*": ["./src/data/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/modules/*": ["./src/modules/*"]
     }
   },
   "include": [
@@ -70,10 +42,6 @@
     "**/*.mts"
   ],
   "exclude": [
-    "node_modules",
-    "staging/**",
-    "src/modules/landing/versions/LandingPage.v2.tsx",
-    "src/**/versions/**",
-    "src/figma-versions/**"
+    "node_modules"
   ]
 }

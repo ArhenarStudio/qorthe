@@ -1,35 +1,34 @@
-import "@/lib/module-manager/registry";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import ClientProviders from "./providers";
 import "./globals.css";
-import { ClientProviders } from "./components/ClientProviders";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const playfair = Playfair_Display({
   subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Davidsons Design",
-  description: "Tienda de diseño Davidsons Design",
+  title: "DavidSon's Design — Tablas Artesanales de Madera",
+  description: "Piezas únicas en Parota, Cedro y Rosa Morada. Diseñadas para celebrar la vida.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
-      >
-        <ClientProviders>{children}</ClientProviders>
+    <html lang="es" suppressHydrationWarning>
+      <body className={`${playfair.variable} ${inter.variable} antialiased`}>
+        <ClientProviders>
+          {children}
+          <Toaster position="bottom-right" />
+        </ClientProviders>
       </body>
     </html>
   );

@@ -3,10 +3,10 @@
 //
 // Toda la lógica de commerce (productos, carrito, checkout,
 // customers) pasa por estas interfaces. El provider activo
-// (Shopify o Medusa) implementa los métodos reales.
+// (MedusaJS) implementa los métodos reales.
 //
-// Los módulos NUNCA importan de @/lib/shopify o @/lib/medusa
-// directamente. Siempre importan de @/lib/commerce.
+// Los módulos NUNCA importan del backend directamente.
+// Siempre importan de @/lib/commerce.
 // ═══════════════════════════════════════════════════════════════
 
 // ─── Product Types ───
@@ -83,7 +83,7 @@ export interface CommerceCustomerCreateResult {
 // ─── Provider Interface ───
 
 export interface CommerceProvider {
-  name: "shopify" | "medusa";
+  name: "medusa";
 
   // Products
   getProducts(first: number): Promise<CommerceProduct[]>;

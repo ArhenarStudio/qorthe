@@ -1,124 +1,103 @@
-# Davidsons Design – Cursor Rules (Copiloto técnico)
+# DavidSons Design V1.1 – Cursor Rules
 
-## Estructura obligatoria de TODOS los prompts
-
-Todo prompt de ingeniería DEBE empezar con estas cuatro secciones. Si el usuario no las incluye, el asistente debe pedirlas o inferirlas antes de actuar:
-
-1. **Ruta del proyecto**  
-   Ejemplo: `~/Documents/davidsons-design`
-
-2. **Objetivo claro**  
-   Qué se quiere lograr en una o dos frases.
-
-3. **Archivos exactos a tocar**  
-   Lista explícita de archivos o rutas que se pueden modificar. Si no se especifica, no asumir.
-
-4. **Qué NO debe tocar**  
-   Lista de archivos, carpetas o dominios (código, layout, lógica) que no se deben modificar.
-
----
-
-## Ruta base del proyecto
-
-La ruta base del repositorio es:
-
+## Ruta base
 ```
 ~/Documents/davidsons-design
 ```
 
-Todas las referencias a archivos o rutas del proyecto deben ser relativas a esta raíz.
+## Convención DSD V1.1
 
----
+- **Páginas (Content Only):** `app/**/page.tsx` NO renderiza Header ni Footer. Solo contenido.
+- **Header y Footer:** Solo en layouts (`app/(main)/layout.tsx`, `app/(checkout)/layout.tsx`).
+- **GlobalWidgets (Chat, WhatsApp, ScrollToTop):** Solo en `app/(main)/layout.tsx` via FeatureWidgets.
+- **Toaster:** Solo en `app/layout.tsx` (root).
 
-## Convención DSD V5 — Content Only
+## State global — Contexts separados
 
-- **Páginas (Content Only):** Las páginas en `app/**/page.tsx` y los componentes de contenido en `src/modules/**` NO deben renderizar `<Header />` ni `<Footer />`. Solo contienen el contenido de la página.
-- **Header y Footer solo en layouts:** `<Header />` y `<Footer />` se renderizan únicamente en layouts (por ejemplo `app/layout.tsx` o layouts de grupo de rutas), nunca dentro de un `page.tsx` ni dentro de componentes de módulo que representen una página de contenido.
-- **GlobalWidgets:** Se renderiza una sola vez desde el layout global (por ejemplo `app/layout.tsx`), no desde páginas ni desde otros layouts que ya estén bajo ese layout.
-
-Al proponer o modificar código, respetar siempre esta convención.
-
----
+- **ThemeContext** (`src/contexts/ThemeContext.tsx`): `useTheme()` → `{ theme, toggleTheme }`
+- **FeatureToggleContext** (`src/contexts/FeatureToggleContext.tsx`): `useFeatureToggle()` → `{ isChatEnabled, isWhatsAppEnabled, toggleChat, toggleWhatsApp }`
+- **NO usar** `useAppState()` — eso era V5.
 
 ## Zonas protegidas — NO modificar sin instrucción explícita
 
-Estas rutas están protegidas. No modificar su lógica, integraciones ni estructura salvo que el prompt lo indique de forma explícita y acotada:
+- `src/lib/supabase/**` — Cliente Supabase, server, middleware
+- `src/lib/commerce/**` — Commerce abstraction layer (backend: MedusaJS)
+- `.env.local` — Variables de entorno
 
-- **`src/lib/shopify/**`** — Cliente Shopify, cart, customer, queries. No tocar.
-- **`src/lib/supabase/**`** — Cliente Supabase, server, middleware. No tocar.
-- **`src/modules/cart/**`** — Carrito (useCart, CartPage, CartDrawer, CartButton). No tocar lógica de carrito/checkout.
-- **`src/modules/auth/**`** — Autenticación (useAuth, config, tipos). No tocar.
+## Backend: MedusaJS
+- NO hay Shopify en este proyecto. El backend es MedusaJS.
+- Todas las operaciones de commerce pasan por `src/lib/commerce/` → `medusa-adapter.ts`
+- Auth: Supabase (se mantiene independiente del commerce backend)
 
-Cualquier cambio en estos ámbitos debe limitarse a lo que el usuario pida (por ejemplo “solo cambiar texto” o “solo esta función”) y no debe alterar integraciones con Shopify, Supabase o flujos de auth/cart.
+## Estructura de archivos
 
----
+```
+app/
+├── layout.tsx              ← Root: fonts, providers, Toaster
+├── globals.css             ← Tokens, theme, Tailwind v4
+├── providers.tsx            ← ThemeProvider + FeatureToggleProvider
+├── (main)/
+│   ├── layout.tsx          ← Header + Footer + FeatureWidgets
+│   ├── page.tsx            ← Home
+│   ├── shop/
+│   ├── cart/
+│   ├── account/
+│   ├── auth/
+│   ├── quote/
+│   ├── about/
+│   ├── philosophy/
+│   ├── faq/
+│   ├── contact/
+│   ├── loyalty/
+│   ├── search/
+│   ├── admin/
+│   └── [legal pages]/
+├── (checkout)/
+│   ├── layout.tsx          ← CheckoutHeader + CheckoutFooter
+│   └── checkout/
+│       ├── page.tsx
+│       └── success/
+src/
+├── components/
+│   ├── layout/             ← GlobalHeader, GlobalFooter, DesktopMenu, NavigationOverlay, etc.
+│   ├── account/            ← 29 componentes de cuenta
+│   ├── quote/              ← 10 componentes de cotizador
+│   ├── features/           ← HeroSectionV2, BrandValues, etc.
+│   ├── auth/               ← AuthModal
+│   ├── cart/               ← CartDrawer
+│   ├── search/             ← GlobalSearchOverlay
+│   ├── shop/               ← ProductCard, LaserEngravingCustomization
+│   ├── reviews/            ← ProductReviews
+│   ├── newsletter/         ← NewsletterSuccessModal
+│   ├── figma/              ← ImageWithFallback
+│   ├── pages/              ← NotFoundPage
+│   ├── ui/                 ← shadcn components
+│   └── shared/
+├── contexts/               ← ThemeContext, FeatureToggleContext
+├── data/                   ← mockData, products, locations
+├── types/                  ← review.ts, etc.
+├── utils/                  ← api.ts, image.ts
+└── lib/                    ← commerce, shopify, supabase (PROTEGIDO)
+```
 
-## Comandos en terminal
+## Conversiones Vite → Next.js
 
-Todos los comandos que se ejecuten en el proyecto DEBEN ejecutarse desde la raíz del repositorio. Incluir siempre:
+| Vite (Figma V1.1) | Next.js (Producción) |
+|---|---|
+| Sin directiva | Agregar `"use client"` si usa hooks/state/events |
+| `import { useNavigate } from 'react-router'` | `import { useRouter } from 'next/navigation'` |
+| `navigate('/path')` | `router.push('/path')` |
+| `useLocation()` de react-router | `usePathname()` de next/navigation |
+| `<a href="/path">` internas | `<Link href="/path">` de next/link |
+| `import xxx from 'figma:asset/...'` | Mover asset a `/public/images/` y usar `/images/...` |
+| `import { useTheme } from '../context/ThemeContext'` | `import { useTheme } from '@/contexts/ThemeContext'` |
+| `import { useFeatureToggle } from '../context/FeatureToggleContext'` | `import { useFeatureToggle } from '@/contexts/FeatureToggleContext'` |
+
+## Comandos
 
 ```bash
 cd ~/Documents/davidsons-design
+npx tsc --noEmit    # Validación TypeScript
+npm run build       # Build completo
+npm run dev         # Dev server
 ```
-
-antes del comando de negocio (por ejemplo `npm run build`, `npx tsc --noEmit`, etc.), o ejecutar el comando en un shell que ya tenga como directorio de trabajo `~/Documents/davidsons-design`.
-
----
-
-## Reportes y validación
-
-Tras cualquier cambio que afecte código del proyecto:
-
-1. **Reporte de cambios:** Indicar de forma breve qué archivos se modificaron y qué se añadió, quitó o cambió en cada uno.
-2. **Validación TypeScript:** Incluir la ejecución de:
-   ```bash
-   cd ~/Documents/davidsons-design
-   npx tsc --noEmit
-   ```
-   e indicar si hay errores o warnings relevantes.
-3. **Build:** Si aplica, indicar que se ejecute (o ejecutar):
-   ```bash
-   cd ~/Documents/davidsons-design
-   npm run build
-   ```
-   y resumir si el build termina correctamente o con errores.
-
-El asistente debe proponer o ejecutar estas validaciones al finalizar tareas de código, salvo que el usuario indique lo contrario.
-
----
-
-## Pipeline de migración Figma
-
-**3 archivos críticos en la raíz del proyecto:**
-
-1. **component-manifest.json** — Contrato diseño↔código. Define para CADA componente:
-   - `figmaAction`: STRIP_AND_REPLACE | DESIGN_ONLY | REPLACE_DESIGN_ONLY | SKIP
-   - `destination`: ruta exacta en producción
-   - `preserveLogic`: imports/funciones que NUNCA se modifican
-   - `stripFromExport`: qué eliminar del export de Figma
-   LEE ESTE ARCHIVO antes de tocar cualquier componente.
-
-2. **token-map.json** — Mapeo de colores hardcodeados → design tokens.
-   Si ves `bg-[#0a0806]` en un export, es `bg-background`.
-   Si ves `text-[#f5f0e8]`, es `text-foreground`.
-
-3. **MIGRATION_MAP.md** — Mapa detallado con contexto.
-
-**Scripts de migración:**
-- `bash scripts/strip-figma.sh V[N]` — Pre-procesa exports de Figma Make
-- `bash scripts/validate-migration.sh` — Verificación post-migración (OBLIGATORIO)
-
-**Regla de staging:** Si existe carpeta `staging/` con archivos pre-procesados:
-- `staging/exports/` → copiar directo al destino (ya están en Next.js + tokens)
-- `staging/converted/` → necesitan conversión de props→useAppState()
-- `staging/design-only/` → SOLO tomar CSS/layout, NUNCA lógica
-- `staging/layout-global/` → Header/Footer, verificar secciones completas
-
-SIEMPRE preferir archivos de staging/ sobre los exports crudos de Figma.
-
-**Después de CADA migración:**
-```bash
-bash scripts/validate-migration.sh
-```
-Si hay errores, corregir ANTES de hacer commit.
-Si el Header no tiene 6/6 secciones, la migración está INCOMPLETA.

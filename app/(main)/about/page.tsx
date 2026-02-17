@@ -1,7 +1,5 @@
-import { AboutUs } from "@/modules/content-pages";
+import { AboutPage } from "@/components/pages/AboutPage";
 
-export const dynamic = "force-dynamic";
-
-export default function AboutPage() {
-  return <AboutUs />;
+export default function Page() {
+  return <AboutPage />;
 }

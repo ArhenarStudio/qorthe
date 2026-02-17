@@ -1,7 +1,5 @@
-import CartPageRouteClient from "./CartPageRouteClient";
+import { CartPage } from "@/components/pages/CartPage";
 
-export const dynamic = "force-dynamic";
-
-export default function CartPage() {
-  return <CartPageRouteClient />;
+export default function Page() {
+  return <CartPage />;
 }

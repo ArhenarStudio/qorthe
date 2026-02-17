@@ -1,7 +1,5 @@
-import { FAQPage } from "@/modules/content-pages";
+import { FaqPage } from "@/components/pages/FaqPage";
 
-export const dynamic = "force-dynamic";
-
-export default function FAQPageRoute() {
-  return <FAQPage />;
+export default function Page() {
+  return <FaqPage />;
 }

@@ -1,7 +1,5 @@
-"use client";
+import { Home } from "@/components/pages/Home";
 
-import { LandingPage } from "@/modules/landing";
-
-export default function HomePage() {
-  return <LandingPage />;
+export default function Page() {
+  return <Home />;
 }
