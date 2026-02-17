@@ -75,7 +75,7 @@ export const BillingStats = () => {
                   }}
                   itemStyle={{ color: '#5B4B49', fontWeight: 600, fontSize: '14px' }}
                   labelStyle={{ color: '#8D7F7D', fontSize: '12px', marginBottom: '4px' }}
-                  formatter={(value: number) => [`$${value.toLocaleString()}`, 'Facturado']}
+                  formatter={(value: number | undefined) => [`$${(value ?? 0).toLocaleString()}`, 'Facturado'] as [string, string]}
                 />
                 <Bar dataKey="amount" radius={[6, 6, 0, 0]} animationDuration={1500}>
                   {data.map((entry, index) => (
