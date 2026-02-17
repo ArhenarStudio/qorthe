@@ -133,6 +133,12 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
+    cursor: default;
+  }
+
+  a, button, [role="button"], input[type="submit"], input[type="button"],
+  select, label[for], .cursor-pointer, [onclick] {
+    cursor: pointer;
   }
   
   h1, h2, h3, h4, h5, h6 {

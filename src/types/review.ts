@@ -8,6 +8,7 @@ export interface Review {
   rating: number;
   comment: string;
   response?: string;
+  helpful?: number;
   createdAt: string;
   updatedAt?: string;
 }

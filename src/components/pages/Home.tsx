@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { ChevronRight, Leaf, Hexagon, Zap, Tag, Star, ArrowRight } from 'lucide-react';
 import { addToCart } from '@/utils/cartActions';
@@ -84,6 +85,7 @@ const fadeInUp = {
 };
 
 export const Home = () => {
+  const router = useRouter();
   const handleAddToCart = (e: React.MouseEvent, item: any) => {
     e.preventDefault();
     e.stopPropagation();
@@ -133,6 +135,7 @@ export const Home = () => {
           </motion.p>
           
           <motion.button 
+            onClick={() => router.push('/shop')}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
@@ -225,7 +228,7 @@ export const Home = () => {
             <p className="text-sand-100/70 text-lg leading-relaxed mb-10 font-light border-l border-accent-gold pl-6">
               {CONTENT.customization.desc}
             </p>
-            <button className="bg-accent-gold text-wood-900 px-8 py-4 font-bold tracking-widest uppercase hover:bg-white transition-colors duration-300 shadow-[0_0_20px_rgba(197,160,101,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+            <button onClick={() => router.push('/quote')} className="bg-accent-gold text-wood-900 px-8 py-4 font-bold tracking-widest uppercase hover:bg-white transition-colors duration-300 shadow-[0_0_20px_rgba(197,160,101,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
               {CONTENT.customization.cta}
             </button>
           </motion.div>

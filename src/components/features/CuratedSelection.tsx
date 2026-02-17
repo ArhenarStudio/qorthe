@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 
 export const CuratedSelection = () => {
   const products = [
@@ -44,9 +45,9 @@ export const CuratedSelection = () => {
 
       {/* Botón */}
       <div className="mt-[64px] text-center">
-        <button className="bg-transparent border border-[#2d2419] text-[#2d2419] px-[16px] py-[14px] font-sans text-[13px] uppercase tracking-[2px]">
+        <Link href="/shop" className="bg-transparent border border-[#2d2419] text-[#2d2419] px-[16px] py-[14px] font-sans text-[13px] uppercase tracking-[2px] hover:bg-[#2d2419] hover:text-[#f5f0e8] transition-colors">
           Ver Toda la Colección
-        </button>
+        </Link>
       </div>
     </section>
   );

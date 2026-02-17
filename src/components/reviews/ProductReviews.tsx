@@ -3,11 +3,43 @@
 import React, { useState, useEffect } from 'react';
 import { Star, User, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Review } from '@/types/review';
-import { API_BASE_URL } from '@/utils/api';
 import { ReviewSkeleton } from '@/components/ui/ReviewSkeleton';
+
+// Mock reviews until backend is connected
+const MOCK_REVIEWS: Review[] = [
+  {
+    id: '1',
+    productId: '',
+    userId: 'user1',
+    userName: 'María García',
+    rating: 5,
+    comment: 'Hermosa tabla de parota. La calidad de la madera es increíble y el acabado es perfecto. Llegó muy bien empacada.',
+    createdAt: '2025-12-15T10:00:00Z',
+    helpful: 12,
+  },
+  {
+    id: '2',
+    productId: '',
+    userId: 'user2',
+    userName: 'Roberto Sánchez',
+    rating: 4,
+    comment: 'Excelente producto, la madera tiene una veta preciosa. Solo tardó un poco más de lo esperado en llegar.',
+    createdAt: '2025-11-20T14:30:00Z',
+    helpful: 8,
+  },
+  {
+    id: '3',
+    productId: '',
+    userId: 'user3',
+    userName: 'Ana López',
+    rating: 5,
+    comment: 'La compré como regalo y quedaron encantados. Se nota que es trabajo artesanal de verdad.',
+    createdAt: '2025-10-05T09:15:00Z',
+    helpful: 15,
+  },
+];
 
 interface ProductReviewsProps {
   productId: string;
@@ -26,34 +58,13 @@ export const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => 
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    fetchReviews();
-    checkUser();
-  }, [productId]);
-
-  const checkUser = async () => {
-    const supabase = createClient();
-    if (!supabase) return;
-    const { data: { session } } = await supabase.auth.getSession();
-    setUser(session?.user || null);
-  };
-
-  const fetchReviews = async () => {
-    try {
-      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      const res = await fetch(`${API_BASE_URL}/reviews/product/${productId}`, {
-        headers: anonKey ? { 'Authorization': `Bearer ${anonKey}` } : {}
-      });
-      if (res.ok) {
-        const data = await res.json();
-        // Sort by date desc
-        setReviews(data.sort((a: Review, b: Review) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-      }
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    } finally {
+    // Load mock reviews (replace with real API when backend is ready)
+    const timer = setTimeout(() => {
+      setReviews(MOCK_REVIEWS.map(r => ({ ...r, productId })));
       setLoading(false);
-    }
-  };
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [productId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,35 +79,22 @@ export const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => 
 
     setSubmitting(true);
     try {
-      const supabase = createClient();
-      if (!supabase) return;
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const res = await fetch(`${API_BASE_URL}/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          productId,
-          rating,
-          comment,
-          userName: user.user_metadata?.name || 'Usuario'
-        })
-      });
-
-      if (res.ok) {
-        const newReview = await res.json();
-        setReviews([newReview, ...reviews]);
-        setComment('');
-        setRating(0);
-        setShowForm(false);
-        toast.success('¡Gracias por tu opinión!');
-      } else {
-        throw new Error('Failed to submit');
-      }
+      // Mock submit — replace with real API when backend is ready
+      const newReview: Review = {
+        id: Date.now().toString(),
+        productId,
+        userId: 'current-user',
+        userName: 'Usuario',
+        rating,
+        comment,
+        createdAt: new Date().toISOString(),
+        helpful: 0,
+      };
+      setReviews([newReview, ...reviews]);
+      setComment('');
+      setRating(0);
+      setShowForm(false);
+      toast.success('¡Gracias por tu opinión!');
     } catch (error) {
       console.error('Error submitting review:', error);
       toast.error('Error al enviar la opinión');
