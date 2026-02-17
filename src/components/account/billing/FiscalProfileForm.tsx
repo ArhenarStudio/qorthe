@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Save, Upload, Building2, MapPin, Mail, AlertCircle, Check, Briefcase, User, Info } from 'lucide-react';

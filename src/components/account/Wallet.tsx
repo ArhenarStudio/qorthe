@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { CreditCard, Plus, Trash2, ShieldCheck, Lock, X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

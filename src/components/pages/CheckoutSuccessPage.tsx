@@ -1,7 +1,8 @@
+"use client";
+
 import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Check, ArrowRight, Home, Package } from 'lucide-react';
-"use client";
 
 import { useRouter } from 'next/navigation';
 const logoDSD = '/images/logo-dsd.png';

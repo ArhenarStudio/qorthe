@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Award, Gift, TrendingUp, Info, ChevronRight, Check, Lock, AlertCircle, Plus, Minus, History, HelpCircle, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

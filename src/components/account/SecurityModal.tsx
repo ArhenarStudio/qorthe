@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Lock, Eye, EyeOff, ShieldCheck, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';

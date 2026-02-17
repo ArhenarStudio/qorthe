@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, Leaf, Hexagon, Zap, Tag, Star, ArrowRight } from 'lucide-react';

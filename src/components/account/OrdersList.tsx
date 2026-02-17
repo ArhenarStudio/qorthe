@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Package, ChevronRight, CheckCircle, Clock, Truck, RefreshCcw, ExternalLink, ArrowRight, ShoppingBag, DollarSign, TrendingUp, Download, FileText, Ruler, PenTool, Image as ImageIcon, Search, Receipt } from 'lucide-react';

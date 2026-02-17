@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 
 const mercadoPagoLogo = '/images/mercado-pago-logo.png';

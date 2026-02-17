@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Package, MapPin, CreditCard, Heart, LogOut, LayoutDashboard, Settings, ChevronRight, MessageSquare, Award, FileText, ShieldCheck, RefreshCw, Palette, Briefcase, Receipt } from 'lucide-react';
 import { motion } from 'motion/react';

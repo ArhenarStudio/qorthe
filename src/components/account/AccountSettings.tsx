@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Camera, Lock, Mail, Bell, Shield, HelpCircle } from 'lucide-react';
 import { ProfilePictureModal } from './ProfilePictureModal';

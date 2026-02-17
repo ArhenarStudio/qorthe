@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, ShoppingBag, ChevronRight } from 'lucide-react';

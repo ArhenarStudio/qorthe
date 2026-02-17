@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Bell, Loader2, Save, ShoppingBag, Tag, Shield, Mail } from 'lucide-react';

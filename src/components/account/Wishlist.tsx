@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { motion } from 'motion/react';
 import { ShoppingBag, X, AlertCircle } from 'lucide-react';

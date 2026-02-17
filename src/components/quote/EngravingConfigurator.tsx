@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Upload, X, Image as ImageIcon, Sparkles, LayoutTemplate, Type, MousePointer2 } from 'lucide-react';

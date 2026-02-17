@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Package, MapPin, Star, Clipboard, PenTool } from 'lucide-react';
 

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 "use client";
+
+import React, { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag } from 'lucide-react';

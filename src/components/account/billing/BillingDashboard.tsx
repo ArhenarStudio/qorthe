@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { FileText, Download, UserCog, Plus, Search, Filter, MoreVertical, CreditCard, AlertCircle, CheckCircle2, XCircle, FileBarChart, Building2, Receipt, X } from 'lucide-react';

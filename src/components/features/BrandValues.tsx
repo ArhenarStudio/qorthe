@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Leaf, Shield, Truck, Heart } from 'lucide-react';
 

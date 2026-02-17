@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { motion } from 'motion/react';
 import { Award, Check, ChevronRight, Star, CreditCard, Gift, TrendingUp, Shield, Zap, Crown } from 'lucide-react';

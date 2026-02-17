@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import { motion, AnimatePresence } from 'motion/react';

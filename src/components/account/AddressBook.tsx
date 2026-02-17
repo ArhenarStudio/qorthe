@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

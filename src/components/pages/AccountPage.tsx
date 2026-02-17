@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 "use client";
+
+import React, { useState } from 'react';
 
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { FileText, Send, Loader2, ArrowRight } from 'lucide-react';
 import { CustomerDetails, ProductItem } from './types';

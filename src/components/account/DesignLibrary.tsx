@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Palette, Trash2, Edit2, ShoppingBag, Eye, Heart, Share2, Grid, List } from 'lucide-react';

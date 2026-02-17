@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Package, MapPin, CreditCard, ChevronRight, TrendingUp, Lock, Mail, Award, Clock, AlertCircle, CheckCircle, ArrowRight, Info } from 'lucide-react';
 import { AccountSection } from '@/components/pages/AccountPage';

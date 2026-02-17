@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Calendar, CheckCircle, Clock, AlertTriangle, ChevronRight, Shield } from 'lucide-react';
 import { motion } from 'motion/react';

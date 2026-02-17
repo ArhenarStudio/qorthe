@@ -1,7 +1,8 @@
+"use client";
+
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'motion/react';
-"use client";
 
 import { useRouter } from 'next/navigation';
 import { ProductItem } from './types';

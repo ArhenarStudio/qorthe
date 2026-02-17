@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Star, MessageSquare, Trash2, ExternalLink, Edit2, X, Send, User, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

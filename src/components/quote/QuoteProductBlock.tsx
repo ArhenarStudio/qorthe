@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, Trash2, Box, Info, Sparkles, ChefHat, Utensils, Maximize2, Package } from 'lucide-react';
