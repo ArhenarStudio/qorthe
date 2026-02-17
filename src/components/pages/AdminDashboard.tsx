@@ -6,7 +6,6 @@ import {
   LayoutDashboard, Users, ShoppingBag, Settings, 
   TrendingUp, DollarSign, Package, AlertCircle 
 } from 'lucide-react';
-import { API_BASE_URL } from '@/utils/api';
 import { toast } from 'sonner';
 
 export const AdminDashboard = () => {
@@ -17,20 +16,9 @@ export const AdminDashboard = () => {
     { label: "Inventario Bajo", value: "3", change: "Alert", icon: AlertCircle, alert: true },
   ]);
 
-  // Auto-seed admin on mount (Hacky but effective for this prototype)
+  // Admin initialization placeholder — will connect to backend when ready
   useEffect(() => {
-    const seedAdmin = async () => {
-      try {
-        await fetch(`${API_BASE_URL}/seed-admin`, {
-          method: 'POST',
-        });
-        // Silent success or maybe a small toast if really needed, but better silent for user exp
-        console.log("Admin seeded");
-      } catch (e) {
-        console.error("Failed to seed admin", e);
-      }
-    };
-    seedAdmin();
+    console.log("Admin dashboard loaded");
   }, []);
 
   return (
