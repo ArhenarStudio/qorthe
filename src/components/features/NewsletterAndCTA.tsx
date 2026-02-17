@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 
 export const NewsletterAndCTA = () => {
   return (
@@ -51,12 +52,12 @@ export const NewsletterAndCTA = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-[16px]">
-          <button className="border border-[#f5f0e8] bg-transparent text-[#f5f0e8] font-sans text-[13px] uppercase tracking-[2px] px-[32px] py-[16px] hover:bg-[#f5f0e8] hover:text-[#2d2419] transition-colors duration-300">
+          <Link href="/shop" className="border border-[#f5f0e8] bg-transparent text-[#f5f0e8] font-sans text-[13px] uppercase tracking-[2px] px-[32px] py-[16px] hover:bg-[#f5f0e8] hover:text-[#2d2419] transition-colors duration-300">
             Ver Colección
-          </button>
-          <button className="bg-[#C5A065] text-[#2d2419] font-sans text-[13px] font-bold uppercase tracking-[2px] px-[32px] py-[16px] hover:bg-[#D7CCC8] transition-colors duration-300">
+          </Link>
+          <Link href="/quote" className="bg-[#C5A065] text-[#2d2419] font-sans text-[13px] font-bold uppercase tracking-[2px] px-[32px] py-[16px] hover:bg-[#D7CCC8] transition-colors duration-300">
             Personalizar mi Tabla
-          </button>
+          </Link>
         </div>
       </section>
     </div>
