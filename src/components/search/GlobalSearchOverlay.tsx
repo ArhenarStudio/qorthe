@@ -5,12 +5,16 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, ArrowRight, TrendingUp, Package, AlertCircle, ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { products, Product } from '@/data/products';
+import { useProducts } from '../../hooks/useProducts';
+import type { CommerceProduct } from '@/lib/commerce';
+import { getMetafield } from '@/lib/commerce/types';
 
 interface GlobalSearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
 
 export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen, onClose }) => {
   const router = useRouter();
@@ -18,79 +22,60 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { products, loading: productsLoading } = useProducts();
 
-  // Focus management
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
-      // Optional: Clear query on close or keep it? 
-      // User intent suggests "premium experience", usually keeping query is annoying if you reopen.
-      // Let's clear it after a delay or immediately.
       setTimeout(() => setQuery(''), 300);
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // Handle ESC key
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  // Mock Search Logic
+  // Search against CommerceProduct data
   const searchResults = useMemo(() => {
-    if (!query.trim()) return { products: [], categories: [], suggestions: [] };
-
+    if (!query.trim()) return { products: [] as CommerceProduct[], materials: [] as string[], suggestions: [] as string[] };
     const lowerQuery = query.toLowerCase();
     
     const matchedProducts = products.filter(p => 
-      p.name.toLowerCase().includes(lowerQuery) || 
-      p.category.toLowerCase().includes(lowerQuery) ||
-      p.description.toLowerCase().includes(lowerQuery)
+      p.title.toLowerCase().includes(lowerQuery) || 
+      p.description.toLowerCase().includes(lowerQuery) ||
+      (getMetafield(p, "materials", "primary_wood") ?? "").toLowerCase().includes(lowerQuery)
     );
 
-    const matchedCategories = Array.from(new Set(products.map(p => p.category)))
-      .filter(c => c.toLowerCase().includes(lowerQuery));
+    const matchedMaterials = Array.from(new Set(
+      products.map(p => getMetafield(p, "materials", "primary_wood")).filter(Boolean) as string[]
+    )).filter(m => m.toLowerCase().includes(lowerQuery));
 
-    // Mock suggestions based on product names
     const suggestions = products
-      .filter(p => p.name.toLowerCase().includes(lowerQuery))
-      .map(p => p.name)
+      .filter(p => p.title.toLowerCase().includes(lowerQuery))
+      .map(p => p.title)
       .slice(0, 3);
 
-    return {
-      products: matchedProducts,
-      categories: matchedCategories,
-      suggestions: suggestions
-    };
-  }, [query]);
+    return { products: matchedProducts, materials: matchedMaterials, suggestions };
+  }, [query, products]);
 
-  // Simulated Loading
   useEffect(() => {
     if (query) {
       setIsLoading(true);
-      const timer = setTimeout(() => setIsLoading(false), 500); // 500ms debounce/mock load
+      const timer = setTimeout(() => setIsLoading(false), 300);
       return () => clearTimeout(timer);
     } else {
       setIsLoading(false);
     }
   }, [query]);
 
-  const handleProductClick = (slug: string) => {
-    router.push(`/shop/${slug}`);
-    onClose();
-  };
-
-  const handleCategoryClick = (category: string) => {
-    router.push('/shop');
+  const handleProductClick = (handle: string) => {
+    router.push(`/shop/${handle}`);
     onClose();
   };
 
@@ -98,7 +83,6 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -108,7 +92,6 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
             onClick={onClose}
           />
 
-          {/* Main Container */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -116,10 +99,9 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-[100] flex flex-col pointer-events-none"
           >
-            {/* Content Wrapper - Pointer events enabled here */}
             <div className="w-full h-full pointer-events-auto flex flex-col bg-sand-100/95 dark:bg-wood-900/95 shadow-2xl overflow-hidden">
               
-              {/* --- HEADER: INPUT --- */}
+              {/* HEADER: INPUT */}
               <div className="container mx-auto px-6 md:px-12 pt-8 pb-4 md:pt-12 md:pb-6 shrink-0 relative">
                 <button 
                   onClick={onClose}
@@ -147,12 +129,11 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                 </div>
               </div>
 
-              {/* --- BODY: RESULTS --- */}
+              {/* BODY: RESULTS */}
               <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar w-full">
                 <div className="container mx-auto px-6 md:px-12 py-8 max-w-6xl">
                   
-                  {isLoading ? (
-                    /* LOADING SKELETON */
+                  {(isLoading || productsLoading) ? (
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-12 animate-pulse">
                       <div className="md:col-span-3 space-y-4">
                         <div className="h-4 w-24 bg-wood-900/10 dark:bg-sand-100/10 rounded"></div>
@@ -165,24 +146,15 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                         ))}
                       </div>
                     </div>
-                  ) : error ? (
-                    /* ERROR STATE */
-                    <div className="flex flex-col items-center justify-center py-20 text-wood-500 dark:text-sand-400">
-                       <AlertCircle className="w-12 h-12 mb-4 opacity-50" />
-                       <p>Hubo un problema al buscar. Intenta nuevamente.</p>
-                    </div>
                   ) : !query ? (
-                    /* --- INITIAL STATE --- */
+                    /* INITIAL STATE */
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
-                      
-                      {/* Popular Searches */}
                       <div className="md:col-span-4 lg:col-span-3">
                         <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-wood-900/40 dark:text-sand-100/40 mb-6 flex items-center gap-2">
-                          <TrendingUp className="w-3 h-3" />
-                          Tendencias
+                          <TrendingUp className="w-3 h-3" /> Tendencias
                         </h3>
                         <div className="flex flex-col gap-3">
-                          {["Mesa de centro", "Tabla personalizada", "Recámara minimal", "Regalos corporativos"].map((term) => (
+                          {["Parota", "Cedro Rojo", "Rosa Morada", "Regalos corporativos"].map((term) => (
                             <button
                               key={term}
                               onClick={() => setQuery(term)}
@@ -195,33 +167,30 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                         </div>
                       </div>
 
-                      {/* Featured Products (Hero) */}
                       <div className="md:col-span-8 lg:col-span-9">
                         <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-wood-900/40 dark:text-sand-100/40 mb-6 flex items-center gap-2">
-                           <Package className="w-3 h-3" />
-                           Destacados
+                           <Package className="w-3 h-3" /> Destacados
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {products.filter(p => p.rating && p.rating > 4.5).slice(0, 3).map((product) => (
+                          {products.slice(0, 3).map((product) => (
                             <motion.div
                               key={product.id}
                               whileHover={{ y: -5 }}
                               className="group cursor-pointer"
-                              onClick={() => handleProductClick(product.slug)}
+                              onClick={() => handleProductClick(product.handle)}
                             >
                               <div className="aspect-[4/5] overflow-hidden rounded-sm mb-4 relative bg-wood-100 dark:bg-wood-800">
                                 <img 
-                                  src={product.images[0]} 
-                                  alt={product.name}
+                                  src={product.featuredImage?.url ?? PLACEHOLDER_IMG} 
+                                  alt={product.title}
                                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                               </div>
-                              <h4 className="font-serif text-lg text-wood-900 dark:text-sand-100 leading-tight mb-1 group-hover:underline decoration-wood-900/30 dark:decoration-sand-100/30 underline-offset-4">
-                                {product.name}
+                              <h4 className="font-serif text-lg text-wood-900 dark:text-sand-100 leading-tight mb-1 group-hover:underline decoration-wood-900/30 underline-offset-4">
+                                {product.title}
                               </h4>
                               <p className="text-sm text-wood-500 dark:text-sand-400">
-                                ${product.price.toLocaleString()}
+                                ${product.priceRange.minVariantPrice.amount.toLocaleString()} {product.priceRange.minVariantPrice.currencyCode}
                               </p>
                             </motion.div>
                           ))}
@@ -229,46 +198,40 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                       </div>
                     </div>
                   ) : (
-                    /* --- RESULTS STATE --- */
+                    /* RESULTS STATE */
                     <div className="space-y-12">
                       
-                      {/* No Results */}
-                      {searchResults.products.length === 0 && searchResults.categories.length === 0 && (
+                      {searchResults.products.length === 0 && (
                          <div className="text-center py-20">
                             <h3 className="text-2xl md:text-3xl font-serif text-wood-900 dark:text-sand-100 mb-2">
-                              No encontramos resultados para "{query}"
+                              No encontramos resultados para &ldquo;{query}&rdquo;
                             </h3>
                             <p className="text-wood-500 dark:text-sand-400 mb-8">
                               Explora nuestras piezas destacadas o intenta con otro término.
                             </p>
-                            <div className="flex justify-center">
-                              <button 
-                                onClick={() => setQuery('')}
-                                className="px-6 py-2 border border-wood-900 dark:border-sand-100 text-wood-900 dark:text-sand-100 hover:bg-wood-900 hover:text-sand-100 dark:hover:bg-sand-100 dark:hover:text-wood-900 transition-colors uppercase tracking-widest text-xs font-bold"
-                              >
-                                Ver Recomendaciones
-                              </button>
-                            </div>
+                            <button 
+                              onClick={() => setQuery('')}
+                              className="px-6 py-2 border border-wood-900 dark:border-sand-100 text-wood-900 dark:text-sand-100 hover:bg-wood-900 hover:text-sand-100 dark:hover:bg-sand-100 dark:hover:text-wood-900 transition-colors uppercase tracking-widest text-xs font-bold"
+                            >
+                              Ver Recomendaciones
+                            </button>
                          </div>
                       )}
 
-                      {/* Suggestions / Categories Matches */}
-                      {(searchResults.suggestions.length > 0 || searchResults.categories.length > 0) && (
+                      {searchResults.products.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                           <div className="md:col-span-3">
-                             {searchResults.categories.length > 0 && (
+                             {searchResults.materials.length > 0 && (
                                <div className="mb-8">
-                                 <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-wood-900/40 dark:text-sand-100/40 mb-4">
-                                   Categorías
-                                 </h3>
+                                 <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-wood-900/40 dark:text-sand-100/40 mb-4">Maderas</h3>
                                  <div className="flex flex-wrap gap-2">
-                                   {searchResults.categories.map(cat => (
+                                   {searchResults.materials.map(mat => (
                                      <button
-                                       key={cat}
-                                       onClick={() => handleCategoryClick(cat)}
+                                       key={mat}
+                                       onClick={() => setQuery(mat)}
                                        className="px-3 py-1 bg-wood-900/5 dark:bg-sand-100/5 hover:bg-wood-900/10 dark:hover:bg-sand-100/10 text-wood-900 dark:text-sand-100 text-sm rounded-full transition-colors"
                                      >
-                                       {cat}
+                                       {mat}
                                      </button>
                                    ))}
                                  </div>
@@ -277,9 +240,7 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                              
                              {searchResults.suggestions.length > 0 && (
                                <div>
-                                 <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-wood-900/40 dark:text-sand-100/40 mb-4">
-                                   Sugerencias
-                                 </h3>
+                                 <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-wood-900/40 dark:text-sand-100/40 mb-4">Sugerencias</h3>
                                  <ul className="space-y-2">
                                    {searchResults.suggestions.map(sugg => (
                                      <li key={sugg}>
@@ -297,7 +258,6 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                              )}
                           </div>
 
-                          {/* Product Results */}
                           <div className="md:col-span-9">
                              <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-wood-900/40 dark:text-sand-100/40 mb-6">
                                Productos ({searchResults.products.length})
@@ -308,12 +268,12 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                                     key={product.id}
                                     layoutId={`search-product-${product.id}`}
                                     className="group cursor-pointer flex flex-col gap-3"
-                                    onClick={() => handleProductClick(product.slug)}
+                                    onClick={() => handleProductClick(product.handle)}
                                   >
                                     <div className="aspect-[3/4] overflow-hidden bg-wood-100 dark:bg-wood-800 relative">
                                       <img 
-                                        src={product.images[0]} 
-                                        alt={product.name}
+                                        src={product.featuredImage?.url ?? PLACEHOLDER_IMG} 
+                                        alt={product.title}
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                       />
                                       <div className="absolute top-2 right-2 bg-wood-900/90 text-sand-100 text-[10px] px-2 py-1 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
@@ -322,14 +282,14 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                                     </div>
                                     <div>
                                       <h4 className="font-serif text-lg text-wood-900 dark:text-sand-100 leading-tight group-hover:text-wood-600 dark:group-hover:text-sand-300 transition-colors">
-                                        {product.name}
+                                        {product.title}
                                       </h4>
                                       <div className="flex items-center justify-between mt-1">
                                         <span className="text-sm font-light text-wood-500 dark:text-sand-400">
-                                          ${product.price.toLocaleString()}
+                                          ${product.priceRange.minVariantPrice.amount.toLocaleString()} {product.priceRange.minVariantPrice.currencyCode}
                                         </span>
                                         <span className="text-[10px] uppercase tracking-wider text-wood-400 dark:text-sand-500/50">
-                                          {product.category}
+                                          {getMetafield(product, "materials", "primary_wood") ?? product.productType}
                                         </span>
                                       </div>
                                     </div>
@@ -345,13 +305,11 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
                 </div>
               </div>
 
-              {/* --- FOOTER: HINT --- */}
+              {/* FOOTER */}
               <div className="shrink-0 py-4 border-t border-wood-900/5 dark:border-sand-100/5 bg-sand-50 dark:bg-wood-900/50">
                 <div className="container mx-auto px-6 md:px-12 flex justify-between items-center text-[10px] uppercase tracking-widest text-wood-900/40 dark:text-sand-100/40">
-                   <span>DavidSon's Design</span>
-                   <div className="flex items-center gap-4">
-                     <span className="hidden md:inline">Presiona ESC para cerrar</span>
-                   </div>
+                   <span>DavidSon&apos;s Design</span>
+                   <span className="hidden md:inline">Presiona ESC para cerrar</span>
                 </div>
               </div>
 

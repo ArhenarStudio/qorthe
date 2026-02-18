@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+// TODO: Migrate to useCart hook when CartContext is implemented
 import { MOCK_CART_ITEMS } from '@/data/mockData';
 
 interface CartDrawerProps {

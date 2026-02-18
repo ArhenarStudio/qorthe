@@ -2,24 +2,31 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { ShoppingBag, Eye, Heart } from 'lucide-react';
+import { ShoppingBag, Heart } from 'lucide-react';
 import Link from 'next/link';
-import { Product } from '@/data/products';
-import { addToCart } from '@/utils/cartActions';
+import type { CommerceProduct } from '@/lib/commerce';
+import { getMetafield } from '@/lib/commerce/types';
 
 interface ProductCardProps {
-  product: Product;
+  product: CommerceProduct;
+  onAddToCart?: (variantId: string) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
+
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+  const mainImage = product.featuredImage?.url ?? PLACEHOLDER_IMG;
+  const price = product.priceRange.minVariantPrice;
+  const inStock = product.variants.some(v => v.availableForSale);
+  const material = getMetafield(product, "materials", "primary_wood") ?? "";
+  const defaultVariant = product.variants[0];
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart({
-      name: product.name,
-      price: product.price,
-      image: product.images[0]
-    });
+    if (onAddToCart && defaultVariant) {
+      onAddToCart(defaultVariant.id);
+    }
   };
 
   return (
@@ -31,12 +38,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     >
       {/* Badges */}
       <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-        {product.isNew && (
-          <span className="bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 text-[10px] font-bold px-2 py-1 uppercase tracking-widest shadow-sm">
-            Nuevo
-          </span>
-        )}
-        {!product.inStock && (
+        {!inStock && (
           <span className="bg-red-800 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest shadow-sm">
             Agotado
           </span>
@@ -44,27 +46,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* Image Container */}
-      <Link href={`/shop/${product.slug}`} className="block relative aspect-[4/5] overflow-hidden bg-wood-50 dark:bg-wood-800">
+      <Link href={`/shop/${product.handle}`} className="block relative aspect-[4/5] overflow-hidden bg-wood-50 dark:bg-wood-800">
         <img 
-          src={product.images[0]} 
-          alt={product.name}
+          src={mainImage} 
+          alt={product.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        {product.images[1] && (
-          <img 
-            src={product.images[1]} 
-            alt={`${product.name} view 2`}
-            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-          />
-        )}
         
         {/* Quick Actions Overlay */}
         <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-gradient-to-t from-black/60 to-transparent flex justify-center gap-3">
           <button 
-            onClick={(e) => {
-              e.preventDefault();
-              // Add to wishlist logic
-            }}
+            onClick={(e) => { e.preventDefault(); }}
             className="p-2 bg-white dark:bg-wood-800 text-wood-900 dark:text-sand-100 rounded-full hover:bg-wood-100 dark:hover:bg-wood-700 transition-colors shadow-lg"
             title="Guardar en favoritos"
           >
@@ -72,7 +64,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </button>
           <button 
             onClick={handleAddToCart}
-            disabled={!product.inStock}
+            disabled={!inStock}
             className="p-2 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-full hover:bg-accent-gold dark:hover:bg-accent-gold hover:text-wood-900 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             title="Añadir al carrito"
           >
@@ -85,27 +77,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="p-5 bg-white dark:bg-wood-900 border-t border-wood-50 dark:border-wood-800">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[10px] uppercase tracking-widest text-wood-600 dark:text-sand-300 font-bold border-b border-wood-200 dark:border-wood-700 pb-0.5">
-            {product.category}
+            {material || product.productType || "Artesanal"}
           </span>
-          {product.rating && (
-            <div className="flex items-center gap-1 text-xs font-bold text-wood-700 dark:text-sand-200 bg-wood-50 dark:bg-wood-800 px-2 py-0.5 rounded-full">
-              <span className="text-accent-gold">★</span>
-              <span>{product.rating}</span>
-            </div>
-          )}
         </div>
-        <Link href={`/shop/${product.slug}`} className="block group-hover:text-accent-gold transition-colors">
+        <Link href={`/shop/${product.handle}`} className="block group-hover:text-accent-gold transition-colors">
           <h3 className="text-lg font-serif font-medium text-wood-900 dark:text-sand-100 leading-tight mb-3 line-clamp-2 min-h-[3rem]">
-            {product.name}
+            {product.title}
           </h3>
         </Link>
         <div className="flex items-center justify-between pt-3 border-t border-wood-100 dark:border-wood-800">
           <span className="text-lg font-bold text-wood-900 dark:text-sand-100 font-sans">
-            ${product.price.toLocaleString()}
+            ${price.amount.toLocaleString()} {price.currencyCode}
           </span>
           <button 
             onClick={handleAddToCart}
-            className="text-xs font-bold uppercase tracking-wider text-wood-500 dark:text-sand-400 hover:text-wood-900 dark:hover:text-sand-100 transition-colors flex items-center gap-1"
+            disabled={!inStock}
+            className="text-xs font-bold uppercase tracking-wider text-wood-500 dark:text-sand-400 hover:text-wood-900 dark:hover:text-sand-100 transition-colors flex items-center gap-1 disabled:opacity-50"
           >
             + Añadir
           </button>

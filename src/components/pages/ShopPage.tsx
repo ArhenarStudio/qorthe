@@ -2,44 +2,49 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Filter, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
-import { useMedusaProducts } from '../../hooks/useMedusaProducts';
-import { products as fallbackProducts, type Product } from '@/data/products';
+import { useProducts } from '../../hooks/useProducts';
+import type { CommerceProduct } from '@/lib/commerce';
+import { getMetafield } from '@/lib/commerce/types';
 
 export const ShopPage = () => {
-  const { products: medusaProducts, loading, error } = useMedusaProducts();
+  const { products, loading } = useProducts();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | 'All'>('All');
+  const [selectedMaterial, setSelectedMaterial] = useState<string | 'All'>('All');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc'>('featured');
 
-  // Use Medusa products if available, fallback to static data
-  const products: Product[] = medusaProducts.length > 0 ? medusaProducts : fallbackProducts;
-
-  // Derived data
-  const categories = useMemo(() => {
-    const cats = new Set(products.map(p => p.category));
-    return ['All', ...Array.from(cats)];
+  // Extract unique materials from product metadata
+  const materials = useMemo(() => {
+    const mats = new Set<string>();
+    products.forEach(p => {
+      const mat = getMetafield(p, "materials", "primary_wood");
+      if (mat) mats.add(mat);
+    });
+    return ['All', ...Array.from(mats)];
   }, [products]);
 
   const filteredProducts = useMemo(() => {
-    let result = products;
+    let result = [...products];
 
-    if (selectedCategory !== 'All') {
-      result = result.filter(p => p.category === selectedCategory);
+    if (selectedMaterial !== 'All') {
+      result = result.filter(p => getMetafield(p, "materials", "primary_wood") === selectedMaterial);
     }
 
-    result = result.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    result = result.filter(p => {
+      const price = p.priceRange.minVariantPrice.amount;
+      return price >= priceRange[0] && price <= priceRange[1];
+    });
 
     if (sortBy === 'price-asc') {
-      result = [...result].sort((a, b) => a.price - b.price);
+      result.sort((a, b) => a.priceRange.minVariantPrice.amount - b.priceRange.minVariantPrice.amount);
     } else if (sortBy === 'price-desc') {
-      result = [...result].sort((a, b) => b.price - a.price);
+      result.sort((a, b) => b.priceRange.minVariantPrice.amount - a.priceRange.minVariantPrice.amount);
     }
 
     return result;
-  }, [products, selectedCategory, priceRange, sortBy]);
+  }, [products, selectedMaterial, priceRange, sortBy]);
 
   return (
     <div className="bg-sand-100 dark:bg-wood-950 min-h-screen pt-24 pb-20 transition-colors duration-300">
@@ -61,7 +66,7 @@ export const ShopPage = () => {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-6xl font-serif mb-6"
           >
-            Colección DavidSon's
+            Colección DavidSon&apos;s
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -82,18 +87,18 @@ export const ShopPage = () => {
             className="flex items-center gap-2 text-sm font-medium text-wood-900 dark:text-sand-100 hover:text-accent-gold dark:hover:text-accent-gold transition-colors uppercase tracking-wider"
           >
             <SlidersHorizontal className="w-4 h-4" />
-            Filtros {selectedCategory !== 'All' && '(1)'}
+            Filtros {selectedMaterial !== 'All' && '(1)'}
           </button>
 
           <div className="flex items-center gap-4">
              <span className="text-sm text-wood-500 dark:text-sand-400 hidden md:inline-block">
-               Mostrando {filteredProducts.length} resultados
+               {loading ? 'Cargando...' : `Mostrando ${filteredProducts.length} resultados`}
              </span>
              <div className="flex items-center gap-2 relative group">
                <span className="text-xs text-wood-500 dark:text-sand-400 uppercase tracking-widest">Ordenar por:</span>
                <select 
                  value={sortBy}
-                 onChange={(e) => setSortBy(e.target.value as any)}
+                 onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                  className="bg-transparent border-none text-wood-900 dark:text-sand-100 font-medium text-sm focus:ring-0 cursor-pointer pr-8 [&>option]:text-wood-900"
                >
                  <option value="featured">Destacados</option>
@@ -118,24 +123,24 @@ export const ShopPage = () => {
           >
             <div className="w-[280px] space-y-10 pr-8 border-r border-wood-900/10 dark:border-sand-100/10 h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
               
-              {/* Categories */}
+              {/* Materials Filter */}
               <div>
-                <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-4 border-b border-wood-900/10 dark:border-sand-100/10 pb-2">Categorías</h3>
+                <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-4 border-b border-wood-900/10 dark:border-sand-100/10 pb-2">Madera</h3>
                 <ul className="space-y-2">
-                  {categories.map(cat => (
-                    <li key={cat}>
+                  {materials.map(mat => (
+                    <li key={mat}>
                       <button 
-                        onClick={() => setSelectedCategory(cat)}
-                        className={`text-sm hover:text-accent-gold transition-colors w-full text-left py-1 ${selectedCategory === cat ? 'font-bold text-wood-900 dark:text-sand-100 pl-2 border-l-2 border-accent-gold' : 'text-wood-600 dark:text-sand-300'}`}
+                        onClick={() => setSelectedMaterial(mat)}
+                        className={`text-sm hover:text-accent-gold transition-colors w-full text-left py-1 ${selectedMaterial === mat ? 'font-bold text-wood-900 dark:text-sand-100 pl-2 border-l-2 border-accent-gold' : 'text-wood-600 dark:text-sand-300'}`}
                       >
-                        {cat === 'All' ? 'Ver Todo' : cat}
+                        {mat === 'All' ? 'Ver Todo' : mat}
                       </button>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Price Range (Simplified) */}
+              {/* Price Range */}
               <div>
                 <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-4 border-b border-wood-900/10 dark:border-sand-100/10 pb-2">Precio</h3>
                 <div className="space-y-4">
@@ -154,13 +159,25 @@ export const ShopPage = () => {
                   />
                 </div>
               </div>
-
             </div>
           </motion.aside>
 
           {/* Product Grid */}
           <div className="flex-1">
-            {filteredProducts.length > 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="animate-pulse bg-white dark:bg-wood-900 rounded-sm overflow-hidden">
+                    <div className="aspect-[4/5] bg-wood-200 dark:bg-wood-800" />
+                    <div className="p-5 space-y-3">
+                      <div className="h-3 bg-wood-200 dark:bg-wood-800 rounded w-1/3" />
+                      <div className="h-5 bg-wood-200 dark:bg-wood-800 rounded w-3/4" />
+                      <div className="h-4 bg-wood-200 dark:bg-wood-800 rounded w-1/2" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                 <AnimatePresence>
                   {filteredProducts.map((product) => (
@@ -173,7 +190,7 @@ export const ShopPage = () => {
                 <p className="text-wood-500 dark:text-sand-400 text-lg font-light">No encontramos productos con esos filtros.</p>
                 <button 
                   onClick={() => {
-                    setSelectedCategory('All');
+                    setSelectedMaterial('All');
                     setPriceRange([0, 5000]);
                   }}
                   className="mt-4 text-accent-gold underline hover:text-wood-900 dark:hover:text-sand-100"
@@ -183,7 +200,6 @@ export const ShopPage = () => {
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>

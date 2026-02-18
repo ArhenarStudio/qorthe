@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag } from 'lucide-react';
+// TODO: Migrate to useCart hook when CartContext is implemented
 import { MOCK_CART_ITEMS } from '@/data/mockData';
 import { motion } from 'motion/react';
 const mercadoPagoLogo = '/images/mercado-pago-logo.png';
