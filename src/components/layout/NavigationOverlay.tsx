@@ -10,6 +10,7 @@ import {
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useFeatureToggle } from '@/contexts/FeatureToggleContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NavigationOverlayProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
 }) => {
   const { isChatEnabled, toggleChat, isWhatsAppEnabled, toggleWhatsApp } = useFeatureToggle();
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
@@ -138,10 +140,23 @@ export const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
                   <User className="w-6 h-6" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-bold text-wood-900 dark:text-sand-100 truncate">{content.guest}</p>
-                  <button onClick={onLogin} className="text-xs text-wood-600 dark:text-sand-300 hover:text-wood-900 dark:hover:text-sand-100 underline text-left block">
-                    {content.login_cta}
-                  </button>
+                  <p className="font-bold text-wood-900 dark:text-sand-100 truncate">
+                    {isAuthenticated ? (user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Mi Cuenta') : content.guest}
+                  </p>
+                  {isAuthenticated ? (
+                    <div className="flex gap-3">
+                      <Link href="/account" onClick={onClose} className="text-xs text-wood-600 dark:text-sand-300 hover:text-wood-900 dark:hover:text-sand-100 underline text-left block">
+                        Mi cuenta
+                      </Link>
+                      <button onClick={() => { signOut(); onClose(); }} className="text-xs text-red-600 hover:text-red-800 underline text-left block">
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={onLogin} className="text-xs text-wood-600 dark:text-sand-300 hover:text-wood-900 dark:hover:text-sand-100 underline text-left block">
+                      {content.login_cta}
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">

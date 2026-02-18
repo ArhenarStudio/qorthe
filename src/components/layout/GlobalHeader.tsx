@@ -14,6 +14,7 @@ import { CartDrawer } from '@/components/cart/CartDrawer';
 import { NavigationOverlay } from '@/components/layout/NavigationOverlay';
 import { DesktopMenu } from '@/components/layout/DesktopMenu';
 import { GlobalSearchOverlay } from '@/components/search/GlobalSearchOverlay';
+import { useAuth } from '@/contexts/AuthContext';
 
 const logoDSD = '/images/logo-dsd.png';
 
@@ -46,6 +47,7 @@ const CONTENT = {
 export const GlobalHeader = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, loading: authLoading, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -86,8 +88,8 @@ export const GlobalHeader = () => {
     "Usa el código DAVIDSON10 para 10% OFF"
   ];
 
-  const isAuthenticated = false;
-  const cartItemsCount = 2; 
+  const isAuthenticated = !!user;
+  const cartItemsCount = 0; // TODO: Connect to CartContext
   
   const onNavigateHome = () => router.push('/');
   
