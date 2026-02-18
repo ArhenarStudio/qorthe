@@ -2,14 +2,25 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useMedusaProducts } from '../../hooks/useMedusaProducts';
 
 export const CuratedSelection = () => {
-  const products = [
-    { name: "Tabla Parota Rústica", price: "$2,450 MXN" },
-    { name: "Set Degustación Cedro", price: "$1,800 MXN" },
-    { name: "Tabla Redonda Pino", price: "$950 MXN" },
-    { name: "Tabla Nogal Premium", price: "$3,200 MXN" }
-  ];
+  const { products: medusaProducts, loading } = useMedusaProducts();
+
+  // Use Medusa products if available, otherwise fallback
+  const displayProducts = medusaProducts.length > 0
+    ? medusaProducts.slice(0, 4).map(p => ({
+        name: p.name,
+        price: `$${p.price.toLocaleString()} MXN`,
+        slug: p.slug,
+        image: p.images[0] || null,
+      }))
+    : [
+        { name: "Tabla Parota Rústica", price: "$2,450 MXN", slug: "tabla-parota-rustica", image: null },
+        { name: "Set Degustación Cedro", price: "$1,800 MXN", slug: "set-degustacion-cedro", image: null },
+        { name: "Tabla Redonda Pino", price: "$950 MXN", slug: "tabla-redonda-pino", image: null },
+        { name: "Tabla Nogal Premium", price: "$3,200 MXN", slug: "tabla-nogal-premium", image: null },
+      ];
 
   return (
     <section className="w-full max-w-[1440px] mx-auto bg-[#f5f0e8] py-[128px] px-[48px]">
@@ -25,22 +36,38 @@ export const CuratedSelection = () => {
 
       {/* Grid de Productos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
-        {products.map((product, index) => (
-          <div key={index} className="bg-[#FFFFFF] rounded-none">
-            {/* Imagen Placeholder */}
-            <div className="w-full aspect-[4/3] bg-[#D7CCC8]"></div>
-            
-            {/* Detalles del Producto */}
-            <div className="p-[16px]">
-              <h4 className="font-serif text-[18px] text-[#2d2419] mb-[8px]">
-                {product.name}
-              </h4>
-              <p className="font-sans text-[16px] font-bold text-[#2d2419]">
-                {product.price}
-              </p>
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-[#FFFFFF] rounded-none animate-pulse">
+              <div className="w-full aspect-[4/3] bg-[#D7CCC8]" />
+              <div className="p-[16px] space-y-2">
+                <div className="h-5 bg-[#D7CCC8] rounded w-3/4" />
+                <div className="h-4 bg-[#D7CCC8] rounded w-1/2" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          displayProducts.map((product, index) => (
+            <Link href={`/shop/${product.slug}`} key={index} className="bg-[#FFFFFF] rounded-none hover:shadow-lg transition-shadow">
+              {/* Imagen */}
+              <div className="w-full aspect-[4/3] bg-[#D7CCC8] overflow-hidden">
+                {product.image && (
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                )}
+              </div>
+              
+              {/* Detalles del Producto */}
+              <div className="p-[16px]">
+                <h4 className="font-serif text-[18px] text-[#2d2419] mb-[8px]">
+                  {product.name}
+                </h4>
+                <p className="font-sans text-[16px] font-bold text-[#2d2419]">
+                  {product.price}
+                </p>
+              </div>
+            </Link>
+          ))
+        )}
       </div>
 
       {/* Botón */}

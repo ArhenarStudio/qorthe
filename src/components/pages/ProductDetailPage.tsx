@@ -5,15 +5,18 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Star, Truck, ShieldCheck, Heart, ShoppingBag, ArrowRight } from 'lucide-react';
-import { products, Product } from '@/data/products';
+import { products as staticProducts, Product } from '@/data/products';
 import { addToCart } from '@/utils/cartActions';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { LaserEngravingCustomization } from '@/components/shop/LaserEngravingCustomization';
 import { ProductReviews } from '@/components/reviews/ProductReviews';
+import { useMedusaProducts, useMedusaProduct } from '../../hooks/useMedusaProducts';
 
 export const ProductDetailPage = () => {
   const params = useParams();
   const slug = params?.id as string | undefined;
+  const { product: medusaProduct, loading: medusaLoading } = useMedusaProduct(slug ?? "");
+  const { products: allMedusaProducts } = useMedusaProducts();
   const [product, setProduct] = useState<Product | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -21,18 +24,28 @@ export const ProductDetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    // Simulate fetching product
-    const found = products.find(p => p.slug === slug);
-    if (found) {
-      setProduct(found);
+    // Try Medusa product first, then fallback to static data
+    if (medusaProduct) {
+      setProduct(medusaProduct);
       setActiveImageIndex(0);
       setQuantity(1);
-      setIsWishlisted(false); // Reset wishlist state for new product
-      // Find related
-      setRelatedProducts(products.filter(p => p.category === found.category && p.id !== found.id).slice(0, 4));
+      setIsWishlisted(false);
+      // Related products from Medusa
+      const related = allMedusaProducts.filter(p => p.id !== medusaProduct.id).slice(0, 4);
+      setRelatedProducts(related.length > 0 ? related : staticProducts.slice(0, 4));
+    } else if (!medusaLoading) {
+      // Fallback to static data
+      const found = staticProducts.find(p => p.slug === slug);
+      if (found) {
+        setProduct(found);
+        setActiveImageIndex(0);
+        setQuantity(1);
+        setIsWishlisted(false);
+        setRelatedProducts(staticProducts.filter(p => p.category === found.category && p.id !== found.id).slice(0, 4));
+      }
     }
     window.scrollTo(0, 0);
-  }, [slug]);
+  }, [slug, medusaProduct, medusaLoading, allMedusaProducts]);
 
   if (!product) {
     return (
