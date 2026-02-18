@@ -4,19 +4,24 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Filter, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
-import { products, Product } from '@/data/products';
+import { useMedusaProducts } from '../../hooks/useMedusaProducts';
+import { products as fallbackProducts, type Product } from '@/data/products';
 
 export const ShopPage = () => {
+  const { products: medusaProducts, loading, error } = useMedusaProducts();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | 'All'>('All');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc'>('featured');
 
+  // Use Medusa products if available, fallback to static data
+  const products: Product[] = medusaProducts.length > 0 ? medusaProducts : fallbackProducts;
+
   // Derived data
   const categories = useMemo(() => {
     const cats = new Set(products.map(p => p.category));
     return ['All', ...Array.from(cats)];
-  }, []);
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
     let result = products;
@@ -34,7 +39,7 @@ export const ShopPage = () => {
     }
 
     return result;
-  }, [selectedCategory, priceRange, sortBy]);
+  }, [products, selectedCategory, priceRange, sortBy]);
 
   return (
     <div className="bg-sand-100 dark:bg-wood-950 min-h-screen pt-24 pb-20 transition-colors duration-300">
