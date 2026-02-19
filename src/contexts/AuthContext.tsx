@@ -63,10 +63,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [supabase]);
 
   const signOut = useCallback(async () => {
+    console.log('[AuthContext] signOut called, supabase:', !!supabase);
     if (!supabase) return;
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    console.log('[AuthContext] signOut result:', error ? error.message : 'success');
     setUser(null);
     setSession(null);
+    window.location.href = '/';
   }, [supabase]);
 
   return (

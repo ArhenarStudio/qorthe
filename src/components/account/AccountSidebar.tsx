@@ -4,6 +4,7 @@ import React from 'react';
 import { Package, MapPin, CreditCard, Heart, LogOut, LayoutDashboard, Settings, ChevronRight, MessageSquare, Award, FileText, ShieldCheck, RefreshCw, Palette, Briefcase, Receipt } from 'lucide-react';
 import { motion } from 'motion/react';
 import { AccountSection } from '@/components/pages/AccountPage';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AccountSidebarProps {
   activeSection: AccountSection;
@@ -12,6 +13,7 @@ interface AccountSidebarProps {
 }
 
 export const AccountSidebar: React.FC<AccountSidebarProps> = ({ activeSection, onNavigate, currentTierName }) => {
+  const { signOut } = useAuth();
   const menuItems = [
     { id: 'overview', label: 'Resumen', icon: LayoutDashboard },
     { id: 'loyalty', label: 'Lealtad', icon: Award },
@@ -109,7 +111,7 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({ activeSection, o
       </nav>
 
       <div className="mt-4 pt-4 border-t border-dashed border-wood-100 dark:border-wood-800 px-2">
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-wood-500 dark:text-sand-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors">
+        <button onClick={() => signOut()} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-wood-500 dark:text-sand-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors">
           <LogOut className="w-4 h-4" />
           <span className="tracking-wide">Cerrar Sesión</span>
         </button>

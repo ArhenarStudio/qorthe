@@ -148,7 +148,7 @@ export const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
                       <Link href="/account" onClick={onClose} className="text-xs text-wood-600 dark:text-sand-300 hover:text-wood-900 dark:hover:text-sand-100 underline text-left block">
                         Mi cuenta
                       </Link>
-                      <button onClick={() => { signOut(); onClose(); }} className="text-xs text-red-600 hover:text-red-800 underline text-left block">
+                      <button onClick={async () => { await signOut(); }} className="text-xs text-red-600 hover:text-red-800 underline text-left block">
                         Cerrar sesión
                       </button>
                     </div>

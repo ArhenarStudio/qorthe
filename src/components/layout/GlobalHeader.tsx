@@ -15,6 +15,7 @@ import { NavigationOverlay } from '@/components/layout/NavigationOverlay';
 import { DesktopMenu } from '@/components/layout/DesktopMenu';
 import { GlobalSearchOverlay } from '@/components/search/GlobalSearchOverlay';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCartContext } from '@/contexts/CartContext';
 
 const logoDSD = '/images/logo-dsd.png';
 
@@ -48,11 +49,11 @@ export const GlobalHeader = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading: authLoading, signOut } = useAuth();
+  const { itemCount, isDrawerOpen: isCartOpen, openDrawer: openCart, closeDrawer: closeCart } = useCartContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
   const getPageTitle = (path: string) => {
@@ -89,12 +90,12 @@ export const GlobalHeader = () => {
   ];
 
   const isAuthenticated = !!user;
-  const cartItemsCount = 0; // TODO: Connect to CartContext
+  const cartItemsCount = itemCount;
   
   const onNavigateHome = () => router.push('/');
   
   const onNavigateCart = () => {
-    setIsCartOpen(true);
+    openCart();
     setIsMobileMenuOpen(false);
   };
 
@@ -122,7 +123,7 @@ export const GlobalHeader = () => {
   }, [TOPBAR_MESSAGES.length]);
 
   useEffect(() => {
-    const handleOpenCart = () => setIsCartOpen(true);
+    const handleOpenCart = () => openCart();
     window.addEventListener('open-cart', handleOpenCart);
     return () => window.removeEventListener('open-cart', handleOpenCart);
   }, []);
@@ -146,7 +147,7 @@ export const GlobalHeader = () => {
     <>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <GlobalSearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
 
       <div 
         className={clsx(
