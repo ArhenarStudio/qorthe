@@ -2,16 +2,22 @@
 
 import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Check, ArrowRight, Home, Package } from 'lucide-react';
+import { Check, Home, Package } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCart } from '@/contexts/CartContext';
 
-import { useRouter } from 'next/navigation';
 const logoDSD = '/images/logo-dsd.png';
 
 export const CheckoutSuccessPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { clearCart } = useCart();
+
+  const orderDisplayId = searchParams.get('order');
+  const mpPaymentId = searchParams.get('mp_id');
 
   useEffect(() => {
-    // Clear cart or any temporary state here
+    clearCart();
     window.scrollTo(0, 0);
   }, []);
 
@@ -76,8 +82,16 @@ export const CheckoutSuccessPage = () => {
         >
           <div className="flex justify-between items-center mb-4 pb-4 border-b border-wood-200">
             <span className="text-sm text-wood-500 uppercase tracking-wider font-medium">Orden #</span>
-            <span className="text-lg font-bold text-wood-900">DSD-8921</span>
+            <span className="text-lg font-bold text-wood-900">
+              {orderDisplayId ? `DSD-${orderDisplayId}` : 'Procesando...'}
+            </span>
           </div>
+          {mpPaymentId && (
+            <div className="flex justify-between items-center mb-4 pb-4 border-b border-wood-200">
+              <span className="text-sm text-wood-500 uppercase tracking-wider font-medium">Pago MP</span>
+              <span className="text-sm font-mono text-wood-700">#{mpPaymentId}</span>
+            </div>
+          )}
           <div className="flex items-start gap-3 text-wood-700 mb-2">
             <Package className="w-5 h-5 text-wood-400 mt-0.5" />
             <p className="text-sm">Recibirás un correo con el número de rastreo cuando tu paquete esté en camino.</p>

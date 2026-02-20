@@ -24,6 +24,7 @@ interface CartContextType {
   addItem: (variantId: string, quantity?: number) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
+  clearCart: () => void;
   isDrawerOpen: boolean;
   openDrawer: () => void;
   closeDrawer: () => void;
@@ -40,6 +41,7 @@ const CartContext = createContext<CartContextType>({
   addItem: async () => {},
   updateItem: async () => {},
   removeItem: async () => {},
+  clearCart: () => {},
   isDrawerOpen: false,
   openDrawer: () => {},
   closeDrawer: () => {},
@@ -143,11 +145,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
   const toggleDrawer = useCallback(() => setIsDrawerOpen(prev => !prev), []);
 
+  const clearCart = useCallback(() => {
+    setCart(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('medusa_cart_id');
+    }
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
         cart, loading, updating, itemCount, subtotal, currencyCode,
-        addItem, updateItem, removeItem,
+        addItem, updateItem, removeItem, clearCart,
         isDrawerOpen, openDrawer, closeDrawer, toggleDrawer,
       }}
     >

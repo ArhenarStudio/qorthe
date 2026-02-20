@@ -131,6 +131,13 @@ export const CheckoutPage = () => {
   const watchedEmail = useWatch({ control, name: 'email' });
   const watchedFirstName = useWatch({ control, name: 'firstName' });
   const watchedLastName = useWatch({ control, name: 'lastName' });
+  const watchedStreet = useWatch({ control, name: 'street' });
+  const watchedExterior = useWatch({ control, name: 'exteriorNumber' });
+  const watchedInterior = useWatch({ control, name: 'interiorNumber' });
+  const watchedCity = useWatch({ control, name: 'city' });
+  const watchedState = useWatch({ control, name: 'state' });
+  const watchedZip = useWatch({ control, name: 'zip' });
+  const watchedPhone = useWatch({ control, name: 'phone' });
 
   // Reset dependent fields when parent changes
   useEffect(() => {
@@ -502,9 +509,21 @@ export const CheckoutPage = () => {
                                   payerEmail={watchedEmail || ''}
                                   payerFirstName={watchedFirstName || ''}
                                   payerLastName={watchedLastName || ''}
+                                  shippingAddress={{
+                                    first_name: watchedFirstName || '',
+                                    last_name: watchedLastName || '',
+                                    address_1: `${watchedStreet || ''} ${watchedExterior || ''}`.trim(),
+                                    address_2: watchedInterior || '',
+                                    city: watchedCity || '',
+                                    province: watchedState || '',
+                                    postal_code: watchedZip || '',
+                                    country_code: 'mx',
+                                    phone: watchedPhone || '',
+                                  }}
                                   onPaymentSuccess={(data) => {
                                     console.log('Payment success:', data);
-                                    router.push('/checkout/success');
+                                    const orderId = data.order_display_id || 'pending';
+                                    router.push(`/checkout/success?order=${orderId}&mp_id=${data.id}`);
                                   }}
                                   onPaymentError={(error) => {
                                     console.error('Payment error:', error);

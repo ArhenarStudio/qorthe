@@ -18,6 +18,17 @@ interface MercadoPagoBrickProps {
   payerEmail?: string;
   payerFirstName?: string;
   payerLastName?: string;
+  shippingAddress?: {
+    first_name?: string;
+    last_name?: string;
+    address_1?: string;
+    address_2?: string;
+    city?: string;
+    province?: string;
+    postal_code?: string;
+    country_code?: string;
+    phone?: string;
+  };
 }
 
 export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
@@ -28,6 +39,7 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
   payerEmail = '',
   payerFirstName = '',
   payerLastName = '',
+  shippingAddress,
 }) => {
   const [status, setStatus] = useState<'loading' | 'ready' | 'processing' | 'success' | 'error'>('loading');
   const [errorMsg, setErrorMsg] = useState('');
@@ -67,6 +79,7 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
             identification: pd.payer?.identification,
           },
           cart_id: cartId,
+          shipping_address: shippingAddress,
         }),
       });
 
