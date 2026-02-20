@@ -5,11 +5,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { useProducts } from '../../hooks/useProducts';
+import { useCartContext } from '@/contexts/CartContext';
 import type { CommerceProduct } from '@/lib/commerce';
 import { getMetafield } from '@/lib/commerce/types';
 
 export const ShopPage = () => {
   const { products, loading } = useProducts();
+  const { addItem } = useCartContext();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<string | 'All'>('All');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
@@ -181,7 +183,7 @@ export const ShopPage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                 <AnimatePresence>
                   {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard key={product.id} product={product} onAddToCart={(variantId) => addItem(variantId)} />
                   ))}
                 </AnimatePresence>
               </div>

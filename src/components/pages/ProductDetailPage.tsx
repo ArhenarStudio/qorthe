@@ -9,6 +9,7 @@ import { ProductCard } from '@/components/shop/ProductCard';
 import { LaserEngravingCustomization } from '@/components/shop/LaserEngravingCustomization';
 import { ProductReviews } from '@/components/reviews/ProductReviews';
 import { useProduct, useProducts } from '../../hooks/useProducts';
+import { useCartContext } from '@/contexts/CartContext';
 import { getMetafield } from '@/lib/commerce/types';
 
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
@@ -18,6 +19,7 @@ export const ProductDetailPage = () => {
   const handle = params?.id as string | undefined;
   const { product, loading } = useProduct(handle ?? "");
   const { products: allProducts } = useProducts();
+  const { addItem, updating: cartUpdating } = useCartContext();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -62,9 +64,9 @@ export const ProductDetailPage = () => {
 
   const relatedProducts = allProducts.filter(p => p.id !== product.id).slice(0, 4);
 
-  const handleAddToCart = () => {
-    // TODO: integrate with useCart hook
-    console.log("Add to cart:", selectedVariant?.id, quantity);
+  const handleAddToCart = async () => {
+    if (!selectedVariant?.id) return;
+    await addItem(selectedVariant.id, quantity);
   };
 
   return (
@@ -261,11 +263,11 @@ export const ProductDetailPage = () => {
                   
                   <button 
                     onClick={handleAddToCart}
-                    disabled={!inStock}
+                    disabled={!inStock || cartUpdating}
                     className="flex-1 h-16 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 text-sm sm:text-base font-bold uppercase tracking-widest sm:tracking-[0.2em] hover:bg-accent-gold dark:hover:bg-accent-gold hover:text-wood-900 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
                   >
                     <ShoppingBag className="w-5 h-5 hidden sm:block" />
-                    {inStock ? 'Añadir al Carrito' : 'Agotado'}
+                    {cartUpdating ? 'Agregando...' : inStock ? 'Añadir al Carrito' : 'Agotado'}
                   </button>
                 </div>
                 <p className="text-center text-xs text-wood-400 font-medium">

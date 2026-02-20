@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
-import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag } from 'lucide-react';
-// TODO: Migrate to useCart hook when CartContext is implemented
-import { MOCK_CART_ITEMS } from '@/data/mockData';
+import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag, Loader2 } from 'lucide-react';
+import { useCartContext } from '@/contexts/CartContext';
 import { motion } from 'motion/react';
 const mercadoPagoLogo = '/images/mercado-pago-logo.png';
 const stripeLogo = '/images/stripe-logo.png';
@@ -13,28 +12,30 @@ const paypalLogo = '/images/paypal-logo.png';
 
 export const CartPage = () => {
   const router = useRouter();
-  const [cartItems, setCartItems] = useState(MOCK_CART_ITEMS);
+  const { cart, loading, updating, itemCount, subtotal, currencyCode, updateItem, removeItem } = useCartContext();
   const [couponCode, setCouponCode] = useState('');
 
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems(items => items.map(item => {
-      if (item.id === id) {
-        const newQuantity = Math.max(1, item.quantity + change);
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    }));
-  };
-
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const shipping = 150; // Flat rate shipping for example
+  const shipping = subtotal >= 3500 ? 0 : 150;
   const total = subtotal + shipping;
 
-  if (cartItems.length === 0) {
+  const formatPrice = (amount: number) => {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: currencyCode || 'MXN',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-sand-50 dark:bg-wood-950 flex flex-col items-center justify-center p-4 transition-colors duration-300">
+        <Loader2 className="w-8 h-8 animate-spin text-wood-400" />
+        <p className="mt-4 text-wood-500 dark:text-sand-400">Cargando carrito...</p>
+      </div>
+    );
+  }
+
+  if (!cart || cart.lines.length === 0) {
     return (
       <div className="min-h-screen bg-sand-50 dark:bg-wood-950 flex flex-col items-center justify-center p-4 transition-colors duration-300">
         <div className="w-16 h-16 bg-wood-100 dark:bg-wood-800 rounded-full flex items-center justify-center mb-6 text-wood-600 dark:text-sand-300">
@@ -43,7 +44,7 @@ export const CartPage = () => {
         <h2 className="text-2xl font-serif text-wood-900 dark:text-sand-100 mb-2">Tu carrito está vacío</h2>
         <p className="text-wood-500 dark:text-sand-400 mb-8 text-center max-w-md">Parece que aún no has añadido ninguna de nuestras selecciones exclusivas.</p>
         <button 
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/shop')}
           className="px-8 py-3 bg-wood-900 dark:bg-sand-100 text-white dark:text-wood-900 rounded-full hover:bg-wood-800 dark:hover:bg-sand-200 transition-colors flex items-center gap-2 font-medium"
         >
           <ArrowLeft size={18} />
@@ -58,10 +59,10 @@ export const CartPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <h1 className="text-3xl md:text-4xl font-serif font-light text-wood-900 dark:text-sand-100">
-            Tu Selección <span className="text-wood-400 dark:text-sand-500 block md:inline text-lg md:text-3xl ml-0 md:ml-4 font-sans font-normal">({cartItems.length} artículos)</span>
+            Tu Selección <span className="text-wood-400 dark:text-sand-500 block md:inline text-lg md:text-3xl ml-0 md:ml-4 font-sans font-normal">({itemCount} artículos)</span>
           </h1>
           <button 
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/shop')}
             className="text-wood-600 dark:text-sand-400 hover:text-wood-900 dark:hover:text-sand-100 flex items-center gap-2 transition-colors text-sm font-medium"
           >
             <ArrowLeft size={16} />
@@ -81,66 +82,79 @@ export const CartPage = () => {
               </div>
               
               <div className="divide-y divide-wood-100 dark:divide-wood-800">
-                {cartItems.map((item) => (
-                  <motion.div 
-                    layout
-                    key={item.id} 
-                    className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-4 items-center group"
-                  >
-                    {/* Product Info */}
-                    <div className="col-span-1 md:col-span-6 flex gap-4">
-                      <div className="w-20 h-20 md:w-24 md:h-24 bg-wood-100 dark:bg-wood-800 rounded-lg overflow-hidden flex-shrink-0">
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal opacity-90 group-hover:opacity-100 transition-opacity"
-                        />
-                      </div>
-                      <div className="flex flex-col justify-center">
-                        <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-1">{item.name}</h3>
-                        <p className="text-sm text-wood-500 dark:text-sand-400 mb-2">{item.variant}</p>
-                        <button 
-                          onClick={() => removeItem(item.id)}
-                          className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 flex items-center gap-1 mt-auto w-fit transition-colors"
-                        >
-                          <Trash2 size={12} />
-                          Eliminar
-                        </button>
-                      </div>
-                    </div>
+                {cart.lines.map((line) => {
+                  const unitPrice = line.merchandise.price.amount;
+                  const lineTotal = unitPrice * line.quantity;
 
-                    {/* Quantity Controls */}
-                    <div className="col-span-1 md:col-span-2 flex items-center justify-start md:justify-center">
-                      <div className="flex items-center border border-wood-200 dark:border-wood-700 rounded-lg overflow-hidden">
-                        <button 
-                          onClick={() => updateQuantity(item.id, -1)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-wood-50 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors"
-                          disabled={item.quantity <= 1}
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="w-10 text-center text-sm font-medium text-wood-900 dark:text-sand-100">{item.quantity}</span>
-                        <button 
-                          onClick={() => updateQuantity(item.id, 1)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-wood-50 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors"
-                        >
-                          <Plus size={14} />
-                        </button>
+                  return (
+                    <motion.div 
+                      layout
+                      key={line.id} 
+                      className={`p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-4 items-center group ${updating ? 'opacity-60 pointer-events-none' : ''}`}
+                    >
+                      {/* Product Info */}
+                      <div className="col-span-1 md:col-span-6 flex gap-4">
+                        <div className="w-20 h-20 md:w-24 md:h-24 bg-wood-100 dark:bg-wood-800 rounded-lg overflow-hidden flex-shrink-0">
+                          {line.merchandise.image ? (
+                            <img 
+                              src={line.merchandise.image.url} 
+                              alt={line.merchandise.image.altText || line.merchandise.productTitle} 
+                              className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal opacity-90 group-hover:opacity-100 transition-opacity"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-wood-400">
+                              <ShoppingBag size={24} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-1">{line.merchandise.productTitle}</h3>
+                          <p className="text-sm text-wood-500 dark:text-sand-400 mb-2">{formatPrice(unitPrice)}</p>
+                          <button 
+                            onClick={() => removeItem(line.id)}
+                            disabled={updating}
+                            className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 flex items-center gap-1 mt-auto w-fit transition-colors"
+                          >
+                            <Trash2 size={12} />
+                            Eliminar
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Price - Mobile: Hidden, Desktop: Visible */}
-                    <div className="hidden md:block col-span-2 text-right font-medium text-wood-600 dark:text-sand-300">
-                      ${item.price.toLocaleString()}
-                    </div>
+                      {/* Quantity Controls */}
+                      <div className="col-span-1 md:col-span-2 flex items-center justify-start md:justify-center">
+                        <div className="flex items-center border border-wood-200 dark:border-wood-700 rounded-lg overflow-hidden">
+                          <button 
+                            onClick={() => updateItem(line.id, Math.max(1, line.quantity - 1))}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-wood-50 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors"
+                            disabled={line.quantity <= 1 || updating}
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="w-10 text-center text-sm font-medium text-wood-900 dark:text-sand-100">{line.quantity}</span>
+                          <button 
+                            onClick={() => updateItem(line.id, line.quantity + 1)}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-wood-50 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors"
+                            disabled={updating}
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
+                      </div>
 
-                    {/* Total */}
-                    <div className="col-span-1 md:col-span-2 flex justify-between md:justify-end items-center md:block">
-                      <span className="md:hidden text-sm text-wood-500 dark:text-sand-400">Total:</span>
-                      <span className="font-bold text-wood-900 dark:text-sand-100">${(item.price * item.quantity).toLocaleString()}</span>
-                    </div>
-                  </motion.div>
-                ))}
+                      {/* Price - Desktop */}
+                      <div className="hidden md:block col-span-2 text-right font-medium text-wood-600 dark:text-sand-300">
+                        {formatPrice(unitPrice)}
+                      </div>
+
+                      {/* Total */}
+                      <div className="col-span-1 md:col-span-2 flex justify-between md:justify-end items-center md:block">
+                        <span className="md:hidden text-sm text-wood-500 dark:text-sand-400">Total:</span>
+                        <span className="font-bold text-wood-900 dark:text-sand-100">{formatPrice(lineTotal)}</span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
             
@@ -168,16 +182,16 @@ export const CartPage = () => {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-wood-600 dark:text-sand-300">
                   <span>Subtotal</span>
-                  <span className="font-medium text-wood-900 dark:text-sand-100">${subtotal.toLocaleString()}</span>
+                  <span className="font-medium text-wood-900 dark:text-sand-100">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-wood-600 dark:text-sand-300">
                   <span>Envío estimado</span>
-                  <span className="font-medium text-wood-900 dark:text-sand-100">${shipping.toLocaleString()}</span>
+                  <span className="font-medium text-wood-900 dark:text-sand-100">{shipping === 0 ? 'Gratis' : formatPrice(shipping)}</span>
                 </div>
                 <div className="pt-4 border-t border-wood-100 dark:border-wood-800 flex justify-between items-end">
                   <span className="text-lg font-serif text-wood-900 dark:text-sand-100">Total</span>
                   <div className="text-right">
-                    <span className="block text-2xl font-bold text-wood-900 dark:text-sand-100">${total.toLocaleString()}</span>
+                    <span className="block text-2xl font-bold text-wood-900 dark:text-sand-100">{formatPrice(total)}</span>
                     <span className="text-xs text-wood-400 dark:text-sand-500">Incluye IVA</span>
                   </div>
                 </div>
@@ -204,7 +218,8 @@ export const CartPage = () => {
 
               <button
                 onClick={() => router.push('/checkout')}
-                className="w-full py-4 bg-wood-900 dark:bg-sand-100 text-white dark:text-wood-900 rounded-lg hover:bg-wood-800 dark:hover:bg-sand-200 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 font-medium shadow-md shadow-wood-900/10 dark:shadow-none"
+                disabled={updating}
+                className="w-full py-4 bg-wood-900 dark:bg-sand-100 text-white dark:text-wood-900 rounded-lg hover:bg-wood-800 dark:hover:bg-sand-200 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 font-medium shadow-md shadow-wood-900/10 dark:shadow-none disabled:opacity-50"
               >
                 Proceder al Pago
                 <ArrowRight size={18} />

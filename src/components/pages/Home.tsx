@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { ChevronRight, Leaf, Hexagon, Zap, Tag, Star, ArrowRight } from 'lucide-react';
-import { addToCart } from '@/utils/cartActions';
+import { useCartContext } from '@/contexts/CartContext';
 import { CuratedSelection } from '@/components/features/CuratedSelection';
 import { BrandValues } from '@/components/features/BrandValues';
 import { TestimonialsSection } from '@/components/features/TestimonialsSection';
@@ -86,14 +86,14 @@ const fadeInUp = {
 
 export const Home = () => {
   const router = useRouter();
+  const { addItem } = useCartContext();
   const handleAddToCart = (e: React.MouseEvent, item: any) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart({
-      name: item.title,
-      price: item.price,
-      image: item.img
-    });
+    // If item has a variantId, use it; otherwise this is a mock handler
+    if (item.variantId) {
+      addItem(item.variantId, 1);
+    }
   };
 
   return (

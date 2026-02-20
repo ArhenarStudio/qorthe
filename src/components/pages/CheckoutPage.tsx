@@ -6,8 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, CreditCard, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, Wallet, Banknote } from 'lucide-react';
-// TODO: Migrate to useCart hook when CartContext is implemented
-import { MOCK_CART_ITEMS } from '@/data/mockData';
+import { useCartContext } from '@/contexts/CartContext';
 import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
@@ -148,31 +147,30 @@ export const CheckoutPage = () => {
   const [step, setStep] = useState(1); // 1: Info & Shipping, 2: Payment
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
-  // Cart State
-  const [cartItems, setCartItems] = useState(MOCK_CART_ITEMS);
+  // Cart State (from CartContext)
+  const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem } = useCartContext();
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [couponError, setCouponError] = useState('');
 
   // Cart Calculations
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const subtotal = cartSubtotal;
   const shipping = subtotal > 3000 ? 0 : 250;
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount) : 0;
   const total = Math.max(0, subtotal + shipping - discountAmount);
 
+  const cartItems = cart?.lines ?? [];
+
   // Cart Handlers
-  const updateQuantity = (id: number, delta: number) => {
-    setCartItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQuantity = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    }));
+  const updateQuantity = (lineId: string, delta: number) => {
+    const line = cartItems.find(l => l.id === lineId);
+    if (!line) return;
+    const newQuantity = Math.max(1, line.quantity + delta);
+    cartUpdateItem(lineId, newQuantity);
   };
 
-  const removeItem = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const removeItem = (lineId: string) => {
+    cartRemoveItem(lineId);
   };
 
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -251,24 +249,28 @@ export const CheckoutPage = () => {
               ) : cartItems.map((item) => (
                 <div key={item.id} className="flex gap-4 items-center group">
                   <div className="w-16 h-16 bg-white rounded-lg border border-wood-100 p-1 relative shrink-0">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-md" />
+                    {item.merchandise.image ? (
+                      <img src={item.merchandise.image.url} alt={item.merchandise.productTitle} className="w-full h-full object-cover rounded-md" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-wood-300"><ShoppingBag className="w-6 h-6" /></div>
+                    )}
                     <span className="absolute -top-2 -right-2 w-5 h-5 bg-wood-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center">
                       {item.quantity}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-wood-900 text-sm truncate">{item.name}</h4>
-                    <p className="text-xs text-wood-500 mb-2">{item.variant}</p>
+                    <h4 className="font-medium text-wood-900 text-sm truncate">{item.merchandise.productTitle}</h4>
+                    <p className="text-xs text-wood-500 mb-2">${item.merchandise.price.amount.toLocaleString()} {currencyCode}</p>
                     <div className="flex items-center gap-3">
                       <div className="flex items-center border border-wood-200 rounded-md bg-white">
-                        <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-wood-50 text-wood-600 transition-colors" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
+                        <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-wood-50 text-wood-600 transition-colors" disabled={item.quantity <= 1 || cartUpdating}><Minus className="w-3 h-3" /></button>
                         <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:bg-wood-50 text-wood-600 transition-colors"><Plus className="w-3 h-3" /></button>
+                        <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:bg-wood-50 text-wood-600 transition-colors" disabled={cartUpdating}><Plus className="w-3 h-3" /></button>
                       </div>
-                      <button onClick={() => removeItem(item.id)} className="text-wood-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => removeItem(item.id)} className="text-wood-400 hover:text-red-500 transition-colors" disabled={cartUpdating}><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
-                  <span className="font-medium text-wood-900 text-sm">${(item.price * item.quantity).toLocaleString()}</span>
+                  <span className="font-medium text-wood-900 text-sm">${(item.merchandise.price.amount * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
            </div>

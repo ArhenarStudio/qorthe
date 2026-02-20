@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag } from 'lucide-react';
+import { X, Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-// TODO: Migrate to useCart hook when CartContext is implemented
-import { MOCK_CART_ITEMS } from '@/data/mockData';
+import { useCartContext } from '@/contexts/CartContext';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -14,40 +13,29 @@ interface CartDrawerProps {
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
-  const [items, setItems] = useState(MOCK_CART_ITEMS);
+  const { cart, loading, updating, itemCount, subtotal, currencyCode, updateItem, removeItem } = useCartContext();
   const [coupon, setCoupon] = useState('');
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const router = useRouter();
 
-  // Reset items when re-opening (just for demo purposes to bring back deleted items)
-  useEffect(() => {
-    if (isOpen && items.length === 0) {
-      setItems(MOCK_CART_ITEMS);
-    }
-  }, [isOpen]);
+  const lines = cart?.lines ?? [];
 
   // Calculations
-  const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const discount = isCouponApplied ? subtotal * 0.10 : 0; // 10% discount mock
+  const discount = isCouponApplied ? subtotal * 0.10 : 0;
   const shipping = subtotal > 3000 ? 0 : 250;
   const total = subtotal - discount + shipping;
   const freeShippingThreshold = 3000;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
   const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
-  // Handlers
-  const updateQuantity = (id: number, delta: number) => {
-    setItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
-      }
-      return item;
-    }));
+  const handleUpdateQuantity = async (lineId: string, currentQty: number, delta: number) => {
+    const newQty = currentQty + delta;
+    if (newQty < 1) return;
+    await updateItem(lineId, newQty);
   };
 
-  const removeItem = (id: number) => {
-    setItems(prev => prev.filter(item => item.id !== id));
+  const handleRemoveItem = async (lineId: string) => {
+    await removeItem(lineId);
     toast.info("Producto eliminado del carrito");
   };
 
@@ -61,11 +49,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const formatPrice = (amount: number) => {
+    return `$${amount.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -74,7 +65,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
             className="fixed inset-0 z-[100] bg-wood-900/60 dark:bg-black/60 backdrop-blur-sm"
           />
 
-          {/* Drawer */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -82,14 +72,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-y-0 right-0 z-[101] w-full max-w-md bg-sand-100 dark:bg-wood-900 shadow-2xl flex flex-col border-l border-wood-900/10 dark:border-sand-100/10 transition-colors duration-300"
           >
-            
             {/* Header */}
             <div className="flex flex-col border-b border-wood-900/5 dark:border-wood-800 bg-white dark:bg-wood-900 transition-colors duration-300">
               <div className="flex items-center justify-between p-6 pb-4">
                 <h2 className="text-2xl font-serif text-wood-900 dark:text-sand-100 font-['Playfair_Display'] flex items-center gap-3">
                   Tu Compra 
                   <span className="text-sm font-sans text-wood-400 dark:text-sand-400 font-normal bg-wood-100 dark:bg-wood-800 px-2 py-0.5 rounded-full">
-                    {items.length}
+                    {itemCount}
                   </span>
                 </h2>
                 <button onClick={onClose} className="p-2 hover:bg-wood-50 dark:hover:bg-wood-800 rounded-full transition-colors">
@@ -97,12 +86,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                 </button>
               </div>
               
-              {/* Shipping Progress */}
-              {items.length > 0 && (
+              {lines.length > 0 && (
                 <div className="px-6 pb-6">
                   <p className="text-xs text-wood-600 dark:text-sand-300 mb-2">
                     {remainingForFreeShipping > 0 
-                      ? <span>Agrega <span className="font-bold text-wood-900 dark:text-sand-100">${remainingForFreeShipping.toLocaleString()}</span> para envío gratis</span>
+                      ? <span>Agrega <span className="font-bold text-wood-900 dark:text-sand-100">{formatPrice(remainingForFreeShipping)}</span> para envío gratis</span>
                       : <span className="text-green-700 dark:text-green-400 font-medium flex items-center gap-1">¡Felicidades! Tienes envío gratis</span>
                     }
                   </p>
@@ -120,7 +108,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
 
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {items.length === 0 ? (
+              {loading ? (
+                <div className="h-full flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-wood-400 animate-spin" />
+                </div>
+              ) : lines.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-wood-400 dark:text-sand-500 space-y-4">
                   <ShoppingBag className="w-16 h-16 opacity-20" />
                   <p className="text-lg font-medium text-wood-900 dark:text-sand-100">Tu carrito está vacío</p>
@@ -129,44 +121,48 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                   </button>
                 </div>
               ) : (
-                items.map((item) => (
+                lines.map((line) => (
                   <motion.div 
                     layout
-                    key={item.id} 
+                    key={line.id} 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                     className="flex gap-4 group"
                   >
-                    {/* Image */}
                     <div className="w-24 h-24 shrink-0 overflow-hidden rounded-md bg-wood-100 dark:bg-wood-800 relative">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal" />
+                      {line.merchandise.image ? (
+                        <img src={line.merchandise.image.url} alt={line.merchandise.productTitle} className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ShoppingBag className="w-8 h-8 text-wood-300 dark:text-wood-600" />
+                        </div>
+                      )}
                     </div>
 
-                    {/* Details */}
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
                         <div className="flex justify-between items-start">
-                          <h3 className="font-serif text-wood-900 dark:text-sand-100 text-lg leading-tight">{item.name}</h3>
-                          <button onClick={() => removeItem(item.id)} className="text-wood-300 dark:text-wood-600 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1 -mr-2">
+                          <h3 className="font-serif text-wood-900 dark:text-sand-100 text-lg leading-tight">{line.merchandise.productTitle}</h3>
+                          <button onClick={() => handleRemoveItem(line.id)} disabled={updating} className="text-wood-300 dark:text-wood-600 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1 -mr-2 disabled:opacity-50">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                        <p className="text-xs text-wood-500 dark:text-sand-400 mt-1 uppercase tracking-wide">{item.variant}</p>
                       </div>
 
                       <div className="flex items-center justify-between mt-2">
-                        {/* Qty Control */}
                         <div className="flex items-center border border-wood-200 dark:border-wood-700 rounded-md">
-                          <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-wood-100 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors">
+                          <button onClick={() => handleUpdateQuantity(line.id, line.quantity, -1)} disabled={updating || line.quantity <= 1} className="p-1 hover:bg-wood-100 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors disabled:opacity-30">
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="w-8 text-center text-sm font-medium text-wood-900 dark:text-sand-100">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:bg-wood-100 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors">
+                          <span className="w-8 text-center text-sm font-medium text-wood-900 dark:text-sand-100">{line.quantity}</span>
+                          <button onClick={() => handleUpdateQuantity(line.id, line.quantity, 1)} disabled={updating} className="p-1 hover:bg-wood-100 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors disabled:opacity-30">
                             <Plus className="w-3 h-3" />
                           </button>
                         </div>
-                        <span className="font-medium text-wood-900 dark:text-sand-100">${(item.price * item.quantity).toLocaleString()}</span>
+                        <span className="font-medium text-wood-900 dark:text-sand-100">
+                          {formatPrice(line.merchandise.price.amount * line.quantity)}
+                        </span>
                       </div>
                     </div>
                   </motion.div>
@@ -175,10 +171,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
             </div>
 
             {/* Footer Summary */}
-            {items.length > 0 && (
+            {lines.length > 0 && (
               <div className="bg-white dark:bg-wood-900 border-t border-wood-900/5 dark:border-wood-800 p-6 space-y-4 transition-colors duration-300">
                 
-                {/* Coupon Input */}
                 <form onSubmit={handleApplyCoupon} className="relative">
                   <input 
                     type="text" 
@@ -198,45 +193,43 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                   </button>
                 </form>
 
-                {/* Totals */}
                 <div className="space-y-2 pt-2 text-sm text-wood-600 dark:text-sand-300">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${subtotal.toLocaleString()}</span>
+                    <span>{formatPrice(subtotal)}</span>
                   </div>
                   {isCouponApplied && (
                     <div className="flex justify-between text-green-700 dark:text-green-400">
                       <span>Descuento (10%)</span>
-                      <span>-${discount.toLocaleString()}</span>
+                      <span>-{formatPrice(discount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span>Envío</span>
-                    <span>{shipping === 0 ? 'Gratis' : `$${shipping.toLocaleString()}`}</span>
+                    <span>{shipping === 0 ? 'Gratis' : formatPrice(shipping)}</span>
                   </div>
                   <div className="flex justify-between text-lg font-serif text-wood-900 dark:text-sand-100 font-bold pt-2 border-t border-dashed border-wood-200 dark:border-wood-700">
                     <span>Total</span>
-                    <span>${total.toLocaleString()}</span>
+                    <span>{formatPrice(total)}</span>
                   </div>
                 </div>
 
-                {/* Actions */}
+                {updating && (
+                  <div className="flex items-center justify-center gap-2 text-xs text-wood-400">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Actualizando...
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-3 pt-2">
                   <button 
-                    onClick={() => {
-                      onClose();
-                      router.push('/cart');
-                    }}
+                    onClick={() => { onClose(); router.push('/cart'); }}
                     className="w-full py-3 text-sm font-medium text-wood-600 dark:text-sand-300 hover:text-wood-900 dark:hover:text-sand-100 underline decoration-1 underline-offset-4 transition-colors"
                   >
                     Ver Carrito Completo
                   </button>
-
                   <button 
-                    onClick={() => {
-                      onClose();
-                      router.push('/checkout');
-                    }}
+                    onClick={() => { onClose(); router.push('/checkout'); }}
                     className="w-full bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 py-4 rounded-sm font-medium hover:bg-wood-800 dark:hover:bg-sand-200 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-wood-900/10 dark:shadow-none group"
                   >
                     Proceder al Pago
