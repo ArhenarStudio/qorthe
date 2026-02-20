@@ -159,7 +159,7 @@ export const CheckoutPage = () => {
 
   // Cart Calculations
   const subtotal = cartSubtotal;
-  const shipping = 0; // Free shipping for testing
+  const shipping: number = 0; // Free shipping for testing
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount) : 0;
   const total = Math.max(0, subtotal + shipping - discountAmount);
 
