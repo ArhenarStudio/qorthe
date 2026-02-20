@@ -123,7 +123,7 @@ interface MedusaCart {
   items?: MedusaLineItem[];
   total: number;
   subtotal: number;
-  currency_code: string;
+  currency_code?: string;
   region?: {
     currency_code: string;
   };
@@ -236,7 +236,7 @@ function mapCart(cart: MedusaCart): CommerceCart {
 
   return {
     id: cart.id,
-    checkoutUrl: null, // Medusa doesn't have a hosted checkout URL — we handle it in our frontend
+    checkoutUrl: null,
     lines: (cart.items ?? []).map((item) => mapCartLine(item, currencyCode)),
     subtotal: mapMoney(cart.subtotal ?? cart.total ?? 0, currencyCode),
   };
@@ -342,7 +342,7 @@ export const medusaProvider: CommerceProvider = {
     lineId: string
   ): Promise<CommerceCart> {
     const data = await medusaFetch<{ cart: MedusaCart }>(
-      `/carts/${cartId}/line-items/${lineId}`,
+      `/carts/${cartId}/line-items/${lineId}?fields=*items,*region`,
       {
         method: "DELETE",
       }

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, CreditCard, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, Wallet, Banknote } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
+import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
@@ -127,6 +128,9 @@ export const CheckoutPage = () => {
   const selectedCountry = useWatch({ control, name: 'country' });
   const selectedState = useWatch({ control, name: 'state' });
   const paymentMethod = useWatch({ control, name: 'paymentMethod' });
+  const watchedEmail = useWatch({ control, name: 'email' });
+  const watchedFirstName = useWatch({ control, name: 'firstName' });
+  const watchedLastName = useWatch({ control, name: 'lastName' });
 
   // Reset dependent fields when parent changes
   useEffect(() => {
@@ -155,7 +159,7 @@ export const CheckoutPage = () => {
 
   // Cart Calculations
   const subtotal = cartSubtotal;
-  const shipping = subtotal > 3000 ? 0 : 250;
+  const shipping = 0; // Free shipping for testing
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount) : 0;
   const total = Math.max(0, subtotal + shipping - discountAmount);
 
@@ -491,9 +495,21 @@ export const CheckoutPage = () => {
                     {/* Conditional Content based on Payment Method */}
                     <div className="mt-6">
                         {paymentMethod === 'mercadopago' && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-blue-50 border border-blue-100 p-6 rounded-lg text-center space-y-4">
-                                <img src={mercadoPagoLogo} alt="Mercado Pago" className="h-8 w-auto mx-auto object-contain" />
-                                <p className="text-blue-900 font-medium">Serás redirigido a Mercado Pago para completar tu compra de forma segura con tu saldo, tarjetas o efectivo.</p>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                <MercadoPagoBrick
+                                  amount={total}
+                                  cartId={cart?.id || ''}
+                                  payerEmail={watchedEmail || ''}
+                                  payerFirstName={watchedFirstName || ''}
+                                  payerLastName={watchedLastName || ''}
+                                  onPaymentSuccess={(data) => {
+                                    console.log('Payment success:', data);
+                                    router.push('/checkout/success');
+                                  }}
+                                  onPaymentError={(error) => {
+                                    console.error('Payment error:', error);
+                                  }}
+                                />
                             </motion.div>
                         )}
 
