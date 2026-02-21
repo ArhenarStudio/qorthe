@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       metadata: { cart_id },
       receipt_email: email || undefined,
       description: 'DavidSons Design - Orden',
-      statement_descriptor: 'DAVIDSONS',
+      statement_descriptor_suffix: 'DSD',
     });
 
     return NextResponse.json({
