@@ -4,14 +4,14 @@ import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Check, Home, Package } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCart } from '@/contexts/CartContext';
+import { useCartContext } from '@/contexts/CartContext';
 
 const logoDSD = '/images/logo-dsd.png';
 
 export const CheckoutSuccessPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { clearCart } = useCart();
+  const { clearCart } = useCartContext();
 
   const orderDisplayId = searchParams.get('order');
   const mpPaymentId = searchParams.get('mp_id');
