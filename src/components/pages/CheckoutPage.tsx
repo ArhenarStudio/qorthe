@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { ArrowLeft, CreditCard, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, Wallet, Banknote } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
+import { StripeCheckout } from '@/components/checkout/StripeCheckout';
 import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
@@ -533,24 +534,33 @@ export const CheckoutPage = () => {
                         )}
 
                         {paymentMethod === 'stripe' && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                                <div className="bg-sand-50 p-4 rounded-lg border border-wood-200 text-center text-sm text-wood-500 mb-4">
-                                    <p>Pagos seguros y encriptados con SSL vía Stripe.</p>
-                                    <div className="flex justify-center gap-2 mt-3 opacity-60 grayscale">
-                                        <CreditCard className="w-5 h-5" />
-                                        <span className="text-xs font-bold tracking-widest">VISA</span>
-                                        <span className="text-xs font-bold tracking-widest">MC</span>
-                                        <span className="text-xs font-bold tracking-widest">AMEX</span>
-                                    </div>
-                                </div>
-                                <div className="relative">
-                                    <InputField label="Número de Tarjeta" name="cardNumber" placeholder="0000 0000 0000 0000" register={register} errors={errors} required={paymentMethod === 'stripe'} />
-                                    <Lock className="absolute right-4 top-9 w-4 h-4 text-wood-400" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <InputField label="Vencimiento" name="cardExpiry" placeholder="MM/YY" register={register} errors={errors} required={paymentMethod === 'stripe'} />
-                                    <InputField label="CVC" name="cardCvc" placeholder="123" register={register} errors={errors} required={paymentMethod === 'stripe'} />
-                                </div>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                <StripeCheckout
+                                  amount={total}
+                                  cartId={cart?.id || ''}
+                                  payerEmail={watchedEmail || ''}
+                                  payerFirstName={watchedFirstName || ''}
+                                  payerLastName={watchedLastName || ''}
+                                  shippingAddress={{
+                                    first_name: watchedFirstName || '',
+                                    last_name: watchedLastName || '',
+                                    address_1: `${watchedStreet || ''} ${watchedExterior || ''}`.trim(),
+                                    address_2: watchedInterior || '',
+                                    city: watchedCity || '',
+                                    province: watchedState || '',
+                                    postal_code: watchedZip || '',
+                                    country_code: 'mx',
+                                    phone: watchedPhone || '',
+                                  }}
+                                  onPaymentSuccess={(data) => {
+                                    console.log('Stripe payment success:', data);
+                                    const orderId = data.order_display_id || 'pending';
+                                    router.push(`/checkout/success?order=${orderId}&provider=stripe&pi=${data.payment_intent_id || ''}`);
+                                  }}
+                                  onPaymentError={(error) => {
+                                    console.error('Stripe payment error:', error);
+                                  }}
+                                />
                             </motion.div>
                         )}
 

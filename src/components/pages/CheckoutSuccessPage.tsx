@@ -15,6 +15,8 @@ export const CheckoutSuccessPage = () => {
 
   const orderDisplayId = searchParams.get('order');
   const mpPaymentId = searchParams.get('mp_id');
+  const stripePaymentId = searchParams.get('pi');
+  const provider = searchParams.get('provider');
 
   useEffect(() => {
     clearCart();
@@ -90,6 +92,12 @@ export const CheckoutSuccessPage = () => {
             <div className="flex justify-between items-center mb-4 pb-4 border-b border-wood-200">
               <span className="text-sm text-wood-500 uppercase tracking-wider font-medium">Pago MP</span>
               <span className="text-sm font-mono text-wood-700">#{mpPaymentId}</span>
+            </div>
+          )}
+          {provider === 'stripe' && stripePaymentId && (
+            <div className="flex justify-between items-center mb-4 pb-4 border-b border-wood-200">
+              <span className="text-sm text-wood-500 uppercase tracking-wider font-medium">Pago Stripe</span>
+              <span className="text-sm font-mono text-wood-700">#{stripePaymentId.substring(0, 20)}...</span>
             </div>
           )}
           <div className="flex items-start gap-3 text-wood-700 mb-2">
