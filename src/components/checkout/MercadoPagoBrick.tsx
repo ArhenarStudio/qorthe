@@ -5,8 +5,6 @@ import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const MP_PUBLIC_KEY = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || '';
-const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000';
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '';
 
 let mpInitialized = false;
 
@@ -103,7 +101,7 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
       setErrorMsg(err.message || 'Error de conexión');
       onPaymentError(err);
     }
-  }, [amount, cartId, onPaymentSuccess, onPaymentError, payerEmail, payerFirstName, payerLastName]);
+  }, [amount, cartId, onPaymentSuccess, onPaymentError, payerEmail, payerFirstName, payerLastName, shippingAddress]);
 
   if (!MP_PUBLIC_KEY) {
     return (
