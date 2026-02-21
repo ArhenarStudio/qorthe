@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { ArrowLeft, CreditCard, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, Wallet, Banknote } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
-import { StripeCheckout } from '@/components/checkout/StripeCheckout';
+import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
 import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
@@ -103,6 +103,7 @@ const TextAreaField = ({ label, name, register, errors, placeholder, required = 
 
 export const CheckoutPage = () => {
   const router = useRouter();
+  const stripeRef = React.useRef<StripeCheckoutHandle>(null);
   const { register, handleSubmit, trigger, control, setValue, formState: { errors } } = useForm({
     defaultValues: {
       country: 'MX',
@@ -208,9 +209,13 @@ export const CheckoutPage = () => {
 
   const onSubmit = (data: any) => {
     console.log(data);
-    setTimeout(() => {
-      router.push('/checkout/success');
-    }, 1500);
+    // If Stripe is selected, trigger Stripe payment via ref
+    if (paymentMethod === 'stripe' && stripeRef.current) {
+      stripeRef.current.submit();
+      return;
+    }
+    // MercadoPago handles its own submit via the Payment Brick
+    // This fallback should not be reached when a payment provider is active
   };
 
   const handleContinue = async () => {
@@ -536,6 +541,7 @@ export const CheckoutPage = () => {
                         {paymentMethod === 'stripe' && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                                 <StripeCheckout
+                                  ref={stripeRef}
                                   amount={total}
                                   cartId={cart?.id || ''}
                                   payerEmail={watchedEmail || ''}

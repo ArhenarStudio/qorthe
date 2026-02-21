@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   Elements,
@@ -34,8 +34,12 @@ interface StripeCheckoutProps {
   };
 }
 
+export interface StripeCheckoutHandle {
+  submit: () => Promise<void>;
+}
+
 // Inner form component (must be inside Elements)
-const CheckoutForm: React.FC<{
+interface CheckoutFormProps {
   cartId: string;
   paymentIntentId: string;
   onPaymentSuccess: (data: any) => void;
@@ -44,7 +48,9 @@ const CheckoutForm: React.FC<{
   payerFirstName?: string;
   payerLastName?: string;
   shippingAddress?: StripeCheckoutProps['shippingAddress'];
-}> = ({
+}
+
+const CheckoutForm = forwardRef<StripeCheckoutHandle, CheckoutFormProps>(({
   cartId,
   paymentIntentId,
   onPaymentSuccess,
@@ -53,14 +59,13 @@ const CheckoutForm: React.FC<{
   payerFirstName,
   payerLastName,
   shippingAddress,
-}) => {
+}, ref) => {
   const stripe = useStripe();
   const elements = useElements();
   const [status, setStatus] = useState<'ready' | 'processing' | 'success' | 'error'>('ready');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(async () => {
     if (!stripe || !elements) return;
 
     setStatus('processing');
@@ -88,7 +93,6 @@ const CheckoutForm: React.FC<{
       }
 
       if (paymentIntent?.status === 'succeeded') {
-        // Payment succeeded — create order in Medusa
         console.log('[Stripe] Payment succeeded, creating order...');
         const confirmRes = await fetch('/api/stripe/confirm-payment', {
           method: 'POST',
@@ -107,7 +111,6 @@ const CheckoutForm: React.FC<{
 
         const result = await confirmRes.json();
         console.log('[Stripe] Order result:', result);
-
         setStatus('success');
         onPaymentSuccess(result);
       } else {
@@ -122,6 +125,10 @@ const CheckoutForm: React.FC<{
       onPaymentError(err);
     }
   }, [stripe, elements, cartId, paymentIntentId, onPaymentSuccess, onPaymentError, payerEmail, payerFirstName, payerLastName, shippingAddress]);
+
+  useImperativeHandle(ref, () => ({
+    submit: handleSubmit,
+  }), [handleSubmit]);
 
   if (status === 'processing') {
     return (
@@ -143,7 +150,7 @@ const CheckoutForm: React.FC<{
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       {errorMsg && (
         <div className="bg-red-50 border border-red-200 p-3 rounded-lg flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
@@ -151,19 +158,7 @@ const CheckoutForm: React.FC<{
         </div>
       )}
 
-      <PaymentElement
-        options={{
-          layout: 'tabs',
-        }}
-      />
-
-      <button
-        type="submit"
-        disabled={!stripe || !elements}
-        className="w-full bg-wood-900 text-sand-100 py-4 rounded-sm hover:bg-wood-800 transition-colors uppercase tracking-widest text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Pagar con Stripe
-      </button>
+      <PaymentElement options={{ layout: 'tabs' }} />
 
       <div className="flex items-center justify-center gap-2 text-xs text-wood-400 pt-2">
         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -172,12 +167,60 @@ const CheckoutForm: React.FC<{
         </svg>
         <span>Pago seguro procesado por Stripe</span>
       </div>
-    </form>
+    </div>
   );
-};
+});
 
-// Outer wrapper that fetches clientSecret and wraps in Elements
-export const StripeCheckout: React.FC<StripeCheckoutProps> = ({
+CheckoutForm.displayName = 'CheckoutForm';
+
+// Outer wrapper
+const StripeCheckoutInner = forwardRef<StripeCheckoutHandle, StripeCheckoutProps & { clientSecret: string; paymentIntentId: string }>(({
+  cartId,
+  onPaymentSuccess,
+  onPaymentError,
+  payerEmail,
+  payerFirstName,
+  payerLastName,
+  shippingAddress,
+  clientSecret,
+  paymentIntentId,
+}, ref) => {
+  if (!stripePromise) return null;
+
+  return (
+    <Elements
+      stripe={stripePromise}
+      options={{
+        clientSecret,
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#3D2B1F',
+            fontFamily: 'system-ui, sans-serif',
+            borderRadius: '2px',
+          },
+        },
+        locale: 'es',
+      }}
+    >
+      <CheckoutForm
+        ref={ref}
+        cartId={cartId}
+        paymentIntentId={paymentIntentId}
+        onPaymentSuccess={onPaymentSuccess}
+        onPaymentError={onPaymentError}
+        payerEmail={payerEmail}
+        payerFirstName={payerFirstName}
+        payerLastName={payerLastName}
+        shippingAddress={shippingAddress}
+      />
+    </Elements>
+  );
+});
+
+StripeCheckoutInner.displayName = 'StripeCheckoutInner';
+
+export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutProps>(({
   amount,
   cartId,
   onPaymentSuccess,
@@ -186,7 +229,7 @@ export const StripeCheckout: React.FC<StripeCheckoutProps> = ({
   payerFirstName = '',
   payerLastName = '',
   shippingAddress,
-}) => {
+}, ref) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -202,12 +245,7 @@ export const StripeCheckout: React.FC<StripeCheckoutProps> = ({
         const res = await fetch('/api/stripe/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount,
-            currency: 'mxn',
-            cart_id: cartId,
-            email: payerEmail,
-          }),
+          body: JSON.stringify({ amount, currency: 'mxn', cart_id: cartId, email: payerEmail }),
         });
         const data = await res.json();
         if (data.clientSecret) {
@@ -253,34 +291,23 @@ export const StripeCheckout: React.FC<StripeCheckoutProps> = ({
     );
   }
 
-  if (!clientSecret || !stripePromise) return null;
+  if (!clientSecret) return null;
 
   return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        clientSecret,
-        appearance: {
-          theme: 'stripe',
-          variables: {
-            colorPrimary: '#3D2B1F',
-            fontFamily: 'system-ui, sans-serif',
-            borderRadius: '2px',
-          },
-        },
-        locale: 'es',
-      }}
-    >
-      <CheckoutForm
-        cartId={cartId}
-        paymentIntentId={paymentIntentId}
-        onPaymentSuccess={onPaymentSuccess}
-        onPaymentError={onPaymentError}
-        payerEmail={payerEmail}
-        payerFirstName={payerFirstName}
-        payerLastName={payerLastName}
-        shippingAddress={shippingAddress}
-      />
-    </Elements>
+    <StripeCheckoutInner
+      ref={ref}
+      amount={amount}
+      cartId={cartId}
+      onPaymentSuccess={onPaymentSuccess}
+      onPaymentError={onPaymentError}
+      payerEmail={payerEmail}
+      payerFirstName={payerFirstName}
+      payerLastName={payerLastName}
+      shippingAddress={shippingAddress}
+      clientSecret={clientSecret}
+      paymentIntentId={paymentIntentId}
+    />
   );
-};
+});
+
+StripeCheckout.displayName = 'StripeCheckout';
