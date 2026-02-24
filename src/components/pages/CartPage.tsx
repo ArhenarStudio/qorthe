@@ -12,11 +12,10 @@ const paypalLogo = '/images/paypal-logo.png';
 
 export const CartPage = () => {
   const router = useRouter();
-  const { cart, loading, updating, itemCount, subtotal, currencyCode, updateItem, removeItem } = useCartContext();
+  const { cart, loading, updating, itemCount, subtotal, shippingTotal, total, currencyCode, updateItem, removeItem } = useCartContext();
   const [couponCode, setCouponCode] = useState('');
 
-  const shipping = subtotal >= 3500 ? 0 : 150;
-  const total = subtotal + shipping;
+  const shipping = shippingTotal;
 
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('es-MX', {

@@ -166,7 +166,7 @@ export const CheckoutPage = () => {
   const [checkoutError, setCheckoutError] = useState('');
 
   // Cart State (from CartContext)
-  const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem, clearCart } = useCartContext();
+  const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, shippingTotal: cartShipping, total: cartTotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem, clearCart } = useCartContext();
 
   // Guard: redirect to cart if empty (after loading finishes)
   useEffect(() => {
@@ -179,11 +179,11 @@ export const CheckoutPage = () => {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [couponError, setCouponError] = useState('');
 
-  // Cart Calculations
+  // Cart Calculations — sourced from Medusa, single source of truth
   const subtotal = cartSubtotal;
-  const shipping: number = 0; // Free shipping for testing
+  const shipping = cartShipping;
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount) : 0;
-  const total = Math.max(0, subtotal + shipping - discountAmount);
+  const total = Math.max(0, cartTotal - discountAmount);
 
   const cartItems = cart?.lines ?? [];
 

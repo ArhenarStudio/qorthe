@@ -13,20 +13,22 @@ interface CartDrawerProps {
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
-  const { cart, loading, updating, itemCount, subtotal, currencyCode, updateItem, removeItem } = useCartContext();
+  const { cart, loading, updating, itemCount, subtotal, shippingTotal, total, currencyCode, updateItem, removeItem } = useCartContext();
   const [coupon, setCoupon] = useState('');
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const router = useRouter();
 
   const lines = cart?.lines ?? [];
 
-  // Calculations
-  const discount = isCouponApplied ? subtotal * 0.10 : 0;
-  const shipping = subtotal > 3000 ? 0 : 250;
-  const total = subtotal - discount + shipping;
+  // Shipping threshold for free shipping progress bar
   const freeShippingThreshold = 3000;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
   const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100);
+  
+  // Discount is local-only for now (coupon system not in Medusa yet)
+  const discount = isCouponApplied ? subtotal * 0.10 : 0;
+  // Use Medusa's shipping total; apply local discount on top
+  const displayTotal = total - discount;
 
   const handleUpdateQuantity = async (lineId: string, currentQty: number, delta: number) => {
     const newQty = currentQty + delta;
@@ -206,11 +208,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                   )}
                   <div className="flex justify-between">
                     <span>Envío</span>
-                    <span>{shipping === 0 ? 'Gratis' : formatPrice(shipping)}</span>
+                    <span>{shippingTotal === 0 ? 'Gratis' : formatPrice(shippingTotal)}</span>
                   </div>
                   <div className="flex justify-between text-lg font-serif text-wood-900 dark:text-sand-100 font-bold pt-2 border-t border-dashed border-wood-200 dark:border-wood-700">
                     <span>Total</span>
-                    <span>{formatPrice(total)}</span>
+                    <span>{formatPrice(displayTotal)}</span>
                   </div>
                 </div>
 

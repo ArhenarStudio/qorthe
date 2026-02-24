@@ -20,6 +20,10 @@ interface CartContextType {
   updating: boolean;
   itemCount: number;
   subtotal: number;
+  shippingTotal: number;
+  discountTotal: number;
+  taxTotal: number;
+  total: number;
   currencyCode: string;
   addItem: (variantId: string, quantity?: number) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
@@ -37,6 +41,10 @@ const CartContext = createContext<CartContextType>({
   updating: false,
   itemCount: 0,
   subtotal: 0,
+  shippingTotal: 0,
+  discountTotal: 0,
+  taxTotal: 0,
+  total: 0,
   currencyCode: "MXN",
   addItem: async () => {},
   updateItem: async () => {},
@@ -139,6 +147,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const itemCount = cart?.lines.reduce((sum, line) => sum + line.quantity, 0) ?? 0;
   const subtotal = cart?.subtotal.amount ?? 0;
+  const shippingTotal = cart?.shippingTotal.amount ?? 0;
+  const discountTotal = cart?.discountTotal.amount ?? 0;
+  const taxTotal = cart?.taxTotal.amount ?? 0;
+  const total = cart?.total.amount ?? 0;
   const currencyCode = cart?.subtotal.currencyCode ?? "MXN";
 
   const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
@@ -155,7 +167,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <CartContext.Provider
       value={{
-        cart, loading, updating, itemCount, subtotal, currencyCode,
+        cart, loading, updating, itemCount,
+        subtotal, shippingTotal, discountTotal, taxTotal, total,
+        currencyCode,
         addItem, updateItem, removeItem, clearCart,
         isDrawerOpen, openDrawer, closeDrawer, toggleDrawer,
       }}

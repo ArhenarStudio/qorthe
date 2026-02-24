@@ -123,6 +123,9 @@ interface MedusaCart {
   items?: MedusaLineItem[];
   total: number;
   subtotal: number;
+  shipping_total?: number;
+  discount_total?: number;
+  tax_total?: number;
   currency_code?: string;
   region?: {
     currency_code: string;
@@ -130,6 +133,7 @@ interface MedusaCart {
   payment_collection?: {
     payment_sessions?: Array<{ provider_id: string }>;
   };
+  shipping_methods?: Array<{ id: string; shipping_option_id: string }>;
 }
 
 // ─── Mapping helpers ───
@@ -238,7 +242,11 @@ function mapCart(cart: MedusaCart): CommerceCart {
     id: cart.id,
     checkoutUrl: null,
     lines: (cart.items ?? []).map((item) => mapCartLine(item, currencyCode)),
-    subtotal: mapMoney(cart.subtotal ?? cart.total ?? 0, currencyCode),
+    subtotal: mapMoney(cart.subtotal ?? 0, currencyCode),
+    shippingTotal: mapMoney(cart.shipping_total ?? 0, currencyCode),
+    discountTotal: mapMoney(cart.discount_total ?? 0, currencyCode),
+    taxTotal: mapMoney(cart.tax_total ?? 0, currencyCode),
+    total: mapMoney(cart.total ?? 0, currencyCode),
   };
 }
 

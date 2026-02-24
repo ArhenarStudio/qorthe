@@ -70,6 +70,10 @@ export interface CommerceCart {
   checkoutUrl: string | null;
   lines: CommerceCartLine[];
   subtotal: CommerceMoney;
+  shippingTotal: CommerceMoney;
+  discountTotal: CommerceMoney;
+  taxTotal: CommerceMoney;
+  total: CommerceMoney;
 }
 
 // ─── Customer Types ───
