@@ -85,12 +85,10 @@ function CheckoutForm({
 
     submitRef.current = async () => {
       const p = propsRef.current;
-      setStatus('processing');
       setErrorMsg('');
 
       try {
-        // STEP 1: Trigger form validation and wallet collection
-        // This is REQUIRED by Stripe before confirmPayment
+        // STEP 1: Validate the form — PaymentElement MUST remain in DOM
         const { error: submitError } = await elements.submit();
         if (submitError) {
           setStatus('error');
@@ -99,7 +97,10 @@ function CheckoutForm({
           return;
         }
 
-        // STEP 2: Confirm the payment
+        // STEP 2: Show processing overlay AFTER validation passed
+        setStatus('processing');
+
+        // STEP 3: Confirm the payment
         const { error, paymentIntent } = await stripe.confirmPayment({
           elements,
           redirect: 'if_required',
@@ -120,7 +121,7 @@ function CheckoutForm({
           return;
         }
 
-        // STEP 3: Payment succeeded — create order in Medusa
+        // STEP 4: Payment succeeded — create order in Medusa
         if (paymentIntent?.status === 'succeeded') {
           console.log('[Stripe] Payment succeeded, creating order...');
           const confirmRes = await fetch('/api/stripe/confirm-payment', {
@@ -151,47 +152,55 @@ function CheckoutForm({
     };
   }, [stripe, elements, submitRef]);
 
-  // ── Render states ──
-  if (status === 'processing') {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-[#635BFF]" />
-        <p className="text-sm font-medium text-wood-700">Procesando tu pago...</p>
-        <p className="text-xs text-wood-500">No cierres esta ventana</p>
-      </div>
-    );
-  }
-
-  if (status === 'success') {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-3">
-        <CheckCircle2 className="w-10 h-10 text-green-500" />
-        <p className="text-sm font-medium text-green-700">¡Pago aprobado!</p>
-      </div>
-    );
-  }
+  // ── Render ──
+  // CRITICAL: PaymentElement must ALWAYS remain mounted in the DOM.
+  // Conditional returns (if processing/success) would unmount it,
+  // causing "elements should have a mounted Payment Element" error.
+  // Instead, we use overlays and visibility to preserve the DOM node.
 
   return (
-    <div className="space-y-4">
-      {errorMsg && (
-        <div className="bg-red-50 border border-red-200 p-3 rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-          <p className="text-sm text-red-700">{errorMsg}</p>
+    <div className="relative">
+      {/* Processing overlay — covers but does NOT unmount PaymentElement */}
+      {status === 'processing' && (
+        <div className="absolute inset-0 bg-white/90 z-10 flex flex-col items-center justify-center py-12 space-y-3 rounded-lg">
+          <Loader2 className="w-8 h-8 animate-spin text-[#635BFF]" />
+          <p className="text-sm font-medium text-wood-700">Procesando tu pago...</p>
+          <p className="text-xs text-wood-500">No cierres esta ventana</p>
         </div>
       )}
 
-      <PaymentElement
-        options={{ layout: 'tabs' }}
-        onReady={() => console.log('[Stripe] PaymentElement ready')}
-        onLoadError={(e) => console.error('[Stripe] PaymentElement load error:', e)}
-      />
+      {/* Success overlay */}
+      {status === 'success' && (
+        <div className="absolute inset-0 bg-white z-10 flex flex-col items-center justify-center py-12 space-y-3 rounded-lg">
+          <CheckCircle2 className="w-10 h-10 text-green-500" />
+          <p className="text-sm font-medium text-green-700">¡Pago aprobado!</p>
+        </div>
+      )}
 
-      <div className="flex items-center justify-center gap-2 text-xs text-wood-400 pt-2">
-        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-        <span>Pago seguro procesado por Stripe</span>
+      {/* The actual form — ALWAYS in the DOM */}
+      <div className={status === 'processing' || status === 'success' ? 'opacity-0 pointer-events-none' : ''}>
+        <div className="space-y-4">
+          {errorMsg && (
+            <div className="bg-red-50 border border-red-200 p-3 rounded-lg flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <p className="text-sm text-red-700">{errorMsg}</p>
+            </div>
+          )}
+
+          <PaymentElement
+            options={{ layout: 'tabs' }}
+            onReady={() => console.log('[Stripe] PaymentElement ready')}
+            onLoadError={(e) => console.error('[Stripe] PaymentElement load error:', e)}
+          />
+
+          <div className="flex items-center justify-center gap-2 text-xs text-wood-400 pt-2">
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>Pago seguro procesado por Stripe</span>
+          </div>
+        </div>
       </div>
     </div>
   );
