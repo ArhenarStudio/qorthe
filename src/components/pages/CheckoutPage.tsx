@@ -253,20 +253,37 @@ export const CheckoutPage = () => {
         },
       });
 
-      // Add shipping method ONLY if cart doesn't already have one.
+      // ─── IDEMPOTENT SHIPPING METHOD MANAGEMENT ───
       // Medusa v2 ACCUMULATES shipping methods (doesn't replace).
-      // Multiple shipping methods cause "shipping profiles not satisfied" error.
+      // We must ensure exactly ONE correct shipping method exists.
       // TODO: Phase 6 — replace hardcoded ID with dynamic shipping options
       const SHIPPING_OPTION_ID = 'so_01KJ619T56SW3JP5JSKEAWXC5V';
       const existingMethods = await commerce.getCartShippingMethods(cart.id);
-      if (existingMethods.length === 0) {
+
+      const hasCorrectMethod = existingMethods.some(
+        (m) => m.shipping_option_id === SHIPPING_OPTION_ID
+      );
+
+      if (existingMethods.length > 1) {
+        // Cart corrupted — multiple methods accumulated. Clean up via fresh add.
+        // Medusa replaces all when you POST a new shipping method to a cart
+        // that already has methods, but only if the cart state allows it.
+        console.warn(`[Checkout] Cart has ${existingMethods.length} shipping methods (corrupted). Re-adding correct one.`);
+        try {
+          await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
+        } catch (shippingErr: unknown) {
+          console.warn('[Checkout] Shipping method cleanup note:', (shippingErr as Error).message);
+        }
+      } else if (!hasCorrectMethod) {
+        // No method or wrong method — add the correct one
+        console.log('[Checkout] Adding shipping method...');
         try {
           await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
         } catch (shippingErr: unknown) {
           console.warn('[Checkout] Shipping method note:', (shippingErr as Error).message);
         }
       } else {
-        console.log(`[Checkout] Cart already has ${existingMethods.length} shipping method(s), skipping add.`);
+        console.log('[Checkout] Correct shipping method already exists, skipping.');
       }
 
       setStep(2);
