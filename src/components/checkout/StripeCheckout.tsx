@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
+import React, { useEffect, useState, useCallback, useImperativeHandle, forwardRef, useRef } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   Elements,
@@ -38,7 +38,8 @@ export interface StripeCheckoutHandle {
   submit: () => Promise<void>;
 }
 
-// Inner form component (must be inside Elements)
+// ── Inner form that lives INSIDE <Elements> ──
+// Uses a callback ref pattern to expose submit to parent
 interface CheckoutFormProps {
   cartId: string;
   paymentIntentId: string;
@@ -48,9 +49,10 @@ interface CheckoutFormProps {
   payerFirstName?: string;
   payerLastName?: string;
   shippingAddress?: StripeCheckoutProps['shippingAddress'];
+  onReady: (handle: StripeCheckoutHandle) => void;
 }
 
-const CheckoutForm = forwardRef<StripeCheckoutHandle, CheckoutFormProps>(({
+function CheckoutForm({
   cartId,
   paymentIntentId,
   onPaymentSuccess,
@@ -59,14 +61,20 @@ const CheckoutForm = forwardRef<StripeCheckoutHandle, CheckoutFormProps>(({
   payerFirstName,
   payerLastName,
   shippingAddress,
-}, ref) => {
+  onReady,
+}: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [status, setStatus] = useState<'ready' | 'processing' | 'success' | 'error'>('ready');
   const [errorMsg, setErrorMsg] = useState('');
+  const [elementReady, setElementReady] = useState(false);
 
   const handleSubmit = useCallback(async () => {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !elementReady) {
+      console.warn('[Stripe] Not ready yet - stripe:', !!stripe, 'elements:', !!elements, 'elementReady:', elementReady);
+      onPaymentError({ message: 'Stripe aún no está listo. Espera un momento e intenta de nuevo.' });
+      return;
+    }
 
     setStatus('processing');
     setErrorMsg('');
@@ -124,11 +132,12 @@ const CheckoutForm = forwardRef<StripeCheckoutHandle, CheckoutFormProps>(({
       setErrorMsg(err.message || 'Error de conexión');
       onPaymentError(err);
     }
-  }, [stripe, elements, cartId, paymentIntentId, onPaymentSuccess, onPaymentError, payerEmail, payerFirstName, payerLastName, shippingAddress]);
+  }, [stripe, elements, elementReady, cartId, paymentIntentId, onPaymentSuccess, onPaymentError, payerEmail, payerFirstName, payerLastName, shippingAddress]);
 
-  useImperativeHandle(ref, () => ({
-    submit: handleSubmit,
-  }), [handleSubmit]);
+  // Expose submit handle to parent via callback (not forwardRef)
+  useEffect(() => {
+    onReady({ submit: handleSubmit });
+  }, [handleSubmit, onReady]);
 
   if (status === 'processing') {
     return (
@@ -158,7 +167,13 @@ const CheckoutForm = forwardRef<StripeCheckoutHandle, CheckoutFormProps>(({
         </div>
       )}
 
-      <PaymentElement options={{ layout: 'tabs' }} />
+      <PaymentElement
+        options={{ layout: 'tabs' }}
+        onReady={() => {
+          console.log('[Stripe] PaymentElement mounted and ready');
+          setElementReady(true);
+        }}
+      />
 
       <div className="flex items-center justify-center gap-2 text-xs text-wood-400 pt-2">
         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -169,57 +184,9 @@ const CheckoutForm = forwardRef<StripeCheckoutHandle, CheckoutFormProps>(({
       </div>
     </div>
   );
-});
+}
 
-CheckoutForm.displayName = 'CheckoutForm';
-
-// Outer wrapper
-const StripeCheckoutInner = forwardRef<StripeCheckoutHandle, StripeCheckoutProps & { clientSecret: string; paymentIntentId: string }>(({
-  cartId,
-  onPaymentSuccess,
-  onPaymentError,
-  payerEmail,
-  payerFirstName,
-  payerLastName,
-  shippingAddress,
-  clientSecret,
-  paymentIntentId,
-}, ref) => {
-  if (!stripePromise) return null;
-
-  return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        clientSecret,
-        appearance: {
-          theme: 'stripe',
-          variables: {
-            colorPrimary: '#3D2B1F',
-            fontFamily: 'system-ui, sans-serif',
-            borderRadius: '2px',
-          },
-        },
-        locale: 'es',
-      }}
-    >
-      <CheckoutForm
-        ref={ref}
-        cartId={cartId}
-        paymentIntentId={paymentIntentId}
-        onPaymentSuccess={onPaymentSuccess}
-        onPaymentError={onPaymentError}
-        payerEmail={payerEmail}
-        payerFirstName={payerFirstName}
-        payerLastName={payerLastName}
-        shippingAddress={shippingAddress}
-      />
-    </Elements>
-  );
-});
-
-StripeCheckoutInner.displayName = 'StripeCheckoutInner';
-
+// ── Main exported component ──
 export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutProps>(({
   amount,
   cartId,
@@ -234,6 +201,19 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const handleRef = useRef<StripeCheckoutHandle | null>(null);
+
+  // Expose submit via forwardRef
+  useImperativeHandle(ref, () => ({
+    submit: async () => {
+      if (handleRef.current) {
+        await handleRef.current.submit();
+      } else {
+        console.warn('[Stripe] Submit called but form not ready');
+        onPaymentError({ message: 'Stripe aún no está listo' });
+      }
+    },
+  }));
 
   useEffect(() => {
     if (!amount || !cartId) return;
@@ -291,22 +271,36 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
     );
   }
 
-  if (!clientSecret) return null;
+  if (!clientSecret || !stripePromise) return null;
 
   return (
-    <StripeCheckoutInner
-      ref={ref}
-      amount={amount}
-      cartId={cartId}
-      onPaymentSuccess={onPaymentSuccess}
-      onPaymentError={onPaymentError}
-      payerEmail={payerEmail}
-      payerFirstName={payerFirstName}
-      payerLastName={payerLastName}
-      shippingAddress={shippingAddress}
-      clientSecret={clientSecret}
-      paymentIntentId={paymentIntentId}
-    />
+    <Elements
+      stripe={stripePromise}
+      options={{
+        clientSecret,
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#3D2B1F',
+            fontFamily: 'system-ui, sans-serif',
+            borderRadius: '2px',
+          },
+        },
+        locale: 'es',
+      }}
+    >
+      <CheckoutForm
+        cartId={cartId}
+        paymentIntentId={paymentIntentId}
+        onPaymentSuccess={onPaymentSuccess}
+        onPaymentError={onPaymentError}
+        payerEmail={payerEmail}
+        payerFirstName={payerFirstName}
+        payerLastName={payerLastName}
+        shippingAddress={shippingAddress}
+        onReady={(handle) => { handleRef.current = handle; }}
+      />
+    </Elements>
   );
 });
 

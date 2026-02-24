@@ -5,7 +5,7 @@ const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localho
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '';
 
 // Shipping option ID for free standard shipping
-const DEFAULT_SHIPPING_OPTION = process.env.MEDUSA_DEFAULT_SHIPPING_OPTION || 'so_01KHYGRQ2SMPV2TQ29PKFGJWSD';
+const DEFAULT_SHIPPING_OPTION = process.env.MEDUSA_DEFAULT_SHIPPING_OPTION || 'so_01KJ619T56SW3JP5JSKEAWXC5V';
 
 async function medusaFetch(path: string, options?: RequestInit) {
   const res = await fetch(`${MEDUSA_URL}/store${path}`, {

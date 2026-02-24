@@ -9,11 +9,7 @@ const nextConfig: NextConfig = {
         hostname: "via.placeholder.com",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "cdn.shopify.com",
-        pathname: "/**",
-      },
+
       {
         protocol: "https",
         hostname: "images.unsplash.com",
