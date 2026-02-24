@@ -96,15 +96,22 @@ export async function completeCartToOrder(opts: {
     });
   }
 
-  // Step 2: Add shipping method
-  console.log(`[${providerLabel}] Adding shipping method...`);
-  try {
-    await medusaFetch(`/carts/${cartId}/shipping-methods`, {
-      method: 'POST',
-      body: JSON.stringify({ option_id: DEFAULT_SHIPPING_OPTION }),
-    });
-  } catch (e: unknown) {
-    console.log(`[${providerLabel}] Shipping method note:`, (e as Error).message);
+  // Step 2: Add shipping method (only if cart doesn't already have one)
+  const cartCheck = await medusaFetch(`/carts/${cartId}`);
+  const existingShippingMethods = cartCheck.cart?.shipping_methods || [];
+  
+  if (existingShippingMethods.length === 0) {
+    console.log(`[${providerLabel}] No shipping method found, adding default...`);
+    try {
+      await medusaFetch(`/carts/${cartId}/shipping-methods`, {
+        method: 'POST',
+        body: JSON.stringify({ option_id: DEFAULT_SHIPPING_OPTION }),
+      });
+    } catch (e: unknown) {
+      console.log(`[${providerLabel}] Shipping method note:`, (e as Error).message);
+    }
+  } else {
+    console.log(`[${providerLabel}] Cart already has ${existingShippingMethods.length} shipping method(s), skipping...`);
   }
 
   // Step 3: Create payment collection + session
