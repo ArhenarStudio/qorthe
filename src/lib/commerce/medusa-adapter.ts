@@ -341,11 +341,15 @@ export const medusaProvider: CommerceProvider = {
     cartId: string,
     lineId: string
   ): Promise<CommerceCart> {
+    // DELETE returns a partial cart without currency_code/region.
+    // So we delete first, then re-fetch the full cart.
+    await medusaFetch<unknown>(
+      `/carts/${cartId}/line-items/${lineId}`,
+      { method: "DELETE" }
+    );
+    // Re-fetch full cart with items and region
     const data = await medusaFetch<{ cart: MedusaCart }>(
-      `/carts/${cartId}/line-items/${lineId}?fields=*items,*region`,
-      {
-        method: "DELETE",
-      }
+      `/carts/${cartId}?fields=*items,*items.variant,*items.variant.product,*region`
     );
     return mapCart(data.cart);
   },
