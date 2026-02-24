@@ -1,121 +1,93 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
+import {
+  getVerifiedCartTotal,
+  completeCartToOrder,
+  jsonError,
+} from '../../_lib/medusa-helpers';
 
-const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000';
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '';
-const DEFAULT_SHIPPING_OPTION = process.env.MEDUSA_DEFAULT_SHIPPING_OPTION || 'so_01KJ619T56SW3JP5JSKEAWXC5V';
-
-async function medusaFetch(path: string, options?: RequestInit) {
-  const res = await fetch(`${MEDUSA_URL}/store${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'x-publishable-api-key': PUBLISHABLE_KEY,
-      ...options?.headers,
-    },
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(`Medusa ${res.status}: ${err.message || res.statusText}`);
-  }
-  return res.json();
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error('STRIPE_SECRET_KEY not configured');
+  return new Stripe(key);
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
-      payment_intent_id,
-      cart_id,
-      shipping_address,
-      email,
-      payer,
-    } = body;
+    const { payment_intent_id, cart_id, shipping_address, email, payer } = body;
 
     if (!payment_intent_id || !cart_id) {
-      return NextResponse.json(
-        { error: 'Datos incompletos' },
-        { status: 400 }
-      );
+      return jsonError('payment_intent_id y cart_id son requeridos');
     }
 
     const customerEmail = email || payer?.email;
 
-    // Step 1: Update cart with shipping address
-    console.log('[Stripe] Updating cart with shipping address...');
-    if (shipping_address) {
-      await medusaFetch(`/carts/${cart_id}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          email: customerEmail,
-          shipping_address: {
-            first_name: shipping_address.first_name || '',
-            last_name: shipping_address.last_name || '',
-            address_1: shipping_address.address_1 || '',
-            address_2: shipping_address.address_2 || '',
-            city: shipping_address.city || '',
-            province: shipping_address.province || '',
-            postal_code: shipping_address.postal_code || '',
-            country_code: shipping_address.country_code || 'mx',
-            phone: shipping_address.phone || '',
-          },
-        }),
-      });
+    // ═══════════════════════════════════════════════════════
+    // ISSUE 2 FIX: Server-side payment verification
+    // NEVER trust the frontend's claim that payment succeeded.
+    // Always verify with Stripe API directly.
+    // ═══════════════════════════════════════════════════════
+    const stripe = getStripe();
+    const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent_id);
+
+    if (paymentIntent.status !== 'succeeded') {
+      console.error(`[Stripe] PaymentIntent ${payment_intent_id} status: ${paymentIntent.status}`);
+      return jsonError(
+        `Pago no completado. Estado: ${paymentIntent.status}`,
+        402
+      );
     }
 
-    // Step 2: Add shipping method
-    console.log('[Stripe] Adding shipping method...');
-    try {
-      await medusaFetch(`/carts/${cart_id}/shipping-methods`, {
-        method: 'POST',
-        body: JSON.stringify({ option_id: DEFAULT_SHIPPING_OPTION }),
-      });
-    } catch (e: unknown) {
-      console.log('[Stripe] Shipping method note:', (e as Error).message);
+    // Verify the PaymentIntent's cart_id matches (prevents using someone else's PI)
+    if (paymentIntent.metadata.cart_id !== cart_id) {
+      console.error(`[Stripe] Cart ID mismatch: PI has ${paymentIntent.metadata.cart_id}, request has ${cart_id}`);
+      return jsonError('Cart ID no coincide con el pago', 403);
     }
 
-    // Step 3: Create payment collection + session
-    console.log('[Stripe] Creating payment collection...');
-    const pcData = await medusaFetch('/payment-collections', {
-      method: 'POST',
-      body: JSON.stringify({ cart_id }),
-    });
-    const pcId = pcData.payment_collection.id;
+    // ═══════════════════════════════════════════════════════
+    // ISSUE 1 FIX (double-check): Verify amount matches cart
+    // ═══════════════════════════════════════════════════════
+    const verifiedTotal = await getVerifiedCartTotal(cart_id);
+    const expectedCents = Math.round(verifiedTotal * 100);
+    if (paymentIntent.amount !== expectedCents) {
+      console.error(`[Stripe] Amount mismatch: PI=${paymentIntent.amount}, Cart=${expectedCents}`);
+      return jsonError(
+        `Monto del pago ($${paymentIntent.amount / 100}) no coincide con el carrito ($${verifiedTotal})`,
+        400
+      );
+    }
 
-    console.log('[Stripe] Creating payment session...');
-    await medusaFetch(`/payment-collections/${pcId}/payment-sessions`, {
-      method: 'POST',
-      body: JSON.stringify({ provider_id: 'pp_system_default' }),
+    console.log(`[Stripe] ✅ Payment verified: ${payment_intent_id} = $${verifiedTotal} MXN`);
+
+    // ═══════════════════════════════════════════════════════
+    // Complete the order in Medusa (shared helper)
+    // ═══════════════════════════════════════════════════════
+    const result = await completeCartToOrder({
+      cartId: cart_id,
+      email: customerEmail,
+      shippingAddress: shipping_address,
+      providerLabel: 'Stripe',
     });
 
-    // Step 4: Complete cart → create order
-    console.log('[Stripe] Completing cart...');
-    const completeData = await medusaFetch(`/carts/${cart_id}/complete`, {
-      method: 'POST',
-    });
-
-    if (completeData.type !== 'order') {
-      console.error('[Stripe] Cart completion failed:', completeData);
+    if (result.error) {
       return NextResponse.json({
         status: 'approved',
         payment_intent_id,
         cart_id,
         order_id: null,
         order_display_id: null,
-        warning: 'Pago aprobado pero orden no creada. Contactar soporte.',
+        warning: result.warning,
       });
     }
-
-    const order = completeData.order;
-    console.log(`[Stripe] Order created: ${order.id} (DSD-${order.display_id})`);
 
     return NextResponse.json({
       status: 'approved',
       payment_intent_id,
       cart_id,
-      order_id: order.id,
-      order_display_id: order.display_id,
+      order_id: result.order.id,
+      order_display_id: result.order.display_id,
     });
-
   } catch (error: unknown) {
     console.error('[Stripe] Server error:', error);
     return NextResponse.json(

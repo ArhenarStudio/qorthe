@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { getVerifiedCartTotal, jsonError } from '../../_lib/medusa-helpers';
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -11,26 +12,47 @@ export async function POST(request: NextRequest) {
   try {
     const stripe = getStripe();
     const body = await request.json();
-    const { amount, currency = 'mxn', cart_id, email } = body;
+    const { cart_id, email } = body;
 
-    if (!amount || !cart_id) {
-      return NextResponse.json(
-        { error: 'Datos incompletos' },
-        { status: 400 }
-      );
+    if (!cart_id) {
+      return jsonError('cart_id es requerido');
     }
 
-    // Stripe expects amount in smallest currency unit (centavos for MXN)
-    const amountInCents = Math.round(amount * 100);
+    // ═══════════════════════════════════════════════════════
+    // ISSUE 1 FIX: Server-side amount validation
+    // NEVER trust the amount from the frontend.
+    // Always recalculate from Medusa cart.
+    // ═══════════════════════════════════════════════════════
+    const verifiedTotal = await getVerifiedCartTotal(cart_id);
+    console.log(`[Stripe] Verified cart total: $${verifiedTotal} MXN for cart ${cart_id}`);
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInCents,
-      currency,
-      metadata: { cart_id },
-      receipt_email: email || undefined,
-      description: 'DavidSons Design - Orden',
-      statement_descriptor_suffix: 'DSD',
-    });
+    // Stripe expects amount in smallest currency unit (centavos for MXN)
+    const amountInCents = Math.round(verifiedTotal * 100);
+
+    // ═══════════════════════════════════════════════════════
+    // ISSUE 3 FIX: Idempotency key
+    // Same cart_id always produces same PaymentIntent.
+    // Prevents double charges on retry/refresh.
+    // ═══════════════════════════════════════════════════════
+    const paymentIntent = await stripe.paymentIntents.create(
+      {
+        amount: amountInCents,
+        currency: 'mxn',
+        metadata: {
+          cart_id,
+          source: 'davidsons_design',
+          verified_total: String(verifiedTotal),
+        },
+        receipt_email: email || undefined,
+        description: `DavidSon's Design — Orden (Cart: ${cart_id})`,
+        statement_descriptor_suffix: 'DSD',
+        // Enable automatic payment methods for SCA/3DS compliance
+        automatic_payment_methods: { enabled: true },
+      },
+      {
+        idempotencyKey: `pi_create_${cart_id}`,
+      }
+    );
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
