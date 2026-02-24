@@ -63,6 +63,25 @@ export async function POST(request: NextRequest) {
     }
 
     // ═══════════════════════════════════════════════════════
+    // GUARDRAIL 0: SINGLE-FLIGHT — Prevent double charge
+    // If this cart already has an order, return it instead
+    // of charging again.
+    // ═══════════════════════════════════════════════════════
+    try {
+      const existingCheck = await medusaFetch(`/carts/${cart_id}?fields=completed_at`);
+      if (existingCheck.cart?.completed_at) {
+        console.log(`[MP] Cart ${cart_id} already completed. Returning existing.`);
+        return NextResponse.json({
+          status: 'already_processed',
+          cart_id,
+          message: 'Este pedido ya fue procesado.',
+        });
+      }
+    } catch {
+      // Cart might not exist or be in weird state — continue to preflight
+    }
+
+    // ═══════════════════════════════════════════════════════
     // GUARDRAIL 1: PREFLIGHT — Validate cart is ready
     // BEFORE any money moves. Checks: email, address,
     // shipping method valid, items exist, total > 0.
@@ -197,7 +216,24 @@ export async function POST(request: NextRequest) {
     const mpResult = await mpResponse.json();
     console.log('[MP] Response:', mpResult.status, mpResult.status_detail);
 
-    if (!mpResponse.ok || mpResult.status !== 'approved') {
+    // ─── Handle non-approved states ───
+    if (!mpResponse.ok || !['approved'].includes(mpResult.status)) {
+      // PENDING states (in_process, pending) — payment is not final yet.
+      // Do NOT complete order. Webhook will resolve this later.
+      // TODO: Phase 4.4 — implement MP webhook to handle pending → approved
+      if (['in_process', 'pending'].includes(mpResult.status)) {
+        console.log(`[MP] ⏳ Payment pending (${mpResult.status}). Order will be created via webhook.`);
+        return NextResponse.json({
+          status: mpResult.status,
+          status_detail: mpResult.status_detail,
+          id: mpResult.id,
+          cart_id,
+          message: 'Tu pago está siendo procesado. Te notificaremos cuando se confirme.',
+          _note: 'order_pending_webhook_required',
+        });
+      }
+
+      // REJECTED / other failures
       console.error('[MP] Payment failed:', JSON.stringify(mpResult, null, 2));
       return NextResponse.json(
         {
@@ -257,6 +293,18 @@ export async function POST(request: NextRequest) {
       console.error(`[MP] ❌ Order creation failed. Initiating auto-refund...`);
       const refundResult = await attemptRefund(mpResult.id, cart_id);
 
+      // Structured audit log
+      console.log(JSON.stringify({
+        event: 'mp_order_failed_refund',
+        cart_id,
+        mp_payment_id: mpResult.id,
+        order_id: null,
+        idempotency_key: `mp_pay_${cart_id}_${Math.floor(Date.now() / 600000)}`,
+        refund_success: refundResult.success,
+        refund_id: refundResult.refund_id || null,
+        timestamp: new Date().toISOString(),
+      }));
+
       return NextResponse.json({
         id: mpResult.id,
         status: 'approved',
@@ -277,7 +325,17 @@ export async function POST(request: NextRequest) {
     // ═══════════════════════════════════════════════════════
     // SUCCESS RESPONSE
     // ═══════════════════════════════════════════════════════
-    console.log(`[MP] 🎉 Order created: ${result.order.id} (DSD-${result.order.display_id})`);
+    // Structured audit log
+    console.log(JSON.stringify({
+      event: 'mp_payment_success',
+      cart_id,
+      mp_payment_id: mpResult.id,
+      order_id: result.order.id,
+      order_display_id: result.order.display_id,
+      amount: verified.transaction_amount,
+      idempotency_key: `mp_pay_${cart_id}_${Math.floor(Date.now() / 600000)}`,
+      timestamp: new Date().toISOString(),
+    }));
 
     return NextResponse.json({
       id: mpResult.id,
