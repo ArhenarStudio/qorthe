@@ -14,6 +14,9 @@ import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
 
+// ─── Shipping option ID (from Medusa DB) ───
+const DEFAULT_SHIPPING_OPTION_ID = 'so_01KJ619T56SW3JP5JSKEAWXC5V';
+
 const logoDSD = '/images/logo-dsd.png';
 const paypalLogo = '/images/paypal-logo.png';
 const mercadoPagoLogo = '/images/mercado-pago-logo.png';
@@ -163,7 +166,15 @@ export const CheckoutPage = () => {
   const [checkoutError, setCheckoutError] = useState('');
 
   // Cart State (from CartContext)
-  const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem } = useCartContext();
+  const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem, clearCart } = useCartContext();
+
+  // Guard: redirect to cart if empty (after loading finishes)
+  useEffect(() => {
+    if (!cartLoading && (!cart || (cart.lines?.length ?? 0) === 0)) {
+      router.replace('/cart');
+    }
+  }, [cartLoading, cart, router]);
+
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [couponError, setCouponError] = useState('');
@@ -566,6 +577,7 @@ export const CheckoutPage = () => {
                                   }}
                                   onPaymentSuccess={(data) => {
                                     console.log('Payment success:', data);
+                                    clearCart();
                                     const orderId = data.order_display_id || 'pending';
                                     router.push(`/checkout/success?order=${orderId}&mp_id=${data.id}`);
                                   }}
@@ -598,6 +610,7 @@ export const CheckoutPage = () => {
                                   }}
                                   onPaymentSuccess={(data) => {
                                     console.log('Stripe payment success:', data);
+                                    clearCart();
                                     const orderId = data.order_display_id || 'pending';
                                     router.push(`/checkout/success?order=${orderId}&provider=stripe&pi=${data.payment_intent_id || ''}`);
                                   }}

@@ -82,7 +82,7 @@ export async function completeCartToOrder(opts: {
   const cartCheck = await medusaFetch(`/carts/${cartId}`);
   const cart = cartCheck.cart;
 
-  if (!cart.email && (email || shippingAddress)) {
+  if (!cart?.email && (email || shippingAddress)) {
     console.log(`[${providerLabel}] Cart missing email/address, updating...`);
     await medusaFetch(`/carts/${cartId}`, {
       method: 'POST',
@@ -107,8 +107,11 @@ export async function completeCartToOrder(opts: {
   // Step 2: Ensure cart has a shipping method
   // The checkout UI adds this when user clicks "Continue".
   // This is a safety fallback for edge cases.
+  // SaaS-READY: Fetch cart with explicit fields to ensure
+  // shipping_methods is included in the response.
   // ───────────────────────────────────────────────────────
-  const existingShippingMethods = cart?.shipping_methods || [];
+  const freshCart = await medusaFetch(`/carts/${cartId}?fields=*shipping_methods`);
+  const existingShippingMethods = freshCart.cart?.shipping_methods || [];
   if (existingShippingMethods.length === 0) {
     console.log(`[${providerLabel}] No shipping method found, adding default...`);
     try {
