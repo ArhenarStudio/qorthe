@@ -423,6 +423,15 @@ export const medusaProvider: CommerceProvider = {
     );
   },
 
+  async getCartShippingMethods(
+    cartId: string
+  ): Promise<Array<{ id: string; shipping_option_id: string }>> {
+    const data = await medusaFetch<{ cart: { shipping_methods?: Array<{ id: string; shipping_option_id: string }> } }>(
+      `/carts/${cartId}?fields=*shipping_methods`
+    );
+    return data.cart?.shipping_methods || [];
+  },
+
   async getShippingOptions(
     cartId: string
   ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string }>> {

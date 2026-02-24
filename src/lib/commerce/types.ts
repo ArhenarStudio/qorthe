@@ -115,6 +115,7 @@ export interface CommerceProvider {
     }
   ): Promise<void>;
   addShippingMethod(cartId: string, optionId: string): Promise<void>;
+  getCartShippingMethods(cartId: string): Promise<Array<{ id: string; shipping_option_id: string }>>;
   getShippingOptions(
     cartId: string
   ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string }>>;

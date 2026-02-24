@@ -253,15 +253,20 @@ export const CheckoutPage = () => {
         },
       });
 
-      // Add default shipping method to cart (idempotent — skip if already has one)
+      // Add shipping method ONLY if cart doesn't already have one.
+      // Medusa v2 ACCUMULATES shipping methods (doesn't replace).
+      // Multiple shipping methods cause "shipping profiles not satisfied" error.
       // TODO: Phase 6 — replace hardcoded ID with dynamic shipping options
       const SHIPPING_OPTION_ID = 'so_01KJ619T56SW3JP5JSKEAWXC5V';
-      try {
-        await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
-      } catch (shippingErr: unknown) {
-        // If shipping method already exists or profile conflict, log and continue
-        // The backend fallback in medusa-helpers.ts will handle it
-        console.warn('[Checkout] Shipping method note:', (shippingErr as Error).message);
+      const existingMethods = await commerce.getCartShippingMethods(cart.id);
+      if (existingMethods.length === 0) {
+        try {
+          await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
+        } catch (shippingErr: unknown) {
+          console.warn('[Checkout] Shipping method note:', (shippingErr as Error).message);
+        }
+      } else {
+        console.log(`[Checkout] Cart already has ${existingMethods.length} shipping method(s), skipping add.`);
       }
 
       setStep(2);
