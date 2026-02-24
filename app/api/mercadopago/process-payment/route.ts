@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getVerifiedCartTotal,
   medusaFetch,
   completeCartToOrder,
   jsonError,
@@ -282,10 +281,12 @@ export async function POST(request: NextRequest) {
     // STEP 3: Complete order in Medusa
     // GUARDRAIL 4: If this fails, AUTO-REFUND the payment
     // ═══════════════════════════════════════════════════════
+    // ARCHITECTURE: Do NOT pass email/address here.
+    // The cart is already fully prepared by the frontend.
+    // Any mutation would invalidate shipping methods.
+    // ═══════════════════════════════════════════════════════
     const result = await completeCartToOrder({
       cartId: cart_id,
-      email: payer?.email,
-      shippingAddress: shipping_address,
       providerLabel: 'MP',
     });
 

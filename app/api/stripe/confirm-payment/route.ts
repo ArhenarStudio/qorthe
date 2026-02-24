@@ -62,11 +62,10 @@ export async function POST(request: NextRequest) {
 
     // ═══════════════════════════════════════════════════════
     // Complete the order in Medusa (shared helper)
+    // ARCHITECTURE: Do NOT pass email/address — cart is ready.
     // ═══════════════════════════════════════════════════════
     const result = await completeCartToOrder({
       cartId: cart_id,
-      email: customerEmail,
-      shippingAddress: shipping_address,
       providerLabel: 'Stripe',
     });
 

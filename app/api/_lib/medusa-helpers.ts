@@ -3,11 +3,16 @@ import { NextResponse } from 'next/server';
 // ═══════════════════════════════════════════════════════════════
 // Shared Medusa helpers for payment API routes
 // Used by both Stripe and MercadoPago routes
+//
+// ARCHITECTURE RULE (SaaS-ready):
+// completeCartToOrder does NOT mutate the cart.
+// The cart must arrive ready (email, address, shipping method)
+// from the frontend checkout flow (handleContinue).
+// This function only: payment collection → session → complete.
 // ═══════════════════════════════════════════════════════════════
 
 const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000';
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '';
-const DEFAULT_SHIPPING_OPTION = process.env.MEDUSA_DEFAULT_SHIPPING_OPTION || 'so_01KJ619T56SW3JP5JSKEAWXC5V';
 
 /**
  * Fetch from Medusa Store API with publishable key
@@ -29,104 +34,41 @@ export async function medusaFetch(path: string, options?: RequestInit) {
 }
 
 /**
- * ISSUE 1 FIX: Validate amount server-side by fetching cart total from Medusa.
- * Returns the verified cart total in the currency's base unit (e.g. MXN pesos).
- * Throws if the cart doesn't exist or has no items.
+ * Validate amount server-side by fetching cart total from Medusa.
+ * Returns the verified cart total in the currency's base unit.
  */
 export async function getVerifiedCartTotal(cartId: string): Promise<number> {
   const data = await medusaFetch(`/carts/${cartId}`);
   const cart = data.cart;
-
-  if (!cart) {
-    throw new Error('Cart not found');
-  }
-
-  // cart.total is in the currency's base unit (pesos for MXN)
+  if (!cart) throw new Error('Cart not found');
   const total = cart.total;
   if (typeof total !== 'number' || total <= 0) {
     throw new Error(`Invalid cart total: ${total}`);
   }
-
   return total;
 }
 
-interface ShippingAddress {
-  first_name?: string;
-  last_name?: string;
-  address_1?: string;
-  address_2?: string;
-  city?: string;
-  province?: string;
-  postal_code?: string;
-  country_code?: string;
-  phone?: string;
-}
-
 /**
- * Shared flow: update cart → add shipping → create payment collection → complete order.
- * Used by both Stripe and MercadoPago after payment is verified.
+ * Complete cart → create order in Medusa.
+ *
+ * CRITICAL ARCHITECTURE RULE:
+ * This function does NOT update email, address, or shipping.
+ * The cart must arrive FULLY READY from the checkout frontend.
+ * Any mutation here would invalidate shipping methods and cause
+ * "shipping profiles not satisfied" errors.
+ *
+ * Steps:
+ * 1. Create payment collection for the cart
+ * 2. Initialize payment session (system default)
+ * 3. Complete cart → creates order
  */
 export async function completeCartToOrder(opts: {
   cartId: string;
-  email?: string;
-  shippingAddress?: ShippingAddress;
   providerLabel: string;
 }): Promise<{ order?: any; error?: string; warning?: string }> {
-  const { cartId, email, shippingAddress, providerLabel } = opts;
+  const { cartId, providerLabel } = opts;
 
-  // ───────────────────────────────────────────────────────
-  // Step 1: Ensure cart has email + shipping address
-  // The checkout UI already registers these when the user
-  // clicks "Continue to Payment". This is a safety fallback.
-  // ───────────────────────────────────────────────────────
-  const cartCheck = await medusaFetch(`/carts/${cartId}`);
-  const cart = cartCheck.cart;
-
-  if (!cart?.email && (email || shippingAddress)) {
-    console.log(`[${providerLabel}] Cart missing email/address, updating...`);
-    await medusaFetch(`/carts/${cartId}`, {
-      method: 'POST',
-      body: JSON.stringify({
-        email: email || undefined,
-        shipping_address: shippingAddress ? {
-          first_name: shippingAddress.first_name || '',
-          last_name: shippingAddress.last_name || '',
-          address_1: shippingAddress.address_1 || '',
-          address_2: shippingAddress.address_2 || '',
-          city: shippingAddress.city || '',
-          province: shippingAddress.province || '',
-          postal_code: shippingAddress.postal_code || '',
-          country_code: shippingAddress.country_code || 'mx',
-          phone: shippingAddress.phone || '',
-        } : undefined,
-      }),
-    });
-  }
-
-  // ───────────────────────────────────────────────────────
-  // Step 2: Ensure cart has a shipping method
-  // The checkout UI adds this when user clicks "Continue".
-  // This is a safety fallback for edge cases.
-  // SaaS-READY: Fetch cart with explicit fields to ensure
-  // shipping_methods is included in the response.
-  // ───────────────────────────────────────────────────────
-  const freshCart = await medusaFetch(`/carts/${cartId}?fields=*shipping_methods`);
-  const existingShippingMethods = freshCart.cart?.shipping_methods || [];
-  if (existingShippingMethods.length === 0) {
-    console.log(`[${providerLabel}] No shipping method found, adding default...`);
-    try {
-      await medusaFetch(`/carts/${cartId}/shipping-methods`, {
-        method: 'POST',
-        body: JSON.stringify({ option_id: DEFAULT_SHIPPING_OPTION }),
-      });
-    } catch (e: unknown) {
-      console.warn(`[${providerLabel}] Could not add shipping method:`, (e as Error).message);
-    }
-  } else {
-    console.log(`[${providerLabel}] Cart has ${existingShippingMethods.length} shipping method(s) ✓`);
-  }
-
-  // Step 3: Create payment collection + session
+  // Step 1: Create payment collection
   console.log(`[${providerLabel}] Creating payment collection...`);
   const pcData = await medusaFetch('/payment-collections', {
     method: 'POST',
@@ -134,13 +76,14 @@ export async function completeCartToOrder(opts: {
   });
   const pcId = pcData.payment_collection.id;
 
+  // Step 2: Create payment session
   console.log(`[${providerLabel}] Creating payment session...`);
   await medusaFetch(`/payment-collections/${pcId}/payment-sessions`, {
     method: 'POST',
     body: JSON.stringify({ provider_id: 'pp_system_default' }),
   });
 
-  // Step 4: Complete cart → create order
+  // Step 3: Complete cart → create order
   console.log(`[${providerLabel}] Completing cart...`);
   const completeData = await medusaFetch(`/carts/${cartId}/complete`, {
     method: 'POST',
@@ -150,12 +93,12 @@ export async function completeCartToOrder(opts: {
     console.error(`[${providerLabel}] Cart completion failed:`, completeData);
     return {
       error: 'Cart completion failed',
-      warning: 'Pago aprobado pero orden no creada en sistema. Contactar soporte.',
+      warning: 'Pago aprobado pero orden no creada. Contactar soporte.',
     };
   }
 
   const order = completeData.order;
-  console.log(`[${providerLabel}] Order created: ${order.id} (DSD-${order.display_id})`);
+  console.log(`[${providerLabel}] ✅ Order created: ${order.id} (DSD-${order.display_id})`);
   return { order };
 }
 
