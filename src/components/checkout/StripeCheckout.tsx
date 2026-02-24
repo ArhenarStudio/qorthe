@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useImperativeHandle, forwardRef, useRef } from 'react';
+import React, { useEffect, useState, useImperativeHandle, forwardRef, useRef, useMemo } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   Elements,
@@ -11,6 +11,9 @@ import {
 import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const STRIPE_PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
+
+// CRITICAL: loadStripe must be called outside component to avoid
+// recreating the Stripe object on every render (per Stripe docs)
 const stripePromise = STRIPE_PK ? loadStripe(STRIPE_PK) : null;
 
 interface StripeCheckoutProps {
@@ -38,11 +41,10 @@ export interface StripeCheckoutHandle {
   submit: () => Promise<void>;
 }
 
-// ─────────────────────────────────────────────────
-// CheckoutForm: lives INSIDE <Elements>
-// Uses refs for all mutable data to avoid re-renders
-// that would unmount the PaymentElement
-// ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+// CheckoutForm — inner component that lives inside <Elements>
+// Following official Stripe pattern from react-stripe-js README
+// ─────────────────────────────────────────────────────────
 interface CheckoutFormProps {
   cartId: string;
   paymentIntentId: string;
@@ -68,43 +70,36 @@ function CheckoutForm({
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const [status, setStatus] = useState<'ready' | 'processing' | 'success' | 'error'>('ready');
+  const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
-  const [elementReady, setElementReady] = useState(false);
 
-  // Store latest props in refs to avoid stale closures
-  // WITHOUT triggering re-renders or re-creating callbacks
-  const propsRef = useRef({
-    payerEmail, payerFirstName, payerLastName,
-    shippingAddress, onPaymentSuccess, onPaymentError,
-    cartId, paymentIntentId,
-  });
-  propsRef.current = {
-    payerEmail, payerFirstName, payerLastName,
-    shippingAddress, onPaymentSuccess, onPaymentError,
-    cartId, paymentIntentId,
-  };
+  // Use refs for all mutable props so the submit closure never goes stale
+  // and never causes re-renders that could unmount PaymentElement
+  const propsRef = useRef({ payerEmail, payerFirstName, payerLastName, shippingAddress, onPaymentSuccess, onPaymentError, cartId, paymentIntentId });
+  propsRef.current = { payerEmail, payerFirstName, payerLastName, shippingAddress, onPaymentSuccess, onPaymentError, cartId, paymentIntentId };
 
-  // Register the submit function ONCE via the shared ref
-  // This avoids any useEffect/callback chains that cause re-renders
+  // Write submit function to shared ref — called by parent via stripeRef.current.submit()
+  // Only depends on stripe and elements (stable after mount)
   useEffect(() => {
-    submitRef.current = async () => {
-      if (!stripe || !elements) {
-        console.error('[Stripe] stripe or elements not available');
-        propsRef.current.onPaymentError({ message: 'Stripe no está inicializado. Recarga la página.' });
-        return;
-      }
-      if (!elementReady) {
-        console.error('[Stripe] PaymentElement not ready yet');
-        propsRef.current.onPaymentError({ message: 'El formulario de pago aún no está listo. Espera un momento.' });
-        return;
-      }
+    if (!stripe || !elements) return;
 
+    submitRef.current = async () => {
+      const p = propsRef.current;
       setStatus('processing');
       setErrorMsg('');
 
       try {
-        const p = propsRef.current;
+        // STEP 1: Trigger form validation and wallet collection
+        // This is REQUIRED by Stripe before confirmPayment
+        const { error: submitError } = await elements.submit();
+        if (submitError) {
+          setStatus('error');
+          setErrorMsg(submitError.message || 'Error de validación');
+          p.onPaymentError(submitError);
+          return;
+        }
+
+        // STEP 2: Confirm the payment
         const { error, paymentIntent } = await stripe.confirmPayment({
           elements,
           redirect: 'if_required',
@@ -125,6 +120,7 @@ function CheckoutForm({
           return;
         }
 
+        // STEP 3: Payment succeeded — create order in Medusa
         if (paymentIntent?.status === 'succeeded') {
           console.log('[Stripe] Payment succeeded, creating order...');
           const confirmRes = await fetch('/api/stripe/confirm-payment', {
@@ -134,21 +130,16 @@ function CheckoutForm({
               payment_intent_id: p.paymentIntentId,
               cart_id: p.cartId,
               shipping_address: p.shippingAddress,
-              payer: {
-                email: p.payerEmail,
-                first_name: p.payerFirstName,
-                last_name: p.payerLastName,
-              },
+              payer: { email: p.payerEmail, first_name: p.payerFirstName, last_name: p.payerLastName },
             }),
           });
-
           const result = await confirmRes.json();
           console.log('[Stripe] Order result:', result);
           setStatus('success');
           p.onPaymentSuccess(result);
         } else {
           setStatus('error');
-          setErrorMsg(`Estado del pago: ${paymentIntent?.status}`);
+          setErrorMsg(`Estado inesperado: ${paymentIntent?.status}`);
           p.onPaymentError({ status: paymentIntent?.status });
         }
       } catch (err: any) {
@@ -158,10 +149,9 @@ function CheckoutForm({
         propsRef.current.onPaymentError(err);
       }
     };
-  // ONLY re-register when stripe/elements/elementReady change
-  // NOT when props change — we read those from propsRef
-  }, [stripe, elements, elementReady, submitRef]);
+  }, [stripe, elements, submitRef]);
 
+  // ── Render states ──
   if (status === 'processing') {
     return (
       <div className="flex flex-col items-center justify-center py-12 space-y-3">
@@ -192,10 +182,8 @@ function CheckoutForm({
 
       <PaymentElement
         options={{ layout: 'tabs' }}
-        onReady={() => {
-          console.log('[Stripe] PaymentElement mounted and ready');
-          setElementReady(true);
-        }}
+        onReady={() => console.log('[Stripe] PaymentElement ready')}
+        onLoadError={(e) => console.error('[Stripe] PaymentElement load error:', e)}
       />
 
       <div className="flex items-center justify-center gap-2 text-xs text-wood-400 pt-2">
@@ -209,9 +197,9 @@ function CheckoutForm({
   );
 }
 
-// ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 // Main exported component
-// ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutProps>(({
   amount,
   cartId,
@@ -227,7 +215,7 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Shared ref that CheckoutForm writes to and parent reads from
+  // Shared ref: CheckoutForm writes its submit fn here, parent reads it
   const submitFnRef = useRef<(() => Promise<void>) | null>(null);
   const intentCreated = useRef(false);
 
@@ -236,17 +224,18 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
       if (submitFnRef.current) {
         await submitFnRef.current();
       } else {
-        console.error('[Stripe] submit called but no handler registered');
+        console.error('[Stripe] submit() called but no handler registered yet');
         onPaymentError({ message: 'Stripe no está listo. Espera a que cargue el formulario.' });
       }
     },
   }));
 
-  // Create PaymentIntent ONCE
+  // Create PaymentIntent ONCE — guard with ref
   useEffect(() => {
     if (!amount || !cartId || intentCreated.current) return;
+    intentCreated.current = true;
 
-    async function createIntent() {
+    (async () => {
       try {
         setLoading(true);
         setError('');
@@ -259,7 +248,6 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
           setPaymentIntentId(data.paymentIntentId);
-          intentCreated.current = true;
         } else {
           setError(data.error || 'Error inicializando Stripe');
         }
@@ -268,10 +256,26 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
       } finally {
         setLoading(false);
       }
-    }
-
-    createIntent();
+    })();
   }, [amount, cartId]);
+
+  // CRITICAL: Memoize options so Elements doesn't create multiple
+  // StripeElements instances on re-render (react-stripe-js issue #296)
+  const elementsOptions = useMemo(() => {
+    if (!clientSecret) return null;
+    return {
+      clientSecret,
+      appearance: {
+        theme: 'stripe' as const,
+        variables: {
+          colorPrimary: '#3D2B1F',
+          fontFamily: 'system-ui, sans-serif',
+          borderRadius: '2px',
+        },
+      },
+      locale: 'es' as const,
+    };
+  }, [clientSecret]);
 
   if (!STRIPE_PK) {
     return (
@@ -300,24 +304,10 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
     );
   }
 
-  if (!clientSecret || !stripePromise) return null;
+  if (!elementsOptions || !stripePromise) return null;
 
   return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        clientSecret,
-        appearance: {
-          theme: 'stripe',
-          variables: {
-            colorPrimary: '#3D2B1F',
-            fontFamily: 'system-ui, sans-serif',
-            borderRadius: '2px',
-          },
-        },
-        locale: 'es',
-      }}
-    >
+    <Elements stripe={stripePromise} options={elementsOptions}>
       <CheckoutForm
         cartId={cartId}
         paymentIntentId={paymentIntentId}
