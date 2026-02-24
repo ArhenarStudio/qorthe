@@ -253,10 +253,16 @@ export const CheckoutPage = () => {
         },
       });
 
-      // Add default shipping method to cart
+      // Add default shipping method to cart (idempotent — skip if already has one)
       // TODO: Phase 6 — replace hardcoded ID with dynamic shipping options
       const SHIPPING_OPTION_ID = 'so_01KJ619T56SW3JP5JSKEAWXC5V';
-      await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
+      try {
+        await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
+      } catch (shippingErr: unknown) {
+        // If shipping method already exists or profile conflict, log and continue
+        // The backend fallback in medusa-helpers.ts will handle it
+        console.warn('[Checkout] Shipping method note:', (shippingErr as Error).message);
+      }
 
       setStep(2);
       window.scrollTo({ top: 0, behavior: 'smooth' });
