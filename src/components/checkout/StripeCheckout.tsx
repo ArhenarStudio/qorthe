@@ -38,30 +38,33 @@ export interface StripeCheckoutHandle {
   submit: () => Promise<void>;
 }
 
-// ── Inner form that lives INSIDE <Elements> ──
-// Uses a callback ref pattern to expose submit to parent
+// ─────────────────────────────────────────────────
+// CheckoutForm: lives INSIDE <Elements>
+// Uses refs for all mutable data to avoid re-renders
+// that would unmount the PaymentElement
+// ─────────────────────────────────────────────────
 interface CheckoutFormProps {
   cartId: string;
   paymentIntentId: string;
-  onPaymentSuccess: (data: any) => void;
-  onPaymentError: (error: any) => void;
+  submitRef: React.MutableRefObject<(() => Promise<void>) | null>;
   payerEmail?: string;
   payerFirstName?: string;
   payerLastName?: string;
   shippingAddress?: StripeCheckoutProps['shippingAddress'];
-  onReady: (handle: StripeCheckoutHandle) => void;
+  onPaymentSuccess: (data: any) => void;
+  onPaymentError: (error: any) => void;
 }
 
 function CheckoutForm({
   cartId,
   paymentIntentId,
-  onPaymentSuccess,
-  onPaymentError,
+  submitRef,
   payerEmail,
   payerFirstName,
   payerLastName,
   shippingAddress,
-  onReady,
+  onPaymentSuccess,
+  onPaymentError,
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -69,75 +72,95 @@ function CheckoutForm({
   const [errorMsg, setErrorMsg] = useState('');
   const [elementReady, setElementReady] = useState(false);
 
-  const handleSubmit = useCallback(async () => {
-    if (!stripe || !elements || !elementReady) {
-      console.warn('[Stripe] Not ready yet - stripe:', !!stripe, 'elements:', !!elements, 'elementReady:', elementReady);
-      onPaymentError({ message: 'Stripe aún no está listo. Espera un momento e intenta de nuevo.' });
-      return;
-    }
+  // Store latest props in refs to avoid stale closures
+  // WITHOUT triggering re-renders or re-creating callbacks
+  const propsRef = useRef({
+    payerEmail, payerFirstName, payerLastName,
+    shippingAddress, onPaymentSuccess, onPaymentError,
+    cartId, paymentIntentId,
+  });
+  propsRef.current = {
+    payerEmail, payerFirstName, payerLastName,
+    shippingAddress, onPaymentSuccess, onPaymentError,
+    cartId, paymentIntentId,
+  };
 
-    setStatus('processing');
-    setErrorMsg('');
-
-    try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        redirect: 'if_required',
-        confirmParams: {
-          payment_method_data: {
-            billing_details: {
-              name: `${payerFirstName || ''} ${payerLastName || ''}`.trim() || undefined,
-              email: payerEmail || undefined,
-            },
-          },
-        },
-      });
-
-      if (error) {
-        setStatus('error');
-        setErrorMsg(error.message || 'Error al procesar el pago');
-        onPaymentError(error);
+  // Register the submit function ONCE via the shared ref
+  // This avoids any useEffect/callback chains that cause re-renders
+  useEffect(() => {
+    submitRef.current = async () => {
+      if (!stripe || !elements) {
+        console.error('[Stripe] stripe or elements not available');
+        propsRef.current.onPaymentError({ message: 'Stripe no está inicializado. Recarga la página.' });
+        return;
+      }
+      if (!elementReady) {
+        console.error('[Stripe] PaymentElement not ready yet');
+        propsRef.current.onPaymentError({ message: 'El formulario de pago aún no está listo. Espera un momento.' });
         return;
       }
 
-      if (paymentIntent?.status === 'succeeded') {
-        console.log('[Stripe] Payment succeeded, creating order...');
-        const confirmRes = await fetch('/api/stripe/confirm-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            payment_intent_id: paymentIntentId,
-            cart_id: cartId,
-            shipping_address: shippingAddress,
-            payer: {
-              email: payerEmail,
-              first_name: payerFirstName,
-              last_name: payerLastName,
+      setStatus('processing');
+      setErrorMsg('');
+
+      try {
+        const p = propsRef.current;
+        const { error, paymentIntent } = await stripe.confirmPayment({
+          elements,
+          redirect: 'if_required',
+          confirmParams: {
+            payment_method_data: {
+              billing_details: {
+                name: `${p.payerFirstName || ''} ${p.payerLastName || ''}`.trim() || undefined,
+                email: p.payerEmail || undefined,
+              },
             },
-          }),
+          },
         });
 
-        const result = await confirmRes.json();
-        console.log('[Stripe] Order result:', result);
-        setStatus('success');
-        onPaymentSuccess(result);
-      } else {
-        setStatus('error');
-        setErrorMsg(`Estado del pago: ${paymentIntent?.status}`);
-        onPaymentError({ status: paymentIntent?.status });
-      }
-    } catch (err: any) {
-      console.error('[Stripe] Error:', err);
-      setStatus('error');
-      setErrorMsg(err.message || 'Error de conexión');
-      onPaymentError(err);
-    }
-  }, [stripe, elements, elementReady, cartId, paymentIntentId, onPaymentSuccess, onPaymentError, payerEmail, payerFirstName, payerLastName, shippingAddress]);
+        if (error) {
+          setStatus('error');
+          setErrorMsg(error.message || 'Error al procesar el pago');
+          p.onPaymentError(error);
+          return;
+        }
 
-  // Expose submit handle to parent via callback (not forwardRef)
-  useEffect(() => {
-    onReady({ submit: handleSubmit });
-  }, [handleSubmit, onReady]);
+        if (paymentIntent?.status === 'succeeded') {
+          console.log('[Stripe] Payment succeeded, creating order...');
+          const confirmRes = await fetch('/api/stripe/confirm-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_intent_id: p.paymentIntentId,
+              cart_id: p.cartId,
+              shipping_address: p.shippingAddress,
+              payer: {
+                email: p.payerEmail,
+                first_name: p.payerFirstName,
+                last_name: p.payerLastName,
+              },
+            }),
+          });
+
+          const result = await confirmRes.json();
+          console.log('[Stripe] Order result:', result);
+          setStatus('success');
+          p.onPaymentSuccess(result);
+        } else {
+          setStatus('error');
+          setErrorMsg(`Estado del pago: ${paymentIntent?.status}`);
+          p.onPaymentError({ status: paymentIntent?.status });
+        }
+      } catch (err: any) {
+        console.error('[Stripe] Error:', err);
+        setStatus('error');
+        setErrorMsg(err.message || 'Error de conexión');
+        propsRef.current.onPaymentError(err);
+      }
+    };
+  // ONLY re-register when stripe/elements/elementReady change
+  // NOT when props change — we read those from propsRef
+  }, [stripe, elements, elementReady, submitRef]);
 
   if (status === 'processing') {
     return (
@@ -186,7 +209,9 @@ function CheckoutForm({
   );
 }
 
-// ── Main exported component ──
+// ─────────────────────────────────────────────────
+// Main exported component
+// ─────────────────────────────────────────────────
 export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutProps>(({
   amount,
   cartId,
@@ -201,24 +226,23 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const handleRef = useRef<StripeCheckoutHandle | null>(null);
 
-  // Expose submit via forwardRef
+  // Shared ref that CheckoutForm writes to and parent reads from
+  const submitFnRef = useRef<(() => Promise<void>) | null>(null);
+  const intentCreated = useRef(false);
+
   useImperativeHandle(ref, () => ({
     submit: async () => {
-      if (handleRef.current) {
-        await handleRef.current.submit();
+      if (submitFnRef.current) {
+        await submitFnRef.current();
       } else {
-        console.warn('[Stripe] Submit called but form not ready');
-        onPaymentError({ message: 'Stripe aún no está listo' });
+        console.error('[Stripe] submit called but no handler registered');
+        onPaymentError({ message: 'Stripe no está listo. Espera a que cargue el formulario.' });
       }
     },
   }));
 
-  // Create PaymentIntent ONCE — do NOT re-create on email/name changes
-  // This prevents the Elements provider from re-mounting and losing the PaymentElement
-  const intentCreated = useRef(false);
-
+  // Create PaymentIntent ONCE
   useEffect(() => {
     if (!amount || !cartId || intentCreated.current) return;
 
@@ -229,7 +253,7 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
         const res = await fetch('/api/stripe/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount, currency: 'mxn', cart_id: cartId, email: payerEmail }),
+          body: JSON.stringify({ amount, currency: 'mxn', cart_id: cartId }),
         });
         const data = await res.json();
         if (data.clientSecret) {
@@ -247,7 +271,6 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
     }
 
     createIntent();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, cartId]);
 
   if (!STRIPE_PK) {
@@ -298,13 +321,13 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
       <CheckoutForm
         cartId={cartId}
         paymentIntentId={paymentIntentId}
-        onPaymentSuccess={onPaymentSuccess}
-        onPaymentError={onPaymentError}
+        submitRef={submitFnRef}
         payerEmail={payerEmail}
         payerFirstName={payerFirstName}
         payerLastName={payerLastName}
         shippingAddress={shippingAddress}
-        onReady={(handle) => { handleRef.current = handle; }}
+        onPaymentSuccess={onPaymentSuccess}
+        onPaymentError={onPaymentError}
       />
     </Elements>
   );
