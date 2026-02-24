@@ -61,6 +61,25 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
     console.log('[MP] Extracted payment data:', pd);
 
     try {
+      // ─── PREFLIGHT: Validate cart is ready before payment ───
+      const preflightRes = await fetch('/api/checkout/preflight', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cart_id: cartId }),
+      });
+      const preflight = await preflightRes.json();
+
+      if (!preflight.ready) {
+        console.error('[MP] Preflight failed:', preflight.errors);
+        setStatus('error');
+        setErrorMsg(
+          preflight.errors?.join(', ') ||
+            'Tu carrito no está listo. Verifica tus datos de envío.'
+        );
+        return;
+      }
+      console.log('[MP] Preflight passed ✅');
+
       const response = await fetch('/api/mercadopago/process-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
