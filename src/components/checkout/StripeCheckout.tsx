@@ -215,8 +215,12 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
     },
   }));
 
+  // Create PaymentIntent ONCE — do NOT re-create on email/name changes
+  // This prevents the Elements provider from re-mounting and losing the PaymentElement
+  const intentCreated = useRef(false);
+
   useEffect(() => {
-    if (!amount || !cartId) return;
+    if (!amount || !cartId || intentCreated.current) return;
 
     async function createIntent() {
       try {
@@ -231,6 +235,7 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
           setPaymentIntentId(data.paymentIntentId);
+          intentCreated.current = true;
         } else {
           setError(data.error || 'Error inicializando Stripe');
         }
@@ -242,7 +247,8 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
     }
 
     createIntent();
-  }, [amount, cartId, payerEmail]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, cartId]);
 
   if (!STRIPE_PK) {
     return (
