@@ -381,6 +381,63 @@ export const medusaProvider: CommerceProvider = {
     }
   },
 
+  // ─── Checkout ───
+
+  async updateCartDetails(
+    cartId: string,
+    details: {
+      email?: string;
+      shipping_address?: {
+        first_name: string;
+        last_name: string;
+        address_1: string;
+        address_2?: string;
+        city: string;
+        province: string;
+        postal_code: string;
+        country_code: string;
+        phone?: string;
+      };
+    }
+  ): Promise<void> {
+    await medusaFetch<{ cart: MedusaCart }>(`/carts/${cartId}`, {
+      method: "POST",
+      body: JSON.stringify(details),
+    });
+  },
+
+  async addShippingMethod(
+    cartId: string,
+    optionId: string
+  ): Promise<void> {
+    await medusaFetch<{ cart: MedusaCart }>(
+      `/carts/${cartId}/shipping-methods`,
+      {
+        method: "POST",
+        body: JSON.stringify({ option_id: optionId }),
+      }
+    );
+  },
+
+  async getShippingOptions(
+    cartId: string
+  ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string }>> {
+    const data = await medusaFetch<{
+      shipping_options: Array<{
+        id: string;
+        name: string;
+        amount: number;
+        prices: Array<{ amount: number; currency_code: string }>;
+      }>;
+    }>(`/shipping-options?cart_id=${cartId}`);
+    return data.shipping_options.map((so) => ({
+      id: so.id,
+      name: so.name,
+      amount: so.amount ?? so.prices?.[0]?.amount ?? 0,
+      currency_code: so.prices?.[0]?.currency_code ?? "mxn",
+    }));
+  },
+
   // ─── Storage helpers ───
 
   getStoredCartId(): string | null {

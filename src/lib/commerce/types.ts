@@ -96,6 +96,29 @@ export interface CommerceProvider {
   updateCartLine(cartId: string, lineId: string, quantity: number): Promise<CommerceCart>;
   removeFromCart(cartId: string, lineId: string): Promise<CommerceCart>;
 
+  // Checkout
+  updateCartDetails(
+    cartId: string,
+    details: {
+      email?: string;
+      shipping_address?: {
+        first_name: string;
+        last_name: string;
+        address_1: string;
+        address_2?: string;
+        city: string;
+        province: string;
+        postal_code: string;
+        country_code: string;
+        phone?: string;
+      };
+    }
+  ): Promise<void>;
+  addShippingMethod(cartId: string, optionId: string): Promise<void>;
+  getShippingOptions(
+    cartId: string
+  ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string }>>;
+
   // Customer sync (auth stays in Supabase, this syncs to commerce backend)
   createCustomer(
     email: string,

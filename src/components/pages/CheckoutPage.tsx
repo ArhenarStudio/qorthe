@@ -5,8 +5,9 @@ import { useForm, useWatch } from 'react-hook-form';
 import { motion, AnimatePresence } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, CreditCard, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, Wallet, Banknote } from 'lucide-react';
+import { ArrowLeft, CreditCard, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, Wallet, Banknote, AlertCircle } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
+import { commerce } from '@/lib/commerce';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
 import { LOCATIONS } from '@/data/locations';
@@ -159,6 +160,7 @@ export const CheckoutPage = () => {
 
   const [step, setStep] = useState(1); // 1: Info & Shipping, 2: Payment
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
 
   // Cart State (from CartContext)
   const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem } = useCartContext();
@@ -220,9 +222,38 @@ export const CheckoutPage = () => {
 
   const handleContinue = async () => {
     const isValid = await trigger(['email', 'firstName', 'lastName', 'street', 'exteriorNumber', 'city', 'state', 'zip', 'phone', 'country']);
-    if (isValid) {
+    if (!isValid || !cart?.id) return;
+
+    setCheckoutError('');
+    try {
+      // Register email + shipping address in Medusa cart
+      await commerce.updateCartDetails(cart.id, {
+        email: watchedEmail,
+        shipping_address: {
+          first_name: watchedFirstName,
+          last_name: watchedLastName,
+          address_1: `${watchedStreet} ${watchedExterior}`.trim(),
+          address_2: watchedInterior || '',
+          city: watchedCity,
+          province: watchedState,
+          postal_code: watchedZip,
+          country_code: (selectedCountry || 'MX').toLowerCase(),
+          phone: watchedPhone,
+        },
+      });
+
+      // Add default shipping method to cart
+      // TODO: Phase 6 — replace hardcoded ID with dynamic shipping options
+      const SHIPPING_OPTION_ID = 'so_01KJ619T56SW3JP5JSKEAWXC5V';
+      await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
+
       setStep(2);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err: unknown) {
+      console.error('[Checkout] Error preparing cart:', err);
+      setCheckoutError(
+        (err as Error).message || 'Error al preparar tu pedido. Intenta de nuevo.'
+      );
     }
   };
 
@@ -449,6 +480,13 @@ export const CheckoutPage = () => {
                         </span>
                      </div>
                   </section>
+
+                  {checkoutError && (
+                    <div className="bg-red-50 border border-red-200 p-4 rounded-lg flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                      <p className="text-sm text-red-700">{checkoutError}</p>
+                    </div>
+                  )}
 
                   <div className="pt-6">
                     <button 

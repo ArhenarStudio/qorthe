@@ -74,14 +74,21 @@ export async function completeCartToOrder(opts: {
 }): Promise<{ order?: any; error?: string; warning?: string }> {
   const { cartId, email, shippingAddress, providerLabel } = opts;
 
-  // Step 1: Update cart with shipping address
-  if (shippingAddress) {
-    console.log(`[${providerLabel}] Updating cart with shipping address...`);
+  // ───────────────────────────────────────────────────────
+  // Step 1: Ensure cart has email + shipping address
+  // The checkout UI already registers these when the user
+  // clicks "Continue to Payment". This is a safety fallback.
+  // ───────────────────────────────────────────────────────
+  const cartCheck = await medusaFetch(`/carts/${cartId}`);
+  const cart = cartCheck.cart;
+
+  if (!cart.email && (email || shippingAddress)) {
+    console.log(`[${providerLabel}] Cart missing email/address, updating...`);
     await medusaFetch(`/carts/${cartId}`, {
       method: 'POST',
       body: JSON.stringify({
         email: email || undefined,
-        shipping_address: {
+        shipping_address: shippingAddress ? {
           first_name: shippingAddress.first_name || '',
           last_name: shippingAddress.last_name || '',
           address_1: shippingAddress.address_1 || '',
@@ -91,15 +98,17 @@ export async function completeCartToOrder(opts: {
           postal_code: shippingAddress.postal_code || '',
           country_code: shippingAddress.country_code || 'mx',
           phone: shippingAddress.phone || '',
-        },
+        } : undefined,
       }),
     });
   }
 
-  // Step 2: Add shipping method (only if cart doesn't already have one)
-  const cartCheck = await medusaFetch(`/carts/${cartId}`);
-  const existingShippingMethods = cartCheck.cart?.shipping_methods || [];
-  
+  // ───────────────────────────────────────────────────────
+  // Step 2: Ensure cart has a shipping method
+  // The checkout UI adds this when user clicks "Continue".
+  // This is a safety fallback for edge cases.
+  // ───────────────────────────────────────────────────────
+  const existingShippingMethods = cart?.shipping_methods || [];
   if (existingShippingMethods.length === 0) {
     console.log(`[${providerLabel}] No shipping method found, adding default...`);
     try {
@@ -108,10 +117,10 @@ export async function completeCartToOrder(opts: {
         body: JSON.stringify({ option_id: DEFAULT_SHIPPING_OPTION }),
       });
     } catch (e: unknown) {
-      console.log(`[${providerLabel}] Shipping method note:`, (e as Error).message);
+      console.warn(`[${providerLabel}] Could not add shipping method:`, (e as Error).message);
     }
   } else {
-    console.log(`[${providerLabel}] Cart already has ${existingShippingMethods.length} shipping method(s), skipping...`);
+    console.log(`[${providerLabel}] Cart has ${existingShippingMethods.length} shipping method(s) ✓`);
   }
 
   // Step 3: Create payment collection + session
