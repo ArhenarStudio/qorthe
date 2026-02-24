@@ -84,7 +84,35 @@ export async function completeCartToOrder(opts: {
   });
 
   // Step 3: Complete cart → create order
-  console.log(`[${providerLabel}] Completing cart...`);
+  // ─── DIAGNOSTIC LOG: cart state RIGHT BEFORE /complete ───
+  try {
+    const diagCart = await medusaFetch(`/carts/${cartId}?fields=*shipping_methods,*items`);
+    const dc = diagCart.cart;
+    console.log(JSON.stringify({
+      event: 'pre_complete_diagnostic',
+      provider: providerLabel,
+      cart_id: cartId,
+      email: dc?.email || null,
+      has_shipping_address: !!dc?.shipping_address?.address_1,
+      shipping_methods_count: dc?.shipping_methods?.length || 0,
+      shipping_methods: (dc?.shipping_methods || []).map((sm: any) => ({
+        id: sm.id,
+        shipping_option_id: sm.shipping_option_id,
+      })),
+      items_count: dc?.items?.length || 0,
+      items: (dc?.items || []).map((i: any) => ({
+        id: i.id,
+        title: i.title,
+        variant_id: i.variant_id,
+      })),
+      total: dc?.total,
+      completed_at: dc?.completed_at || null,
+    }));
+  } catch (diagErr) {
+    console.error(`[${providerLabel}] Diagnostic fetch failed:`, diagErr);
+  }
+
+  console.log(`[${providerLabel}] Completing cart ${cartId}...`);
   const completeData = await medusaFetch(`/carts/${cartId}/complete`, {
     method: 'POST',
   });
