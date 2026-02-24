@@ -121,33 +121,33 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
     );
   }
 
-  if (status === 'processing') {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-[#009ee3]" />
-        <p className="text-sm font-medium text-wood-700">Procesando tu pago...</p>
-        <p className="text-xs text-wood-500">No cierres esta ventana</p>
-      </div>
-    );
-  }
-
-  if (status === 'success') {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-3">
-        <CheckCircle2 className="w-10 h-10 text-green-500" />
-        <p className="text-sm font-medium text-green-700">¡Pago aprobado!</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      {errorMsg && (
-        <div className="bg-red-50 border border-red-200 p-3 rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-          <p className="text-sm text-red-700">{errorMsg}</p>
+    <div className="relative">
+      {/* Processing overlay */}
+      {status === 'processing' && (
+        <div className="absolute inset-0 bg-white/90 z-10 flex flex-col items-center justify-center py-12 space-y-3 rounded-lg">
+          <Loader2 className="w-8 h-8 animate-spin text-[#009ee3]" />
+          <p className="text-sm font-medium text-wood-700">Procesando tu pago...</p>
+          <p className="text-xs text-wood-500">No cierres esta ventana</p>
         </div>
       )}
+
+      {/* Success overlay */}
+      {status === 'success' && (
+        <div className="absolute inset-0 bg-white z-10 flex flex-col items-center justify-center py-12 space-y-3 rounded-lg">
+          <CheckCircle2 className="w-10 h-10 text-green-500" />
+          <p className="text-sm font-medium text-green-700">¡Pago aprobado!</p>
+        </div>
+      )}
+
+      <div className={status === 'processing' || status === 'success' ? 'opacity-0 pointer-events-none' : ''}>
+        <div className="space-y-4">
+          {errorMsg && (
+            <div className="bg-red-50 border border-red-200 p-3 rounded-lg flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <p className="text-sm text-red-700">{errorMsg}</p>
+            </div>
+          )}
 
       <Payment
         initialization={{
@@ -182,6 +182,8 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
         <span>Pago seguro procesado por MercadoPago</span>
+      </div>
+        </div>
       </div>
     </div>
   );
