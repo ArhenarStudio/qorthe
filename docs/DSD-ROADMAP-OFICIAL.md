@@ -229,10 +229,12 @@ workflows/   — Vacío (no hay workflows custom)
          — ✅ Fix: paymentCompletedRef prevents empty-cart guard from hijacking redirect
          — ✅ Test E2E con tarjeta de prueba MP (APRO) — pago + success page
          — ✅ Test E2E con Stripe (4242) re-verificado — pago + success page
-4.3  [ ] Configurar Stripe webhook en producción
-         — URL: https://[backend-url]/hooks/payment/stripe_stripe
-         — Eventos: payment_intent.succeeded, payment_intent.payment_failed
-         — Agregar STRIPE_WEBHOOK_SECRET en DO env vars
+4.3  [x] Configurar Stripe webhook en producción — ✅ COMPLETADO 2026-02-25
+         — Endpoint: https://urchin-app-u62qc.ondigitalocean.app/hooks/payment/stripe_stripe
+         — Eventos: payment_intent.succeeded, payment_failed, amount_capturable_updated, canceled
+         — STRIPE_WEBHOOK_SECRET (whsec_...) configurado en DO env vars (encrypted)
+         — webhookSecret agregado a medusa-config.ts payment-stripe provider
+         — Verificado: payment_intent.succeeded → HTTP 200 OK
 4.4  [ ] Configurar MercadoPago webhook en producción
          — URL: https://[backend-url]/hooks/payment/mercadopago_mercadopago
          — Agregar MERCADOPAGO_WEBHOOK_SECRET en DO env vars
