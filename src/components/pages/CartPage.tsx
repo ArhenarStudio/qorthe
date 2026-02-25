@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Minus, Plus, Trash2, ArrowRight, ArrowLeft, ShoppingBag, Loader2 } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
+import { toast } from 'sonner';
 import { motion } from 'motion/react';
 const mercadoPagoLogo = '/images/mercado-pago-logo.png';
 const stripeLogo = '/images/stripe-logo.png';
@@ -14,8 +15,28 @@ export const CartPage = () => {
   const router = useRouter();
   const { cart, loading, updating, itemCount, subtotal, shippingTotal, total, currencyCode, updateItem, removeItem } = useCartContext();
   const [couponCode, setCouponCode] = useState('');
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
 
-  const shipping = shippingTotal;
+  // Free shipping threshold — must match Medusa's "Envío Gratis" option
+  const freeShippingThreshold = 2500;
+  const qualifiesForFreeShipping = subtotal >= freeShippingThreshold;
+  // Shipping method isn't selected until checkout, so estimate it here:
+  // $0 if qualifies for free shipping, otherwise $150 flat rate
+  const estimatedShipping = qualifiesForFreeShipping ? 0 : 150;
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+    if (couponCode.toUpperCase() === 'DAVIDSON10') {
+      setIsCouponApplied(true);
+      toast.success("Cupón DAVIDSON10 aplicado — 10% de descuento");
+    } else {
+      toast.error("Cupón inválido");
+    }
+  };
+
+  // Local-only discount (coupon system not in Medusa yet)
+  const discount = isCouponApplied ? subtotal * 0.10 : 0;
+  const displayTotal = subtotal + estimatedShipping - discount;
 
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -163,8 +184,14 @@ export const CartPage = () => {
                   <ShoppingBag size={18} />
                 </div>
                 <div className="text-sm">
-                  <p className="font-medium text-wood-900 dark:text-sand-100">Envío gratuito</p>
-                  <p>En pedidos superiores a $3,500</p>
+                  {qualifiesForFreeShipping ? (
+                    <p className="font-medium text-green-700 dark:text-green-400">¡Felicidades! Tienes envío gratis</p>
+                  ) : (
+                    <>
+                      <p className="font-medium text-wood-900 dark:text-sand-100">Envío gratuito</p>
+                      <p>En pedidos superiores a $2,500 MXN — te faltan {formatPrice(freeShippingThreshold - subtotal)}</p>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="text-right text-xs text-wood-400 dark:text-sand-500 w-full sm:w-auto">
@@ -183,14 +210,20 @@ export const CartPage = () => {
                   <span>Subtotal</span>
                   <span className="font-medium text-wood-900 dark:text-sand-100">{formatPrice(subtotal)}</span>
                 </div>
+                {isCouponApplied && (
+                  <div className="flex justify-between text-green-700 dark:text-green-400">
+                    <span>Descuento (10%)</span>
+                    <span>-{formatPrice(discount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-wood-600 dark:text-sand-300">
                   <span>Envío estimado</span>
-                  <span className="font-medium text-wood-900 dark:text-sand-100">{shipping === 0 ? 'Gratis' : formatPrice(shipping)}</span>
+                  <span className="font-medium text-wood-900 dark:text-sand-100">{estimatedShipping === 0 ? 'Gratis' : formatPrice(estimatedShipping)}</span>
                 </div>
                 <div className="pt-4 border-t border-wood-100 dark:border-wood-800 flex justify-between items-end">
                   <span className="text-lg font-serif text-wood-900 dark:text-sand-100">Total</span>
                   <div className="text-right">
-                    <span className="block text-2xl font-bold text-wood-900 dark:text-sand-100">{formatPrice(total)}</span>
+                    <span className="block text-2xl font-bold text-wood-900 dark:text-sand-100">{formatPrice(displayTotal)}</span>
                     <span className="text-xs text-wood-400 dark:text-sand-500">Incluye IVA</span>
                   </div>
                 </div>
@@ -206,11 +239,17 @@ export const CartPage = () => {
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Ej. WELCOME10"
-                    className="flex-1 px-4 py-2 bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 text-wood-900 dark:text-sand-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-wood-200 dark:focus:ring-wood-600 focus:border-wood-400 dark:focus:border-wood-500 text-sm placeholder:text-wood-400 dark:placeholder:text-wood-600"
+                    placeholder="Ej. DAVIDSON10"
+                    disabled={isCouponApplied}
+                    className="flex-1 px-4 py-2 bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 text-wood-900 dark:text-sand-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-wood-200 dark:focus:ring-wood-600 focus:border-wood-400 dark:focus:border-wood-500 text-sm placeholder:text-wood-400 dark:placeholder:text-wood-600 uppercase disabled:opacity-50"
+                    onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                   />
-                  <button className="px-4 py-2 bg-wood-100 dark:bg-wood-800 text-wood-700 dark:text-sand-200 font-medium rounded-lg hover:bg-wood-200 dark:hover:bg-wood-700 transition-colors text-sm border border-transparent dark:border-wood-700">
-                    Aplicar
+                  <button 
+                    onClick={handleApplyCoupon}
+                    disabled={!couponCode.trim() || isCouponApplied}
+                    className="px-4 py-2 bg-wood-100 dark:bg-wood-800 text-wood-700 dark:text-sand-200 font-medium rounded-lg hover:bg-wood-200 dark:hover:bg-wood-700 transition-colors text-sm border border-transparent dark:border-wood-700 disabled:opacity-50"
+                  >
+                    {isCouponApplied ? 'Aplicado ✓' : 'Aplicar'}
                   </button>
                 </div>
               </div>

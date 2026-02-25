@@ -21,14 +21,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
   const lines = cart?.lines ?? [];
 
   // Shipping threshold for free shipping progress bar
-  const freeShippingThreshold = 3000;
+  // Must match Medusa's "Envío Gratis" option (compras +$2,500 MXN)
+  const freeShippingThreshold = 2500;
+  const qualifiesForFreeShipping = subtotal >= freeShippingThreshold;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
   const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100);
   
   // Discount is local-only for now (coupon system not in Medusa yet)
   const discount = isCouponApplied ? subtotal * 0.10 : 0;
-  // Use Medusa's shipping total; apply local discount on top
-  const displayTotal = total - discount;
+  // Shipping is not selected yet in drawer (that happens in checkout).
+  // Show estimated shipping: $0 if qualifies for free shipping, otherwise $150 flat.
+  const estimatedShipping = qualifiesForFreeShipping ? 0 : 150;
+  const displayTotal = subtotal + estimatedShipping - discount;
 
   const handleUpdateQuantity = async (lineId: string, currentQty: number, delta: number) => {
     const newQty = currentQty + delta;
@@ -208,7 +212,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                   )}
                   <div className="flex justify-between">
                     <span>Envío</span>
-                    <span>{shippingTotal === 0 ? 'Gratis' : formatPrice(shippingTotal)}</span>
+                    <span>{estimatedShipping === 0 ? 'Gratis' : formatPrice(estimatedShipping)}</span>
                   </div>
                   <div className="flex justify-between text-lg font-serif text-wood-900 dark:text-sand-100 font-bold pt-2 border-t border-dashed border-wood-200 dark:border-wood-700">
                     <span>Total</span>
