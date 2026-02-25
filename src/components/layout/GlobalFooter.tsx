@@ -262,7 +262,7 @@ export const GlobalFooter = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-8 border-t border-wood-200 dark:border-wood-800/50">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-8 border-t border-wood-200 dark:border-wood-800/50 px-8 md:px-[10%]">
           
           <div className="text-xs text-wood-500 font-medium tracking-wide flex flex-col sm:flex-row gap-2 md:gap-4 items-center text-center sm:text-left">
             <p>{CONTENT.legal_bottom.copyright}</p>
