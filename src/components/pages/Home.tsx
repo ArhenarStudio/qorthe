@@ -3,8 +3,8 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { ChevronRight, Leaf, Hexagon, Zap, Tag, Star, ArrowRight } from 'lucide-react';
-import { useCartContext } from '@/contexts/CartContext';
+import { Leaf, Zap, ArrowRight } from 'lucide-react';
+// CartContext not needed on Home — products use CuratedSelection component
 import { CuratedSelection } from '@/components/features/CuratedSelection';
 import { BrandValues } from '@/components/features/BrandValues';
 import { TestimonialsSection } from '@/components/features/TestimonialsSection';
@@ -45,29 +45,7 @@ const CONTENT = {
       }
     ]
   },
-  uses: {
-    title: "Un Lienzo, Múltiples Escenarios",
-    items: [
-      {
-        title: "Charcutería & Servicio",
-        desc: "Eleva tus reuniones con tablas diseñadas para compartir.",
-        img: "https://images.unsplash.com/photo-1745970800051-c98b55ffe260?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGFyY3V0ZXJpZSUyMHBsYXR0ZXIlMjBldmVudHxlbnwxfHx8fDE3NzA4NDc0NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-        price: 2450
-      },
-      {
-        title: "Eventos & Decoración",
-        desc: "Centros de mesa y bases que transforman espacios.",
-        img: "https://images.unsplash.com/photo-1516629959642-127e1f5796a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB3ZWRkaW5nJTIwdGFibGUlMjBzZXR0aW5nJTIwd29vZHxlbnwxfHx8fDE3NzA4NDc0NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-        price: 1800
-      },
-      {
-        title: "Mobiliario Auxiliar",
-        desc: "Piezas funcionales que añaden calidez a tu hogar.",
-        img: "https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwd29vZGVuJTIwZnVybml0dXJlfGVufDF8fHx8MTc3MDg0NzQ1Mnww&ixlib=rb-4.1.0&q=80&w=1080",
-        price: 3500
-      }
-    ]
-  },
+  // uses section removed — dead code with hardcoded prices (Phase 4.7.10)
   customization: {
     title: "Tu Sello Personal",
     subtitle: "Personalización Láser de Alta Precisión",
@@ -86,15 +64,6 @@ const fadeInUp = {
 
 export const Home = () => {
   const router = useRouter();
-  const { addItem } = useCartContext();
-  const handleAddToCart = (e: React.MouseEvent, item: any) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // If item has a variantId, use it; otherwise this is a mock handler
-    if (item.variantId) {
-      addItem(item.variantId, 1);
-    }
-  };
 
   return (
     <div className="bg-sand-100 dark:bg-wood-950 text-wood-900 dark:text-sand-100 font-sans overflow-x-hidden transition-colors duration-300">

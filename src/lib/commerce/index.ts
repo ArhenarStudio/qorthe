@@ -20,6 +20,7 @@ export type {
   CommerceProduct,
   CommerceCart,
   CommerceCartLine,
+  CommercePromotion,
   CommerceVariant,
   CommerceImage,
   CommerceMoney,

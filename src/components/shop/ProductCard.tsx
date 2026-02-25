@@ -4,8 +4,10 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { ShoppingBag, Heart } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { CommerceProduct } from '@/lib/commerce';
 import { getMetafield } from '@/lib/commerce/types';
+import { formatPrice } from '@/config/shipping';
 
 interface ProductCardProps {
   product: CommerceProduct;
@@ -15,15 +17,22 @@ interface ProductCardProps {
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+  const router = useRouter();
   const mainImage = product.featuredImage?.url ?? PLACEHOLDER_IMG;
   const price = product.priceRange.minVariantPrice;
   const inStock = product.variants.some(v => v.availableForSale);
   const material = getMetafield(product, "materials", "primary_wood") ?? "";
+  const isMultiVariant = product.variants.length > 1;
   const defaultVariant = product.variants[0];
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Multi-variant: navigate to detail page so user picks the right option
+    if (isMultiVariant) {
+      router.push(`/shop/${product.handle}`);
+      return;
+    }
     if (onAddToCart && defaultVariant) {
       onAddToCart(defaultVariant.id);
     }
@@ -87,14 +96,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
         </Link>
         <div className="flex items-center justify-between pt-3 border-t border-wood-100 dark:border-wood-800">
           <span className="text-lg font-bold text-wood-900 dark:text-sand-100 font-sans">
-            ${price.amount.toLocaleString()} {price.currencyCode}
+            {isMultiVariant ? 'Desde ' : ''}{formatPrice(price.amount, price.currencyCode)}
           </span>
           <button 
             onClick={handleAddToCart}
             disabled={!inStock}
             className="text-xs font-bold uppercase tracking-wider text-wood-500 dark:text-sand-400 hover:text-wood-900 dark:hover:text-sand-100 transition-colors flex items-center gap-1 disabled:opacity-50"
           >
-            + Añadir
+            {isMultiVariant ? 'Ver opciones' : '+ Añadir'}
           </button>
         </div>
       </div>

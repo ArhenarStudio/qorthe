@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/contexts/CartContext';
+import { getShippingEstimate, formatPrice } from '@/config/shipping';
+import type { CommercePromotion } from '@/lib/commerce';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -13,31 +15,32 @@ interface CartDrawerProps {
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
-  const { cart, loading, updating, itemCount, subtotal, shippingTotal, total, currencyCode, updateItem, removeItem } = useCartContext();
-  const [coupon, setCoupon] = useState('');
-  const [isCouponApplied, setIsCouponApplied] = useState(false);
+  const {
+    cart, loading, updating, itemCount, subtotal, discountTotal,
+    promotions, updateItem, removeItem, removePromo,
+  } = useCartContext();
   const router = useRouter();
 
+  // ─── Debounce for quantity updates ───
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedUpdate = useCallback(
+    (lineId: string, newQty: number) => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        updateItem(lineId, newQty);
+      }, 400);
+    },
+    [updateItem]
+  );
+
   const lines = cart?.lines ?? [];
+  const { qualifiesFreeShipping, estimatedShipping, remainingForFree, progressPercent } = getShippingEstimate(subtotal);
+  const displayTotal = subtotal + estimatedShipping - discountTotal;
 
-  // Shipping threshold for free shipping progress bar
-  // Must match Medusa's "Envío Gratis" option (compras +$2,500 MXN)
-  const freeShippingThreshold = 2500;
-  const qualifiesForFreeShipping = subtotal >= freeShippingThreshold;
-  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100);
-  
-  // Discount is local-only for now (coupon system not in Medusa yet)
-  const discount = isCouponApplied ? subtotal * 0.10 : 0;
-  // Shipping is not selected yet in drawer (that happens in checkout).
-  // Show estimated shipping: $0 if qualifies for free shipping, otherwise $150 flat.
-  const estimatedShipping = qualifiesForFreeShipping ? 0 : 150;
-  const displayTotal = subtotal + estimatedShipping - discount;
-
-  const handleUpdateQuantity = async (lineId: string, currentQty: number, delta: number) => {
+  const handleUpdateQuantity = (lineId: string, currentQty: number, delta: number) => {
     const newQty = currentQty + delta;
     if (newQty < 1) return;
-    await updateItem(lineId, newQty);
+    debouncedUpdate(lineId, newQty);
   };
 
   const handleRemoveItem = async (lineId: string) => {
@@ -45,18 +48,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
     toast.info("Producto eliminado del carrito");
   };
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (coupon.toUpperCase() === 'DAVIDSON10') {
-      setIsCouponApplied(true);
-      toast.success("Cupón aplicado correctamente");
-    } else {
-      toast.error("Cupón inválido");
-    }
-  };
-
-  const formatPrice = (amount: number) => {
-    return `$${amount.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  const handleRemovePromo = async (code: string) => {
+    await removePromo(code);
+    toast.info("Cupón removido");
   };
 
   return (
@@ -95,8 +89,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
               {lines.length > 0 && (
                 <div className="px-6 pb-6">
                   <p className="text-xs text-wood-600 dark:text-sand-300 mb-2">
-                    {remainingForFreeShipping > 0 
-                      ? <span>Agrega <span className="font-bold text-wood-900 dark:text-sand-100">{formatPrice(remainingForFreeShipping)}</span> para envío gratis</span>
+                    {remainingForFree > 0 
+                      ? <span>Agrega <span className="font-bold text-wood-900 dark:text-sand-100">{formatPrice(remainingForFree)}</span> para envío gratis</span>
                       : <span className="text-green-700 dark:text-green-400 font-medium flex items-center gap-1">¡Felicidades! Tienes envío gratis</span>
                     }
                   </p>
@@ -176,42 +170,33 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            {/* Footer Summary */}
+            {/* Footer Summary — NO coupon input (that's in CartPage/Checkout). 
+                Only shows applied promos as removable pills. */}
             {lines.length > 0 && (
               <div className="bg-white dark:bg-wood-900 border-t border-wood-900/5 dark:border-wood-800 p-6 space-y-4 transition-colors duration-300">
                 
-                <form onSubmit={handleApplyCoupon} className="relative">
-                  <input 
-                    type="text" 
-                    placeholder="Código de descuento"
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                    disabled={isCouponApplied}
-                    className="w-full bg-sand-100 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg py-3 pl-10 pr-20 text-sm text-wood-900 dark:text-sand-100 outline-none focus:border-wood-900 dark:focus:border-sand-100 transition-colors uppercase placeholder:normal-case placeholder:text-wood-400 dark:placeholder:text-wood-500 disabled:opacity-50"
-                  />
-                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-wood-400 dark:text-wood-500" />
-                  <button 
-                    type="submit"
-                    disabled={!coupon || isCouponApplied}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-wood-900 dark:text-sand-100 hover:text-accent-gold dark:hover:text-accent-gold disabled:text-wood-300 dark:disabled:text-wood-600 transition-colors px-2 py-1"
-                  >
-                    {isCouponApplied ? 'APLICADO' : 'APLICAR'}
-                  </button>
-                </form>
+                {/* Applied Promotions — pills */}
+                {promotions.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {promotions.map((promo) => (
+                      <PromoPill key={promo.id} promo={promo} onRemove={handleRemovePromo} disabled={updating} />
+                    ))}
+                  </div>
+                )}
 
                 <div className="space-y-2 pt-2 text-sm text-wood-600 dark:text-sand-300">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
                     <span>{formatPrice(subtotal)}</span>
                   </div>
-                  {isCouponApplied && (
+                  {discountTotal > 0 && (
                     <div className="flex justify-between text-green-700 dark:text-green-400">
-                      <span>Descuento (10%)</span>
-                      <span>-{formatPrice(discount)}</span>
+                      <span>Descuento</span>
+                      <span>-{formatPrice(discountTotal)}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span>Envío</span>
+                    <span>Envío estimado</span>
                     <span>{estimatedShipping === 0 ? 'Gratis' : formatPrice(estimatedShipping)}</span>
                   </div>
                   <div className="flex justify-between text-lg font-serif text-wood-900 dark:text-sand-100 font-bold pt-2 border-t border-dashed border-wood-200 dark:border-wood-700">
@@ -250,3 +235,34 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
     </AnimatePresence>
   );
 };
+
+// ─── Promo Pill (removable badge) ───
+
+function PromoPill({ promo, onRemove, disabled }: {
+  promo: CommercePromotion;
+  onRemove: (code: string) => void;
+  disabled: boolean;
+}) {
+  if (!promo.code) return null;
+
+  const label = promo.application_method
+    ? promo.application_method.type === 'percentage'
+      ? `${promo.code} (-${promo.application_method.value}%)`
+      : `${promo.code}`
+    : promo.code;
+
+  return (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-full text-xs font-medium border border-green-200 dark:border-green-800">
+      <Tag className="w-3 h-3" />
+      {label}
+      <button
+        onClick={() => onRemove(promo.code!)}
+        disabled={disabled}
+        className="ml-0.5 hover:text-red-500 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+        aria-label={`Remover cupón ${promo.code}`}
+      >
+        <X className="w-3 h-3" />
+      </button>
+    </span>
+  );
+}

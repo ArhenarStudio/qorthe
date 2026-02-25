@@ -15,6 +15,7 @@ import type {
   CommerceProduct,
   CommerceCart,
   CommerceCartLine,
+  CommercePromotion,
   CommerceVariant,
   CommerceImage,
   CommerceMoney,
@@ -118,9 +119,23 @@ interface MedusaLineItem {
   thumbnail?: string | null;
 }
 
+interface MedusaPromotion {
+  id: string;
+  code: string | null;
+  type: string;
+  is_automatic: boolean;
+  application_method?: {
+    type: string;
+    value: number;
+    allocation: string;
+    target_type: string;
+  } | null;
+}
+
 interface MedusaCart {
   id: string;
   items?: MedusaLineItem[];
+  promotions?: MedusaPromotion[];
   total: number;
   subtotal: number;
   shipping_total?: number;
@@ -235,6 +250,23 @@ function mapCartLine(item: MedusaLineItem, currencyCode: string): CommerceCartLi
   };
 }
 
+function mapPromotion(p: MedusaPromotion): CommercePromotion {
+  return {
+    id: p.id,
+    code: p.code,
+    type: p.type,
+    is_automatic: p.is_automatic,
+    application_method: p.application_method
+      ? {
+          type: p.application_method.type,
+          value: p.application_method.value,
+          allocation: p.application_method.allocation,
+          target_type: p.application_method.target_type,
+        }
+      : null,
+  };
+}
+
 function mapCart(cart: MedusaCart): CommerceCart {
   const currencyCode = cart.currency_code ?? cart.region?.currency_code ?? "mxn";
 
@@ -242,6 +274,7 @@ function mapCart(cart: MedusaCart): CommerceCart {
     id: cart.id,
     checkoutUrl: null,
     lines: (cart.items ?? []).map((item) => mapCartLine(item, currencyCode)),
+    promotions: (cart.promotions ?? []).map(mapPromotion),
     subtotal: mapMoney(cart.subtotal ?? 0, currencyCode),
     shippingTotal: mapMoney(cart.shipping_total ?? 0, currencyCode),
     discountTotal: mapMoney(cart.discount_total ?? 0, currencyCode),
@@ -457,6 +490,30 @@ export const medusaProvider: CommerceProvider = {
       amount: so.amount ?? so.prices?.[0]?.amount ?? 0,
       currency_code: so.prices?.[0]?.currency_code ?? "mxn",
     }));
+  },
+
+  // ─── Promotions (Medusa v2 Promotion Module) ───
+
+  async applyPromoCode(cartId: string, code: string): Promise<CommerceCart> {
+    const data = await medusaFetch<{ cart: MedusaCart }>(
+      `/carts/${cartId}/promotions`,
+      {
+        method: "POST",
+        body: JSON.stringify({ promo_codes: [code] }),
+      }
+    );
+    return mapCart(data.cart);
+  },
+
+  async removePromoCode(cartId: string, code: string): Promise<CommerceCart> {
+    const data = await medusaFetch<{ cart: MedusaCart }>(
+      `/carts/${cartId}/promotions`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ promo_codes: [code] }),
+      }
+    );
+    return mapCart(data.cart);
   },
 
   // ─── Storage helpers ───

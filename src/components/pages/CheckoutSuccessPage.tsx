@@ -19,9 +19,12 @@ export const CheckoutSuccessPage = () => {
   const stripePaymentId = searchParams.get('pi');
   const provider = searchParams.get('provider');
 
+  // Clear cart on arrival — promotions die with the cart (Medusa Promotion Module)
+  // Double-clear is safe: CheckoutPage also clears before navigating here
   useEffect(() => {
     clearCart();
     window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

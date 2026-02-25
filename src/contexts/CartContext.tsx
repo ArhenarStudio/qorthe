@@ -14,6 +14,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { commerce } from "@/lib/commerce";
 import type { CommerceCart } from "@/lib/commerce";
 
+import type { CommercePromotion } from "@/lib/commerce";
+
 interface CartContextType {
   cart: CommerceCart | null;
   loading: boolean;
@@ -25,9 +27,12 @@ interface CartContextType {
   taxTotal: number;
   total: number;
   currencyCode: string;
+  promotions: CommercePromotion[];
   addItem: (variantId: string, quantity?: number) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
+  applyPromo: (code: string) => Promise<{ success: boolean; error?: string }>;
+  removePromo: (code: string) => Promise<void>;
   clearCart: () => void;
   isDrawerOpen: boolean;
   openDrawer: () => void;
@@ -46,9 +51,12 @@ const CartContext = createContext<CartContextType>({
   taxTotal: 0,
   total: 0,
   currencyCode: "MXN",
+  promotions: [],
   addItem: async () => {},
   updateItem: async () => {},
   removeItem: async () => {},
+  applyPromo: async () => ({ success: false }),
+  removePromo: async () => {},
   clearCart: () => {},
   isDrawerOpen: false,
   openDrawer: () => {},
@@ -152,10 +160,53 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const taxTotal = cart?.taxTotal.amount ?? 0;
   const total = cart?.total.amount ?? 0;
   const currencyCode = cart?.subtotal.currencyCode ?? "MXN";
+  const promotions = cart?.promotions ?? [];
 
   const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
   const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
   const toggleDrawer = useCallback(() => setIsDrawerOpen(prev => !prev), []);
+
+  const applyPromo = useCallback(
+    async (code: string): Promise<{ success: boolean; error?: string }> => {
+      if (!cart) return { success: false, error: "No hay carrito activo" };
+      try {
+        setUpdating(true);
+        const updated = await commerce.applyPromoCode(cart.id, code);
+        setCart(updated);
+        return { success: true };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Error al aplicar cupón";
+        console.error("[CartContext] applyPromo error:", message);
+        // Parse Medusa error for user-friendly messages
+        if (message.includes("404") || message.includes("not found")) {
+          return { success: false, error: "Cupón no encontrado" };
+        }
+        if (message.includes("already")) {
+          return { success: false, error: "Este cupón ya está aplicado" };
+        }
+        return { success: false, error: "Cupón inválido o expirado" };
+      } finally {
+        setUpdating(false);
+      }
+    },
+    [cart]
+  );
+
+  const removePromo = useCallback(
+    async (code: string) => {
+      if (!cart) return;
+      try {
+        setUpdating(true);
+        const updated = await commerce.removePromoCode(cart.id, code);
+        setCart(updated);
+      } catch (err) {
+        console.error("[CartContext] removePromo error:", err);
+      } finally {
+        setUpdating(false);
+      }
+    },
+    [cart]
+  );
 
   const clearCart = useCallback(() => {
     setCart(null);
@@ -169,8 +220,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         cart, loading, updating, itemCount,
         subtotal, shippingTotal, discountTotal, taxTotal, total,
-        currencyCode,
-        addItem, updateItem, removeItem, clearCart,
+        currencyCode, promotions,
+        addItem, updateItem, removeItem, applyPromo, removePromo, clearCart,
         isDrawerOpen, openDrawer, closeDrawer, toggleDrawer,
       }}
     >

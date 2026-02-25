@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, CreditCard, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, Wallet, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, AlertCircle } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
+import { formatPrice } from '@/config/shipping';
 import { commerce } from '@/lib/commerce';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
@@ -169,7 +170,7 @@ export const CheckoutPage = () => {
   const paymentCompletedRef = useRef(false);
 
   // Cart State (from CartContext)
-  const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, shippingTotal: cartShipping, total: cartTotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem, clearCart } = useCartContext();
+  const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, shippingTotal: cartShipping, discountTotal, total: cartTotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem, clearCart, promotions, applyPromo, removePromo } = useCartContext();
 
   // Guard: redirect to cart if empty (after loading finishes)
   // Skip guard if payment was just completed (cart cleared intentionally)
@@ -181,48 +182,51 @@ export const CheckoutPage = () => {
   }, [cartLoading, cart, router]);
 
   const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [couponError, setCouponError] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
 
-  // Cart Calculations — sourced from Medusa, single source of truth
+  // Debounce for quantity updates
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cart Calculations — 100% Medusa, single source of truth
   const subtotal = cartSubtotal;
   const shipping = cartShipping;
-  const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount) : 0;
-  const total = Math.max(0, cartTotal - discountAmount);
+  const total = cartTotal; // Medusa already includes discount in cart.total
 
   const cartItems = cart?.lines ?? [];
 
-  // Cart Handlers
+  // Cart Handlers (debounced)
   const updateQuantity = (lineId: string, delta: number) => {
     const line = cartItems.find(l => l.id === lineId);
     if (!line) return;
     const newQuantity = Math.max(1, line.quantity + delta);
-    cartUpdateItem(lineId, newQuantity);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => cartUpdateItem(lineId, newQuantity), 400);
   };
 
   const removeItem = (lineId: string) => {
     cartRemoveItem(lineId);
   };
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleApplyCoupon = async () => {
     setCouponError('');
-    if (!couponCode.trim()) return;
-    const code = couponCode.toUpperCase();
-    if (code === 'WELCOME10') {
-      setAppliedCoupon({ code: 'WELCOME10', discount: 0.10 });
-      setCouponCode('');
-    } else if (code === 'LUJO20') {
-      setAppliedCoupon({ code: 'LUJO20', discount: 0.20 });
-      setCouponCode('');
-    } else {
-      setCouponError('Cupón inválido o expirado');
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    setCouponLoading(true);
+    try {
+      const result = await applyPromo(code);
+      if (result.success) {
+        setCouponCode('');
+      } else {
+        setCouponError(result.error || 'Cupón inválido o expirado');
+      }
+    } finally {
+      setCouponLoading(false);
     }
   };
 
-  const removeCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponError('');
+  const handleRemovePromo = async (code: string) => {
+    await removePromo(code);
   };
 
   const onSubmit = (data: any) => {
@@ -316,7 +320,7 @@ export const CheckoutPage = () => {
             <span className="text-sm">Mostrar resumen del pedido</span>
             {isSummaryOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
-          <span className="font-bold text-lg text-wood-900">${total.toLocaleString()}</span>
+          <span className="font-bold text-lg text-wood-900">{formatPrice(total, currencyCode)}</span>
         </div>
 
         {/* Content */}
@@ -352,7 +356,7 @@ export const CheckoutPage = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-wood-900 text-sm truncate">{item.merchandise.productTitle}</h4>
-                    <p className="text-xs text-wood-500 mb-2">${item.merchandise.price.amount.toLocaleString()} {currencyCode}</p>
+                    <p className="text-xs text-wood-500 mb-2">{formatPrice(item.merchandise.price.amount, currencyCode)}</p>
                     <div className="flex items-center gap-3">
                       <div className="flex items-center border border-wood-200 rounded-md bg-white">
                         <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-wood-50 text-wood-600 transition-colors" disabled={item.quantity <= 1 || cartUpdating}><Minus className="w-3 h-3" /></button>
@@ -362,35 +366,62 @@ export const CheckoutPage = () => {
                       <button onClick={() => removeItem(item.id)} className="text-wood-400 hover:text-red-500 transition-colors" disabled={cartUpdating}><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
-                  <span className="font-medium text-wood-900 text-sm">${(item.merchandise.price.amount * item.quantity).toLocaleString()}</span>
+                  <span className="font-medium text-wood-900 text-sm">{formatPrice(item.merchandise.price.amount * item.quantity, currencyCode)}</span>
                 </div>
               ))}
            </div>
            
-           {/* Coupon */}
+           {/* Coupon — Medusa Promotion Module */}
            <div className="pt-6 border-t border-wood-200">
              <div className="flex gap-2">
                <div className="relative flex-1">
-                 <input type="text" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="Código de descuento" className="w-full bg-white border border-wood-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-wood-900 transition-colors" disabled={!!appliedCoupon} />
+                 <input
+                   type="text"
+                   value={couponCode}
+                   onChange={(e) => setCouponCode(e.target.value)}
+                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleApplyCoupon())}
+                   placeholder="Código de descuento"
+                   className="w-full bg-white border border-wood-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-wood-900 transition-colors"
+                   disabled={couponLoading}
+                 />
                  <Tag className="absolute right-3 top-2.5 w-4 h-4 text-wood-400" />
                </div>
-               <button onClick={handleApplyCoupon} disabled={!!appliedCoupon || !couponCode.trim()} className="bg-wood-200 text-wood-900 px-4 py-2 rounded-md text-sm font-medium hover:bg-wood-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">Aplicar</button>
+               <button
+                 type="button"
+                 onClick={handleApplyCoupon}
+                 disabled={couponLoading || !couponCode.trim()}
+                 className="bg-wood-200 text-wood-900 px-4 py-2 rounded-md text-sm font-medium hover:bg-wood-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+               >
+                 {couponLoading ? '...' : 'Aplicar'}
+               </button>
              </div>
              {couponError && <p className="text-xs text-red-500 mt-2">{couponError}</p>}
-             {appliedCoupon && (
-               <div className="mt-3 flex items-center justify-between bg-green-50 border border-green-100 p-2 rounded-md">
-                 <div className="flex items-center gap-2"><Tag className="w-3 h-3 text-green-700" /><span className="text-xs font-bold text-green-700">{appliedCoupon.code}</span></div>
-                 <button onClick={removeCoupon} className="text-green-700 hover:text-green-900"><X className="w-3 h-3" /></button>
+             {promotions.length > 0 && (
+               <div className="mt-3 space-y-2">
+                 {promotions.map((promo) => (
+                   <div key={promo.id} className="flex items-center justify-between bg-green-50 border border-green-100 p-2 rounded-md">
+                     <div className="flex items-center gap-2">
+                       <Tag className="w-3 h-3 text-green-700" />
+                       <span className="text-xs font-bold text-green-700">{promo.code ?? 'Automático'}</span>
+                       {promo.application_method?.value && (
+                         <span className="text-xs text-green-600">-{promo.application_method.value}%</span>
+                       )}
+                     </div>
+                     <button type="button" onClick={() => handleRemovePromo(promo.code ?? '')} className="text-green-700 hover:text-green-900">
+                       <X className="w-3 h-3" />
+                     </button>
+                   </div>
+                 ))}
                </div>
              )}
            </div>
 
            {/* Totals */}
            <div className="space-y-3 pt-6 border-t border-wood-200 text-sm">
-              <div className="flex justify-between text-wood-600"><span>Subtotal</span><span>${subtotal.toLocaleString()}</span></div>
-              <div className="flex justify-between text-wood-600"><span>Envío</span><span>{shipping === 0 ? 'Gratis' : `$${shipping.toLocaleString()}`}</span></div>
-              {appliedCoupon && <div className="flex justify-between text-green-700 font-medium"><span>Descuento ({(appliedCoupon.discount * 100).toFixed(0)}%)</span><span>-${discountAmount.toLocaleString()}</span></div>}
-              <div className="flex justify-between text-xl font-serif text-wood-900 pt-4 border-t border-wood-200 items-baseline"><span>Total</span><span className="font-bold">${total.toLocaleString()}</span></div>
+              <div className="flex justify-between text-wood-600"><span>Subtotal</span><span>{formatPrice(subtotal, currencyCode)}</span></div>
+              <div className="flex justify-between text-wood-600"><span>Envío</span><span>{shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}</span></div>
+              {discountTotal > 0 && <div className="flex justify-between text-green-700 font-medium"><span>Descuento</span><span>-{formatPrice(discountTotal, currencyCode)}</span></div>}
+              <div className="flex justify-between text-xl font-serif text-wood-900 pt-4 border-t border-wood-200 items-baseline"><span>Total</span><span className="font-bold">{formatPrice(total, currencyCode)}</span></div>
            </div>
         </div>
       </aside>
@@ -520,7 +551,7 @@ export const CheckoutPage = () => {
                            </div>
                         </div>
                         <span className="font-bold text-wood-900">
-                           {shipping === 0 ? 'Gratis' : `$${shipping.toLocaleString()}`}
+                           {shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}
                         </span>
                      </div>
                   </section>
@@ -676,7 +707,7 @@ export const CheckoutPage = () => {
                                     className="w-full bg-wood-900 text-white py-4 rounded-lg font-bold text-base hover:bg-black transition-all duration-300 shadow-lg shadow-wood-900/10 flex items-center justify-center gap-2"
                                 >
                                     <Lock className="w-4 h-4" />
-                                    <span>Pagar ${total.toLocaleString()} MXN</span>
+                                    <span>Pagar {formatPrice(total, currencyCode)}</span>
                                 </button>
                               </div>
                             </>

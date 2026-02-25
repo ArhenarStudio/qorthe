@@ -65,10 +65,25 @@ export interface CommerceCartLine {
   };
 }
 
+/** Promoción aplicada al carrito (viene de Medusa Promotion Module) */
+export interface CommercePromotion {
+  id: string;
+  code: string | null;
+  type: string;             // "standard" | "buyget"
+  is_automatic: boolean;
+  application_method?: {
+    type: string;           // "percentage" | "fixed"
+    value: number;          // ej. 10 = 10%
+    allocation: string;     // "each" | "across"
+    target_type: string;    // "order" | "items" | "shipping_methods"
+  } | null;
+}
+
 export interface CommerceCart {
   id: string;
   checkoutUrl: string | null;
   lines: CommerceCartLine[];
+  promotions: CommercePromotion[];
   subtotal: CommerceMoney;
   shippingTotal: CommerceMoney;
   discountTotal: CommerceMoney;
@@ -131,6 +146,10 @@ export interface CommerceProvider {
     firstName?: string | null,
     lastName?: string | null
   ): Promise<CommerceCustomerCreateResult>;
+
+  // Promotions (Medusa v2 Promotion Module)
+  applyPromoCode(cartId: string, code: string): Promise<CommerceCart>;
+  removePromoCode(cartId: string, code: string): Promise<CommerceCart>;
 
   // Storage helpers
   getStoredCartId(): string | null;
