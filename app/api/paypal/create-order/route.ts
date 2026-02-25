@@ -1,83 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getVerifiedCartTotal, jsonError } from '../../_lib/medusa-helpers';
 
-const MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000';
-const MEDUSA_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '';
+// ═══════════════════════════════════════════════════════════════
+// PayPal Create Order — Direct PayPal API (like Stripe pattern)
+//
+// Instead of going through Medusa payment collections (which may
+// not exist yet), we call PayPal Orders API directly to create
+// the order. Cart completion happens in capture-order route.
+// ═══════════════════════════════════════════════════════════════
+
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID || process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
+const PAYPAL_IS_SANDBOX = process.env.PAYPAL_IS_SANDBOX !== 'false';
+
+const PAYPAL_API_URL = PAYPAL_IS_SANDBOX
+  ? 'https://api-m.sandbox.paypal.com'
+  : 'https://api-m.paypal.com';
+
+/**
+ * Get PayPal access token using client credentials
+ */
+async function getPayPalAccessToken(): Promise<string> {
+  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
+
+  const res = await fetch(`${PAYPAL_API_URL}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('[PayPal] Token error:', err);
+    throw new Error('Failed to get PayPal access token');
+  }
+
+  const data = await res.json();
+  return data.access_token;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { cartId, amount, email, firstName, lastName, shippingAddress } = await req.json();
+    const { cartId } = await req.json();
 
     if (!cartId) {
-      return NextResponse.json({ error: 'cartId is required' }, { status: 400 });
+      return jsonError('cartId is required');
     }
 
-    // 1. Preflight: validate cart has all required data
-    const cartRes = await fetch(`${MEDUSA_BACKEND_URL}/store/carts/${cartId}`, {
+    // 1. Get verified cart total from Medusa (never trust frontend)
+    const verifiedTotal = await getVerifiedCartTotal(cartId);
+    console.log(`[PayPal] Verified cart total: $${verifiedTotal} MXN for cart ${cartId}`);
+
+    // 2. Get PayPal access token
+    const accessToken = await getPayPalAccessToken();
+
+    // 3. Create PayPal order directly via PayPal Orders API
+    const orderRes = await fetch(`${PAYPAL_API_URL}/v2/checkout/orders`, {
+      method: 'POST',
       headers: {
-        'x-publishable-api-key': MEDUSA_PUBLISHABLE_KEY,
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
+        'PayPal-Request-Id': `dsd_${cartId}_${Date.now()}`, // idempotency
       },
+      body: JSON.stringify({
+        intent: 'CAPTURE',
+        purchase_units: [
+          {
+            reference_id: cartId,
+            description: `DavidSon's Design — Orden`,
+            amount: {
+              currency_code: 'MXN',
+              value: verifiedTotal.toFixed(2),
+            },
+          },
+        ],
+        application_context: {
+          brand_name: "DavidSon's Design",
+          shipping_preference: 'NO_SHIPPING', // We handle shipping in our checkout
+          user_action: 'PAY_NOW',
+        },
+      }),
     });
 
-    if (!cartRes.ok) {
-      return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
-    }
-
-    const { cart } = await cartRes.json();
-
-    // Validate cart has items, email, shipping
-    if (!cart.items || cart.items.length === 0) {
-      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
-    }
-    if (!cart.email) {
-      return NextResponse.json({ error: 'Cart email not set' }, { status: 400 });
-    }
-    if (!cart.shipping_address) {
-      return NextResponse.json({ error: 'Shipping address not set' }, { status: 400 });
-    }
-
-    // 2. Initialize PayPal payment session via Medusa
-    const initRes = await fetch(
-      `${MEDUSA_BACKEND_URL}/store/payment-collections/${cart.payment_collection?.id}/payment-sessions`,
-      {
-        method: 'POST',
-        headers: {
-          'x-publishable-api-key': MEDUSA_PUBLISHABLE_KEY,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          provider_id: 'pp_paypal_paypal',
-        }),
-      }
-    );
-
-    if (!initRes.ok) {
-      const errorData = await initRes.json();
-      console.error('[PayPal] Init payment session error:', errorData);
+    if (!orderRes.ok) {
+      const errData = await orderRes.json();
+      console.error('[PayPal] Create order error:', JSON.stringify(errData));
       return NextResponse.json(
-        { error: 'Failed to initialize PayPal payment session' },
+        { error: 'Failed to create PayPal order', details: errData },
         { status: 500 }
       );
     }
 
-    const initData = await initRes.json();
-
-    // The payment session data should contain the PayPal order ID
-    const paymentSession = initData.payment_collection?.payment_sessions?.find(
-      (s: any) => s.provider_id === 'pp_paypal_paypal'
-    );
-
-    if (!paymentSession?.data?.id) {
-      console.error('[PayPal] No PayPal order ID in session:', initData);
-      return NextResponse.json(
-        { error: 'PayPal order ID not found in payment session' },
-        { status: 500 }
-      );
-    }
+    const orderData = await orderRes.json();
+    console.log(`[PayPal] ✅ Order created: ${orderData.id} for cart ${cartId}`);
 
     return NextResponse.json({
-      paypalOrderId: paymentSession.data.id,
-      paymentSessionId: paymentSession.id,
+      paypalOrderId: orderData.id,
     });
   } catch (error: any) {
     console.error('[PayPal] Create order error:', error);
