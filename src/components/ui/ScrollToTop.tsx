@@ -29,7 +29,7 @@ export function ScrollToTopButton() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={scrollToTop}
-          className="fixed bottom-20 md:bottom-20 left-6 z-40 bg-white text-wood-900 hover:bg-wood-900 hover:text-white p-2.5 rounded-full shadow-md pointer-events-auto flex items-center justify-center"
+          className="fixed bottom-6 left-6 z-40 bg-white text-wood-900 hover:bg-wood-900 hover:text-white p-2.5 rounded-full shadow-md pointer-events-auto flex items-center justify-center"
           aria-label="Volver arriba"
         >
           <ArrowUp size={20} />
