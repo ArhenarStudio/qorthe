@@ -1,15 +1,30 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageSquare, X, Send, Paperclip } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export const LiveChatWidget = () => {
+interface LiveChatWidgetProps {
+  footerOffset?: number;
+}
+
+const BASE_BOTTOM_MOBILE = 208; // bottom-52 = 13rem = 208px
+const BASE_BOTTOM_DESKTOP = 112; // bottom-28 = 7rem = 112px
+
+export const LiveChatWidget = ({ footerOffset = 0 }: LiveChatWidgetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   const [messages, setMessages] = useState<{ text: string; isUser: boolean; time: string }[]>([
     { text: "Hola, bienvenido a DavidSon's Design. ¿En qué podemos ayudarte hoy?", isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
   ]);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +34,6 @@ export const LiveChatWidget = () => {
     setMessages(prev => [...prev, newMsg]);
     setMessage('');
 
-    // Auto-reply simulation
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         text: "Gracias por tu mensaje. Un asesor se pondrá en contacto contigo en breve.", 
@@ -29,13 +43,17 @@ export const LiveChatWidget = () => {
     }, 1500);
   };
 
+  const baseBottom = isMobile ? BASE_BOTTOM_MOBILE : BASE_BOTTOM_DESKTOP;
+  const computedBottom = baseBottom + footerOffset;
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20, scale: 0.8 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.8 }}
       transition={{ duration: 0.3 }}
-      className="fixed bottom-52 md:bottom-28 right-6 z-50 flex flex-col items-end pointer-events-none"
+      style={{ bottom: `${computedBottom}px` }}
+      className="fixed right-6 z-50 flex flex-col items-end pointer-events-none transition-[bottom] duration-300 ease-out"
     >
       <AnimatePresence>
         {isOpen && (
@@ -55,7 +73,7 @@ export const LiveChatWidget = () => {
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-wood-900 rounded-full"></span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Soporte DavidSon's</h3>
+                  <h3 className="font-bold text-sm">Soporte DavidSon&apos;s</h3>
                   <p className="text-xs text-wood-300">En línea</p>
                 </div>
               </div>
@@ -69,7 +87,7 @@ export const LiveChatWidget = () => {
               {messages.map((msg, idx) => (
                 <div key={idx} className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.isUser ? 'bg-wood-900 text-white self-end rounded-br-none' : 'bg-white border border-wood-200 text-wood-800 self-start rounded-bl-none'}`}>
                   <p>{msg.text}</p>
-                  <span className={`text-[10px] block mt-1 ${msg.isUser ? 'text-wood-400' : 'text-wood-400'}`}>{msg.time}</span>
+                  <span className={`text-[10px] block mt-1 text-wood-400`}>{msg.time}</span>
                 </div>
               ))}
             </div>
