@@ -4,11 +4,7 @@ import React, { useState } from 'react';
 import { MessageSquare, X, Send, Paperclip } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-interface LiveChatWidgetProps {
-  footerOverlap?: number;
-}
-
-export const LiveChatWidget = ({ footerOverlap = 0 }: LiveChatWidgetProps) => {
+export const LiveChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ text: string; isUser: boolean; time: string }[]>([
@@ -30,25 +26,15 @@ export const LiveChatWidget = ({ footerOverlap = 0 }: LiveChatWidgetProps) => {
     }, 1500);
   };
 
-  // Normal: 24px from bottom. When footer visible, stay 12px above footer top.
-  const bottom = footerOverlap > 0 ? footerOverlap + 12 : 24;
-
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20, scale: 0.8 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 20, scale: 0.8 }}
-      transition={{ duration: 0.3 }}
-      style={{ bottom: `${bottom}px` }}
-      className="fixed right-6 z-50 flex flex-col items-end pointer-events-none transition-[bottom] duration-300 ease-out"
-    >
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="mb-4 bg-white w-80 sm:w-96 rounded-2xl shadow-2xl border border-wood-200 overflow-hidden pointer-events-auto origin-bottom-right"
+            className="mb-4 bg-white w-80 sm:w-96 rounded-2xl shadow-2xl border border-wood-200 overflow-hidden origin-bottom-right"
           >
             <div className="bg-wood-900 p-4 flex items-center justify-between text-white">
               <div className="flex items-center gap-3">
@@ -98,13 +84,13 @@ export const LiveChatWidget = ({ footerOverlap = 0 }: LiveChatWidgetProps) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="text-wood-900 dark:text-sand-100 hover:text-accent-gold p-2 transition-colors pointer-events-auto flex items-center justify-center relative group"
+        className="bg-white text-wood-900 hover:text-accent-gold p-2.5 rounded-full shadow-md pointer-events-auto flex items-center justify-center relative group"
       >
-        {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
+        {isOpen ? <X size={20} /> : <MessageSquare size={20} />}
         <span className="absolute right-full mr-3 bg-wood-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
           Chat en vivo
         </span>
       </motion.button>
-    </motion.div>
+    </div>
   );
 };

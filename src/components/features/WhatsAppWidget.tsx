@@ -3,38 +3,21 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
-interface WhatsAppWidgetProps {
-  footerOverlap?: number;
-}
-
-export const WhatsAppWidget = ({ footerOverlap = 0 }: WhatsAppWidgetProps) => {
-  // Normal: 64px from bottom (above LiveChat). When footer visible, stay 52px above footer top.
-  const bottom = footerOverlap > 0 ? footerOverlap + 52 : 64;
-
+export const WhatsAppWidget = () => {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20, scale: 0.8 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 20, scale: 0.8 }}
-      transition={{ duration: 0.3 }}
-      style={{ bottom: `${bottom}px` }}
-      className="fixed right-6 z-40 pointer-events-none transition-[bottom] duration-300 ease-out"
-    >
+    <div className="fixed bottom-[4.5rem] right-6 z-40">
       <motion.a
         href="https://wa.me/525512345678?text=Hola,%20me%20interesa%20uno%20de%20sus%20diseños"
         target="_blank"
         rel="noopener noreferrer"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0, opacity: 0 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="text-wood-900 dark:text-sand-100 hover:text-accent-gold p-2 transition-colors pointer-events-auto flex items-center justify-center relative group"
+        className="bg-white text-wood-900 hover:text-green-600 p-2.5 rounded-full shadow-md pointer-events-auto flex items-center justify-center relative group"
       >
         <svg 
             xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
+            width="20" 
+            height="20" 
             viewBox="0 0 24 24" 
             fill="currentColor"
             stroke="none"
@@ -45,6 +28,6 @@ export const WhatsAppWidget = ({ footerOverlap = 0 }: WhatsAppWidgetProps) => {
           WhatsApp
         </span>
       </motion.a>
-    </motion.div>
+    </div>
   );
 };

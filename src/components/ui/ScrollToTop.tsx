@@ -4,11 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-interface ScrollToTopProps {
-  footerOverlap?: number;
-}
-
-export function ScrollToTopButton({ footerOverlap = 0 }: ScrollToTopProps) {
+export function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -23,9 +19,6 @@ export function ScrollToTopButton({ footerOverlap = 0 }: ScrollToTopProps) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Normal: 24px from bottom. When footer visible, stay 12px above footer top.
-  const bottom = footerOverlap > 0 ? footerOverlap + 12 : 24;
-
   return (
     <AnimatePresence>
       {isVisible && (
@@ -36,11 +29,10 @@ export function ScrollToTopButton({ footerOverlap = 0 }: ScrollToTopProps) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={scrollToTop}
-          style={{ bottom: `${bottom}px` }}
-          className="fixed left-6 z-40 text-wood-900 dark:text-sand-100 hover:bg-wood-900 hover:text-sand-100 dark:hover:bg-sand-100 dark:hover:text-wood-900 p-2 rounded-full pointer-events-auto flex items-center justify-center group shadow-lg transition-[bottom] duration-300 ease-out"
+          className="fixed bottom-6 left-6 z-40 bg-white text-wood-900 hover:bg-wood-900 hover:text-white p-2.5 rounded-full shadow-md pointer-events-auto flex items-center justify-center"
           aria-label="Volver arriba"
         >
-          <ArrowUp size={24} />
+          <ArrowUp size={20} />
         </motion.button>
       )}
     </AnimatePresence>
