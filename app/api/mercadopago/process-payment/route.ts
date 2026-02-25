@@ -136,13 +136,16 @@ export async function POST(request: NextRequest) {
 
     // ═══════════════════════════════════════════════════════
     // GUARDRAIL 2: Server-side amount validation
+    // Medusa stores amounts in smallest currency unit (centavos for MXN)
+    // MercadoPago expects amounts in standard units (pesos for MXN)
     // ═══════════════════════════════════════════════════════
     const verifiedTotal = cart.total;
-    console.log(`[MP] Verified cart total: $${verifiedTotal} MXN`);
+    const mpAmount = verifiedTotal / 100; // Convert centavos → pesos for MP
+    console.log(`[MP] Verified cart total: ${verifiedTotal} centavos = $${mpAmount} MXN`);
 
-    if (Number(transaction_amount) !== verifiedTotal) {
+    if (Number(transaction_amount) !== mpAmount) {
       console.warn(
-        `[MP] ⚠️ Frontend amount ($${transaction_amount}) differs from verified ($${verifiedTotal}). Using verified.`
+        `[MP] ⚠️ Frontend amount ($${transaction_amount}) differs from verified ($${mpAmount}). Using verified.`
       );
     }
 
@@ -158,7 +161,7 @@ export async function POST(request: NextRequest) {
 
     const mpBody: Record<string, unknown> = {
       token,
-      transaction_amount: verifiedTotal,
+      transaction_amount: mpAmount,
       installments: Number(installments) || 1,
       payment_method_id,
       payer: {
@@ -176,7 +179,7 @@ export async function POST(request: NextRequest) {
             id: cart_id,
             title: "DavidSon's Design - Productos artesanales",
             quantity: 1,
-            unit_price: verifiedTotal,
+            unit_price: mpAmount,
           },
         ],
         payer: {
@@ -259,9 +262,9 @@ export async function POST(request: NextRequest) {
       return jsonError(`Pago no verificado. Estado: ${verified.status}`, 402);
     }
 
-    if (Math.abs(verified.transaction_amount - verifiedTotal) > 0.01) {
+    if (Math.abs(verified.transaction_amount - mpAmount) > 0.01) {
       console.error(
-        `[MP] Amount mismatch: MP=${verified.transaction_amount}, Cart=${verifiedTotal}`
+        `[MP] Amount mismatch: MP=${verified.transaction_amount}, Expected=${mpAmount}`
       );
       // Refund: amount doesn't match
       const refundResult = await attemptRefund(mpResult.id, cart_id);
@@ -275,7 +278,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[MP] ✅ Payment verified: ${mpResult.id} = $${verifiedTotal} MXN`);
+    console.log(`[MP] ✅ Payment verified: ${mpResult.id} = $${mpAmount} MXN`);
 
     // ═══════════════════════════════════════════════════════
     // STEP 3: Complete order in Medusa
