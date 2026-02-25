@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Check, Home, Package } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useCartContext } from '@/contexts/CartContext';
 
 const logoDSD = '/images/logo-dsd.png';
@@ -33,14 +34,16 @@ export const CheckoutSuccessPage = () => {
       </div>
 
       {/* Logo */}
-      <motion.img 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        src={logoDSD}
-        alt="DavidSon's Design"
-        className="h-16 w-auto mb-8 relative z-10 drop-shadow-md"
-      />
+      <Link href="/">
+        <motion.img 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          src={logoDSD}
+          alt="DavidSon's Design"
+          className="h-16 w-auto mb-8 relative z-10 drop-shadow-md cursor-pointer"
+        />
+      </Link>
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
