@@ -1,36 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 
-interface WhatsAppWidgetProps {
-  footerOffset?: number;
-}
-
-const BASE_BOTTOM_MOBILE = 272; // bottom-[17rem] = 272px
-const BASE_BOTTOM_DESKTOP = 176; // bottom-44 = 11rem = 176px
-
-export const WhatsAppWidget = ({ footerOffset = 0 }: WhatsAppWidgetProps) => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const baseBottom = isMobile ? BASE_BOTTOM_MOBILE : BASE_BOTTOM_DESKTOP;
-  const computedBottom = baseBottom + footerOffset;
-
+export const WhatsAppWidget = () => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20, scale: 0.8 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.8 }}
       transition={{ duration: 0.3 }}
-      style={{ bottom: `${computedBottom}px` }}
-      className="fixed right-6 z-40 pointer-events-none transition-[bottom] duration-300 ease-out"
+      className="fixed bottom-[17rem] md:bottom-44 right-6 z-40 pointer-events-none"
     >
       <motion.a
         href="https://wa.me/525512345678?text=Hola,%20me%20interesa%20uno%20de%20sus%20diseños"

@@ -4,39 +4,28 @@ import { useState, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-interface ScrollToTopProps {
-  footerOffset?: number;
-}
-
-// Base bottom positions (in px)
-const BASE_BOTTOM_MOBILE = 208; // bottom-52 = 13rem = 208px
-const BASE_BOTTOM_DESKTOP = 112; // bottom-28 = 7rem = 112px
-
-export function ScrollToTopButton({ footerOffset = 0 }: ScrollToTopProps) {
+export function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   useEffect(() => {
     const toggleVisibility = () => {
-      setIsVisible(window.pageYOffset > 300);
+      if (window.pageYOffset > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
     };
+
     window.addEventListener('scroll', toggleVisibility);
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   };
-
-  const baseBottom = isMobile ? BASE_BOTTOM_MOBILE : BASE_BOTTOM_DESKTOP;
-  const computedBottom = baseBottom + footerOffset;
 
   return (
     <AnimatePresence>
@@ -48,8 +37,7 @@ export function ScrollToTopButton({ footerOffset = 0 }: ScrollToTopProps) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={scrollToTop}
-          style={{ bottom: `${computedBottom}px` }}
-          className="fixed left-6 z-40 text-wood-900 dark:text-sand-100 hover:bg-wood-900 hover:text-sand-100 dark:hover:bg-sand-100 dark:hover:text-wood-900 p-2 rounded-full pointer-events-auto flex items-center justify-center group shadow-lg transition-[bottom] duration-300 ease-out"
+          className="fixed bottom-52 md:bottom-28 left-6 z-40 text-wood-900 dark:text-sand-100 hover:bg-wood-900 hover:text-sand-100 dark:hover:bg-sand-100 dark:hover:text-wood-900 p-2 rounded-full transition-all pointer-events-auto flex items-center justify-center group shadow-lg"
           aria-label="Volver arriba"
         >
           <ArrowUp size={24} />
