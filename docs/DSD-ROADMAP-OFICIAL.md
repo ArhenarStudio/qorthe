@@ -235,10 +235,18 @@ workflows/   — Vacío (no hay workflows custom)
          — STRIPE_WEBHOOK_SECRET (whsec_...) configurado en DO env vars (encrypted)
          — webhookSecret agregado a medusa-config.ts payment-stripe provider
          — Verificado: payment_intent.succeeded → HTTP 200 OK
-4.4  [ ] Configurar MercadoPago webhook en producción
-         — URL: https://[backend-url]/hooks/payment/mercadopago_mercadopago
-         — Agregar MERCADOPAGO_WEBHOOK_SECRET en DO env vars
-4.5  [ ] Verificar que webhooks crean/actualizan órdenes correctamente
+4.4  [x] Configurar MercadoPago webhook en producción — ✅ COMPLETADO 2026-02-25
+         — Endpoint: https://urchin-app-u62qc.ondigitalocean.app/hooks/payment/mercadopago_mercadopago
+         — Eventos: Pagos (payment.created, payment.updated)
+         — MERCADOPAGO_WEBHOOK_SECRET configurado en DO env vars (encrypted)
+         — webhookSecret ya leído por plugin @nicogorga en medusa-config.ts
+         — Plugin valida HMAC SHA256 (x-signature + x-request-id)
+         — Fix: convert Medusa centavos → pesos para MP transaction_amount (/100)
+         — Nota: webhooks test no se disparan consistentemente en sandbox MP
+         — Verificación completa pendiente para modo producción (Fase 15)
+4.5  [~] Verificar que webhooks crean/actualizan órdenes correctamente
+         — ✅ Stripe: payment_intent.succeeded → HTTP 200 OK (verificado en dashboard)
+         — ⏳ MercadoPago: pendiente verificación en modo producción (sandbox no dispara consistentemente)
 4.6  [x] Fix: Variables legacy de Shopify eliminadas de Vercel ✅
 ```
 
