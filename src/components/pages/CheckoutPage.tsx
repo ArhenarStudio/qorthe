@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { motion, AnimatePresence } from 'motion/react';
 import { useRouter } from 'next/navigation';
@@ -165,12 +165,15 @@ export const CheckoutPage = () => {
   const [step, setStep] = useState(1); // 1: Info & Shipping, 2: Payment
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
+  const paymentCompletedRef = useRef(false);
 
   // Cart State (from CartContext)
   const { cart, loading: cartLoading, updating: cartUpdating, subtotal: cartSubtotal, shippingTotal: cartShipping, total: cartTotal, currencyCode, updateItem: cartUpdateItem, removeItem: cartRemoveItem, clearCart } = useCartContext();
 
   // Guard: redirect to cart if empty (after loading finishes)
+  // Skip guard if payment was just completed (cart cleared intentionally)
   useEffect(() => {
+    if (paymentCompletedRef.current) return;
     if (!cartLoading && (!cart || (cart.lines?.length ?? 0) === 0)) {
       router.replace('/cart');
     }
@@ -618,6 +621,7 @@ export const CheckoutPage = () => {
                               }}
                               onPaymentSuccess={(data) => {
                                 console.log('Payment success:', data);
+                                paymentCompletedRef.current = true;
                                 clearCart();
                                 const orderId = data.order_display_id || 'pending';
                                 router.push(`/checkout/success?order=${orderId}&mp_id=${data.id}`);
@@ -650,6 +654,7 @@ export const CheckoutPage = () => {
                                 }}
                                 onPaymentSuccess={(data) => {
                                   console.log('Stripe payment success:', data);
+                                  paymentCompletedRef.current = true;
                                   clearCart();
                                   const orderId = data.order_display_id || 'pending';
                                   router.push(`/checkout/success?order=${orderId}&provider=stripe&pi=${data.payment_intent_id || ''}`);
