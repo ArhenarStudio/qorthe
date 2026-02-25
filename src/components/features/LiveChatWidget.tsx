@@ -4,7 +4,11 @@ import React, { useState } from 'react';
 import { MessageSquare, X, Send, Paperclip } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export const LiveChatWidget = () => {
+interface LiveChatWidgetProps {
+  footerOverlap?: number;
+}
+
+export const LiveChatWidget = ({ footerOverlap = 0 }: LiveChatWidgetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ text: string; isUser: boolean; time: string }[]>([
@@ -14,12 +18,9 @@ export const LiveChatWidget = () => {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
-
     const newMsg = { text: message, isUser: true, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     setMessages(prev => [...prev, newMsg]);
     setMessage('');
-
-    // Auto-reply simulation
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         text: "Gracias por tu mensaje. Un asesor se pondrá en contacto contigo en breve.", 
@@ -29,13 +30,17 @@ export const LiveChatWidget = () => {
     }, 1500);
   };
 
+  // Base: bottom-6 (24px) — lowest widget on right. When footer visible, push up.
+  const bottom = 24 + footerOverlap;
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20, scale: 0.8 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.8 }}
       transition={{ duration: 0.3 }}
-      className="fixed bottom-52 md:bottom-28 right-6 z-50 flex flex-col items-end pointer-events-none"
+      style={{ bottom: `${bottom}px` }}
+      className="fixed right-6 z-50 flex flex-col items-end pointer-events-none transition-[bottom] duration-300 ease-out"
     >
       <AnimatePresence>
         {isOpen && (
@@ -45,7 +50,6 @@ export const LiveChatWidget = () => {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="mb-4 bg-white w-80 sm:w-96 rounded-2xl shadow-2xl border border-wood-200 overflow-hidden pointer-events-auto origin-bottom-right"
           >
-            {/* Header */}
             <div className="bg-wood-900 p-4 flex items-center justify-between text-white">
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -55,7 +59,7 @@ export const LiveChatWidget = () => {
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-wood-900 rounded-full"></span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Soporte DavidSon's</h3>
+                  <h3 className="font-bold text-sm">Soporte DavidSon&apos;s</h3>
                   <p className="text-xs text-wood-300">En línea</p>
                 </div>
               </div>
@@ -63,18 +67,14 @@ export const LiveChatWidget = () => {
                 <X size={20} />
               </button>
             </div>
-
-            {/* Messages */}
             <div className="h-80 overflow-y-auto p-4 bg-sand-50 space-y-4 flex flex-col">
               {messages.map((msg, idx) => (
                 <div key={idx} className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.isUser ? 'bg-wood-900 text-white self-end rounded-br-none' : 'bg-white border border-wood-200 text-wood-800 self-start rounded-bl-none'}`}>
                   <p>{msg.text}</p>
-                  <span className={`text-[10px] block mt-1 ${msg.isUser ? 'text-wood-400' : 'text-wood-400'}`}>{msg.time}</span>
+                  <span className="text-[10px] block mt-1 text-wood-400">{msg.time}</span>
                 </div>
               ))}
             </div>
-
-            {/* Input */}
             <form onSubmit={handleSend} className="p-3 bg-white border-t border-wood-100 flex items-center gap-2">
               <button type="button" className="text-wood-400 hover:text-wood-600 p-2 rounded-full hover:bg-wood-50 transition-colors">
                 <Paperclip size={18} />
@@ -101,8 +101,6 @@ export const LiveChatWidget = () => {
         className="text-wood-900 dark:text-sand-100 hover:text-accent-gold p-2 transition-colors pointer-events-auto flex items-center justify-center relative group"
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
-        
-        {/* Tooltip */}
         <span className="absolute right-full mr-3 bg-wood-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
           Chat en vivo
         </span>

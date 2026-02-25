@@ -4,28 +4,27 @@ import { useState, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export function ScrollToTopButton() {
+interface ScrollToTopProps {
+  footerOverlap?: number;
+}
+
+export function ScrollToTopButton({ footerOverlap = 0 }: ScrollToTopProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      setIsVisible(window.pageYOffset > 300);
     };
-
     window.addEventListener('scroll', toggleVisibility);
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Base: bottom-6 (24px). When footer visible, push up.
+  const bottom = 24 + footerOverlap;
 
   return (
     <AnimatePresence>
@@ -37,7 +36,8 @@ export function ScrollToTopButton() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={scrollToTop}
-          className="fixed bottom-52 md:bottom-28 left-6 z-40 text-wood-900 dark:text-sand-100 hover:bg-wood-900 hover:text-sand-100 dark:hover:bg-sand-100 dark:hover:text-wood-900 p-2 rounded-full transition-all pointer-events-auto flex items-center justify-center group shadow-lg"
+          style={{ bottom: `${bottom}px` }}
+          className="fixed left-6 z-40 text-wood-900 dark:text-sand-100 hover:bg-wood-900 hover:text-sand-100 dark:hover:bg-sand-100 dark:hover:text-wood-900 p-2 rounded-full pointer-events-auto flex items-center justify-center group shadow-lg transition-[bottom] duration-300 ease-out"
           aria-label="Volver arriba"
         >
           <ArrowUp size={24} />
