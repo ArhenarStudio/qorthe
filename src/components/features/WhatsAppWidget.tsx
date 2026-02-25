@@ -8,8 +8,8 @@ interface WhatsAppWidgetProps {
 }
 
 export const WhatsAppWidget = ({ footerOverlap = 0 }: WhatsAppWidgetProps) => {
-  // Base: bottom-16 (64px) — above LiveChat. When footer visible, push up.
-  const bottom = 64 + footerOverlap;
+  // Normal: 64px from bottom (above LiveChat). When footer visible, stay 52px above footer top.
+  const bottom = footerOverlap > 0 ? footerOverlap + 52 : 64;
 
   return (
     <motion.div 

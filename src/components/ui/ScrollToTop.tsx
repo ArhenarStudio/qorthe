@@ -23,8 +23,8 @@ export function ScrollToTopButton({ footerOverlap = 0 }: ScrollToTopProps) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Base: bottom-6 (24px). When footer visible, push up.
-  const bottom = 24 + footerOverlap;
+  // Normal: 24px from bottom. When footer visible, stay 12px above footer top.
+  const bottom = footerOverlap > 0 ? footerOverlap + 12 : 24;
 
   return (
     <AnimatePresence>

@@ -21,6 +21,8 @@ export const FeatureWidgets = () => {
     if (!footer) return;
     const footerTop = footer.getBoundingClientRect().top;
     const viewportHeight = window.innerHeight;
+
+    // How many px of footer are visible from bottom of viewport
     if (footerTop < viewportHeight) {
       setFooterOverlap(viewportHeight - footerTop);
     } else {
