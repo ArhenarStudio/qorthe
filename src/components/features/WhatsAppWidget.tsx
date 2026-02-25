@@ -5,7 +5,7 @@ import { motion } from 'motion/react';
 
 export const WhatsAppWidget = () => {
   return (
-    <div className="fixed bottom-[4.5rem] right-6 z-40">
+    <div className="fixed bottom-[7.5rem] md:bottom-[7.5rem] right-6 z-40">
       <motion.a
         href="https://wa.me/525512345678?text=Hola,%20me%20interesa%20uno%20de%20sus%20diseños"
         target="_blank"
