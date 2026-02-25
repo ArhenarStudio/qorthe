@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════════════════════
 # DavidSon's Design — ROADMAP OFICIAL
-# Última actualización: 2026-02-24
+# Última actualización: 2026-02-25
 # ═══════════════════════════════════════════════════════════════
 
 ## ESTADO DE INFRAESTRUCTURA
@@ -215,7 +215,7 @@ workflows/   — Vacío (no hay workflows custom)
          — ✅ Shared medusa-helpers.ts (DRY: medusaFetch, getVerifiedCartTotal, completeCartToOrder)
          — ✅ MP additional_info (items, payer, shipments) para mejor tasa de aprobación
          — Commit: 4b571e3
-4.2  [ ] Test checkout e2e con MercadoPago
+4.2  [x] Test checkout e2e con MercadoPago — ✅ COMPLETADO 2026-02-25
          — Mismo flujo con MP test credentials
          — ✅ Preflight validation implementado (cart ready before payment)
          — ✅ Auto-refund if order creation fails after payment
@@ -226,7 +226,9 @@ workflows/   — Vacío (no hay workflows custom)
          — ✅ Shipping methods idempotent (no duplicates on re-navigation)
          — ✅ Cart totals from Medusa (single source of truth, no hardcoded values)
          — ✅ Checkout UX unified (1 button per provider, terms before payment)
-         — Pendiente: Test E2E con tarjeta de prueba MP
+         — ✅ Fix: paymentCompletedRef prevents empty-cart guard from hijacking redirect
+         — ✅ Test E2E con tarjeta de prueba MP (APRO) — pago + success page
+         — ✅ Test E2E con Stripe (4242) re-verificado — pago + success page
 4.3  [ ] Configurar Stripe webhook en producción
          — URL: https://[backend-url]/hooks/payment/stripe_stripe
          — Eventos: payment_intent.succeeded, payment_intent.payment_failed
