@@ -10,6 +10,7 @@ import { useCartContext } from '@/contexts/CartContext';
 import { commerce } from '@/lib/commerce';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
+import { PayPalCheckout } from '@/components/checkout/PayPalCheckout';
 import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
@@ -557,7 +558,7 @@ export const CheckoutPage = () => {
                     <h2 className="text-xl font-serif text-wood-900 mb-4">Método de Pago</h2>
                     
                     {/* Payment Method Selector */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                         {/* Mercado Pago */}
                         <label className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-300 flex items-center justify-center gap-3 h-16 ${paymentMethod === 'mercadopago' ? 'border-wood-900 bg-sand-50 shadow-md' : 'border-wood-200 hover:border-wood-400 hover:bg-wood-50'}`}>
                             <input {...register('paymentMethod')} type="radio" value="mercadopago" className="sr-only" />
@@ -568,6 +569,12 @@ export const CheckoutPage = () => {
                         <label className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-300 flex items-center justify-center gap-3 h-16 ${paymentMethod === 'stripe' ? 'border-wood-900 bg-sand-50 shadow-md' : 'border-wood-200 hover:border-wood-400 hover:bg-wood-50'}`}>
                             <input {...register('paymentMethod')} type="radio" value="stripe" className="sr-only" />
                             <img src={stripeLogo} alt="Stripe" className="h-7 w-auto object-contain" />
+                        </label>
+
+                        {/* PayPal */}
+                        <label className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-300 flex items-center justify-center gap-3 h-16 ${paymentMethod === 'paypal' ? 'border-wood-900 bg-sand-50 shadow-md' : 'border-wood-200 hover:border-wood-400 hover:bg-wood-50'}`}>
+                            <input {...register('paymentMethod')} type="radio" value="paypal" className="sr-only" />
+                            <img src={paypalLogo} alt="PayPal" className="h-7 w-auto object-contain" />
                         </label>
                     </div>
 
@@ -673,6 +680,37 @@ export const CheckoutPage = () => {
                                 </button>
                               </div>
                             </>
+                        )}
+
+                        {paymentMethod === 'paypal' && (
+                            <PayPalCheckout
+                              amount={total}
+                              cartId={cart?.id || ''}
+                              payerEmail={watchedEmail || ''}
+                              payerFirstName={watchedFirstName || ''}
+                              payerLastName={watchedLastName || ''}
+                              shippingAddress={{
+                                first_name: watchedFirstName || '',
+                                last_name: watchedLastName || '',
+                                address_1: `${watchedStreet || ''} ${watchedExterior || ''}`.trim(),
+                                address_2: watchedInterior || '',
+                                city: watchedCity || '',
+                                province: watchedState || '',
+                                postal_code: watchedZip || '',
+                                country_code: 'mx',
+                                phone: watchedPhone || '',
+                              }}
+                              onPaymentSuccess={(data) => {
+                                console.log('PayPal payment success:', data);
+                                paymentCompletedRef.current = true;
+                                clearCart();
+                                const orderId = data.order_display_id || 'pending';
+                                router.push(`/checkout/success?order=${orderId}&provider=paypal&pp=${data.paypal_order_id || ''}`);
+                              }}
+                              onPaymentError={(error) => {
+                                console.error('PayPal payment error:', error);
+                              }}
+                            />
                         )}
                       </motion.div>
                     )}
