@@ -301,9 +301,10 @@ export const medusaProvider: CommerceProvider = {
     }>(
       `/products?limit=${first}&fields=*variants,*variants.prices,*images`
     );
-    // Filter out service products (e.g. laser engraving) from public catalog
+    // Filter out service products from public catalog
+    // Uses handle-based check since Store API may not return metadata
     return data.products
-      .filter((p) => !p.metadata?.hide_from_catalog)
+      .filter((p) => p.handle !== "servicio-grabado-laser")
       .map((p) => mapProduct(p));
   },
 

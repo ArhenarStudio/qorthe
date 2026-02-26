@@ -20,3 +20,6 @@ export const LASER_SERVICE_PRICE_MXN = 70;
 
 /** SKU for identification in cart line items */
 export const LASER_SERVICE_SKU = "DSD-LASER-STD-001";
+
+/** Handle (used to filter from public catalog) */
+export const LASER_SERVICE_HANDLE = "servicio-grabado-laser";
