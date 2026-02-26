@@ -28,7 +28,7 @@ interface CartContextType {
   total: number;
   currencyCode: string;
   promotions: CommercePromotion[];
-  addItem: (variantId: string, quantity?: number) => Promise<void>;
+  addItem: (variantId: string, quantity?: number, metadata?: Record<string, unknown>) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   applyPromo: (code: string) => Promise<{ success: boolean; error?: string }>;
@@ -105,11 +105,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const addItem = useCallback(
-    async (variantId: string, quantity = 1) => {
+    async (variantId: string, quantity = 1, metadata?: Record<string, unknown>) => {
       if (!cart) return;
       try {
         setUpdating(true);
-        const updated = await commerce.addToCart(cart.id, variantId, quantity);
+        const updated = await commerce.addToCart(cart.id, variantId, quantity, metadata);
         setCart(updated);
         setIsDrawerOpen(true); // Auto-open drawer on add
       } catch (err) {

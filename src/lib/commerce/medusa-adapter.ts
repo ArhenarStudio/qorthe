@@ -117,6 +117,7 @@ interface MedusaLineItem {
     };
   };
   thumbnail?: string | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 interface MedusaPromotion {
@@ -247,6 +248,7 @@ function mapCartLine(item: MedusaLineItem, currencyCode: string): CommerceCartLi
           ? { url: item.variant.product.thumbnail, altText: item.title }
           : null,
     },
+    metadata: item.metadata ?? null,
   };
 }
 
@@ -348,16 +350,21 @@ export const medusaProvider: CommerceProvider = {
   async addToCart(
     cartId: string,
     variantId: string,
-    quantity: number
+    quantity: number,
+    metadata?: Record<string, unknown>
   ): Promise<CommerceCart> {
+    const body: Record<string, unknown> = {
+      variant_id: variantId,
+      quantity,
+    };
+    if (metadata && Object.keys(metadata).length > 0) {
+      body.metadata = metadata;
+    }
     const data = await medusaFetch<{ cart: MedusaCart }>(
       `/carts/${cartId}/line-items`,
       {
         method: "POST",
-        body: JSON.stringify({
-          variant_id: variantId,
-          quantity,
-        }),
+        body: JSON.stringify(body),
       }
     );
     return mapCart(data.cart);

@@ -15,16 +15,20 @@ import {
   Maximize
 } from 'lucide-react';
 
+import type { LaserCustomizationData } from '@/lib/commerce/types';
+
 interface LaserEngravingCustomizationProps {
   maxArea?: { width: number; height: number }; // In cm
   basePrice?: number;
+  onChange?: (data: LaserCustomizationData | null) => void;
 }
 
 type EngravingPosition = 'center' | 'bottom-right' | 'bottom-left' | 'custom';
 
 export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationProps> = ({
   maxArea = { width: 20, height: 15 }, // Default max engraving area
-  basePrice = 70
+  basePrice = 70,
+  onChange,
 }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -38,8 +42,31 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Supabase Storage upload state
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   // Price Calculation
   const currentPrice = basePrice; // Could add logic for larger sizes
+
+  // Emit current state to parent whenever relevant data changes
+  useEffect(() => {
+    if (!onChange) return;
+    if (!isEnabled) {
+      onChange(null);
+      return;
+    }
+    onChange({
+      enabled: isEnabled,
+      fileUrl: uploadedUrl,
+      fileName: file?.name ?? null,
+      widthCm: dimensions.width ? Number(dimensions.width) : null,
+      heightCm: dimensions.height ? Number(dimensions.height) : null,
+      position,
+      confirmed: isConfirmed,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnabled, uploadedUrl, file, dimensions.width, dimensions.height, position, isConfirmed]);
 
   // Clean up preview URL on unmount
   useEffect(() => {
@@ -89,22 +116,48 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
     }
   };
 
-  const handleFile = (file: File) => {
+  const handleFile = async (selectedFile: File) => {
     setErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors.file;
       return newErrors;
     });
 
-    if (validateFile(file)) {
-      setFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+    if (validateFile(selectedFile)) {
+      setFile(selectedFile);
+      setPreviewUrl(URL.createObjectURL(selectedFile));
+
+      // Upload to Supabase Storage
+      setUploading(true);
+      try {
+        const { uploadLaserDesign } = await import('@/lib/supabase/upload-laser-design');
+        const url = await uploadLaserDesign(selectedFile);
+        setUploadedUrl(url);
+      } catch (err) {
+        console.error('[LaserEngraving] Upload failed:', err);
+        setErrors(prev => ({
+          ...prev,
+          file: 'Error al subir el archivo. Intenta de nuevo.',
+        }));
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
-  const removeFile = () => {
+  const removeFile = async () => {
+    // Delete from Supabase Storage if uploaded
+    if (uploadedUrl) {
+      try {
+        const { deleteLaserDesign } = await import('@/lib/supabase/upload-laser-design');
+        await deleteLaserDesign(uploadedUrl);
+      } catch (err) {
+        console.error('[LaserEngraving] Delete failed:', err);
+      }
+    }
     setFile(null);
     setPreviewUrl(null);
+    setUploadedUrl(null);
     if (inputRef.current) inputRef.current.value = '';
   };
 
@@ -227,7 +280,15 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
                         {file.name}
                       </p>
                       <p className="text-xs text-wood-600 dark:text-sand-200 font-medium">
-                        {(file.size / 1024 / 1024).toFixed(2)} MB • Listo para procesar
+                        {(file.size / 1024 / 1024).toFixed(2)} MB • {uploading ? (
+                          <span className="inline-flex items-center gap-1 text-accent-gold">
+                            <Loader2 size={10} className="animate-spin" /> Subiendo...
+                          </span>
+                        ) : uploadedUrl ? (
+                          <span className="text-green-600 dark:text-green-400">✓ Archivo subido</span>
+                        ) : (
+                          'Listo para procesar'
+                        )}
                       </p>
                     </div>
                     <button 

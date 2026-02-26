@@ -54,6 +54,17 @@ export interface CommerceProduct {
 
 // ─── Cart Types ───
 
+/** Datos de personalización láser adjuntos a un line item */
+export interface LaserCustomizationData {
+  enabled: boolean;
+  fileUrl: string | null;
+  fileName: string | null;
+  widthCm: number | null;
+  heightCm: number | null;
+  position: 'center' | 'bottom-right' | 'bottom-left' | 'custom';
+  confirmed: boolean;
+}
+
 export interface CommerceCartLine {
   id: string;
   quantity: number;
@@ -63,6 +74,7 @@ export interface CommerceCartLine {
     price: CommerceMoney;
     image: CommerceImage | null;
   };
+  metadata?: Record<string, unknown> | null;
 }
 
 /** Promoción aplicada al carrito (viene de Medusa Promotion Module) */
@@ -111,7 +123,7 @@ export interface CommerceProvider {
   // Cart
   createCart(): Promise<string>;
   getCart(cartId: string): Promise<CommerceCart | null>;
-  addToCart(cartId: string, variantId: string, quantity: number): Promise<CommerceCart>;
+  addToCart(cartId: string, variantId: string, quantity: number, metadata?: Record<string, unknown>): Promise<CommerceCart>;
   updateCartLine(cartId: string, lineId: string, quantity: number): Promise<CommerceCart>;
   removeFromCart(cartId: string, lineId: string): Promise<CommerceCart>;
 

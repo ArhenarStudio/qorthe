@@ -2,7 +2,7 @@
 
 import React, { useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag, Loader2 } from 'lucide-react';
+import { X, Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag, Loader2, Scissors } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/contexts/CartContext';
@@ -142,12 +142,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
 
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-serif text-wood-900 dark:text-sand-100 text-lg leading-tight">{line.merchandise.productTitle}</h3>
-                          <button onClick={() => handleRemoveItem(line.id)} disabled={updating} className="text-wood-300 dark:text-wood-600 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1 -mr-2 disabled:opacity-50">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                      <div className="flex justify-between items-start">
+                      <h3 className="font-serif text-wood-900 dark:text-sand-100 text-lg leading-tight">{line.merchandise.productTitle}</h3>
+                      <button onClick={() => handleRemoveItem(line.id)} disabled={updating} className="text-wood-300 dark:text-wood-600 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1 -mr-2 disabled:opacity-50">
+                      <Trash2 className="w-4 h-4" />
+                      </button>
+                      </div>
+                        {/* Laser personalization badge */}
+                        {(line.metadata as any)?.custom_design && (
+                          <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">
+                            <Scissors className="w-3 h-3" /> Grabado láser personalizado
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between mt-2">
