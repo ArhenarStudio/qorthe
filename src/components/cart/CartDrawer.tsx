@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/contexts/CartContext';
 import { getShippingEstimate, formatPrice } from '@/config/shipping';
+import { LASER_SERVICE_VARIANT_ID } from '@/config/laser-engraving';
 import type { CommercePromotion } from '@/lib/commerce';
 
 interface CartDrawerProps {
@@ -121,17 +122,23 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                   </button>
                 </div>
               ) : (
-                lines.map((line) => (
+                lines.map((line) => {
+                  const isLaserService = line.merchandise.id === LASER_SERVICE_VARIANT_ID;
+                  return (
                   <motion.div 
                     layout
                     key={line.id} 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                    className="flex gap-4 group"
+                    className={`flex gap-4 group ${isLaserService ? 'opacity-80 pl-4 border-l-2 border-amber-300 dark:border-amber-700' : ''}`}
                   >
-                    <div className="w-24 h-24 shrink-0 overflow-hidden rounded-md bg-wood-100 dark:bg-wood-800 relative">
-                      {line.merchandise.image ? (
+                    <div className={`${isLaserService ? 'w-16 h-16' : 'w-24 h-24'} shrink-0 overflow-hidden rounded-md bg-wood-100 dark:bg-wood-800 relative`}>
+                      {isLaserService ? (
+                        <div className="w-full h-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
+                          <Scissors className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                        </div>
+                      ) : line.merchandise.image ? (
                         <img src={line.merchandise.image.url} alt={line.merchandise.productTitle} className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -143,20 +150,29 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
                       <div className="flex justify-between items-start">
-                      <h3 className="font-serif text-wood-900 dark:text-sand-100 text-lg leading-tight">{line.merchandise.productTitle}</h3>
+                      <h3 className={`font-serif text-wood-900 dark:text-sand-100 leading-tight ${isLaserService ? 'text-sm' : 'text-lg'}`}>{line.merchandise.productTitle}</h3>
                       <button onClick={() => handleRemoveItem(line.id)} disabled={updating} className="text-wood-300 dark:text-wood-600 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1 -mr-2 disabled:opacity-50">
                       <Trash2 className="w-4 h-4" />
                       </button>
                       </div>
-                        {/* Laser personalization badge */}
-                        {(line.metadata as any)?.custom_design && (
+                        {/* Laser personalization badge on the main product */}
+                        {!isLaserService && (line.metadata as any)?.custom_design && (
                           <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">
                             <Scissors className="w-3 h-3" /> Grabado láser personalizado
+                          </span>
+                        )}
+                        {/* Service label for laser engraving line */}
+                        {isLaserService && (
+                          <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                            Servicio incluido con personalización
                           </span>
                         )}
                       </div>
 
                       <div className="flex items-center justify-between mt-2">
+                        {isLaserService ? (
+                          <span className="text-xs text-wood-500 dark:text-sand-400">×{line.quantity}</span>
+                        ) : (
                         <div className="flex items-center border border-wood-200 dark:border-wood-700 rounded-md">
                           <button onClick={() => handleUpdateQuantity(line.id, line.quantity, -1)} disabled={updating || line.quantity <= 1} className="p-1 hover:bg-wood-100 dark:hover:bg-wood-800 text-wood-600 dark:text-sand-300 transition-colors disabled:opacity-30">
                             <Minus className="w-3 h-3" />
@@ -166,13 +182,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                             <Plus className="w-3 h-3" />
                           </button>
                         </div>
-                        <span className="font-medium text-wood-900 dark:text-sand-100">
+                        )}
+                        <span className={`font-medium ${isLaserService ? 'text-sm text-amber-700 dark:text-amber-400' : 'text-wood-900 dark:text-sand-100'}`}>
                           {formatPrice(line.merchandise.price.amount * line.quantity)}
                         </span>
                       </div>
                     </div>
                   </motion.div>
-                ))
+                  );
+                })
               )}
             </div>
 

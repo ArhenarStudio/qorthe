@@ -301,7 +301,10 @@ export const medusaProvider: CommerceProvider = {
     }>(
       `/products?limit=${first}&fields=*variants,*variants.prices,*images`
     );
-    return data.products.map((p) => mapProduct(p));
+    // Filter out service products (e.g. laser engraving) from public catalog
+    return data.products
+      .filter((p) => !p.metadata?.hide_from_catalog)
+      .map((p) => mapProduct(p));
   },
 
   async getProductByHandle(handle: string): Promise<CommerceProduct | null> {

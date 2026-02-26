@@ -12,6 +12,7 @@ import { useProduct, useProducts } from '../../hooks/useProducts';
 import { useCartContext } from '@/contexts/CartContext';
 import { getMetafield } from '@/lib/commerce/types';
 import type { LaserCustomizationData } from '@/lib/commerce/types';
+import { LASER_SERVICE_VARIANT_ID } from '@/config/laser-engraving';
 
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
 
@@ -71,7 +72,8 @@ export const ProductDetailPage = () => {
 
     // Build metadata if laser personalization is active
     const metadata: Record<string, unknown> = {};
-    if (laserData?.enabled && laserData.confirmed) {
+    const hasLaser = laserData?.enabled && laserData.confirmed;
+    if (hasLaser) {
       metadata.custom_design = {
         file_url: laserData.fileUrl,
         file_name: laserData.fileName,
@@ -82,11 +84,17 @@ export const ProductDetailPage = () => {
       };
     }
 
+    // Add main product
     await addItem(
       selectedVariant.id,
       quantity,
       Object.keys(metadata).length > 0 ? metadata : undefined
     );
+
+    // Auto-add laser engraving service product (1 per main product qty)
+    if (hasLaser) {
+      await addItem(LASER_SERVICE_VARIANT_ID, quantity);
+    }
   };
 
   return (
