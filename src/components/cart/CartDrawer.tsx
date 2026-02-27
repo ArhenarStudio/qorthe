@@ -156,15 +156,27 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                       </button>
                       </div>
                         {/* Laser personalization badge on the main product */}
-                        {!isLaserService && (line.metadata as any)?.custom_design && (
-                          <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">
-                            <Scissors className="w-3 h-3" /> Grabado láser personalizado
-                          </span>
-                        )}
-                        {/* Service label for laser engraving line */}
+                        {!isLaserService && ((line.metadata as any)?.custom_design || (line.metadata as any)?.custom_designs) && (() => {
+                          const designs = (line.metadata as any)?.custom_designs;
+                          const extraCount = (line.metadata as any)?.extra_design_count ?? 0;
+                          const totalDesigns = designs?.length ?? 1;
+                          return (
+                            <>
+                              <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded text-[10px] font-bold uppercase tracking-wider border border-green-200 dark:border-green-800">
+                                <Scissors className="w-3 h-3" /> Grabado láser incluido
+                              </span>
+                              {extraCount > 0 && (
+                                <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">
+                                  +{extraCount} diseño{extraCount > 1 ? 's' : ''} extra
+                                </span>
+                              )}
+                            </>
+                          );
+                        })()}
+                        {/* Service label for laser engraving extra designs */}
                         {isLaserService && (
                           <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
-                            Servicio incluido con personalización
+                            Diseño{line.quantity > 1 ? 's' : ''} adicional{line.quantity > 1 ? 'es' : ''} de grabado
                           </span>
                         )}
                       </div>

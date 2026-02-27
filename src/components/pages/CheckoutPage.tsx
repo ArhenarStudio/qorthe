@@ -356,9 +356,14 @@ export const CheckoutPage = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-wood-900 text-sm truncate">{item.merchandise.productTitle}</h4>
-                    {(item.metadata as any)?.custom_design && (
-                      <span className="inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded text-[9px] font-bold uppercase tracking-wider border border-amber-200">
-                        ✂️ Grabado láser
+                    {((item.metadata as any)?.custom_design || (item.metadata as any)?.custom_designs) && (
+                      <span className="inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.5 bg-green-50 text-green-700 rounded text-[9px] font-bold uppercase tracking-wider border border-green-200">
+                        ✂️ Grabado láser incluido
+                      </span>
+                    )}
+                    {((item.metadata as any)?.extra_design_count ?? 0) > 0 && (
+                      <span className="inline-flex items-center gap-1 mt-0.5 ml-1 px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded text-[9px] font-bold uppercase tracking-wider border border-amber-200">
+                        +{(item.metadata as any).extra_design_count} diseño{(item.metadata as any).extra_design_count > 1 ? 's' : ''} extra
                       </span>
                     )}
                     <p className="text-xs text-wood-500 mb-2">{formatPrice(item.merchandise.price.amount, currencyCode)}</p>
