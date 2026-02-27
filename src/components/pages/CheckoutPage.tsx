@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, AlertCircle } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
-import { formatPrice, getShippingEstimate } from '@/config/shipping';
+import { formatPrice } from '@/config/shipping';
 import { commerce } from '@/lib/commerce';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
@@ -181,6 +181,12 @@ export const CheckoutPage = () => {
     }
   }, [cartLoading, cart, router]);
 
+  // ─── Dynamic Shipping Options ───
+  const [shippingOptions, setShippingOptions] = useState<Array<{ id: string; name: string; amount: number; currency_code: string }>>([]);
+  const [selectedShippingOption, setSelectedShippingOption] = useState<string>('');
+  const [shippingOptionsLoading, setShippingOptionsLoading] = useState(false);
+  const [shippingOptionsError, setShippingOptionsError] = useState('');
+
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
@@ -188,19 +194,52 @@ export const CheckoutPage = () => {
   // Debounce for quantity updates
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ─── Fetch shipping options from Medusa when cart is ready ───
+  useEffect(() => {
+    if (!cart?.id) return;
+    let cancelled = false;
+    const fetchOptions = async () => {
+      setShippingOptionsLoading(true);
+      setShippingOptionsError('');
+      try {
+        const options = await commerce.getShippingOptions(cart.id);
+        if (cancelled) return;
+        setShippingOptions(options);
+        // Auto-select: if only 1 option, select it. If free shipping exists, prefer it.
+        if (options.length === 1) {
+          setSelectedShippingOption(options[0].id);
+        } else if (options.length > 1) {
+          const freeOption = options.find(o => o.amount === 0);
+          if (freeOption) {
+            setSelectedShippingOption(freeOption.id);
+          } else {
+            // Select cheapest by default
+            const cheapest = options.reduce((min, o) => o.amount < min.amount ? o : min, options[0]);
+            setSelectedShippingOption(cheapest.id);
+          }
+        }
+      } catch (err) {
+        if (cancelled) return;
+        console.error('[Checkout] Error fetching shipping options:', err);
+        setShippingOptionsError('No pudimos cargar las opciones de envío. Intenta de nuevo.');
+      } finally {
+        if (!cancelled) setShippingOptionsLoading(false);
+      }
+    };
+    fetchOptions();
+    return () => { cancelled = true; };
+  }, [cart?.id]);
+
   // Cart Calculations — 100% Medusa, single source of truth
   const subtotal = cartSubtotal;
-  // Shipping: Medusa only includes shipping in cart totals AFTER the shipping
-  // method is added (which happens in handleContinue). Before that, cartShipping
-  // is 0 which incorrectly shows "Gratis". Use the estimated shipping from
-  // config as fallback when Medusa reports 0 but subtotal doesn't qualify.
-  const shippingEstimate = getShippingEstimate(subtotal);
-  const shipping = (cartShipping > 0 || shippingEstimate.qualifiesFreeShipping)
-    ? cartShipping
-    : shippingEstimate.estimatedShipping;
-  const total = (cartShipping > 0 || shippingEstimate.qualifiesFreeShipping)
+  // Shipping: use the selected shipping option's amount as estimate before
+  // the method is actually added in Medusa (which happens in handleContinue).
+  // After handleContinue, cartShipping reflects the real Medusa value.
+  const selectedOptionAmount = shippingOptions.find(o => o.id === selectedShippingOption)?.amount ?? 0;
+  const shipping = cartShipping > 0 ? cartShipping : selectedOptionAmount;
+  const total = cartShipping > 0
     ? cartTotal
-    : (subtotal + shipping); // Before shipping method is added, calculate manually
+    : (subtotal - discountTotal + shipping);
 
   const cartItems = cart?.lines ?? [];
 
@@ -274,29 +313,27 @@ export const CheckoutPage = () => {
       // ─── IDEMPOTENT SHIPPING METHOD MANAGEMENT ───
       // Medusa v2 ACCUMULATES shipping methods (doesn't replace).
       // We must ensure exactly ONE correct shipping method exists.
-      // TODO: Phase 6 — replace hardcoded ID with dynamic shipping options
-      const SHIPPING_OPTION_ID = 'so_01KJ619T56SW3JP5JSKEAWXC5V';
+      if (!selectedShippingOption) {
+        setCheckoutError('Selecciona un método de envío.');
+        return;
+      }
       const existingMethods = await commerce.getCartShippingMethods(cart.id);
 
       const hasCorrectMethod = existingMethods.some(
-        (m) => m.shipping_option_id === SHIPPING_OPTION_ID
+        (m) => m.shipping_option_id === selectedShippingOption
       );
 
       if (existingMethods.length > 1) {
-        // Cart corrupted — multiple methods accumulated. Clean up via fresh add.
-        // Medusa replaces all when you POST a new shipping method to a cart
-        // that already has methods, but only if the cart state allows it.
         console.warn(`[Checkout] Cart has ${existingMethods.length} shipping methods (corrupted). Re-adding correct one.`);
         try {
-          await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
+          await commerce.addShippingMethod(cart.id, selectedShippingOption);
         } catch (shippingErr: unknown) {
           console.warn('[Checkout] Shipping method cleanup note:', (shippingErr as Error).message);
         }
       } else if (!hasCorrectMethod) {
-        // No method or wrong method — add the correct one
-        console.log('[Checkout] Adding shipping method...');
+        console.log('[Checkout] Adding shipping method:', selectedShippingOption);
         try {
-          await commerce.addShippingMethod(cart.id, SHIPPING_OPTION_ID);
+          await commerce.addShippingMethod(cart.id, selectedShippingOption);
         } catch (shippingErr: unknown) {
           console.warn('[Checkout] Shipping method note:', (shippingErr as Error).message);
         }
@@ -553,26 +590,64 @@ export const CheckoutPage = () => {
                     <TextAreaField label="Notas de envío (Opcional)" name="shippingNotes" placeholder="Instrucciones especiales para el repartidor (ej. timbre descompuesto, dejar en recepción...)" register={register} errors={errors} />
                   </section>
 
-                  {/* Shipping Method Section */}
+                  {/* Shipping Method Section — Dynamic from Medusa */}
                   <section className="space-y-4">
                      <h2 className="text-xl font-serif text-wood-900">Método de Envío</h2>
-                     <div className="border-2 border-wood-900 bg-sand-50 rounded-lg p-4 flex items-center justify-between cursor-pointer relative">
-                        <div className="flex items-center gap-4">
-                           <div className="w-5 h-5 rounded-full border-2 border-wood-900 flex items-center justify-center">
-                              <div className="w-2.5 h-2.5 rounded-full bg-wood-900" />
-                           </div>
-                           <div>
-                              <p className="font-bold text-wood-900 flex items-center gap-2">
-                                 <Truck className="w-4 h-4" />
-                                 Envío Estándar
-                              </p>
-                              <p className="text-xs text-wood-600 mt-0.5">3-5 días hábiles</p>
-                           </div>
-                        </div>
-                        <span className="font-bold text-wood-900">
-                           {shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}
-                        </span>
-                     </div>
+                     
+                     {shippingOptionsLoading ? (
+                       <div className="border border-wood-200 rounded-lg p-6 text-center">
+                         <div className="animate-pulse flex items-center justify-center gap-2 text-wood-500">
+                           <Truck className="w-4 h-4" />
+                           <span className="text-sm">Cargando opciones de envío...</span>
+                         </div>
+                       </div>
+                     ) : shippingOptionsError ? (
+                       <div className="bg-red-50 border border-red-200 p-4 rounded-lg flex items-start gap-3">
+                         <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                         <p className="text-sm text-red-700">{shippingOptionsError}</p>
+                       </div>
+                     ) : shippingOptions.length === 0 ? (
+                       <div className="border border-wood-200 rounded-lg p-6 text-center text-wood-500 text-sm">
+                         No hay opciones de envío disponibles para tu ubicación.
+                       </div>
+                     ) : (
+                       <div className="space-y-3">
+                         {shippingOptions.map((option) => {
+                           const isSelected = selectedShippingOption === option.id;
+                           return (
+                             <div
+                               key={option.id}
+                               onClick={() => setSelectedShippingOption(option.id)}
+                               className={`border-2 rounded-lg p-4 flex items-center justify-between cursor-pointer transition-all duration-200 ${
+                                 isSelected
+                                   ? 'border-wood-900 bg-sand-50 shadow-md'
+                                   : 'border-wood-200 hover:border-wood-400 hover:bg-wood-50'
+                               }`}
+                             >
+                               <div className="flex items-center gap-4">
+                                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                   isSelected ? 'border-wood-900' : 'border-wood-300'
+                                 }`}>
+                                   {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-wood-900" />}
+                                 </div>
+                                 <div>
+                                   <p className="font-bold text-wood-900 flex items-center gap-2">
+                                     <Truck className="w-4 h-4" />
+                                     {option.name}
+                                   </p>
+                                   <p className="text-xs text-wood-500 mt-0.5">
+                                     {option.amount === 0 ? 'Sin costo adicional' : 'Precio calculado por paquetería'}
+                                   </p>
+                                 </div>
+                               </div>
+                               <span className="font-bold text-wood-900 whitespace-nowrap">
+                                 {option.amount === 0 ? 'Gratis' : formatPrice(option.amount, option.currency_code)}
+                               </span>
+                             </div>
+                           );
+                         })}
+                       </div>
+                     )}
                   </section>
 
                   {checkoutError && (
