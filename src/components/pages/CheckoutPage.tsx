@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, AlertCircle } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
-import { formatPrice } from '@/config/shipping';
+import { formatPrice, getShippingEstimate } from '@/config/shipping';
 import { commerce } from '@/lib/commerce';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
@@ -190,8 +190,17 @@ export const CheckoutPage = () => {
 
   // Cart Calculations — 100% Medusa, single source of truth
   const subtotal = cartSubtotal;
-  const shipping = cartShipping;
-  const total = cartTotal; // Medusa already includes discount in cart.total
+  // Shipping: Medusa only includes shipping in cart totals AFTER the shipping
+  // method is added (which happens in handleContinue). Before that, cartShipping
+  // is 0 which incorrectly shows "Gratis". Use the estimated shipping from
+  // config as fallback when Medusa reports 0 but subtotal doesn't qualify.
+  const shippingEstimate = getShippingEstimate(subtotal);
+  const shipping = (cartShipping > 0 || shippingEstimate.qualifiesFreeShipping)
+    ? cartShipping
+    : shippingEstimate.estimatedShipping;
+  const total = (cartShipping > 0 || shippingEstimate.qualifiesFreeShipping)
+    ? cartTotal
+    : (subtotal + shipping); // Before shipping method is added, calculate manually
 
   const cartItems = cart?.lines ?? [];
 
