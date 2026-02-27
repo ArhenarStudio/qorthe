@@ -54,8 +54,28 @@ export interface CommerceProduct {
 
 // ─── Cart Types ───
 
+/** Un diseño individual de grabado láser */
+export interface LaserDesign {
+  id: string; // unique id per design (e.g. crypto.randomUUID())
+  fileUrl: string | null;
+  fileName: string | null;
+  widthCm: number | null;
+  heightCm: number | null;
+  position: 'center' | 'bottom-right' | 'bottom-left' | 'custom';
+  uploading: boolean;
+}
+
 /** Datos de personalización láser adjuntos a un line item */
 export interface LaserCustomizationData {
+  enabled: boolean;
+  designs: LaserDesign[];
+  confirmed: boolean;
+  /** Computed: how many extra designs above the free one */
+  extraDesignCount: number;
+}
+
+/** LEGACY — single-design shape (kept for backward compat in emails/metadata) */
+export interface LaserCustomizationDataLegacy {
   enabled: boolean;
   fileUrl: string | null;
   fileName: string | null;

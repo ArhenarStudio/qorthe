@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   UploadCloud, 
@@ -12,44 +12,54 @@ import {
   AlertCircle, 
   Info,
   Loader2,
-  Maximize
+  Maximize,
+  Plus,
+  Gift
 } from 'lucide-react';
 
-import type { LaserCustomizationData } from '@/lib/commerce/types';
+import type { LaserCustomizationData, LaserDesign } from '@/lib/commerce/types';
+import {
+  LASER_EXTRA_DESIGN_PRICE_MXN,
+  LASER_FREE_DESIGNS_PER_ORDER,
+  LASER_MAX_DESIGNS_PER_ORDER,
+  LASER_MAX_FILE_SIZE,
+  LASER_ACCEPTED_TYPES,
+} from '@/config/laser-engraving';
 
 interface LaserEngravingCustomizationProps {
-  maxArea?: { width: number; height: number }; // In cm
-  basePrice?: number;
+  maxArea?: { width: number; height: number };
   onChange?: (data: LaserCustomizationData | null) => void;
 }
 
 type EngravingPosition = 'center' | 'bottom-right' | 'bottom-left' | 'custom';
 
+function createEmptyDesign(): LaserDesign {
+  return {
+    id: crypto.randomUUID(),
+    fileUrl: null,
+    fileName: null,
+    widthCm: null,
+    heightCm: null,
+    position: 'center',
+    uploading: false,
+  };
+}
+
 export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationProps> = ({
-  maxArea = { width: 20, height: 15 }, // Default max engraving area
-  basePrice = 70,
+  maxArea = { width: 20, height: 15 },
   onChange,
 }) => {
   const [isEnabled, setIsEnabled] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  
-  const [dimensions, setDimensions] = useState({ width: '', height: '' });
-  const [position, setPosition] = useState<EngravingPosition>('center');
+  const [designs, setDesigns] = useState<LaserDesign[]>([createEmptyDesign()]);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [previews, setPreviews] = useState<Record<string, string>>({});
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
-  // Supabase Storage upload state
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const extraDesignCount = Math.max(0, designs.length - LASER_FREE_DESIGNS_PER_ORDER);
+  const extraCost = extraDesignCount * LASER_EXTRA_DESIGN_PRICE_MXN;
 
-  // Price Calculation
-  const currentPrice = basePrice; // Could add logic for larger sizes
-
-  // Emit current state to parent whenever relevant data changes
+  // Emit state to parent
   useEffect(() => {
     if (!onChange) return;
     if (!isEnabled) {
@@ -58,138 +68,114 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
     }
     onChange({
       enabled: isEnabled,
-      fileUrl: uploadedUrl,
-      fileName: file?.name ?? null,
-      widthCm: dimensions.width ? Number(dimensions.width) : null,
-      heightCm: dimensions.height ? Number(dimensions.height) : null,
-      position,
+      designs,
       confirmed: isConfirmed,
+      extraDesignCount,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEnabled, uploadedUrl, file, dimensions.width, dimensions.height, position, isConfirmed]);
+  }, [isEnabled, designs, isConfirmed, extraDesignCount]);
 
-  // Clean up preview URL on unmount
+  // Cleanup preview URLs
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      Object.values(previews).forEach(url => URL.revokeObjectURL(url));
     };
-  }, [previewUrl]);
+  }, [previews]);
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
+  const validateFile = (file: File): string | null => {
+    if (!LASER_ACCEPTED_TYPES.includes(file.type)) {
+      return 'Formato no soportado. Usa SVG, PNG o JPG.';
     }
+    if (file.size > LASER_MAX_FILE_SIZE) {
+      return 'El archivo excede los 10MB.';
+    }
+    return null;
   };
 
-  const validateFile = (file: File) => {
-    const validTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
-    const maxSize = 10 * 1024 * 1024; // 10MB
-
-    if (!validTypes.includes(file.type)) {
-      setErrors(prev => ({ ...prev, file: 'Formato no soportado. Usa SVG, PNG o JPG.' }));
-      return false;
+  const handleFile = useCallback(async (designId: string, file: File) => {
+    const error = validateFile(file);
+    if (error) {
+      setErrors(prev => ({ ...prev, [designId]: error }));
+      return;
     }
-    if (file.size > maxSize) {
-      setErrors(prev => ({ ...prev, file: 'El archivo excede los 10MB.' }));
-      return false;
+
+    setErrors(prev => { const n = { ...prev }; delete n[designId]; return n; });
+    setPreviews(prev => ({ ...prev, [designId]: URL.createObjectURL(file) }));
+
+    // Mark uploading
+    setDesigns(prev => prev.map(d =>
+      d.id === designId ? { ...d, fileName: file.name, uploading: true } : d
+    ));
+
+    try {
+      const { uploadLaserDesign } = await import('@/lib/supabase/upload-laser-design');
+      const url = await uploadLaserDesign(file);
+      setDesigns(prev => prev.map(d =>
+        d.id === designId ? { ...d, fileUrl: url, uploading: false } : d
+      ));
+    } catch {
+      setErrors(prev => ({ ...prev, [designId]: 'Error al subir. Intenta de nuevo.' }));
+      setDesigns(prev => prev.map(d =>
+        d.id === designId ? { ...d, uploading: false } : d
+      ));
     }
-    return true;
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
-    }
-  };
-
-  const handleFile = async (selectedFile: File) => {
-    setErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors.file;
-      return newErrors;
-    });
-
-    if (validateFile(selectedFile)) {
-      setFile(selectedFile);
-      setPreviewUrl(URL.createObjectURL(selectedFile));
-
-      // Upload to Supabase Storage
-      setUploading(true);
-      try {
-        const { uploadLaserDesign } = await import('@/lib/supabase/upload-laser-design');
-        const url = await uploadLaserDesign(selectedFile);
-        setUploadedUrl(url);
-      } catch (err) {
-        console.error('[LaserEngraving] Upload failed:', err);
-        setErrors(prev => ({
-          ...prev,
-          file: 'Error al subir el archivo. Intenta de nuevo.',
-        }));
-      } finally {
-        setUploading(false);
-      }
-    }
-  };
-
-  const removeFile = async () => {
-    // Delete from Supabase Storage if uploaded
-    if (uploadedUrl) {
+  const removeDesign = async (designId: string) => {
+    const design = designs.find(d => d.id === designId);
+    if (design?.fileUrl) {
       try {
         const { deleteLaserDesign } = await import('@/lib/supabase/upload-laser-design');
-        await deleteLaserDesign(uploadedUrl);
-      } catch (err) {
-        console.error('[LaserEngraving] Delete failed:', err);
-      }
+        await deleteLaserDesign(design.fileUrl);
+      } catch { /* silent */ }
     }
-    setFile(null);
-    setPreviewUrl(null);
-    setUploadedUrl(null);
-    if (inputRef.current) inputRef.current.value = '';
+    if (previews[designId]) {
+      URL.revokeObjectURL(previews[designId]);
+      setPreviews(prev => { const n = { ...prev }; delete n[designId]; return n; });
+    }
+    // If it's the only design, reset it instead of removing
+    if (designs.length === 1) {
+      setDesigns([createEmptyDesign()]);
+    } else {
+      setDesigns(prev => prev.filter(d => d.id !== designId));
+    }
   };
 
-  const handleDimensionChange = (field: 'width' | 'height', value: string) => {
-    // Allow empty or numeric
-    if (value !== '' && isNaN(Number(value))) return;
+  const addDesign = () => {
+    if (designs.length >= LASER_MAX_DESIGNS_PER_ORDER) return;
+    setDesigns(prev => [...prev, createEmptyDesign()]);
+  };
 
-    setDimensions(prev => ({ ...prev, [field]: value }));
-    
-    // Validate
+  const updateDesignDimension = (designId: string, field: 'widthCm' | 'heightCm', value: string) => {
+    if (value !== '' && isNaN(Number(value))) return;
     const numVal = Number(value);
-    const limit = field === 'width' ? maxArea.width : maxArea.height;
-    
-    if (numVal > limit) {
-      setErrors(prev => ({ 
-        ...prev, 
-        dimensions: `El tamaño excede el área permitida (${maxArea.width}cm x ${maxArea.height}cm).` 
+    const limit = field === 'widthCm' ? maxArea.width : maxArea.height;
+
+    if (value !== '' && numVal > limit) {
+      setErrors(prev => ({
+        ...prev,
+        [`${designId}_dim`]: `Excede el área permitida (${maxArea.width}cm × ${maxArea.height}cm).`,
       }));
     } else {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.dimensions;
-        return newErrors;
-      });
+      setErrors(prev => { const n = { ...prev }; delete n[`${designId}_dim`]; return n; });
     }
+
+    setDesigns(prev => prev.map(d =>
+      d.id === designId ? { ...d, [field]: value === '' ? null : numVal } : d
+    ));
+  };
+
+  const updateDesignPosition = (designId: string, position: EngravingPosition) => {
+    setDesigns(prev => prev.map(d =>
+      d.id === designId ? { ...d, position } : d
+    ));
   };
 
   return (
     <div className="w-full mb-8 rounded-xl border border-wood-200 dark:border-wood-800 bg-white dark:bg-wood-900/40 overflow-hidden transition-colors">
-      
+
       {/* Toggle Header */}
-      <div 
+      <div
         className="p-5 flex items-center justify-between cursor-pointer select-none group"
         onClick={() => setIsEnabled(!isEnabled)}
       >
@@ -198,11 +184,12 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
             {isEnabled && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
           </div>
           <span className="font-serif text-lg text-wood-900 dark:text-sand-100 font-medium">
-            Agregar grabado láser personalizado
+            Personalizar con grabado láser
           </span>
         </div>
-        <span className="font-medium text-wood-900 dark:text-sand-100">
-          +${basePrice} MXN
+        <span className="flex items-center gap-2 font-medium text-green-700 dark:text-green-400">
+          <Gift className="w-4 h-4" />
+          Incluido
         </span>
       </div>
 
@@ -215,180 +202,54 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <div className="px-6 pb-8 pt-2 space-y-8 border-t border-wood-100 dark:border-wood-800">
-              
-              {/* A. File Upload */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-baseline">
-                  <label className="text-sm font-bold uppercase tracking-wider text-wood-900 dark:text-sand-100">
-                    Sube tu diseño
-                  </label>
-                  <button className="text-xs font-medium text-wood-600 dark:text-sand-200 hover:text-wood-900 dark:hover:text-sand-100 hover:underline">
-                    Ver guía de preparación
-                  </button>
+            <div className="px-6 pb-8 pt-2 space-y-6 border-t border-wood-100 dark:border-wood-800">
+
+              {/* Info Banner */}
+              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg flex gap-3 border border-green-200 dark:border-green-800">
+                <Gift className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-green-800 dark:text-green-200">
+                    Tu primer diseño es gratis
+                  </p>
+                  <p className="text-xs text-green-700 dark:text-green-300 font-medium leading-relaxed">
+                    Incluimos un grabado personalizado con tu compra. Si deseas diseños adicionales diferentes, cada uno tiene un costo de ${LASER_EXTRA_DESIGN_PRICE_MXN} MXN.
+                  </p>
                 </div>
-
-                {!file ? (
-                  <div 
-                    className={`relative h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-center p-4 transition-all ${
-                      dragActive 
-                        ? 'border-accent-gold bg-accent-gold/5' 
-                        : 'border-wood-300 dark:border-wood-600 hover:border-wood-500 dark:hover:border-wood-400'
-                    } ${errors.file ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : ''}`}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                  >
-                    <input 
-                      ref={inputRef}
-                      type="file" 
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      onChange={handleFileChange}
-                      accept=".svg,.png,.jpg,.jpeg"
-                    />
-                    <div className="pointer-events-none space-y-2">
-                      <div className="w-10 h-10 bg-wood-200 dark:bg-wood-700 rounded-full flex items-center justify-center mx-auto text-wood-700 dark:text-sand-100">
-                        <UploadCloud size={20} />
-                      </div>
-                      <div>
-                        <p className="text-wood-900 dark:text-sand-100 font-semibold">
-                          Arrastra tu imagen aquí o haz clic
-                        </p>
-                        <p className="text-xs text-wood-600 dark:text-sand-200 font-medium mt-1">
-                          SVG, PNG, JPG (Máx. 10MB)
-                        </p>
-                      </div>
-                    </div>
-                    {errors.file && (
-                      <div className="absolute bottom-2 text-xs text-red-600 flex items-center gap-1">
-                        <AlertCircle size={12} /> {errors.file}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-4 p-4 border border-wood-200 dark:border-wood-700 rounded-lg bg-wood-50 dark:bg-wood-800/30">
-                    <div className="w-16 h-16 bg-white dark:bg-wood-900 rounded border border-wood-100 dark:border-wood-700 flex items-center justify-center overflow-hidden shrink-0">
-                      {previewUrl ? (
-                        <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
-                      ) : (
-                        <FileImage className="text-wood-400" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-wood-900 dark:text-sand-100 truncate">
-                        {file.name}
-                      </p>
-                      <p className="text-xs text-wood-600 dark:text-sand-200 font-medium">
-                        {(file.size / 1024 / 1024).toFixed(2)} MB • {uploading ? (
-                          <span className="inline-flex items-center gap-1 text-accent-gold">
-                            <Loader2 size={10} className="animate-spin" /> Subiendo...
-                          </span>
-                        ) : uploadedUrl ? (
-                          <span className="text-green-600 dark:text-green-400">✓ Archivo subido</span>
-                        ) : (
-                          'Listo para procesar'
-                        )}
-                      </p>
-                    </div>
-                    <button 
-                      onClick={removeFile}
-                      className="p-2 text-wood-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                )}
               </div>
 
-              {/* B. Dimensions */}
-              <div className="space-y-3">
-                 <label className="text-sm font-bold uppercase tracking-wider text-wood-900 dark:text-sand-100 flex items-center gap-2">
-                    <Ruler size={14} /> Dimensiones (cm)
-                  </label>
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1 space-y-1">
-                       <input 
-                          type="text" 
-                          placeholder="Ancho"
-                          value={dimensions.width}
-                          onChange={(e) => handleDimensionChange('width', e.target.value)}
-                          className="w-full bg-transparent border-b border-wood-400 dark:border-wood-500 py-2 text-wood-900 dark:text-sand-100 placeholder:text-wood-500 dark:placeholder:text-wood-400 font-medium focus:border-accent-gold focus:outline-none transition-colors"
-                       />
-                    </div>
-                    <span className="pt-2 text-wood-600 dark:text-sand-200">x</span>
-                    <div className="flex-1 space-y-1">
-                       <input 
-                          type="text" 
-                          placeholder="Alto"
-                          value={dimensions.height}
-                          onChange={(e) => handleDimensionChange('height', e.target.value)}
-                          className="w-full bg-transparent border-b border-wood-400 dark:border-wood-500 py-2 text-wood-900 dark:text-sand-100 placeholder:text-wood-500 dark:placeholder:text-wood-400 font-medium focus:border-accent-gold focus:outline-none transition-colors"
-                       />
-                    </div>
-                  </div>
-                  {errors.dimensions ? (
-                    <p className="text-xs text-red-600 font-medium mt-1">{errors.dimensions}</p>
-                  ) : (
-                    <p className="text-xs text-wood-600 dark:text-sand-200 font-medium">
-                      Área máxima disponible: {maxArea.width}cm x {maxArea.height}cm
-                    </p>
-                  )}
-              </div>
+              {/* Designs List */}
+              {designs.map((design, index) => (
+                <DesignCard
+                  key={design.id}
+                  design={design}
+                  index={index}
+                  isFree={index < LASER_FREE_DESIGNS_PER_ORDER}
+                  maxArea={maxArea}
+                  previewUrl={previews[design.id] ?? null}
+                  error={errors[design.id] ?? null}
+                  dimError={errors[`${design.id}_dim`] ?? null}
+                  canRemove={designs.length > 1}
+                  inputRef={(el) => { inputRefs.current[design.id] = el; }}
+                  onFile={(file) => handleFile(design.id, file)}
+                  onRemoveFile={() => removeDesign(design.id)}
+                  onDimensionChange={(field, val) => updateDesignDimension(design.id, field, val)}
+                  onPositionChange={(pos) => updateDesignPosition(design.id, pos)}
+                  onRemoveDesign={() => removeDesign(design.id)}
+                />
+              ))}
 
-              {/* C. Location */}
-              <div className="space-y-3">
-                <label className="text-sm font-bold uppercase tracking-wider text-wood-900 dark:text-sand-100 flex items-center gap-2">
-                  <Grid size={14} /> Ubicación
-                </label>
-                <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { id: 'center', label: 'Centro' },
-                    { id: 'bottom-left', label: 'Izq. Inf.' },
-                    { id: 'bottom-right', label: 'Der. Inf.' },
-                    { id: 'custom', label: 'Personalizado' },
-                  ].map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setPosition(opt.id as EngravingPosition)}
-                      className={`py-3 px-2 rounded border text-xs font-semibold transition-all ${
-                        position === opt.id
-                          ? 'border-accent-gold bg-accent-gold/10 text-wood-900 dark:text-sand-100 shadow-sm'
-                          : 'border-wood-300 dark:border-wood-600 text-wood-600 dark:text-sand-200 hover:border-wood-500 dark:hover:border-wood-400 hover:text-wood-900 dark:hover:text-sand-100'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                
-                {/* Custom Position Preview */}
-                <AnimatePresence>
-                  {position === 'custom' && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mt-4"
-                    >
-                      <div className="relative aspect-[3/2] bg-wood-100 dark:bg-wood-800 rounded border border-dashed border-wood-300 dark:border-wood-600 flex items-center justify-center overflow-hidden">
-                        <span className="absolute text-[10px] text-wood-400 uppercase tracking-widest top-2 left-2">Vista Previa (Arrastrar)</span>
-                        <div className="w-full h-full relative cursor-crosshair">
-                           {/* Mock Draggable Box - Just visual for now */}
-                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-12 border-2 border-accent-gold bg-accent-gold/20 flex items-center justify-center">
-                              <Maximize size={10} className="text-accent-gold opacity-70" />
-                           </div>
-                        </div>
-                      </div>
-                      <p className="text-[10px] text-center text-wood-600 dark:text-sand-200 font-medium mt-2">
-                        Arrastra el recuadro para definir la posición exacta
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              {/* Add Design Button */}
+              {designs.length < LASER_MAX_DESIGNS_PER_ORDER && (
+                <button
+                  onClick={addDesign}
+                  className="w-full py-3 border-2 border-dashed border-wood-300 dark:border-wood-600 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold text-wood-600 dark:text-sand-300 hover:border-accent-gold hover:text-accent-gold transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Agregar otro diseño (+${LASER_EXTRA_DESIGN_PRICE_MXN} MXN)
+                </button>
+              )}
 
-              {/* D. Auto-conversion Info */}
+              {/* Auto-conversion Info */}
               <div className="bg-wood-100 dark:bg-wood-800/40 p-4 rounded-lg flex gap-3 border border-wood-200 dark:border-wood-700">
                 <Info className="w-5 h-5 text-wood-700 dark:text-sand-200 shrink-0 mt-0.5" />
                 <div className="space-y-1">
@@ -398,34 +259,46 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
                   <p className="text-xs text-wood-700 dark:text-sand-200 font-medium leading-relaxed">
                     Convertiremos tu imagen a escala de grises y vectorizaremos los trazos para garantizar un grabado limpio y duradero.
                   </p>
-                  <button className="text-[10px] font-bold uppercase tracking-wider text-wood-800 dark:text-sand-100 hover:text-wood-900 hover:underline mt-2 transition-colors">
-                    Ver simulación
-                  </button>
                 </div>
               </div>
 
-              {/* E. Confirmation & Price */}
+              {/* Confirmation & Cost Summary */}
               <div className="pt-4 border-t border-wood-200 dark:border-wood-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <label className="flex items-start gap-3 cursor-pointer group">
                   <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors ${isConfirmed ? 'bg-wood-900 dark:bg-sand-100 border-wood-900 dark:border-sand-100' : 'border-wood-400 dark:border-wood-500 group-hover:border-wood-600'}`}>
                     {isConfirmed && <Check size={10} className="text-white dark:text-wood-900" strokeWidth={4} />}
                   </div>
-                  <input 
-                    type="checkbox" 
-                    className="hidden" 
+                  <input
+                    type="checkbox"
+                    className="hidden"
                     checked={isConfirmed}
                     onChange={() => setIsConfirmed(!isConfirmed)}
                   />
                   <span className="text-xs font-medium text-wood-800 dark:text-sand-200 select-none">
-                    Confirmo que mi archivo cumple con las especificaciones.
+                    Confirmo que mis archivos cumplen con las especificaciones.
                   </span>
                 </label>
 
                 <div className="text-right">
-                  <span className="block text-[10px] text-wood-600 dark:text-sand-300 font-bold uppercase tracking-widest">Costo adicional</span>
-                  <span className="text-lg font-serif font-bold text-wood-900 dark:text-sand-100">
-                    +${currentPrice} MXN
-                  </span>
+                  {extraDesignCount > 0 ? (
+                    <>
+                      <span className="block text-[10px] text-wood-600 dark:text-sand-300 font-bold uppercase tracking-widest">
+                        {extraDesignCount} diseño{extraDesignCount > 1 ? 's' : ''} adicional{extraDesignCount > 1 ? 'es' : ''}
+                      </span>
+                      <span className="text-lg font-serif font-bold text-wood-900 dark:text-sand-100">
+                        +${extraCost} MXN
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="block text-[10px] text-green-600 dark:text-green-400 font-bold uppercase tracking-widest">
+                        Grabado incluido
+                      </span>
+                      <span className="text-lg font-serif font-bold text-green-700 dark:text-green-400">
+                        Gratis
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -433,6 +306,213 @@ export const LaserEngravingCustomization: React.FC<LaserEngravingCustomizationPr
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+};
+
+// ─── Individual Design Card ─────────────────────────────
+
+interface DesignCardProps {
+  design: LaserDesign;
+  index: number;
+  isFree: boolean;
+  maxArea: { width: number; height: number };
+  previewUrl: string | null;
+  error: string | null;
+  dimError: string | null;
+  canRemove: boolean;
+  inputRef: (el: HTMLInputElement | null) => void;
+  onFile: (file: File) => void;
+  onRemoveFile: () => void;
+  onDimensionChange: (field: 'widthCm' | 'heightCm', value: string) => void;
+  onPositionChange: (position: EngravingPosition) => void;
+  onRemoveDesign: () => void;
+}
+
+const DesignCard: React.FC<DesignCardProps> = ({
+  design,
+  index,
+  isFree,
+  maxArea,
+  previewUrl,
+  error,
+  dimError,
+  canRemove,
+  inputRef,
+  onFile,
+  onRemoveFile,
+  onDimensionChange,
+  onPositionChange,
+  onRemoveDesign,
+}) => {
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(e.type === "dragenter" || e.type === "dragover");
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files?.[0]) onFile(e.dataTransfer.files[0]);
+  };
+
+  return (
+    <div className={`p-5 rounded-lg border ${isFree ? 'border-green-200 dark:border-green-800 bg-green-50/30 dark:bg-green-900/10' : 'border-amber-200 dark:border-amber-800 bg-amber-50/30 dark:bg-amber-900/10'}`}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-wood-900 dark:text-sand-100">
+            Diseño #{index + 1}
+          </span>
+          {isFree ? (
+            <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider">
+              Incluido
+            </span>
+          ) : (
+            <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider">
+              +${LASER_EXTRA_DESIGN_PRICE_MXN} MXN
+            </span>
+          )}
+        </div>
+        {canRemove && (
+          <button
+            onClick={onRemoveDesign}
+            className="p-1.5 text-wood-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+          >
+            <X size={16} />
+          </button>
+        )}
+      </div>
+
+      {/* File Upload */}
+      <div className="space-y-3 mb-4">
+        <label className="text-xs font-bold uppercase tracking-wider text-wood-900 dark:text-sand-100">
+          Sube tu diseño
+        </label>
+
+        {!design.fileName ? (
+          <div
+            className={`relative h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-center p-3 transition-all ${
+              dragActive
+                ? 'border-accent-gold bg-accent-gold/5'
+                : 'border-wood-300 dark:border-wood-600 hover:border-wood-500'
+            } ${error ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : ''}`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          >
+            <input
+              ref={(el) => {
+                fileInputRef.current = el;
+                inputRef(el);
+              }}
+              type="file"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
+              accept=".svg,.png,.jpg,.jpeg"
+            />
+            <div className="pointer-events-none space-y-1">
+              <UploadCloud size={20} className="mx-auto text-wood-500" />
+              <p className="text-sm text-wood-700 dark:text-sand-200 font-semibold">Arrastra o haz clic</p>
+              <p className="text-[10px] text-wood-500 font-medium">SVG, PNG, JPG (Máx. 10MB)</p>
+            </div>
+            {error && (
+              <div className="absolute bottom-1 text-[10px] text-red-600 flex items-center gap-1">
+                <AlertCircle size={10} /> {error}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 p-3 border border-wood-200 dark:border-wood-700 rounded-lg bg-wood-50 dark:bg-wood-800/30">
+            <div className="w-12 h-12 bg-white dark:bg-wood-900 rounded border border-wood-100 dark:border-wood-700 flex items-center justify-center overflow-hidden shrink-0">
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
+              ) : (
+                <FileImage className="text-wood-400" size={18} />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-wood-900 dark:text-sand-100 truncate">{design.fileName}</p>
+              <p className="text-[10px] text-wood-600 dark:text-sand-200 font-medium">
+                {design.uploading ? (
+                  <span className="inline-flex items-center gap-1 text-accent-gold">
+                    <Loader2 size={10} className="animate-spin" /> Subiendo...
+                  </span>
+                ) : design.fileUrl ? (
+                  <span className="text-green-600 dark:text-green-400">✓ Subido</span>
+                ) : (
+                  'Procesando...'
+                )}
+              </p>
+            </div>
+            <button onClick={onRemoveFile} className="p-1.5 text-wood-400 hover:text-red-500 rounded-full transition-colors">
+              <X size={16} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Dimensions */}
+      <div className="space-y-2 mb-4">
+        <label className="text-xs font-bold uppercase tracking-wider text-wood-900 dark:text-sand-100 flex items-center gap-1.5">
+          <Ruler size={12} /> Dimensiones (cm)
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Ancho"
+            value={design.widthCm ?? ''}
+            onChange={(e) => onDimensionChange('widthCm', e.target.value)}
+            className="flex-1 bg-transparent border-b border-wood-400 dark:border-wood-500 py-1.5 text-sm text-wood-900 dark:text-sand-100 placeholder:text-wood-400 font-medium focus:border-accent-gold focus:outline-none transition-colors"
+          />
+          <span className="text-wood-500 text-xs">×</span>
+          <input
+            type="text"
+            placeholder="Alto"
+            value={design.heightCm ?? ''}
+            onChange={(e) => onDimensionChange('heightCm', e.target.value)}
+            className="flex-1 bg-transparent border-b border-wood-400 dark:border-wood-500 py-1.5 text-sm text-wood-900 dark:text-sand-100 placeholder:text-wood-400 font-medium focus:border-accent-gold focus:outline-none transition-colors"
+          />
+        </div>
+        {dimError ? (
+          <p className="text-[10px] text-red-600 font-medium">{dimError}</p>
+        ) : (
+          <p className="text-[10px] text-wood-500 font-medium">Máx: {maxArea.width}cm × {maxArea.height}cm</p>
+        )}
+      </div>
+
+      {/* Position */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-wood-900 dark:text-sand-100 flex items-center gap-1.5">
+          <Grid size={12} /> Ubicación
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { id: 'center', label: 'Centro' },
+            { id: 'bottom-left', label: 'Izq. Inf.' },
+            { id: 'bottom-right', label: 'Der. Inf.' },
+            { id: 'custom', label: 'Personalizado' },
+          ].map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => onPositionChange(opt.id as EngravingPosition)}
+              className={`py-2 px-1 rounded border text-[10px] font-semibold transition-all ${
+                design.position === opt.id
+                  ? 'border-accent-gold bg-accent-gold/10 text-wood-900 dark:text-sand-100'
+                  : 'border-wood-300 dark:border-wood-600 text-wood-500 hover:border-wood-400'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

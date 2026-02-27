@@ -72,16 +72,33 @@ export const ProductDetailPage = () => {
 
     // Build metadata if laser personalization is active
     const metadata: Record<string, unknown> = {};
-    const hasLaser = laserData?.enabled && laserData.confirmed;
+    const hasLaser = laserData?.enabled && laserData.confirmed && laserData.designs.length > 0;
     if (hasLaser) {
-      metadata.custom_design = {
-        file_url: laserData.fileUrl,
-        file_name: laserData.fileName,
-        width_cm: laserData.widthCm,
-        height_cm: laserData.heightCm,
-        position: laserData.position,
-        engraving_price: 70,
-      };
+      // Store all designs in metadata
+      metadata.custom_designs = laserData.designs
+        .filter(d => d.fileUrl) // only uploaded designs
+        .map((d, idx) => ({
+          design_number: idx + 1,
+          file_url: d.fileUrl,
+          file_name: d.fileName,
+          width_cm: d.widthCm,
+          height_cm: d.heightCm,
+          position: d.position,
+          is_free: idx === 0,
+        }));
+      // Legacy compat: also store first design as custom_design
+      const first = laserData.designs[0];
+      if (first?.fileUrl) {
+        metadata.custom_design = {
+          file_url: first.fileUrl,
+          file_name: first.fileName,
+          width_cm: first.widthCm,
+          height_cm: first.heightCm,
+          position: first.position,
+          engraving_price: 0, // first design is free
+        };
+      }
+      metadata.extra_design_count = laserData.extraDesignCount;
     }
 
     // Add main product
@@ -91,9 +108,9 @@ export const ProductDetailPage = () => {
       Object.keys(metadata).length > 0 ? metadata : undefined
     );
 
-    // Auto-add laser engraving service product (1 per main product qty)
-    if (hasLaser) {
-      await addItem(LASER_SERVICE_VARIANT_ID, quantity);
+    // Auto-add laser engraving service ONLY for extra designs (2nd, 3rd, etc)
+    if (hasLaser && laserData.extraDesignCount > 0) {
+      await addItem(LASER_SERVICE_VARIANT_ID, laserData.extraDesignCount);
     }
   };
 
