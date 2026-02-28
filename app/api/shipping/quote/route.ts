@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
           shipment: { carrier, type: 1 },
         };
 
-        console.log(`[Shipping Quote] Quoting ${carrier} to CP ${body.postalCode}`);
+        console.log(`[Shipping Quote] Quoting ${carrier} to CP ${body.postalCode} via ${ENVIA_BASE_URL} (key: ${ENVIA_API_KEY.slice(0, 8)}...)`);
 
         const resp = await fetch(`${ENVIA_BASE_URL}/ship/rate/`, {
           method: "POST",
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (!resp.ok || !data.data || data.data.length === 0) {
-          console.warn(`[Shipping Quote] No rates for ${carrier} (${resp.status}):`, data.meta || data.error || data.message);
+          console.warn(`[Shipping Quote] No rates for ${carrier} (${resp.status}):`, JSON.stringify(data).slice(0, 500));
           return null;
         }
 
