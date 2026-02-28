@@ -486,12 +486,14 @@ export const medusaProvider: CommerceProvider = {
 
   async getShippingOptions(
     cartId: string
-  ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string }>> {
+  ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string; price_type: string; data: Record<string, unknown> | null }>> {
     const data = await medusaFetch<{
       shipping_options: Array<{
         id: string;
         name: string;
         amount: number;
+        price_type: string;
+        data: Record<string, unknown> | null;
         prices: Array<{ amount: number; currency_code: string }>;
       }>;
     }>(`/shipping-options?cart_id=${cartId}`);
@@ -500,6 +502,8 @@ export const medusaProvider: CommerceProvider = {
       name: so.name,
       amount: so.amount ?? so.prices?.[0]?.amount ?? 0,
       currency_code: so.prices?.[0]?.currency_code ?? "mxn",
+      price_type: so.price_type ?? "flat",
+      data: so.data ?? null,
     }));
   },
 

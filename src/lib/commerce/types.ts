@@ -169,7 +169,7 @@ export interface CommerceProvider {
   getCartShippingMethods(cartId: string): Promise<Array<{ id: string; shipping_option_id: string }>>;
   getShippingOptions(
     cartId: string
-  ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string }>>;
+  ): Promise<Array<{ id: string; name: string; amount: number; currency_code: string; price_type: string; data: Record<string, unknown> | null }>>;
 
   // Customer sync (auth stays in Supabase, this syncs to commerce backend)
   createCustomer(

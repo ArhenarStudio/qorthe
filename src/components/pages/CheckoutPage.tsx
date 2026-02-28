@@ -182,7 +182,8 @@ export const CheckoutPage = () => {
   }, [cartLoading, cart, router]);
 
   // ─── Dynamic Shipping Options ───
-  const [shippingOptions, setShippingOptions] = useState<Array<{ id: string; name: string; amount: number; currency_code: string }>>([]);
+  type ShippingOption = { id: string; name: string; amount: number; currency_code: string; price_type: string; data: Record<string, unknown> | null };
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedShippingOption, setSelectedShippingOption] = useState<string>('');
   const [shippingOptionsLoading, setShippingOptionsLoading] = useState(false);
   const [shippingOptionsError, setShippingOptionsError] = useState('');
@@ -195,6 +196,7 @@ export const CheckoutPage = () => {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ─── Fetch shipping options from Medusa when cart is ready ───
+  const [allShippingOptions, setAllShippingOptions] = useState<ShippingOption[]>([]);
   useEffect(() => {
     if (!cart?.id) return;
     let cancelled = false;
@@ -204,20 +206,7 @@ export const CheckoutPage = () => {
       try {
         const options = await commerce.getShippingOptions(cart.id);
         if (cancelled) return;
-        setShippingOptions(options);
-        // Auto-select: if only 1 option, select it. If free shipping exists, prefer it.
-        if (options.length === 1) {
-          setSelectedShippingOption(options[0].id);
-        } else if (options.length > 1) {
-          const freeOption = options.find(o => o.amount === 0);
-          if (freeOption) {
-            setSelectedShippingOption(freeOption.id);
-          } else {
-            // Select cheapest by default
-            const cheapest = options.reduce((min, o) => o.amount < min.amount ? o : min, options[0]);
-            setSelectedShippingOption(cheapest.id);
-          }
-        }
+        setAllShippingOptions(options);
       } catch (err) {
         if (cancelled) return;
         console.error('[Checkout] Error fetching shipping options:', err);
@@ -230,12 +219,54 @@ export const CheckoutPage = () => {
     return () => { cancelled = true; };
   }, [cart?.id]);
 
+  // ─── Filter shipping options based on postal code + subtotal ───
+  const HERMOSILLO_OPTION_ID = 'so_01KJGHMC9AD3SGSATMP5GZ0QCQ';
+  const FREE_SHIPPING_OPTION_ID = 'so_01KJ61A3JQW6X3RXS186XT17R1';
+  const FREE_SHIPPING_THRESHOLD = 2500;
+
+  useEffect(() => {
+    const zip = watchedZip?.trim() || '';
+    const isHermosillo = /^839\d{2}$/.test(zip) || /^83[0-8]\d{2}$/.test(zip) || zip.startsWith('83');
+    // More precise: Hermosillo CPs are 83000-83999
+    const isHermosilloCP = zip.length === 5 && parseInt(zip) >= 83000 && parseInt(zip) <= 83999;
+
+    const filtered = allShippingOptions.filter(option => {
+      // Filter Hermosillo: only show if CP is 83000-83999
+      if (option.id === HERMOSILLO_OPTION_ID && !isHermosilloCP) return false;
+      // Filter Free Shipping: only show if subtotal qualifies
+      if (option.id === FREE_SHIPPING_OPTION_ID && cartSubtotal < FREE_SHIPPING_THRESHOLD) return false;
+      return true;
+    });
+
+    setShippingOptions(filtered);
+
+    // Auto-select logic
+    if (filtered.length > 0) {
+      const currentStillValid = filtered.some(o => o.id === selectedShippingOption);
+      if (!currentStillValid) {
+        // Prefer flat-price options over calculated
+        const flatOptions = filtered.filter(o => o.price_type === 'flat');
+        if (flatOptions.length > 0) {
+          // Prefer free, then cheapest flat
+          const freeOpt = flatOptions.find(o => o.amount === 0);
+          setSelectedShippingOption(freeOpt ? freeOpt.id : flatOptions[0].id);
+        } else {
+          setSelectedShippingOption(filtered[0].id);
+        }
+      }
+    } else {
+      setSelectedShippingOption('');
+    }
+  }, [allShippingOptions, watchedZip, cartSubtotal, selectedShippingOption]);
+
   // Cart Calculations — 100% Medusa, single source of truth
   const subtotal = cartSubtotal;
   // Shipping: use the selected shipping option's amount as estimate before
   // the method is actually added in Medusa (which happens in handleContinue).
-  // After handleContinue, cartShipping reflects the real Medusa value.
-  const selectedOptionAmount = shippingOptions.find(o => o.id === selectedShippingOption)?.amount ?? 0;
+  // For calculated options (Envia), amount is 0 until Medusa processes it.
+  const selectedOption = shippingOptions.find(o => o.id === selectedShippingOption);
+  const isCalculatedShipping = selectedOption?.price_type === 'calculated';
+  const selectedOptionAmount = selectedOption?.amount ?? 0;
   const shipping = cartShipping > 0 ? cartShipping : selectedOptionAmount;
   const total = cartShipping > 0
     ? cartTotal
@@ -475,7 +506,7 @@ export const CheckoutPage = () => {
            {/* Totals */}
            <div className="space-y-3 pt-6 border-t border-wood-200 text-sm">
               <div className="flex justify-between text-wood-600"><span>Subtotal</span><span>{formatPrice(subtotal, currencyCode)}</span></div>
-              <div className="flex justify-between text-wood-600"><span>Envío</span><span>{shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}</span></div>
+              <div className="flex justify-between text-wood-600"><span>Envío</span><span>{isCalculatedShipping && cartShipping === 0 ? 'Por cotizar' : shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}</span></div>
               {discountTotal > 0 && <div className="flex justify-between text-green-700 font-medium"><span>Descuento</span><span>-{formatPrice(discountTotal, currencyCode)}</span></div>}
               <div className="flex justify-between text-xl font-serif text-wood-900 pt-4 border-t border-wood-200 items-baseline"><span>Total</span><span className="font-bold">{formatPrice(total, currencyCode)}</span></div>
            </div>
@@ -614,6 +645,7 @@ export const CheckoutPage = () => {
                        <div className="space-y-3">
                          {shippingOptions.map((option) => {
                            const isSelected = selectedShippingOption === option.id;
+                           const isCalculated = option.price_type === 'calculated';
                            return (
                              <div
                                key={option.id}
@@ -636,12 +668,20 @@ export const CheckoutPage = () => {
                                      {option.name}
                                    </p>
                                    <p className="text-xs text-wood-500 mt-0.5">
-                                     {option.amount === 0 ? 'Sin costo adicional' : 'Precio calculado por paquetería'}
+                                     {isCalculated
+                                       ? 'Precio calculado al confirmar dirección'
+                                       : option.amount === 0
+                                         ? 'Sin costo adicional'
+                                         : 'Tarifa fija'}
                                    </p>
                                  </div>
                                </div>
-                               <span className="font-bold text-wood-900 whitespace-nowrap">
-                                 {option.amount === 0 ? 'Gratis' : formatPrice(option.amount, option.currency_code)}
+                               <span className={`font-bold whitespace-nowrap ${isCalculated ? 'text-wood-500 text-sm' : 'text-wood-900'}`}>
+                                 {isCalculated
+                                   ? 'Por cotizar'
+                                   : option.amount === 0
+                                     ? 'Gratis'
+                                     : formatPrice(option.amount, option.currency_code)}
                                </span>
                              </div>
                            );
