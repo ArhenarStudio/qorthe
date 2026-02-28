@@ -226,6 +226,7 @@ export const CheckoutPage = () => {
 
   useEffect(() => {
     const zip = watchedZip?.trim() || '';
+    console.log('[Checkout Quote] Effect fired:', { zip, allShippingOptionsCount: allShippingOptions.length, lastQuoted: lastQuotedZipRef.current });
     // Only quote when we have a 5-digit Mexican postal code
     if (zip.length !== 5 || !/^\d{5}$/.test(zip)) return;
     // Don't re-quote the same CP
