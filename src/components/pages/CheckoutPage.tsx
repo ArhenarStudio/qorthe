@@ -219,6 +219,60 @@ export const CheckoutPage = () => {
     return () => { cancelled = true; };
   }, [cart?.id]);
 
+  // ─── Envia Rate Quotes — fetch real prices when CP is entered ───
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const quoteDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastQuotedZipRef = useRef('');
+
+  useEffect(() => {
+    const zip = watchedZip?.trim() || '';
+    // Only quote when we have a 5-digit Mexican postal code
+    if (zip.length !== 5 || !/^\d{5}$/.test(zip)) return;
+    // Don't re-quote the same CP
+    if (zip === lastQuotedZipRef.current) return;
+    // Must have options loaded from Medusa first
+    if (allShippingOptions.length === 0) return;
+
+    // Debounce 600ms to avoid spamming while typing
+    if (quoteDebounceRef.current) clearTimeout(quoteDebounceRef.current);
+    quoteDebounceRef.current = setTimeout(async () => {
+      setQuoteLoading(true);
+      try {
+        const resp = await fetch('/api/shipping/quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            postalCode: zip,
+            city: watchedCity || '',
+            state: watchedState || '',
+            country: 'MX',
+            weight: 3, // TODO: calculate from cart items
+            declaredValue: cartSubtotal || 1000,
+          }),
+        });
+        const data = await resp.json();
+        if (data.quotes && data.quotes.length > 0) {
+          lastQuotedZipRef.current = zip;
+          // Merge Envia quotes into allShippingOptions
+          setAllShippingOptions(prev => prev.map(option => {
+            if (option.price_type !== 'calculated') return option;
+            const quote = data.quotes.find((q: any) => q.shippingOptionId === option.id);
+            if (quote) {
+              return { ...option, amount: Math.round(quote.totalPrice) };
+            }
+            return option;
+          }));
+        }
+      } catch (err) {
+        console.warn('[Checkout] Envia quote error:', err);
+      } finally {
+        setQuoteLoading(false);
+      }
+    }, 600);
+
+    return () => { if (quoteDebounceRef.current) clearTimeout(quoteDebounceRef.current); };
+  }, [watchedZip, watchedCity, watchedState, allShippingOptions.length, cartSubtotal]);
+
   // ─── Filter shipping options based on postal code + subtotal ───
   const HERMOSILLO_OPTION_ID = 'so_01KJGHMC9AD3SGSATMP5GZ0QCQ';
   const FREE_SHIPPING_OPTION_ID = 'so_01KJ61A3JQW6X3RXS186XT17R1';
@@ -506,7 +560,7 @@ export const CheckoutPage = () => {
            {/* Totals */}
            <div className="space-y-3 pt-6 border-t border-wood-200 text-sm">
               <div className="flex justify-between text-wood-600"><span>Subtotal</span><span>{formatPrice(subtotal, currencyCode)}</span></div>
-              <div className="flex justify-between text-wood-600"><span>Envío</span><span>{isCalculatedShipping && cartShipping === 0 ? 'Por cotizar' : shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}</span></div>
+              <div className="flex justify-between text-wood-600"><span>Envío</span><span>{quoteLoading ? 'Cotizando...' : isCalculatedShipping && shipping === 0 ? 'Por cotizar' : shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}</span></div>
               {discountTotal > 0 && <div className="flex justify-between text-green-700 font-medium"><span>Descuento</span><span>-{formatPrice(discountTotal, currencyCode)}</span></div>}
               <div className="flex justify-between text-xl font-serif text-wood-900 pt-4 border-t border-wood-200 items-baseline"><span>Total</span><span className="font-bold">{formatPrice(total, currencyCode)}</span></div>
            </div>
@@ -669,16 +723,22 @@ export const CheckoutPage = () => {
                                    </p>
                                    <p className="text-xs text-wood-500 mt-0.5">
                                      {isCalculated
-                                       ? 'Precio calculado al confirmar dirección'
+                                       ? option.amount > 0
+                                         ? `${option.name.includes('DHL') ? 'Express' : 'Terrestre'} — precio estimado`
+                                         : 'Ingresa tu C.P. para cotizar'
                                        : option.amount === 0
                                          ? 'Sin costo adicional'
                                          : 'Tarifa fija'}
                                    </p>
                                  </div>
                                </div>
-                               <span className={`font-bold whitespace-nowrap ${isCalculated ? 'text-wood-500 text-sm' : 'text-wood-900'}`}>
+                               <span className={`font-bold whitespace-nowrap ${isCalculated && option.amount === 0 ? 'text-wood-400 text-sm' : 'text-wood-900'}`}>
                                  {isCalculated
-                                   ? 'Por cotizar'
+                                   ? quoteLoading
+                                     ? 'Cotizando...'
+                                     : option.amount > 0
+                                       ? formatPrice(option.amount, option.currency_code)
+                                       : 'Por cotizar'
                                    : option.amount === 0
                                      ? 'Gratis'
                                      : formatPrice(option.amount, option.currency_code)}
