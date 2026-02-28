@@ -137,17 +137,20 @@ export async function POST(request: NextRequest) {
         }
 
         // Get cheapest service for this carrier
+        // Envia API uses camelCase (totalPrice) not snake_case (total_price)
         const cheapest = data.data.reduce((min: any, rate: any) =>
-          rate.total_price < min.total_price ? rate : min
+          (rate.totalPrice || rate.total_price) < (min.totalPrice || min.total_price) ? rate : min
         );
+
+        const price = cheapest.totalPrice || cheapest.total_price || 0;
 
         return {
           carrier,
           shippingOptionId: CARRIER_OPTION_MAP[carrier] || "",
           service: cheapest.service || carrier,
-          totalPrice: cheapest.total_price,
-          deliveryDays: cheapest.delivery_estimate?.days,
-          deliveryEstimate: cheapest.delivery_estimate?.label || cheapest.delivery_estimate?.date,
+          totalPrice: price,
+          deliveryDays: cheapest.deliveryDate?.dateDifference || cheapest.delivery_estimate?.days,
+          deliveryEstimate: cheapest.deliveryEstimate || cheapest.delivery_estimate?.label || cheapest.deliveryDate?.date,
         };
       } catch (err: any) {
         console.warn(`[Shipping Quote] Error quoting ${carrier}:`, err.message);
