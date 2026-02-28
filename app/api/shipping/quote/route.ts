@@ -17,6 +17,70 @@ import { NextRequest, NextResponse } from "next/server";
 const ENVIA_API_KEY = process.env.ENVIA_API_KEY || "";
 const ENVIA_BASE_URL = process.env.ENVIA_BASE_URL || "https://api-test.envia.com";
 
+// ─── Mexican State Name → Envia 2-letter Code ───
+// Envia API requires short state codes, not full names.
+const STATE_CODE_MAP: Record<string, string> = {
+  'aguascalientes': 'AG',
+  'baja california': 'BC',
+  'baja california sur': 'BS',
+  'campeche': 'CM',
+  'chiapas': 'CS',
+  'chihuahua': 'CH',
+  'ciudad de méxico': 'DF',
+  'ciudad de mexico': 'DF',
+  'cdmx': 'DF',
+  'coahuila': 'CO',
+  'coahuila de zaragoza': 'CO',
+  'colima': 'CL',
+  'durango': 'DG',
+  'guanajuato': 'GT',
+  'guerrero': 'GR',
+  'hidalgo': 'HG',
+  'jalisco': 'JA',
+  'méxico': 'EM',
+  'mexico': 'EM',
+  'estado de méxico': 'EM',
+  'estado de mexico': 'EM',
+  'michoacán': 'MI',
+  'michoacan': 'MI',
+  'michoacán de ocampo': 'MI',
+  'michoacan de ocampo': 'MI',
+  'morelos': 'MO',
+  'nayarit': 'NA',
+  'nuevo león': 'NL',
+  'nuevo leon': 'NL',
+  'oaxaca': 'OA',
+  'puebla': 'PU',
+  'querétaro': 'QT',
+  'queretaro': 'QT',
+  'quintana roo': 'QR',
+  'san luis potosí': 'SL',
+  'san luis potosi': 'SL',
+  'sinaloa': 'SI',
+  'sonora': 'SO',
+  'tabasco': 'TB',
+  'tamaulipas': 'TM',
+  'tlaxcala': 'TL',
+  'veracruz': 'VE',
+  'veracruz de ignacio de la llave': 'VE',
+  'yucatán': 'YU',
+  'yucatan': 'YU',
+  'zacatecas': 'ZA',
+};
+
+/** Convert state name to 2-letter Envia code */
+function toStateCode(state: string): string {
+  if (!state) return '';
+  const trimmed = state.trim();
+  // Already a 2-letter code?
+  if (/^[A-Z]{2}$/.test(trimmed)) return trimmed;
+  const mapped = STATE_CODE_MAP[trimmed.toLowerCase()];
+  if (mapped) return mapped;
+  // Fallback: return first 2 chars uppercased (better than sending full name)
+  console.warn(`[Shipping Quote] Unknown state "${trimmed}", using first 2 chars`);
+  return trimmed.slice(0, 2).toUpperCase();
+}
+
 // Origin: DavidSon's Design workshop in Hermosillo
 const ORIGIN = {
   name: "DavidSon's Design",
@@ -76,13 +140,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const stateCode = toStateCode(body.state || '');
     const destination = {
       name: "Cliente",
       phone: "0000000000",
       street: "N/A",
       number: "",
       city: body.city || "",
-      state: body.state || "",
+      state: stateCode,
       country: (body.country || "MX").toUpperCase(),
       postalCode: body.postalCode,
     };
@@ -110,7 +175,7 @@ export async function POST(request: NextRequest) {
           shipment: { carrier, type: 1 },
         };
 
-        console.log(`[Shipping Quote] Quoting ${carrier} to CP ${body.postalCode} via ${ENVIA_BASE_URL} (key: ${ENVIA_API_KEY.slice(0, 8)}...)`);
+        console.log(`[Shipping Quote] Quoting ${carrier} to CP ${body.postalCode}, state=${stateCode} via ${ENVIA_BASE_URL} (key: ${ENVIA_API_KEY.slice(0, 8)}...)`);
 
         const resp = await fetch(`${ENVIA_BASE_URL}/ship/rate/`, {
           method: "POST",
