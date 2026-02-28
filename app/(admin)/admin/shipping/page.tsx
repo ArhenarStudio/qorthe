@@ -31,7 +31,8 @@ import {
   FileText,
 } from "lucide-react";
 
-const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "";
+// Use frontend API proxy routes (handles Medusa admin auth server-side)
+const API_BASE = ""; // Same origin — /api/admin/*
 
 // ─── Types ───
 
@@ -146,9 +147,7 @@ export default function AdminShippingPage() {
     setLoading(true);
     setError(null);
     try {
-      const resp = await fetch(`${MEDUSA_URL}/admin/orders/pending-shipment`, {
-        credentials: "include",
-      });
+      const resp = await fetch(`${API_BASE}/api/admin/orders`);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
       setPendingOrders(data.pending || []);
@@ -171,9 +170,8 @@ export default function AdminShippingPage() {
     setGeneratingLabel(order.id);
 
     try {
-      const resp = await fetch(`${MEDUSA_URL}/admin/fulfillment/generate-label`, {
+      const resp = await fetch(`${API_BASE}/api/admin/fulfillment`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           order_id: order.id,
