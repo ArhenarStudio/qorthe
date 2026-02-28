@@ -15,7 +15,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const ENVIA_API_KEY = process.env.ENVIA_API_KEY || "";
-const ENVIA_BASE_URL = "https://api.envia.com";
+const ENVIA_BASE_URL = process.env.ENVIA_BASE_URL || "https://api-test.envia.com";
 
 // Origin: DavidSon's Design workshop in Hermosillo
 const ORIGIN = {
