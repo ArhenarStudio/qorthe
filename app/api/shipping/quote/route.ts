@@ -103,24 +103,36 @@ export async function POST(request: NextRequest) {
     const carriers = ["estafeta", "dhl", "fedex"];
     const quotePromises = carriers.map(async (carrier): Promise<CarrierQuote | null> => {
       try {
+        const requestBody = {
+          origin: ORIGIN,
+          destination,
+          packages: [pkg],
+          shipment: { carrier, type: 1 },
+        };
+
+        console.log(`[Shipping Quote] Quoting ${carrier} to CP ${body.postalCode}`);
+
         const resp = await fetch(`${ENVIA_BASE_URL}/ship/rate/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${ENVIA_API_KEY}`,
           },
-          body: JSON.stringify({
-            origin: ORIGIN,
-            destination,
-            packages: [pkg],
-            shipment: { carrier, type: 1 },
-          }),
+          body: JSON.stringify(requestBody),
         });
 
-        const data = await resp.json();
+        const rawText = await resp.text();
+
+        let data: any;
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          console.error(`[Shipping Quote] Non-JSON response for ${carrier} (${resp.status}):`, rawText.slice(0, 200));
+          return null;
+        }
 
         if (!resp.ok || !data.data || data.data.length === 0) {
-          console.warn(`[Shipping Quote] No rates for ${carrier}:`, data.meta || data.error);
+          console.warn(`[Shipping Quote] No rates for ${carrier} (${resp.status}):`, data.meta || data.error || data.message);
           return null;
         }
 
