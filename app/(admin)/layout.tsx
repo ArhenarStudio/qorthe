@@ -1,16 +1,18 @@
 "use client";
 
 // ═══════════════════════════════════════════════════════════════
-// Admin Layout — Minimal layout for admin pages
-//
-// No site header/footer. Simple admin navigation.
-// Auth check: only admin emails can access.
+// Admin Layout — Full sidebar + header layout
+// Migrated from Figma export — 2026-03-01 (Fase 12.0)
 // ═══════════════════════════════════════════════════════════════
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { Package, LayoutDashboard, LogOut, Shield } from "lucide-react";
+import { Shield, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
 
 // Admin email whitelist — extend as needed
 const ADMIN_EMAILS = [
@@ -19,7 +21,108 @@ const ADMIN_EMAILS = [
   "studiorockstage@gmail.com",
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminShell({ children }: { children: React.ReactNode }) {
+  const { currentPage, navigate, period, setPeriod } = useAdmin();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleNavigate = (page: Parameters<typeof navigate>[0]) => {
+    navigate(page);
+    setMobileMenuOpen(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F5F3F0]">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <AdminSidebar
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+            />
+            <motion.div
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed left-0 top-0 h-full z-50 lg:hidden"
+            >
+              <AdminSidebar
+                currentPage={currentPage}
+                onNavigate={handleNavigate}
+                collapsed={false}
+                onToggleCollapse={() => setMobileMenuOpen(false)}
+              />
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="absolute top-3 right-3 p-1.5 bg-[#2d2419] rounded-full text-[#A1887F] hover:text-[#f5f0e8] z-50"
+              >
+                <X size={14} />
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content */}
+      <div
+        className="transition-all duration-250 ease-in-out"
+        style={{
+          marginLeft: isDesktop ? (sidebarCollapsed ? 68 : 256) : 0,
+        }}
+      >
+        <AdminHeader
+          period={period}
+          onPeriodChange={setPeriod}
+          onNavigate={handleNavigate}
+          onMobileMenuToggle={() => setMobileMenuOpen(true)}
+        />
+
+        <main className="p-4 sm:p-6 lg:p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, loading, signOut } = useAuth();
   const [authorized, setAuthorized] = useState(false);
 
@@ -33,8 +136,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#795548] border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-[#C5A065] border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -42,16 +145,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Not logged in
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-        <div className="bg-white border border-[#EFEBE9] rounded-lg p-8 max-w-md text-center">
+      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
+        <div className="bg-white border border-[#EFEBE9] rounded-xl p-8 max-w-md text-center shadow-sm">
           <Shield size={40} className="mx-auto mb-4 text-[#A1887F]" />
-          <h1 className="font-serif text-2xl text-[#2d2419] mb-2">Acceso Restringido</h1>
+          <h1 className="text-2xl text-[#2d2419] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>
+            Acceso Restringido
+          </h1>
           <p className="text-[14px] text-[#795548] mb-6">
             Necesitas iniciar sesión con una cuenta de administrador.
           </p>
           <Link
             href="/auth"
-            className="inline-block px-6 py-3 bg-[#2d2419] text-white text-[13px] font-semibold rounded hover:bg-[#3e3226] transition-colors"
+            className="inline-block px-6 py-3 bg-[#2d2419] text-white text-[13px] font-semibold rounded-lg hover:bg-[#3e3226] transition-colors"
           >
             Iniciar Sesión
           </Link>
@@ -63,16 +168,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Not authorized
   if (!authorized) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-        <div className="bg-white border border-[#EFEBE9] rounded-lg p-8 max-w-md text-center">
+      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
+        <div className="bg-white border border-[#EFEBE9] rounded-xl p-8 max-w-md text-center shadow-sm">
           <Shield size={40} className="mx-auto mb-4 text-red-400" />
-          <h1 className="font-serif text-2xl text-[#2d2419] mb-2">Sin Autorización</h1>
+          <h1 className="text-2xl text-[#2d2419] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>
+            Sin Autorización
+          </h1>
           <p className="text-[14px] text-[#795548] mb-2">
             Tu cuenta ({user.email}) no tiene permisos de administrador.
           </p>
           <Link
             href="/"
-            className="inline-block mt-4 px-6 py-3 bg-[#2d2419] text-white text-[13px] font-semibold rounded hover:bg-[#3e3226] transition-colors"
+            className="inline-block mt-4 px-6 py-3 bg-[#2d2419] text-white text-[13px] font-semibold rounded-lg hover:bg-[#3e3226] transition-colors"
           >
             Volver al Sitio
           </Link>
@@ -82,40 +189,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F3F0]">
-      {/* Admin Topbar */}
-      <header className="bg-[#2d2419] text-white h-14 flex items-center px-6 justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-6">
-          <Link href="/admin/shipping" className="font-serif text-lg tracking-wide">
-            DSD Admin
-          </Link>
-          <nav className="flex items-center gap-1 ml-4">
-            <Link
-              href="/admin/shipping"
-              className="flex items-center gap-2 px-3 py-1.5 rounded text-[13px] text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <Package size={15} />
-              Envíos
-            </Link>
-            {/* Future: more admin links */}
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-[12px] text-white/60">{user.email}</span>
-          <button
-            onClick={signOut}
-            className="flex items-center gap-1.5 text-[12px] text-white/60 hover:text-white transition-colors"
-          >
-            <LogOut size={14} />
-            Salir
-          </button>
-        </div>
-      </header>
-
-      {/* Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {children}
-      </main>
-    </div>
+    <AdminProvider>
+      <AdminShell>{children}</AdminShell>
+    </AdminProvider>
   );
 }
