@@ -4,6 +4,7 @@ import React from 'react';
 import { Package, MapPin, CreditCard, ChevronRight, TrendingUp, Lock, Mail, Award, Clock, AlertCircle, CheckCircle, ArrowRight, Info } from 'lucide-react';
 import { AccountSection } from '@/components/pages/AccountPage';
 import { LOYALTY_TIERS } from '@/data/loyalty';
+import { useAuth } from '@/contexts/AuthContext';
 const appleWalletImg = "/images/apple-wallet.png";
 const googleWalletImg = "/images/google-wallet.png";
 
@@ -13,6 +14,14 @@ interface AccountOverviewProps {
 }
 
 export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSection, lifetimeSpend = 6500 }) => {
+  const { user, medusaCustomer } = useAuth();
+
+  // Derive display name
+  const displayName = medusaCustomer?.first_name
+    || user?.user_metadata?.full_name?.split(' ')[0]
+    || user?.email?.split('@')[0]
+    || 'Miembro';
+
   // Derived Loyalty State (matching LoyaltyDashboard logic)
   const currentTier = LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend)) || LOYALTY_TIERS[0];
   const currentPoints = 2540;
@@ -55,7 +64,7 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
             <div>
                <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-2 mb-6">
                   <div>
-                    <h2 className="font-serif text-3xl text-wood-900 dark:text-sand-50 mb-1">Hola, Carlos</h2>
+                    <h2 className="font-serif text-3xl text-wood-900 dark:text-sand-50 mb-1">Hola, {displayName}</h2>
                     <p className="text-wood-500 dark:text-sand-300 text-sm">
                        Tienes <span className="font-bold text-wood-900 dark:text-sand-100">${(currentPoints * 0.01).toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN</span> disponibles en puntos.
                     </p>

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard, ShoppingBag, Truck, Package, FolderTree,
   Users, Star, FileText, Megaphone, DollarSign,
@@ -114,8 +115,13 @@ interface AdminSidebarProps {
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   currentPage, onNavigate, collapsed, onToggleCollapse
 }) => {
+  const { user, medusaCustomer } = useAuth();
   const [siteOnline] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const adminName = medusaCustomer
+    ? `${medusaCustomer.first_name} ${medusaCustomer.last_name}`.trim()
+    : user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Admin';
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const searchActive = searchQuery.trim().length > 0;
 
@@ -418,7 +424,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[60]
                   border border-stone-200/80 shadow-lg shadow-stone-200/50
                 ">
-                  David Admin
+                  {adminName}
                   <span className="block text-[9px] text-stone-400">Owner</span>
                 </span>
               )}
@@ -432,7 +438,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   transition={{ duration: 0.12 }}
                   className="flex-1 min-w-0"
                 >
-                  <p className="text-[12px] text-stone-700 truncate font-medium">David Admin</p>
+                  <p className="text-[12px] text-stone-700 truncate font-medium">{adminName}</p>
                   <p className="text-[10px] text-stone-400">Owner</p>
                 </motion.div>
               )}

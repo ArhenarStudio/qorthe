@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Bell, Calendar, ChevronDown, X, Menu, ShoppingCart, Star, FileText, Package, DollarSign, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import type { AdminPage } from './AdminSidebar';
 
 type Period = 'today' | '7days' | '30days' | 'custom';
@@ -75,12 +76,19 @@ interface AdminHeaderProps {
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange, onNavigate, onMobileMenuToggle }) => {
+  const { user, medusaCustomer } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
   const [periodOpen, setPeriodOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const periodRef = useRef<HTMLDivElement>(null);
+
+  // Derive display name: medusaCustomer > supabase metadata > email prefix
+  const displayName = medusaCustomer?.first_name
+    || user?.user_metadata?.full_name?.split(' ')[0]
+    || user?.email?.split('@')[0]
+    || 'Admin';
 
   const now = new Date();
   const hour = now.getHours();
@@ -109,7 +117,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
             </button>
           )}
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-xl font-serif text-wood-900 truncate">{greeting}, David</h2>
+            <h2 className="text-lg sm:text-xl font-serif text-wood-900 truncate">{greeting}, {displayName}</h2>
             <p className="text-xs text-wood-400 capitalize hidden sm:block">{dateStr}</p>
           </div>
         </div>
