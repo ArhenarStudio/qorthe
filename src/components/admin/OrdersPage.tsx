@@ -9,7 +9,8 @@ import {
   ExternalLink, Camera, X as XIcon, AlertCircle, Zap, Send,
   User, Trophy, ShoppingBag, Eye, BarChart3
 } from 'lucide-react';
-import { orders, type Order, type OrderItem, type EngravingDesign } from '@/data/adminMockData';
+import { orders as mockOrders, type Order, type OrderItem, type EngravingDesign } from '@/data/adminMockData';
+import { useAdminData } from '@/hooks/useAdminData';
 import { toast } from 'sonner';
 
 // ===== CONFIG =====
@@ -63,6 +64,81 @@ const tierConfig: Record<string, { label: string; icon: string; class: string }>
   gold: { label: 'Oro', icon: '🏆', class: 'text-amber-600' },
 };
 
+// ===== Helper: map Medusa order to mock Order shape (for list display) =====
+const fmtPrice = (n: number) => `${n.toLocaleString('es-MX', { minimumFractionDigits: 0 })}`;
+
+function mapLiveOrder(o: any): Order {
+  const created = new Date(o.created_at);
+  const dateISO = created.toISOString();
+
+  // Map Medusa fulfillment_status to our shipping status
+  const shippingMap: Record<string, Order['shippingStatus']> = {
+    not_fulfilled: 'pending',
+    partially_fulfilled: 'production',
+    fulfilled: 'shipped',
+    canceled: 'cancelled',
+  };
+
+  const paymentMap: Record<string, Order['paymentStatus']> = {
+    captured: 'paid',
+    not_paid: 'pending',
+    refunded: 'refunded',
+  };
+
+  const addr = `${o.city || ''}${o.province ? ', ' + o.province : ''}`;
+
+  return {
+    id: o.id,
+    number: `#DSD-${String(o.display_id).padStart(4, '0')}`,
+    date: dateISO,
+    customer: {
+      name: o.customer_name || o.email?.split('@')[0] || '—',
+      email: o.email || '',
+      phone: '',
+      avatar: (o.customer_name || 'U').substring(0, 2).toUpperCase(),
+    },
+    items: (o.items || []).map((i: any) => ({
+      id: i.id,
+      productName: i.title,
+      sku: '',
+      qty: i.quantity,
+      unitPrice: i.unit_price,
+      subtotal: i.unit_price * i.quantity,
+      image: i.thumbnail || '/placeholder.jpg',
+    })),
+    subtotal: o.total,
+    shipping: 0,
+    discount: 0,
+    engravingTotal: 0,
+    tax: 0,
+    total: o.total,
+    paymentStatus: paymentMap[o.payment_status] || 'pending',
+    paymentMethod: 'Tarjeta',
+    shippingStatus: shippingMap[o.fulfillment_status] || 'pending',
+    orderStatus: o.status === 'canceled' ? 'cancelled' : 'payment_confirmed',
+    address: addr,
+    addressDetail: {
+      name: o.customer_name || '',
+      street: '',
+      neighborhood: '',
+      city: o.city || '',
+      state: o.province || '',
+      zip: '',
+      country: 'México',
+      phone: '',
+      fullString: addr,
+      zone: '',
+    },
+    hasEngraving: false,
+    timeline: [
+      { id: 't1', label: 'Pedido Recibido', date: dateISO, done: true },
+    ],
+    notes: [],
+    communications: [],
+    margin: { productCost: 0, shippingCost: 0, stripeCommission: 0, estimatedProfit: 0, marginPercent: 0 },
+  };
+}
+
 // ===== MAIN COMPONENT =====
 export const OrdersPage: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -71,7 +147,21 @@ export const OrdersPage: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [engravingFilter, setEngravingFilter] = useState(false);
 
+  // ── Live data from Medusa ──
+  const statusParam = statusFilter !== 'all' ? `&status=${statusFilter}` : '';
+  const searchParam = searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : '';
+  const { data: liveData, loading: liveLoading } = useAdminData<{
+    orders: any[];
+    count: number;
+  }>(`/api/admin/orders?limit=50${statusParam}${searchParam}`, { refreshInterval: 30_000 });
+
+  const isLive = !!liveData?.orders;
+  const orders: Order[] = isLive
+    ? liveData!.orders.map(mapLiveOrder)
+    : mockOrders;
+
   const filteredOrders = orders.filter(o => {
+    if (isLive) return true; // API already filtered
     const matchesSearch = o.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || o.shippingStatus === statusFilter;

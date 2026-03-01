@@ -9,9 +9,45 @@ import {
   X, ArrowUpDown, TrendingUp, DollarSign, ShoppingBag, Check,
   Zap
 } from 'lucide-react';
-import { adminProducts, type AdminProduct } from '@/data/adminMockData';
+import { adminProducts as mockProducts, type AdminProduct } from '@/data/adminMockData';
+import { useAdminData } from '@/hooks/useAdminData';
 import { ProductForm } from './ProductForm';
 import { ImportWizard, ExportModal } from './ProductImportExport';
+
+/* ---------- Helper: map Medusa product to AdminProduct ---------- */
+function mapLiveProduct(p: any): AdminProduct {
+  const minPrice = p.price_range?.min || 0;
+  const maxPrice = p.price_range?.max || minPrice;
+  const status: AdminProduct['status'] = p.out_of_stock
+    ? 'outOfStock'
+    : p.status === 'draft'
+      ? 'draft'
+      : 'active';
+
+  return {
+    id: p.id,
+    name: p.title || 'Sin nombre',
+    sku: p.variants?.[0]?.sku || '',
+    slug: p.handle || '',
+    category: p.categories?.[0]?.name || p.collection?.title || 'General',
+    price: minPrice,
+    comparePrice: maxPrice > minPrice ? maxPrice : undefined,
+    cost: 0, // No disponible vía API admin estándar
+    stock: p.total_stock ?? 0,
+    reorderPoint: 5,
+    status,
+    material: '',
+    dimensions: '',
+    weight: 0,
+    image: p.thumbnail || '/placeholder.jpg',
+    soldUnits: 0, // Requiere analytics custom
+    revenue: 0,
+    rating: 0,
+    reviewCount: 0,
+    laserAvailable: true,
+    productionDays: 5,
+  };
+}
 
 /* ---------- Config ---------- */
 
@@ -49,9 +85,20 @@ export const ProductsPage: React.FC = () => {
   const [showExport, setShowExport] = useState(false);
   const [bulkAction, setBulkAction] = useState('');
 
+  /* === Live data from Medusa === */
+  const { data: liveData } = useAdminData<{
+    products: any[];
+    count: number;
+  }>('/api/admin/products?limit=100', { refreshInterval: 60_000 });
+
+  const isLive = !!liveData?.products;
+  const adminProducts: AdminProduct[] = isLive
+    ? liveData!.products.map(mapLiveProduct)
+    : mockProducts;
+
   /* === Derived data === */
-  const categories = useMemo(() => [...new Set(adminProducts.map(p => p.category))], []);
-  const woods = useMemo(() => [...new Set(adminProducts.map(p => p.material))], []);
+  const categories = useMemo(() => [...new Set(adminProducts.map(p => p.category))], [adminProducts]);
+  const woods = useMemo(() => [...new Set(adminProducts.map(p => p.material).filter(Boolean))], [adminProducts]);
 
   const filtered = useMemo(() => {
     let result = adminProducts.filter(p => {
@@ -86,7 +133,7 @@ export const ProductsPage: React.FC = () => {
     });
 
     return result;
-  }, [searchQuery, filters, sortKey, sortDir]);
+  }, [adminProducts, searchQuery, filters, sortKey, sortDir]);
 
   const activeFilters = Object.entries(filters).filter(([_, v]) => v !== 'all');
 
@@ -101,7 +148,7 @@ export const ProductsPage: React.FC = () => {
     const invCost = adminProducts.reduce((s, p) => s + p.cost * p.stock, 0);
     const invSale = adminProducts.reduce((s, p) => s + p.price * p.stock, 0);
     return { total, totalVariants, active, drafts, lowStock, outOfStock, invCost, invSale };
-  }, []);
+  }, [adminProducts]);
 
   /* === Helpers === */
   const toggleSort = (key: SortKey) => {
