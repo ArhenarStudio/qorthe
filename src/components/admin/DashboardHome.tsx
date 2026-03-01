@@ -6,13 +6,14 @@ import {
   DollarSign, ShoppingBag, TrendingUp, Eye,
   ArrowUpRight, ArrowDownRight, AlertTriangle,
   ShoppingCart, Star, FileText, Truck,
-  CheckCircle, UserPlus, Package
+  CheckCircle, UserPlus, Package, Wifi, WifiOff
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { salesChartData, activityFeed, orders, adminProducts } from '@/data/adminMockData';
+import { useAdminData } from '@/hooks/useAdminData';
 import type { Period } from './AdminHeader';
 import type { AdminPage } from './AdminSidebar';
 
@@ -38,15 +39,52 @@ interface Props {
   onNavigate: (page: AdminPage) => void;
 }
 
+// Period → query param map
+const periodQueryMap: Record<Period, string> = {
+  today: 'today',
+  '7days': '7days',
+  '30days': '30days',
+  custom: '90days',
+};
+
+const fmtMXN = (n: number) =>
+  new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+
 export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
   const [chartView, setChartView] = React.useState<'revenue' | 'orders'>('revenue');
 
-  const kpis = [
-    { label: 'Ventas del periodo', value: '$124,500', change: '+12.4%', up: true, icon: DollarSign, color: 'bg-accent-gold/10 text-accent-gold' },
-    { label: 'Pedidos', value: '45', change: '3 pendientes', up: true, icon: ShoppingBag, color: 'bg-blue-50 text-blue-600', highlight: true },
-    { label: 'Ticket promedio', value: '$2,766', change: '+8.2%', up: true, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
-    { label: 'Visitantes', value: '3,240', change: '-2.1%', up: false, icon: Eye, color: 'bg-purple-50 text-purple-600' },
-  ];
+  // ── Live data from Medusa ──
+  const periodQ = periodQueryMap[period] || '7days';
+  const { data: liveData, loading: liveLoading, error: liveError } = useAdminData<{
+    kpis: {
+      total_revenue: number;
+      order_count: number;
+      pending_orders: number;
+      shipped_orders: number;
+      product_count: number;
+      customer_count: number;
+      avg_order_value: number;
+    };
+    recent_orders: any[];
+    low_stock: any[];
+  }>(`/api/admin/dashboard?period=${periodQ}`, { refreshInterval: 60_000 });
+
+  const isLive = !!liveData && !liveError;
+  const k = liveData?.kpis;
+
+  const kpis = k
+    ? [
+        { label: 'Ventas del periodo', value: fmtMXN(k.total_revenue), change: `${k.order_count} pedidos`, up: true, icon: DollarSign, color: 'bg-accent-gold/10 text-accent-gold' },
+        { label: 'Pedidos', value: String(k.order_count), change: `${k.pending_orders} pendientes`, up: true, icon: ShoppingBag, color: 'bg-blue-50 text-blue-600', highlight: k.pending_orders > 0 },
+        { label: 'Ticket promedio', value: fmtMXN(k.avg_order_value), change: `${k.product_count} productos`, up: true, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
+        { label: 'Clientes', value: String(k.customer_count), change: `${k.shipped_orders} enviados`, up: true, icon: UserPlus, color: 'bg-purple-50 text-purple-600' },
+      ]
+    : [
+        { label: 'Ventas del periodo', value: '$124,500', change: '+12.4%', up: true, icon: DollarSign, color: 'bg-accent-gold/10 text-accent-gold' },
+        { label: 'Pedidos', value: '45', change: '3 pendientes', up: true, icon: ShoppingBag, color: 'bg-blue-50 text-blue-600', highlight: true },
+        { label: 'Ticket promedio', value: '$2,766', change: '+8.2%', up: true, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
+        { label: 'Visitantes', value: '3,240', change: '-2.1%', up: false, icon: Eye, color: 'bg-purple-50 text-purple-600' },
+      ];
 
   const pendingOrders = orders.filter(o => o.shippingStatus === 'pending' || o.shippingStatus === 'production');
   const topProducts = [...adminProducts].sort((a, b) => b.revenue - a.revenue).slice(0, 5);
@@ -59,6 +97,17 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
 
   return (
     <div className="space-y-6">
+      {/* Live data indicator */}
+      {!liveLoading && (
+        <div className={`flex items-center gap-1.5 text-[10px] ${
+          isLive ? 'text-green-600' : 'text-wood-400'
+        }`}>
+          {isLive ? <Wifi size={10} /> : <WifiOff size={10} />}
+          {isLive ? 'Datos en vivo de Medusa' : 'Datos de demostración (mock)'}
+          {liveError && <span className="text-red-400 ml-2">· {liveError}</span>}
+        </div>
+      )}
+
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, idx) => (
