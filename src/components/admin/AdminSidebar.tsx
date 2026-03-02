@@ -16,7 +16,8 @@ export type AdminPage =
   | 'dashboard' | 'orders' | 'shipping' | 'products' | 'categories'
   | 'customers' | 'reviews' | 'quotes' | 'marketing'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
-  | 'integrations' | 'theme' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings';
+  | 'integrations' | 'theme' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
+  | 'pos';
 
 interface NavItem {
   id: AdminPage;
@@ -43,6 +44,7 @@ const navGroups: NavGroup[] = [
     id: 'ventas',
     label: 'Ventas',
     items: [
+      { id: 'pos', label: 'Punto de Venta', icon: Zap },
       { id: 'orders', label: 'Pedidos', icon: ShoppingBag, badge: 3 },
       { id: 'shipping', label: 'Envios', icon: Truck },
       { id: 'quotes', label: 'Cotizaciones', icon: FileText, badge: 5 },
