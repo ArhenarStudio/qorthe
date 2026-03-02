@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   Shield, Key, Smartphone, Globe, Clock, LogOut, 
-  CheckCircle, AlertTriangle, ChevronRight, Eye, EyeOff
+  CheckCircle, AlertTriangle, ChevronRight, Eye, EyeOff, Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Mock Data
 const ACTIVE_SESSIONS = [
@@ -38,16 +39,18 @@ const ACCESS_HISTORY = [
 ];
 
 export const AccountSecurity = () => {
+  const { supabase } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [sessions, setSessions] = useState(ACTIVE_SESSIONS);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
 
   // Password Form State
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleUpdatePassword = (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       toast.error('Las contraseñas no coinciden');
@@ -57,17 +60,27 @@ export const AccountSecurity = () => {
       toast.error('La contraseña debe tener al menos 8 caracteres');
       return;
     }
-    
-    // Simulate API call
-    toast.promise(new Promise(resolve => setTimeout(resolve, 1500)), {
-      loading: 'Actualizando contraseña...',
-      success: 'Contraseña actualizada correctamente',
-      error: 'Error al actualizar'
-    });
-    
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    if (!supabase) {
+      toast.error('Servicio de autenticación no disponible');
+      return;
+    }
+
+    setUpdatingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        toast.error(error.message || 'Error al actualizar contraseña');
+      } else {
+        toast.success('Contraseña actualizada correctamente');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Error inesperado');
+    } finally {
+      setUpdatingPassword(false);
+    }
   };
 
   const handleRevokeSession = (sessionId: string) => {
@@ -157,10 +170,11 @@ export const AccountSecurity = () => {
               <div className="pt-2 flex justify-end">
                 <button 
                   type="submit"
-                  disabled={!currentPassword || !newPassword}
-                  className="px-6 py-3 bg-wood-900 dark:bg-sand-100 text-sand-50 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!currentPassword || !newPassword || updatingPassword}
+                  className="px-6 py-3 bg-wood-900 dark:bg-sand-100 text-sand-50 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  Actualizar Contraseña
+                  {updatingPassword && <Loader2 className="w-3 h-3 animate-spin" />}
+                  {updatingPassword ? 'Actualizando...' : 'Actualizar Contraseña'}
                 </button>
               </div>
             </form>
