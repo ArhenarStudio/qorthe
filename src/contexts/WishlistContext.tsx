@@ -1,25 +1,36 @@
 "use client";
 
 // ═══════════════════════════════════════════════════════════════
-// WishlistContext — Global wishlist state
+// WishlistContext — Global wishlist state (Supabase table)
 //
 // Provides: wishlist items, toggle, isInWishlist, loading
-// Syncs with /api/wishlist (Supabase user_metadata)
+// Syncs with /api/account/wishlist (Supabase wishlists table)
+// Optimistic updates for instant UI feedback.
 // ═══════════════════════════════════════════════════════════════
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface WishlistItem {
+  id: string;
   product_id: string;
-  variant_id?: string;
-  added_at: string;
+  variant_id: string | null;
+  product_title: string;
+  product_thumbnail: string | null;
+  product_price: number;
+  created_at: string;
 }
 
 interface WishlistContextType {
   wishlist: WishlistItem[];
   loading: boolean;
-  toggle: (productId: string, variantId?: string) => Promise<void>;
+  toggle: (product: {
+    id: string;
+    variant_id?: string;
+    title?: string;
+    thumbnail?: string;
+    price?: number;
+  }) => Promise<void>;
   isInWishlist: (productId: string) => boolean;
   count: number;
 }
@@ -37,29 +48,28 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch wishlist on auth
-  useEffect(() => {
+  // Fetch wishlist
+  const fetchWishlist = useCallback(async () => {
     if (!session?.access_token) {
       setWishlist([]);
       return;
     }
-
-    const fetchWishlist = async () => {
-      try {
-        const resp = await fetch("/api/wishlist", {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          setWishlist(data.wishlist || []);
-        }
-      } catch (err) {
-        console.warn("[Wishlist] Fetch error:", err);
+    try {
+      const resp = await fetch("/api/account/wishlist", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setWishlist(data.items || []);
       }
-    };
-
-    fetchWishlist();
+    } catch (err) {
+      console.warn("[Wishlist] Fetch error:", err);
+    }
   }, [session?.access_token]);
+
+  useEffect(() => {
+    fetchWishlist();
+  }, [fetchWishlist]);
 
   const isInWishlist = useCallback(
     (productId: string) => wishlist.some((w) => w.product_id === productId),
@@ -67,45 +77,64 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const toggle = useCallback(
-    async (productId: string, variantId?: string) => {
+    async (product: {
+      id: string;
+      variant_id?: string;
+      title?: string;
+      thumbnail?: string;
+      price?: number;
+    }) => {
       if (!session?.access_token) return;
 
-      const inList = isInWishlist(productId);
+      const inList = isInWishlist(product.id);
       setLoading(true);
 
       try {
         if (inList) {
-          // Remove
-          const resp = await fetch(`/api/wishlist?product_id=${productId}`, {
+          // Optimistic remove
+          setWishlist((prev) => prev.filter((w) => w.product_id !== product.id));
+          await fetch(`/api/account/wishlist?product_id=${product.id}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${session.access_token}` },
           });
-          if (resp.ok) {
-            const data = await resp.json();
-            setWishlist(data.wishlist || []);
-          }
         } else {
-          // Add
-          const resp = await fetch("/api/wishlist", {
+          // Optimistic add
+          const optimistic: WishlistItem = {
+            id: `temp_${Date.now()}`,
+            product_id: product.id,
+            variant_id: product.variant_id || null,
+            product_title: product.title || "",
+            product_thumbnail: product.thumbnail || null,
+            product_price: product.price || 0,
+            created_at: new Date().toISOString(),
+          };
+          setWishlist((prev) => [optimistic, ...prev]);
+
+          await fetch("/api/account/wishlist", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${session.access_token}`,
             },
-            body: JSON.stringify({ product_id: productId, variant_id: variantId }),
+            body: JSON.stringify({
+              product_id: product.id,
+              variant_id: product.variant_id,
+              product_title: product.title,
+              product_thumbnail: product.thumbnail,
+              product_price: product.price,
+            }),
           });
-          if (resp.ok) {
-            const data = await resp.json();
-            setWishlist(data.wishlist || []);
-          }
         }
+        // Refresh to get real data
+        await fetchWishlist();
       } catch (err) {
         console.warn("[Wishlist] Toggle error:", err);
+        fetchWishlist(); // Revert
       } finally {
         setLoading(false);
       }
     },
-    [session?.access_token, isInWishlist]
+    [session?.access_token, isInWishlist, fetchWishlist]
   );
 
   return (
@@ -115,4 +144,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
-export const useWishlist = () => useContext(WishlistContext);
+export const useWishlistContext = () => useContext(WishlistContext);
+
+// Backwards compat alias
+export const useWishlist = useWishlistContext;

@@ -60,7 +60,7 @@ export const Wishlist = () => {
   const displayItems = isLive ? wishlistItems : MOCK_WISHLIST_ITEMS;
 
   const handleRemove = async (productId: string) => {
-    await toggle(productId);
+    await toggle({ id: productId });
     toast.success("Eliminado de tu lista de deseos");
   };
 
