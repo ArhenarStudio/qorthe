@@ -8,8 +8,11 @@ import { CommunicationModal } from './CommunicationModal';
 import { NotificationsModal } from './NotificationsModal';
 import { PrivacyModal } from './PrivacyModal';
 import { HelpModal } from './HelpModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export const AccountSettings: React.FC = () => {
+  const { user, supabase, refreshCustomer } = useAuth();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const [isCommunicationModalOpen, setIsCommunicationModalOpen] = useState(false);
@@ -17,8 +20,55 @@ export const AccountSettings: React.FC = () => {
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
-  const handleProfileSave = (newImage: Blob) => {
-    console.log('New profile image blob:', newImage);
+  const handleProfileSave = async (newImage: Blob) => {
+    if (!supabase || !user) {
+      toast.error('Sesión no disponible');
+      return;
+    }
+
+    try {
+      // Upload to Supabase Storage (avatars bucket)
+      const fileName = `${user.id}/avatar_${Date.now()}.jpg`;
+      const { data, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, newImage, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: 'image/jpeg',
+        });
+
+      if (uploadError) {
+        console.error('[Avatar] Upload error:', uploadError);
+        // If bucket doesn't exist, save as base64 in metadata as fallback
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64 = reader.result as string;
+          await supabase.auth.updateUser({
+            data: { avatar_url: base64.substring(0, 500000) } // Max 500KB as base64
+          });
+          toast.success('Foto de perfil actualizada');
+          refreshCustomer();
+        };
+        reader.readAsDataURL(newImage);
+        return;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Save URL in user metadata
+      await supabase.auth.updateUser({
+        data: { avatar_url: urlData.publicUrl }
+      });
+
+      toast.success('Foto de perfil actualizada');
+      refreshCustomer();
+    } catch (error: any) {
+      console.error('[Avatar] Error:', error);
+      toast.error('Error al subir la foto');
+    }
   };
 
   return (
