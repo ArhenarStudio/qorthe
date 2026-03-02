@@ -13,6 +13,7 @@ import { useCartContext } from '@/contexts/CartContext';
 import { getMetafield } from '@/lib/commerce/types';
 import type { LaserCustomizationData } from '@/lib/commerce/types';
 import { LASER_SERVICE_VARIANT_ID } from '@/config/laser-engraving';
+import { fbEvent, FB_EVENTS } from '@/lib/meta-pixel';
 
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
 
@@ -27,6 +28,21 @@ export const ProductDetailPage = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [laserData, setLaserData] = useState<LaserCustomizationData | null>(null);
+
+  // Meta Pixel: ViewContent when product loads
+  React.useEffect(() => {
+    if (product) {
+      const variant = product.variants[selectedVariantIndex] || product.variants[0];
+      fbEvent(FB_EVENTS.VIEW_CONTENT, {
+        content_ids: [variant?.id || product.id],
+        content_name: product.title,
+        content_type: 'product',
+        value: variant?.price.amount ?? 0,
+        currency: variant?.price.currencyCode ?? 'MXN',
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
 
   if (loading) {
     return (
@@ -333,7 +349,7 @@ export const ProductDetailPage = () => {
 
         {/* Reviews Section */}
         <div className="mb-24">
-          <ProductReviews productId={product.id} />
+          <ProductReviews productId={product.id} productTitle={product.title} productThumbnail={product.featuredImage?.url} />
         </div>
 
         {/* Related Products */}

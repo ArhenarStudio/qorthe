@@ -1,118 +1,162 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Star, MessageSquare, Trash2, ExternalLink, Edit2, X, Send, User, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Star, MessageSquare, Trash2, ExternalLink, Edit2, X, Send, User, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { Review } from '@/types/review';
-import { API_BASE_URL } from '@/utils/api';
 import { ReviewSkeleton } from '@/components/ui/ReviewSkeleton';
 
-// Mock Data for Demo
-const MOCK_REVIEWS: Review[] = [
-  {
-    id: 'rev-001',
-    productId: 'prod-001',
-    productName: 'Silla Eames Lounge',
-    productImage: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=300',
-    userId: 'user-123',
-    userName: 'Alejandro G.',
-    rating: 5,
-    comment: 'La calidad de la piel es excepcional. Llegó antes de lo esperado y el armado fue muy sencillo. Definitivamente vale la inversión para mi oficina en casa.',
-    createdAt: '2024-01-15T10:00:00Z',
-    response: '¡Gracias por tu confianza, Alejandro! Nos alegra saber que la silla cumple con tus expectativas de calidad y diseño. Esperamos ver fotos de tu oficina pronto.'
-  },
-  {
-    id: 'rev-002',
-    productId: 'prod-002',
-    productName: 'Mesa de Centro Nogal',
-    userId: 'user-123',
-    userName: 'Alejandro G.',
-    rating: 4,
-    comment: 'El acabado es hermoso, tal cual se ve en las fotos. Le doy 4 estrellas porque el empaque llegó un poco maltratado, aunque la mesa estaba intacta.',
-    createdAt: '2023-11-20T14:30:00Z'
-  },
-  {
-    id: 'rev-003',
-    productId: 'prod-005',
-    productName: 'Lámpara de Pie Industrial',
-    userId: 'user-123',
-    userName: 'Alejandro G.',
-    rating: 5,
-    comment: 'Minimalista y funcional. La luz es cálida, perfecta para leer por las noches.',
-    createdAt: '2023-09-05T09:15:00Z'
-  }
-];
+// ── Types matching Supabase reviews table ──
+interface ReviewData {
+  id: string;
+  user_id: string;
+  product_id: string;
+  order_id: string | null;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  photos: string[];
+  status: 'pending' | 'approved' | 'rejected';
+  admin_reply: string | null;
+  admin_reply_at: string | null;
+  helpful_count: number;
+  created_at: string;
+  updated_at: string;
+  user_name: string;
+  user_avatar: string | null;
+  product_title: string | null;
+  product_thumbnail: string | null;
+}
 
 export const UserReviews = () => {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [editingReview, setEditingReview] = useState<ReviewData | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
 
-  // Load reviews (simulate API + LocalStorage)
+  // Get auth
   useEffect(() => {
-    const loadReviews = async () => {
-      setLoading(true);
-      try {
-        // Try to get from LocalStorage first to persist edits/deletes in demo
-        const localData = localStorage.getItem('davidson_user_reviews');
-        
-        if (localData) {
-          setReviews(JSON.parse(localData));
-        } else {
-          // Fallback to Mock Data
-          setReviews(MOCK_REVIEWS);
-          localStorage.setItem('davidson_user_reviews', JSON.stringify(MOCK_REVIEWS));
-        }
-
-        // In a real app, we would fetch from API here:
-        // const { data: { session } } = await supabase.auth.getSession();
-        // if (session) {
-        //   const res = await fetch(`${API_BASE_URL}/reviews/user/me`, ...);
-        //   if (res.ok) setReviews(await res.json());
-        // }
-      } catch (error) {
-        console.error('Error loading reviews:', error);
-        setReviews(MOCK_REVIEWS);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadReviews();
+    const supabase = createClient();
+    if (!supabase) return;
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      setSession(s);
+      setUser(s?.user || null);
+    });
   }, []);
 
-  const saveReviews = (newReviews: Review[]) => {
-    setReviews(newReviews);
-    localStorage.setItem('davidson_user_reviews', JSON.stringify(newReviews));
-  };
+  // Fetch user's reviews
+  const fetchReviews = useCallback(async () => {
+    if (!user || !session) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/reviews?user_id=${user.id}`, {
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch reviews');
+      const data = await res.json();
+      setReviews(data.reviews || []);
+    } catch (error) {
+      console.error('[UserReviews] fetch error:', error);
+      setReviews([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, session]);
+
+  useEffect(() => {
+    if (user && session) fetchReviews();
+  }, [user, session, fetchReviews]);
 
   const handleDelete = async (reviewId: string) => {
     if (!confirm('¿Estás seguro de que quieres eliminar esta opinión?')) return;
+    if (!session) return;
 
-    // Optimistic update for demo
-    const updatedReviews = reviews.filter(r => r.id !== reviewId);
-    saveReviews(updatedReviews);
-    toast.success('Opinión eliminada correctamente');
+    // Optimistic update
+    const prev = [...reviews];
+    setReviews(reviews.filter(r => r.id !== reviewId));
 
-    // Real API call would go here
+    try {
+      const res = await fetch(`/api/reviews?id=${reviewId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) throw new Error('Failed to delete');
+      toast.success('Opinión eliminada');
+    } catch (error) {
+      console.error('[UserReviews] delete error:', error);
+      setReviews(prev); // rollback
+      toast.error('Error al eliminar la opinión');
+    }
   };
 
-  const handleUpdateReview = (updatedReview: Review) => {
-    const updatedReviews = reviews.map(r => r.id === updatedReview.id ? updatedReview : r);
-    saveReviews(updatedReviews);
+  const handleUpdateReview = async (updatedReview: ReviewData) => {
+    if (!session) return;
+
+    // Optimistic update
+    const prev = [...reviews];
+    setReviews(reviews.map(r => r.id === updatedReview.id ? updatedReview : r));
     setEditingReview(null);
-    toast.success('Opinión actualizada correctamente');
+
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST', // upsert — same user+product overwrites
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          product_id: updatedReview.product_id,
+          rating: updatedReview.rating,
+          title: updatedReview.title,
+          body: updatedReview.body,
+          product_title: updatedReview.product_title,
+          product_thumbnail: updatedReview.product_thumbnail,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to update');
+      toast.success('Opinión actualizada');
+      fetchReviews(); // refresh to get server state
+    } catch (error) {
+      console.error('[UserReviews] update error:', error);
+      setReviews(prev); // rollback
+      toast.error('Error al actualizar la opinión');
+    }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
+    return new Date(dateString).toLocaleDateString('es-MX', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const statusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return (
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <CheckCircle size={12} /> Publicada
+          </span>
+        );
+      case 'pending':
+        return (
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400">
+            <Clock size={12} /> En revisión
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-red-500 dark:text-red-400">
+            <XCircle size={12} /> No aprobada
+          </span>
+        );
+      default:
+        return null;
+    }
   };
 
   if (loading) {
@@ -157,13 +201,12 @@ export const UserReviews = () => {
                 className="bg-white dark:bg-wood-900 rounded-2xl border border-wood-100 dark:border-wood-800 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
               >
                 <div className="p-6 md:p-8">
-                  {/* Header: Product & Date */}
+                  {/* Header */}
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                     <div className="flex items-start gap-4">
-                      {/* Product Image Thumbnail (if available) or Icon */}
                       <div className="w-16 h-16 rounded-lg bg-wood-100 dark:bg-wood-800 overflow-hidden shrink-0 border border-wood-200 dark:border-wood-700">
-                        {review.productImage ? (
-                          <img src={review.productImage} alt={review.productName} className="w-full h-full object-cover" />
+                        {review.product_thumbnail ? (
+                          <img src={review.product_thumbnail} alt={review.product_title || ''} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-wood-400">
                             <ExternalLink size={20} />
@@ -173,29 +216,29 @@ export const UserReviews = () => {
                       
                       <div>
                         <Link 
-                          href={`/shop/${review.productId}`} 
+                          href={`/shop/${review.product_id}`} 
                           className="font-serif text-lg text-wood-900 dark:text-sand-100 hover:text-accent-gold transition-colors block mb-1"
                         >
-                          {review.productName || 'Producto Desconocido'}
+                          {review.product_title || 'Producto'}
                         </Link>
                         <div className="flex items-center gap-3 text-xs text-wood-500 dark:text-wood-400">
-                          <span>Comprado el {formatDate(review.createdAt)}</span>
+                          <span>{formatDate(review.created_at)}</span>
                           <span className="w-1 h-1 rounded-full bg-wood-300"></span>
-                          <span className={review.response ? "text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1" : ""}>
-                            {review.response ? <><CheckCircle className="w-3 h-3"/> Respondido</> : "Pendiente de respuesta"}
-                          </span>
+                          {statusBadge(review.status)}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 self-end md:self-start">
-                      <button 
-                        onClick={() => setEditingReview(review)}
-                        className="p-2 text-wood-400 hover:text-wood-900 dark:hover:text-sand-100 hover:bg-wood-100 dark:hover:bg-wood-800 rounded-lg transition-colors"
-                        title="Editar reseña"
-                      >
-                        <Edit2 size={16} />
-                      </button>
+                      {review.status === 'pending' && (
+                        <button 
+                          onClick={() => setEditingReview(review)}
+                          className="p-2 text-wood-400 hover:text-wood-900 dark:hover:text-sand-100 hover:bg-wood-100 dark:hover:bg-wood-800 rounded-lg transition-colors"
+                          title="Editar reseña"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                      )}
                       <button 
                         onClick={() => handleDelete(review.id)}
                         className="p-2 text-wood-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
@@ -207,25 +250,28 @@ export const UserReviews = () => {
                   </div>
 
                   {/* Rating & Comment */}
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <div className="flex text-accent-gold mb-3">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} size={18} fill={star <= review.rating ? "currentColor" : "none"} className={star <= review.rating ? "text-accent-gold" : "text-wood-200 dark:text-wood-700"} />
+                        <Star key={star} size={18} fill="currentColor" className={star <= review.rating ? "text-accent-gold" : "text-wood-200 dark:text-wood-700"} strokeWidth={0} />
                       ))}
                     </div>
+                    {review.title && (
+                      <p className="font-bold text-wood-900 dark:text-sand-100 mb-2">{review.title}</p>
+                    )}
                     <p className="text-wood-700 dark:text-sand-200 text-base leading-relaxed">
-                      "{review.comment}"
+                      {review.body}
                     </p>
                   </div>
 
-                  {/* Brand Response */}
-                  {review.response && (
+                  {/* Admin Response */}
+                  {review.admin_reply && (
                     <div className="mt-6 bg-wood-50 dark:bg-wood-800/50 rounded-xl p-5 border border-wood-100 dark:border-wood-700/50 relative">
                        <div className="absolute top-0 left-6 -translate-y-1/2 bg-wood-200 dark:bg-wood-700 text-wood-800 dark:text-sand-100 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                         <User size={10} /> Respuesta de DavidSon's
+                         <User size={10} /> Respuesta de DavidSon&apos;s
                        </div>
                        <p className="text-sm text-wood-600 dark:text-sand-300 italic mt-1">
-                         {review.response}
+                         {review.admin_reply}
                        </p>
                     </div>
                   )}
@@ -250,15 +296,16 @@ export const UserReviews = () => {
   );
 };
 
-// Sub-component for editing
-const EditReviewModal = ({ review, onClose, onSave }: { review: Review, onClose: () => void, onSave: (r: Review) => void }) => {
+// ── Edit Modal ──
+const EditReviewModal = ({ review, onClose, onSave }: { review: ReviewData, onClose: () => void, onSave: (r: ReviewData) => void }) => {
   const [rating, setRating] = useState(review.rating);
-  const [comment, setComment] = useState(review.comment);
+  const [title, setTitle] = useState(review.title || '');
+  const [body, setBody] = useState(review.body || '');
   const [hoverRating, setHoverRating] = useState(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ ...review, rating, comment, updatedAt: new Date().toISOString() });
+    onSave({ ...review, rating, title: title.trim() || null, body: body.trim() || null });
   };
 
   return (
@@ -289,15 +336,15 @@ const EditReviewModal = ({ review, onClose, onSave }: { review: Review, onClose:
             {/* Product Info */}
             <div className="flex items-center gap-3 mb-6 p-3 bg-wood-50 dark:bg-wood-900 rounded-xl">
               <div className="w-12 h-12 bg-wood-200 dark:bg-wood-800 rounded-lg overflow-hidden">
-                 {review.productImage && <img src={review.productImage} className="w-full h-full object-cover" />}
+                 {review.product_thumbnail && <img src={review.product_thumbnail} className="w-full h-full object-cover" alt="" />}
               </div>
               <div>
                 <p className="text-xs text-wood-500 uppercase tracking-wider font-bold">Producto</p>
-                <p className="text-sm font-medium text-wood-900 dark:text-sand-100">{review.productName}</p>
+                <p className="text-sm font-medium text-wood-900 dark:text-sand-100">{review.product_title || 'Producto'}</p>
               </div>
             </div>
 
-            {/* Rating Input */}
+            {/* Rating */}
             <div className="mb-6 text-center">
               <label className="block text-xs font-bold uppercase tracking-widest text-wood-500 mb-3">Tu Calificación</label>
               <div className="flex justify-center gap-2">
@@ -312,24 +359,34 @@ const EditReviewModal = ({ review, onClose, onSave }: { review: Review, onClose:
                   >
                     <Star 
                       size={32} 
-                      fill={(hoverRating || rating) >= star ? "currentColor" : "none"} 
+                      fill={(hoverRating || rating) >= star ? "currentColor" : "currentColor"} 
                       className={`${(hoverRating || rating) >= star ? "text-accent-gold" : "text-wood-200 dark:text-wood-700"} transition-colors duration-200`} 
-                      strokeWidth={1.5}
+                      strokeWidth={0}
                     />
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-wood-400 mt-2 h-4">
-                {rating === 5 ? '¡Excelente!' : rating === 4 ? 'Muy bueno' : rating === 3 ? 'Regular' : rating === 2 ? 'Malo' : 'Terrible'}
-              </p>
             </div>
 
-            {/* Comment Input */}
+            {/* Title */}
+            <div className="mb-4">
+              <label className="block text-xs font-bold uppercase tracking-widest text-wood-500 mb-2">Título (opcional)</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full p-3 bg-wood-50 dark:bg-wood-900 border border-wood-200 dark:border-wood-800 rounded-xl focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold outline-none text-wood-900 dark:text-sand-100 text-sm transition-all"
+                placeholder="Resumen de tu experiencia"
+                maxLength={100}
+              />
+            </div>
+
+            {/* Body */}
             <div className="mb-8">
               <label className="block text-xs font-bold uppercase tracking-widest text-wood-500 mb-2">Tu Experiencia</label>
               <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
                 className="w-full h-32 p-4 bg-wood-50 dark:bg-wood-900 border border-wood-200 dark:border-wood-800 rounded-xl focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold outline-none resize-none text-wood-900 dark:text-sand-100 placeholder-wood-400 text-sm leading-relaxed transition-all"
                 placeholder="Cuéntanos qué te pareció el producto..."
                 required

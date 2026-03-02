@@ -13,8 +13,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { commerce } from "@/lib/commerce";
 import type { CommerceCart } from "@/lib/commerce";
-
 import type { CommercePromotion } from "@/lib/commerce";
+import { fbEvent, FB_EVENTS } from "@/lib/meta-pixel";
 
 interface CartContextType {
   cart: CommerceCart | null;
@@ -112,6 +112,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const updated = await commerce.addToCart(cart.id, variantId, quantity, metadata);
         setCart(updated);
         setIsDrawerOpen(true); // Auto-open drawer on add
+
+        // Meta Pixel: AddToCart event
+        const addedItem = updated.lines.find(line => line.merchandise.id === variantId);
+        fbEvent(FB_EVENTS.ADD_TO_CART, {
+          content_ids: [variantId],
+          content_name: addedItem?.merchandise.productTitle || '',
+          content_type: 'product',
+          value: (addedItem?.merchandise.price.amount ?? 0) * quantity,
+          currency: updated.subtotal.currencyCode || 'MXN',
+          num_items: quantity,
+        });
       } catch (err) {
         console.error("[CartContext] addItem error:", err);
       } finally {

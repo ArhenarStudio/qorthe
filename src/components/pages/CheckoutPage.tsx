@@ -9,6 +9,7 @@ import { ArrowLeft, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBa
 import { useCartContext } from '@/contexts/CartContext';
 import { formatPrice } from '@/config/shipping';
 import { commerce } from '@/lib/commerce';
+import { fbEvent, FB_EVENTS } from '@/lib/meta-pixel';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
 import { PayPalCheckout } from '@/components/checkout/PayPalCheckout';
@@ -429,6 +430,16 @@ export const CheckoutPage = () => {
 
       setStep(2);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Meta Pixel: InitiateCheckout event
+      fbEvent(FB_EVENTS.INITIATE_CHECKOUT, {
+        content_ids: cartItems.map(item => item.merchandise.id),
+        contents: cartItems.map(item => ({ id: item.merchandise.id, quantity: item.quantity, item_price: item.merchandise.price.amount })),
+        content_type: 'product',
+        value: total,
+        currency: currencyCode,
+        num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+      });
     } catch (err: unknown) {
       console.error('[Checkout] Error preparing cart:', err);
       setCheckoutError(
@@ -854,6 +865,15 @@ export const CheckoutPage = () => {
                               }}
                               onPaymentSuccess={(data) => {
                                 console.log('Payment success:', data);
+                                // Meta Pixel: Purchase event
+                                fbEvent(FB_EVENTS.PURCHASE, {
+                                  content_ids: cartItems.map(item => item.merchandise.id),
+                                  contents: cartItems.map(item => ({ id: item.merchandise.id, quantity: item.quantity, item_price: item.merchandise.price.amount })),
+                                  content_type: 'product',
+                                  value: total,
+                                  currency: currencyCode,
+                                  num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+                                });
                                 paymentCompletedRef.current = true;
                                 clearCart();
                                 const orderId = data.order_display_id || 'pending';
@@ -887,6 +907,15 @@ export const CheckoutPage = () => {
                                 }}
                                 onPaymentSuccess={(data) => {
                                   console.log('Stripe payment success:', data);
+                                  // Meta Pixel: Purchase event
+                                  fbEvent(FB_EVENTS.PURCHASE, {
+                                    content_ids: cartItems.map(item => item.merchandise.id),
+                                    contents: cartItems.map(item => ({ id: item.merchandise.id, quantity: item.quantity, item_price: item.merchandise.price.amount })),
+                                    content_type: 'product',
+                                    value: total,
+                                    currency: currencyCode,
+                                    num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+                                  });
                                   paymentCompletedRef.current = true;
                                   clearCart();
                                   const orderId = data.order_display_id || 'pending';
@@ -928,6 +957,15 @@ export const CheckoutPage = () => {
                               }}
                               onPaymentSuccess={(data) => {
                                 console.log('PayPal payment success:', data);
+                                // Meta Pixel: Purchase event
+                                fbEvent(FB_EVENTS.PURCHASE, {
+                                  content_ids: cartItems.map(item => item.merchandise.id),
+                                  contents: cartItems.map(item => ({ id: item.merchandise.id, quantity: item.quantity, item_price: item.merchandise.price.amount })),
+                                  content_type: 'product',
+                                  value: total,
+                                  currency: currencyCode,
+                                  num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+                                });
                                 paymentCompletedRef.current = true;
                                 clearCart();
                                 const orderId = data.order_display_id || 'pending';
