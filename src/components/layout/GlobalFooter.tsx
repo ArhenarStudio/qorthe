@@ -94,7 +94,7 @@ export const GlobalFooter = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [openSection, setOpenSection] = useState<string | null>(null);
 
-  const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const emailInput = form.querySelector('input[type="email"]') as HTMLInputElement;
@@ -104,6 +104,17 @@ export const GlobalFooter = () => {
       setNewsletterEmail(email);
       setIsNewsletterOpen(true);
       form.reset();
+
+      // Send to API (fire and forget — modal already shown)
+      try {
+        await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+      } catch (err) {
+        console.warn('[Newsletter] API error:', err);
+      }
     }
   };
   

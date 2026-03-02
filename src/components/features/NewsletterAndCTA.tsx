@@ -1,9 +1,26 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 export const NewsletterAndCTA = () => {
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubscribe = async () => {
+    if (!email || !email.includes('@')) return;
+    setSubmitted(true);
+    try {
+      await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+    } catch (err) {
+      console.warn('[Newsletter] error:', err);
+    }
+  };
+
   return (
     <div className="w-full max-w-[1440px] mx-auto">
       {/* BLOQUE A: NEWSLETTER */}
@@ -25,14 +42,26 @@ export const NewsletterAndCTA = () => {
             </p>
             
             <div className="flex flex-row w-full mb-[12px]">
-              <input 
-                type="email" 
-                placeholder="tu@email.com" 
-                className="flex-grow bg-[#FFFFFF] border border-[#D7CCC8] p-[14px] font-sans text-[14px] text-[#2d2419] placeholder-[#A1887F] outline-none"
-              />
-              <button className="bg-[#2d2419] text-[#f5f0e8] font-sans text-[13px] font-bold uppercase px-[24px] py-[14px] whitespace-nowrap">
-                Suscribirse
-              </button>
+              {submitted ? (
+                <p className="font-sans text-[14px] text-[#2d2419] py-[14px]">✅ ¡Gracias por suscribirte!</p>
+              ) : (
+                <>
+                  <input 
+                    type="email" 
+                    placeholder="tu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
+                    className="flex-grow bg-[#FFFFFF] border border-[#D7CCC8] p-[14px] font-sans text-[14px] text-[#2d2419] placeholder-[#A1887F] outline-none"
+                  />
+                  <button 
+                    onClick={handleSubscribe}
+                    className="bg-[#2d2419] text-[#f5f0e8] font-sans text-[13px] font-bold uppercase px-[24px] py-[14px] whitespace-nowrap hover:bg-[#3d3425] transition-colors"
+                  >
+                    Suscribirse
+                  </button>
+                </>
+              )}
             </div>
             
             <p className="font-sans text-[12px] text-[#A1887F]">
