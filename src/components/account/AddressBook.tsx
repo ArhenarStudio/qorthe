@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
-import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, X, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, X, AlertTriangle, Loader2, Wifi, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
-const ADDRESSES = [
+const MOCK_ADDRESSES = [
   {
     id: 1,
     label: "Casa Principal",
@@ -29,10 +31,56 @@ const ADDRESSES = [
   }
 ];
 
+// Helper: map Medusa address to display format
+function mapMedusaAddress(a: any) {
+  return {
+    id: a.id,
+    label: a.metadata?.label || (a.company ? 'Trabajo' : 'Casa'),
+    type: a.metadata?.type || (a.company ? 'work' : 'home'),
+    name: `${a.first_name || ''} ${a.last_name || ''}`.trim(),
+    street: [a.address_1, a.address_2].filter(Boolean).join(', '),
+    city: [a.city, a.province].filter(Boolean).join(', '),
+    zip: a.postal_code || '',
+    phone: a.phone || '',
+    default: a.is_default_shipping || false,
+    // Keep raw for editing
+    _raw: a,
+  };
+}
+
 export const AddressBook = () => {
+  const { session, refreshCustomer } = useAuth();
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any>(null);
   const [deletingAddress, setDeletingAddress] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+
+  // ── Live addresses from Medusa ──
+  const [liveAddresses, setLiveAddresses] = useState<any[] | null>(null);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+
+  const fetchAddresses = useCallback(async () => {
+    if (!session?.access_token) { setLoadingAddresses(false); return; }
+    try {
+      const resp = await fetch('/api/account/addresses', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setLiveAddresses((data.addresses || []).map(mapMedusaAddress));
+        setIsLive(true);
+      }
+    } catch (err) {
+      console.warn('[AddressBook] Failed to fetch:', err);
+    } finally {
+      setLoadingAddresses(false);
+    }
+  }, [session?.access_token]);
+
+  useEffect(() => { fetchAddresses(); }, [fetchAddresses]);
+
+  const ADDRESSES = isLive ? liveAddresses! : MOCK_ADDRESSES;
 
   const [addressForm, setAddressForm] = useState({
     label: '',
@@ -59,16 +107,79 @@ export const AddressBook = () => {
     setEditingAddress(addr);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(editingAddress ? 'Updating address:' : 'Saving address:', addressForm);
-    setIsAddingAddress(false);
-    setEditingAddress(null);
+    if (!session?.access_token) {
+      toast.error('Sesión no disponible');
+      return;
+    }
+
+    setSaving(true);
+    const [firstName, ...lastParts] = addressForm.name.split(' ');
+    const lastName = lastParts.join(' ');
+    const [city, province] = addressForm.city.split(',').map(s => s.trim());
+
+    const payload = {
+      first_name: firstName || '',
+      last_name: lastName || '',
+      address_1: addressForm.street,
+      city: city || '',
+      province: province || '',
+      postal_code: addressForm.zip,
+      phone: addressForm.phone,
+      metadata: { label: addressForm.label, type: addressForm.type },
+      ...(editingAddress?.id && { address_id: editingAddress.id }),
+    };
+
+    try {
+      const method = editingAddress ? 'PUT' : 'POST';
+      const resp = await fetch('/api/account/addresses', {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (resp.ok) {
+        toast.success(editingAddress ? 'Dirección actualizada' : 'Dirección agregada');
+        await fetchAddresses();
+        refreshCustomer();
+      } else {
+        const err = await resp.json();
+        toast.error(err.error || 'Error al guardar');
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSaving(false);
+      setIsAddingAddress(false);
+      setEditingAddress(null);
+    }
   };
 
-  const handleDelete = () => {
-    console.log('Deleting address:', deletingAddress);
-    setDeletingAddress(null);
+  const handleDelete = async () => {
+    if (!session?.access_token || !deletingAddress?.id) return;
+    setSaving(true);
+    try {
+      const resp = await fetch(`/api/account/addresses?id=${deletingAddress.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (resp.ok) {
+        toast.success('Dirección eliminada');
+        await fetchAddresses();
+        refreshCustomer();
+      } else {
+        toast.error('Error al eliminar');
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSaving(false);
+      setDeletingAddress(null);
+    }
   };
 
   // Shared Modal Component
@@ -219,10 +330,25 @@ export const AddressBook = () => {
     </form>
   );
 
+  if (loadingAddresses) {
+    return (
+      <div className="flex items-center justify-center py-20 text-wood-400">
+        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+        Cargando direcciones...
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 relative">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-2xl font-serif text-wood-900 dark:text-sand-100 transition-colors">Mis Direcciones</h2>
+        <div>
+          <h2 className="text-2xl font-serif text-wood-900 dark:text-sand-100 transition-colors">Mis Direcciones</h2>
+          <div className={`flex items-center gap-1.5 text-[10px] mt-1 ${isLive ? 'text-green-600' : 'text-wood-400'}`}>
+            {isLive ? <Wifi size={10} /> : <WifiOff size={10} />}
+            {isLive ? `${ADDRESSES.length} direcciones guardadas` : 'Datos de demostración'}
+          </div>
+        </div>
         <button 
           onClick={openAddModal}
           className="flex items-center gap-2 bg-wood-900 dark:bg-sand-100 text-sand-50 dark:text-wood-900 px-5 py-2.5 rounded-xl hover:bg-wood-800 dark:hover:bg-sand-200 transition-all text-xs font-bold uppercase tracking-widest shadow-lg shadow-wood-900/10 dark:shadow-none hover:shadow-wood-900/20"
