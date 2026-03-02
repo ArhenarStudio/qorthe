@@ -8,18 +8,24 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+let _supabaseAdmin: SupabaseClient | null = null;
+function getSupabaseAdmin() {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+  }
+  return _supabaseAdmin;
+}
 
 async function getUser(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) return null;
   const token = authHeader.replace("Bearer ", "");
-  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+  const { data: { user }, error } = await getSupabaseAdmin().auth.getUser(token);
   if (error || !user) return null;
   return user;
 }
@@ -31,7 +37,7 @@ export async function GET(req: NextRequest) {
     const productId = searchParams.get("product_id");
     const userId = searchParams.get("user_id");
 
-    let query = supabaseAdmin.from("reviews").select("*");
+    let query = getSupabaseAdmin().from("reviews").select("*");
 
     if (productId) {
       query = query.eq("product_id", productId).eq("status", "approved");
@@ -52,7 +58,7 @@ export async function GET(req: NextRequest) {
     // Also get stats if product_id provided
     let stats = null;
     if (productId) {
-      const { data: statsData } = await supabaseAdmin
+      const { data: statsData } = await getSupabaseAdmin()
         .from("product_review_stats")
         .select("*")
         .eq("product_id", productId)
@@ -84,7 +90,7 @@ export async function POST(req: NextRequest) {
       user.user_metadata?.name ||
       user.email?.split("@")[0] || "Cliente";
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from("reviews")
       .upsert(
         {
@@ -127,7 +133,7 @@ export async function DELETE(req: NextRequest) {
     const reviewId = searchParams.get("id");
     if (!reviewId) return NextResponse.json({ error: "id required" }, { status: 400 });
 
-    const { error } = await supabaseAdmin
+    const { error } = await getSupabaseAdmin()
       .from("reviews")
       .delete()
       .eq("id", reviewId)

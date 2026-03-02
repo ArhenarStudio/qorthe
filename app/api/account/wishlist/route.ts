@@ -10,12 +10,18 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+let _supabaseAdmin: SupabaseClient | null = null;
+function getSupabaseAdmin() {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+  }
+  return _supabaseAdmin;
+}
 
 // Helper: verify user from Supabase token
 async function getUser(req: NextRequest) {
@@ -23,7 +29,7 @@ async function getUser(req: NextRequest) {
   if (!authHeader?.startsWith("Bearer ")) return null;
 
   const token = authHeader.replace("Bearer ", "");
-  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+  const { data: { user }, error } = await getSupabaseAdmin().auth.getUser(token);
   if (error || !user) return null;
   return user;
 }
@@ -34,7 +40,7 @@ export async function GET(req: NextRequest) {
     const user = await getUser(req);
     if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from("wishlists")
       .select("*")
       .eq("user_id", user.id)
@@ -64,7 +70,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "product_id required" }, { status: 400 });
     }
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from("wishlists")
       .upsert(
         {
@@ -104,7 +110,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "product_id required" }, { status: 400 });
     }
 
-    const { error } = await supabaseAdmin
+    const { error } = await getSupabaseAdmin()
       .from("wishlists")
       .delete()
       .eq("user_id", user.id)
