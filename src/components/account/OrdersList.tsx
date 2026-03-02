@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Package, ChevronRight, CheckCircle, Clock, Truck, RefreshCcw, ExternalLink, ArrowRight, ShoppingBag, DollarSign, TrendingUp, Download, FileText, Ruler, PenTool, Image as ImageIcon, Search, Receipt } from 'lucide-react';
+import { Package, ChevronRight, CheckCircle, Clock, Truck, RefreshCcw, ExternalLink, ArrowRight, ShoppingBag, DollarSign, TrendingUp, Download, FileText, Ruler, PenTool, Image as ImageIcon, Search, Receipt, Wifi, WifiOff, Loader2 } from 'lucide-react';
 import { InvoiceRequestModal } from './billing/InvoiceRequestModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Enhanced Mock Data with Customizations and Timeline
-const ORDERS = [
+const MOCK_ORDERS = [
   {
     id: "ORD-8921",
     date: "10 Feb 2026",
@@ -122,10 +123,46 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export const OrdersList = () => {
+  const { session } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'All' | 'Processing' | 'Shipped' | 'Delivered'>('All');
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceOrderId, setInvoiceOrderId] = useState<string | undefined>(undefined);
+
+  // ── Live orders from Medusa ──
+  const [liveOrders, setLiveOrders] = useState<typeof MOCK_ORDERS | null>(null);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    if (!session?.access_token) {
+      setLoadingOrders(false);
+      return;
+    }
+
+    const fetchOrders = async () => {
+      try {
+        const resp = await fetch('/api/account/orders?limit=50', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.orders?.length > 0) {
+            setLiveOrders(data.orders);
+            setIsLive(true);
+          }
+        }
+      } catch (err) {
+        console.warn('[OrdersList] Failed to fetch live orders:', err);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    fetchOrders();
+  }, [session?.access_token]);
+
+  const ORDERS = isLive ? liveOrders! : MOCK_ORDERS;
 
   // Filter Logic
   const filteredOrders = ORDERS.filter(order => {
@@ -143,9 +180,26 @@ export const OrdersList = () => {
   const totalSpentFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(totalSpentValue);
   const avgOrderFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(avgOrderValue);
 
+  if (loadingOrders) {
+    return (
+      <div className="flex items-center justify-center py-20 text-wood-400">
+        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+        Cargando pedidos...
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      
+
+      {/* Live data indicator */}
+      <div className={`flex items-center gap-1.5 text-[10px] ${
+        isLive ? 'text-green-600' : 'text-wood-400'
+      }`}>
+        {isLive ? <Wifi size={10} /> : <WifiOff size={10} />}
+        {isLive ? `${ORDERS.length} pedidos reales` : 'Datos de demostración'}
+      </div>
+
       {/* Analytics Section */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-wood-900 p-5 rounded-2xl border border-wood-100 dark:border-wood-800 shadow-sm flex items-center gap-4">
