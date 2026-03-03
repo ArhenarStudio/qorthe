@@ -17,7 +17,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
  */
 
 const MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'https://urchin-app-u62qc.ondigitalocean.app'
-const MEDUSA_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_API_KEY || ''
+const MEDUSA_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ''
 const REGION_ID = 'reg_01KJ4BB2Z46YY1HWG0Q2N4KBVX'
 
 interface MetaProduct {
