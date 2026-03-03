@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 /**
@@ -26,17 +26,12 @@ interface MetaProduct {
 }
 
 function parseMetaProducts(productsParam: string): MetaProduct[] {
-  // Meta format: "id1:qty1,id2:qty2" 
-  // IDs may contain commas/colons that are percent-encoded per RFC 3986
   const items: MetaProduct[] = []
-  
   if (!productsParam) return items
   
-  // Split by comma to get individual products
   const productPairs = productsParam.split(',')
   
   for (const pair of productPairs) {
-    // Split by colon — last colon separates ID from quantity
     const lastColonIndex = pair.lastIndexOf(':')
     if (lastColonIndex === -1) continue
     
@@ -72,7 +67,7 @@ async function medusaFetch(path: string, options: RequestInit = {}) {
   return res.json()
 }
 
-export default function MetaCheckoutPage() {
+function MetaCheckoutContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [status, setStatus] = useState('Procesando tu pedido...')
@@ -125,7 +120,6 @@ export default function MetaCheckoutPage() {
         }
         
         // 3. If coupon provided, apply it
-        // Note: Medusa uses discount codes, Meta might send coupon param
         if (couponParam) {
           try {
             await medusaFetch(`/store/carts/${cartId}`, {
@@ -135,7 +129,6 @@ export default function MetaCheckoutPage() {
               }),
             })
           } catch (e) {
-            // Don't fail if coupon is invalid, just continue to checkout
             console.warn('Could not apply coupon:', e)
           }
         }
@@ -145,7 +138,7 @@ export default function MetaCheckoutPage() {
         // 4. Redirect to checkout
         router.push('/checkout')
         
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Meta checkout error:', err)
         setError(
           'Hubo un problema procesando tu pedido. Por favor visita nuestra tienda directamente.'
@@ -186,5 +179,22 @@ export default function MetaCheckoutPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function MetaCheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#faf8f5]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C5A065] mx-auto mb-6"></div>
+            <p className="text-[#2d2419]">Cargando...</p>
+          </div>
+        </div>
+      }
+    >
+      <MetaCheckoutContent />
+    </Suspense>
   )
 }
