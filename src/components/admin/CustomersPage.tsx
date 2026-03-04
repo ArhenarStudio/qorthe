@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
 import {
   Search, Users, ArrowLeft, ShoppingBag, Mail, Phone, Plus,
   Download, MoreVertical, Filter, X, Star,
@@ -343,8 +344,8 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
       {/* TAB 3: SEGMENTOS */}
       {tab === 'segments' && <SegmentsTab />}
 
-      {/* TAB 4: CONFIG */}
-      {tab === 'config' && <ProgramConfigTab />}
+      {/* TAB 4: CONFIG — Connected to /api/loyalty/config */}
+      {tab === 'config' && <LoyaltyConfigPanel />}
     </div>
   );
 };
