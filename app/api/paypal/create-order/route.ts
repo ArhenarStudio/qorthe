@@ -1,31 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { medusaFetch, getVerifiedCartTotal, jsonError } from '../../_lib/medusa-helpers';
+import { calculateDiscounts } from '../../_lib/discount-engine';
 
 // ═══════════════════════════════════════════════════════════════
 // PayPal Create Order — via Medusa Payment Collection + Session
 //
 // Flow:
 // 1. Verify cart total from Medusa (never trust frontend)
-// 2. Create payment collection for the cart
-// 3. Initialize PayPal payment session via Medusa
-// 4. Return the PayPal order ID (from session data) to frontend
+// 2. Calculate discounts via centralized engine (tier + points + cap)
+// 3. Create payment collection for the cart
+// 4. Initialize PayPal payment session via Medusa
+// 5. Return the PayPal order ID (from session data) to frontend
 //
-// Medusa handles PayPal API calls through our native provider.
+// NOTE: PayPal amount is set by Medusa from the cart total.
+// Tier and points discounts are tracked in metadata but the
+// actual PayPal order amount comes from Medusa's cart.total.
+// For tier/points discounts to affect PayPal amount, they need
+// to be applied to the cart before payment collection creation.
 // ═══════════════════════════════════════════════════════════════
 
 export async function POST(req: NextRequest) {
   try {
-    const { cartId } = await req.json();
+    const { cartId, email, loyalty_points_to_redeem } = await req.json();
 
     if (!cartId) {
       return jsonError('cartId is required');
     }
 
-    // 1. Verify cart exists and has valid total
-    const verifiedTotal = await getVerifiedCartTotal(cartId);
-    console.log(`[PayPal] Verified cart total: $${verifiedTotal} MXN for cart ${cartId}`);
+    // 1. Verify cart exists and get details
+    const cartData = await medusaFetch(`/carts/${cartId}`);
+    const cart = cartData.cart;
+    if (!cart) return jsonError('Cart not found', 404);
 
-    // 2. Create payment collection for this cart
+    const cartTotalCentavos = cart.total || 0;
+    const cartSubtotalCentavos = cart.item_subtotal || cart.subtotal || cartTotalCentavos;
+    console.log(`[PayPal] Cart total: ${cartTotalCentavos} centavos, subtotal: ${cartSubtotalCentavos} centavos`);
+
+    // 2. Calculate discounts via centralized engine
+    const discounts = await calculateDiscounts({
+      userEmail: email || cart.email,
+      cartSubtotalCentavos,
+      cartTotalCentavos,
+      pointsToRedeem: loyalty_points_to_redeem || 0,
+    });
+    console.log(`[PayPal] Discount engine: ${discounts.debug}`);
+
+    // 3. Create payment collection for this cart
     console.log(`[PayPal] Creating payment collection for cart ${cartId}...`);
     const pcData = await medusaFetch('/payment-collections', {
       method: 'POST',
@@ -34,7 +54,7 @@ export async function POST(req: NextRequest) {
     const pcId = pcData.payment_collection.id;
     console.log(`[PayPal] Payment collection created: ${pcId}`);
 
-    // 3. Initialize PayPal payment session
+    // 4. Initialize PayPal payment session
     console.log(`[PayPal] Creating PayPal payment session...`);
     const sessionData = await medusaFetch(
       `/payment-collections/${pcId}/payment-sessions`,
@@ -69,6 +89,18 @@ export async function POST(req: NextRequest) {
       approveUrl,
       paymentSessionId: paypalSession.id,
       paymentCollectionId: pcId,
+      // Return discount info for frontend display + post-payment processing
+      discountBreakdown: {
+        tierDiscount: discounts.tierDiscountCentavos,
+        tierName: discounts.tierName,
+        tierPercent: discounts.tierDiscountPercent,
+        pointsDiscount: discounts.pointsDiscountCentavos,
+        pointsRedeemed: discounts.pointsRedeemed,
+        pointsCapped: discounts.pointsWereCapped,
+        promoDiscount: discounts.promoDiscountCentavos,
+        totalDiscount: discounts.totalDiscountCentavos,
+        finalAmount: discounts.finalAmountCentavos,
+      },
     });
   } catch (error: any) {
     console.error('[PayPal] Create order error:', error);

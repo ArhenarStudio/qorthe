@@ -4,6 +4,7 @@ import {
   completeCartToOrder,
   jsonError,
 } from '../../_lib/medusa-helpers';
+import { calculateDiscounts } from '../../_lib/discount-engine';
 
 const MP_ACCESS_TOKEN = process.env.MERCADOPAGO_ACCESS_TOKEN || '';
 
@@ -55,6 +56,7 @@ export async function POST(request: NextRequest) {
       payer,
       cart_id,
       shipping_address,
+      loyalty_points_to_redeem,
     } = body;
 
     if (!token || !payment_method_id || !cart_id) {
@@ -135,17 +137,26 @@ export async function POST(request: NextRequest) {
     console.log(`[MP] ✅ Preflight passed for cart ${cart_id}`);
 
     // ═══════════════════════════════════════════════════════
-    // GUARDRAIL 2: Server-side amount validation
-    // Medusa stores amounts in smallest currency unit (centavos for MXN)
-    // MercadoPago expects amounts in standard units (pesos for MXN)
+    // GUARDRAIL 2: CENTRALIZED DISCOUNT ENGINE
+    // Validates tier + points + enforces 70% max combined cap
     // ═══════════════════════════════════════════════════════
-    const verifiedTotal = cart.total;
-    const mpAmount = verifiedTotal / 100; // Convert centavos → pesos for MP
-    console.log(`[MP] Verified cart total: ${verifiedTotal} centavos = $${mpAmount} MXN`);
+    const cartTotalCentavos = cart.total || 0;
+    const cartSubtotalCentavos = cart.item_subtotal || cart.subtotal || cartTotalCentavos;
 
-    if (Number(transaction_amount) !== mpAmount) {
+    const discounts = await calculateDiscounts({
+      userEmail: payer?.email || cart.email,
+      cartSubtotalCentavos,
+      cartTotalCentavos,
+      pointsToRedeem: loyalty_points_to_redeem || 0,
+    });
+
+    const mpAmount = discounts.finalAmountCentavos / 100; // Convert centavos → pesos for MP
+    console.log(`[MP] Discount engine: ${discounts.debug}`);
+    console.log(`[MP] Final amount: ${mpAmount} MXN`);
+
+    if (Math.abs(Number(transaction_amount) - mpAmount) > 0.01) {
       console.warn(
-        `[MP] ⚠️ Frontend amount ($${transaction_amount}) differs from verified ($${mpAmount}). Using verified.`
+        `[MP] ⚠️ Frontend amount (${transaction_amount}) differs from verified (${mpAmount}). Using verified.`
       );
     }
 
