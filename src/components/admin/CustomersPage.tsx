@@ -99,37 +99,11 @@ function mapApiCustomer(c: any): CustomerFull {
   };
 }
 
+// mockSpendChart remains for Summary tab (no real API for per-customer spend breakdown yet)
 const mockSpendChart = ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb'].map(m => ({
   mes: m,
   gasto: Math.round(500 + Math.random() * 1500),
 }));
-
-const mockPointsHistory = [
-  { date: '28 Feb 2026', concept: 'Compra #DSD-0014', points: 850, balance: 12340 },
-  { date: '22 Feb 2026', concept: 'Compra #DSD-0013', points: 1100, balance: 11490 },
-  { date: '15 Feb 2026', concept: 'Canje en pedido #DSD-0012', points: -500, balance: 10390 },
-  { date: '10 Feb 2026', concept: 'Compra #DSD-0012', points: 650, balance: 10890 },
-  { date: '01 Feb 2026', concept: 'Bono mensual Oro', points: 200, balance: 10240 },
-  { date: '20 Ene 2026', concept: 'Compra #DSD-0011', points: 920, balance: 10040 },
-];
-
-const mockOrders = [
-  { id: 'DSD-0014', date: '28 Feb 2026', products: 'Tabla Parota Charcuteria Gde', total: 1100, status: 'delivered' },
-  { id: 'DSD-0013', date: '22 Feb 2026', products: 'Tabla Cedro Rojo Rustica', total: 1200, status: 'shipped' },
-  { id: 'DSD-0012', date: '10 Feb 2026', products: 'Set 3 Tablas + Grabado', total: 3490, status: 'delivered' },
-  { id: 'DSD-0011', date: '20 Ene 2026', products: 'Tabla Rosa Morada Gourmet', total: 1650, status: 'delivered' },
-  { id: 'DSD-0010', date: '05 Ene 2026', products: 'Mini Tabla Parota Appetizer x2', total: 900, status: 'delivered' },
-];
-
-const mockActivity = [
-  { type: 'order', date: '28 Feb 2026', text: 'Realizo pedido #DSD-0014 por $1,100', icon: ShoppingBag },
-  { type: 'points', date: '28 Feb 2026', text: 'Gano 850 puntos por compra', icon: Star },
-  { type: 'tier', date: '25 Feb 2026', text: 'Subio a tier Oro', icon: Crown },
-  { type: 'order', date: '22 Feb 2026', text: 'Realizo pedido #DSD-0013 por $1,200', icon: ShoppingBag },
-  { type: 'points', date: '15 Feb 2026', text: 'Canjeo 500 puntos ($5.00 MXN)', icon: Gift },
-  { type: 'admin', date: '10 Feb 2026', text: 'Admin ajusto +200 puntos (cortesia)', icon: Shield },
-  { type: 'order', date: '10 Feb 2026', text: 'Realizo pedido #DSD-0012 por $3,490', icon: ShoppingBag },
-];
 
 /* ================================================================
    HELPERS
@@ -424,6 +398,31 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
    ================================================================ */
 const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> = ({ customer, onBack }) => {
   const [profileTab, setProfileTab] = useState<'summary' | 'orders' | 'points' | 'addresses' | 'activity' | 'notes' | 'comms'>('summary');
+
+  // ── Fetch detail data from API ──
+  const [detailOrders, setDetailOrders] = useState<any[]>([]);
+  const [detailTransactions, setDetailTransactions] = useState<any[]>([]);
+  const [detailAddresses, setDetailAddresses] = useState<any[]>([]);
+  const [detailLoading, setDetailLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDetail() {
+      try {
+        setDetailLoading(true);
+        const res = await fetch(`/api/admin/customers?id=${customer.id}`);
+        if (!res.ok) throw new Error('Failed');
+        const data = await res.json();
+        setDetailOrders(data.orders || []);
+        setDetailTransactions(data.transactions || []);
+        setDetailAddresses(data.customer?.addresses || []);
+      } catch (err) {
+        console.error('[CustomerProfile] fetch error:', err);
+      } finally {
+        setDetailLoading(false);
+      }
+    }
+    fetchDetail();
+  }, [customer.id]);
   const ts = getTierStyles(customer.tier);
   const tierIds = DEFAULT_LOYALTY_CONFIG.tiers.map(t => t.id);
   const currentNorm = normalizeTierId(customer.tier);
@@ -623,9 +622,14 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
           {profileTab === 'orders' && (
             <div className="bg-white rounded-xl border border-wood-100 shadow-sm">
               <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
-                <p className="text-xs text-wood-500">{customer.orders} pedidos | Total: ${customer.totalSpent.toLocaleString()} | Promedio: ${customer.avgTicket.toLocaleString()}</p>
+                <p className="text-xs text-wood-500">{detailOrders.length} pedidos | Total: ${customer.totalSpent.toLocaleString()} | Promedio: ${customer.avgTicket.toLocaleString()}</p>
                 <button className="text-[11px] text-accent-gold hover:underline flex items-center gap-1"><Plus size={11} /> Crear pedido manual</button>
               </div>
+              {detailLoading ? (
+                <div className="p-8 text-center text-wood-400 text-xs">Cargando pedidos...</div>
+              ) : detailOrders.length === 0 ? (
+                <div className="p-8 text-center text-wood-400 text-xs">Sin pedidos</div>
+              ) : (
               <table className="w-full text-left">
                 <thead>
                   <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
@@ -637,17 +641,28 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-wood-50">
-                  {mockOrders.map(o => (
+                  {detailOrders.map((o: any) => {
+                    const statusMap: Record<string, { label: string; cls: string }> = {
+                      fulfilled: { label: 'Entregado', cls: 'bg-green-50 text-green-600' },
+                      not_fulfilled: { label: 'Pendiente', cls: 'bg-amber-50 text-amber-600' },
+                      partially_fulfilled: { label: 'Parcial', cls: 'bg-blue-50 text-blue-600' },
+                      shipped: { label: 'En camino', cls: 'bg-blue-50 text-blue-600' },
+                    };
+                    const st = statusMap[o.fulfillment_status] || statusMap[o.status] || { label: o.status || 'N/A', cls: 'bg-wood-100 text-wood-500' };
+                    const itemsSummary = (o.items || []).map((i: any) => `${i.title}${i.quantity > 1 ? ` x${i.quantity}` : ''}`).join(', ') || 'Productos';
+                    return (
                     <tr key={o.id} className="hover:bg-sand-50/30 transition-colors">
-                      <td className="px-5 py-3 text-xs text-accent-gold font-medium">{o.id}</td>
-                      <td className="px-5 py-3 text-xs text-wood-500">{o.date}</td>
-                      <td className="px-5 py-3 text-xs text-wood-700">{o.products}</td>
+                      <td className="px-5 py-3 text-xs text-accent-gold font-medium">DSD-{String(o.display_id).padStart(4, '0')}</td>
+                      <td className="px-5 py-3 text-xs text-wood-500">{new Date(o.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td className="px-5 py-3 text-xs text-wood-700 max-w-[250px] truncate">{itemsSummary}</td>
                       <td className="px-5 py-3 text-xs text-wood-900">${o.total.toLocaleString()}</td>
-                      <td className="px-5 py-3"><span className={`text-[10px] px-2 py-0.5 rounded-full ${o.status === 'delivered' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`}>{o.status === 'delivered' ? 'Entregado' : 'En camino'}</span></td>
+                      <td className="px-5 py-3"><span className={`text-[10px] px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span></td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
+              )}
             </div>
           )}
 
@@ -713,55 +728,91 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
               {/* Points history */}
               <div className="bg-white rounded-xl border border-wood-100 shadow-sm">
                 <div className="px-5 py-3 border-b border-wood-100"><h4 className="text-xs text-wood-400 uppercase tracking-wider">Historial de puntos</h4></div>
+                {detailLoading ? (
+                  <div className="p-8 text-center text-wood-400 text-xs">Cargando historial...</div>
+                ) : detailTransactions.length === 0 ? (
+                  <div className="p-8 text-center text-wood-400 text-xs">Sin transacciones de puntos</div>
+                ) : (
                 <table className="w-full text-left">
                   <thead>
                     <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
-                      <th className="px-5 py-2.5">Fecha</th><th className="px-5 py-2.5">Concepto</th><th className="px-5 py-2.5">Puntos</th><th className="px-5 py-2.5">Balance</th>
+                      <th className="px-5 py-2.5">Fecha</th><th className="px-5 py-2.5">Concepto</th><th className="px-5 py-2.5">Tipo</th><th className="px-5 py-2.5">Puntos</th><th className="px-5 py-2.5">Balance</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-wood-50">
-                    {mockPointsHistory.map((p, i) => (
-                      <tr key={i} className="hover:bg-sand-50/30">
-                        <td className="px-5 py-2.5 text-xs text-wood-500">{p.date}</td>
-                        <td className="px-5 py-2.5 text-xs text-wood-700">{p.concept}</td>
-                        <td className={`px-5 py-2.5 text-xs font-medium ${p.points > 0 ? 'text-green-600' : 'text-red-500'}`}>{p.points > 0 ? '+' : ''}{p.points.toLocaleString()}</td>
-                        <td className="px-5 py-2.5 text-xs text-wood-900">{p.balance.toLocaleString()}</td>
+                    {detailTransactions.map((tx: any, i: number) => (
+                      <tr key={tx.id || i} className="hover:bg-sand-50/30">
+                        <td className="px-5 py-2.5 text-xs text-wood-500">{new Date(tx.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td className="px-5 py-2.5 text-xs text-wood-700">{tx.description || tx.order_id || 'Transacción'}</td>
+                        <td className="px-5 py-2.5"><span className={`text-[10px] px-2 py-0.5 rounded-full ${tx.type === 'earn' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{tx.type === 'earn' ? 'Ganados' : 'Canjeados'}</span></td>
+                        <td className={`px-5 py-2.5 text-xs font-medium ${tx.type === 'earn' ? 'text-green-600' : 'text-red-500'}`}>{tx.type === 'earn' ? '+' : '-'}{tx.points.toLocaleString()}</td>
+                        <td className="px-5 py-2.5 text-xs text-wood-900">{(tx.balance_after ?? 0).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                )}
               </div>
             </div>
           )}
 
           {profileTab === 'addresses' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                { label: 'Casa (Predeterminada)', name: 'David Perez', address: 'Blvd. Morelos #234, Col. Centro, Hermosillo, Sonora 83000', phone: '662-361-0742', uses: 10, zone: 'Local Hermosillo' },
-                { label: 'Oficina', name: 'David Perez - RockSage Capital', address: 'Torre Kyo, Piso 8, Blvd. Rodriguez, Hermosillo, Sonora 83100', phone: '662-361-0742', uses: 4, zone: 'Local Hermosillo' },
-              ].map((a, i) => (
-                <div key={i} className="bg-white rounded-xl border border-wood-100 p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs text-wood-900 font-medium">{a.label}</p>
-                    <button className="text-[10px] text-accent-gold hover:underline">Editar</button>
-                  </div>
-                  <p className="text-xs text-wood-700 mb-1">{a.name}</p>
-                  <p className="text-xs text-wood-500 mb-1">{a.address}</p>
-                  <p className="text-xs text-wood-500 mb-2 flex items-center gap-1"><Phone size={10} /> {a.phone}</p>
-                  <div className="flex items-center gap-3 text-[10px] text-wood-400">
-                    <span>Usada {a.uses} veces</span>
-                    <span className="px-1.5 py-0.5 bg-sand-100 rounded">{a.zone}</span>
-                  </div>
-                </div>
-              ))}
+              {detailLoading ? (
+                <div className="col-span-2 p-8 text-center text-wood-400 text-xs">Cargando direcciones...</div>
+              ) : detailAddresses.length === 0 ? (
+                <div className="col-span-2 p-8 text-center text-wood-400 text-xs">Sin direcciones registradas</div>
+              ) : (
+                detailAddresses.map((a: any, i: number) => {
+                  const fullAddress = [a.address_1, a.address_2, a.city, a.province, a.postal_code].filter(Boolean).join(', ');
+                  const fullName = [a.first_name, a.last_name].filter(Boolean).join(' ') || customer.name;
+                  return (
+                    <div key={a.id || i} className="bg-white rounded-xl border border-wood-100 p-5">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs text-wood-900 font-medium">{a.company || (i === 0 ? 'Principal' : `Dirección ${i + 1}`)}</p>
+                        {i === 0 && <span className="text-[9px] px-1.5 py-0.5 bg-accent-gold/10 text-accent-gold rounded-full">Predeterminada</span>}
+                      </div>
+                      <p className="text-xs text-wood-700 mb-1">{fullName}</p>
+                      <p className="text-xs text-wood-500 mb-1">{fullAddress}</p>
+                      {a.phone && <p className="text-xs text-wood-500 mb-2 flex items-center gap-1"><Phone size={10} /> {a.phone}</p>}
+                      <div className="flex items-center gap-3 text-[10px] text-wood-400">
+                        <span>{a.country_code?.toUpperCase() || 'MX'}</span>
+                        {a.postal_code && <span className="px-1.5 py-0.5 bg-sand-100 rounded">CP {a.postal_code}</span>}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
 
-          {profileTab === 'activity' && (
+          {profileTab === 'activity' && (() => {
+            // Build timeline from real orders + transactions
+            const timeline: { type: string; date: string; text: string; icon: any }[] = [];
+            for (const o of detailOrders) {
+              timeline.push({ type: 'order', date: o.created_at, text: `Pedido DSD-${String(o.display_id).padStart(4, '0')} por ${o.total.toLocaleString()}`, icon: ShoppingBag });
+            }
+            for (const tx of detailTransactions) {
+              const isEarn = tx.type === 'earn';
+              timeline.push({
+                type: 'points',
+                date: tx.created_at,
+                text: isEarn ? `Ganó ${tx.points.toLocaleString()} puntos — ${tx.description || ''}` : `Canjeó ${tx.points.toLocaleString()} puntos — ${tx.description || ''}`,
+                icon: isEarn ? Star : Gift,
+              });
+            }
+            timeline.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+            return (
             <div className="bg-white rounded-xl border border-wood-100 p-5">
               <h4 className="text-xs text-wood-400 uppercase tracking-wider mb-4">Timeline de actividad</h4>
+              {detailLoading ? (
+                <div className="p-8 text-center text-wood-400 text-xs">Cargando actividad...</div>
+              ) : timeline.length === 0 ? (
+                <div className="p-8 text-center text-wood-400 text-xs">Sin actividad registrada</div>
+              ) : (
               <div className="space-y-0">
-                {mockActivity.map((a, i) => (
+                {timeline.slice(0, 20).map((a, i) => (
                   <div key={i} className="flex gap-3 pb-4 last:pb-0">
                     <div className="flex flex-col items-center">
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -772,17 +823,19 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                       }`}>
                         <a.icon size={12} />
                       </div>
-                      {i < mockActivity.length - 1 && <div className="w-px flex-1 bg-wood-100 mt-1" />}
+                      {i < Math.min(timeline.length, 20) - 1 && <div className="w-px flex-1 bg-wood-100 mt-1" />}
                     </div>
                     <div className="pb-2">
                       <p className="text-xs text-wood-700">{a.text}</p>
-                      <p className="text-[10px] text-wood-400">{a.date}</p>
+                      <p className="text-[10px] text-wood-400">{new Date(a.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                     </div>
                   </div>
                 ))}
               </div>
+              )}
             </div>
-          )}
+            );
+          })()}
 
           {profileTab === 'notes' && (
             <div className="bg-white rounded-xl border border-wood-100 p-5 space-y-4">
