@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Truck, ShieldCheck, Lock, ChevronDown, ChevronUp, ShoppingBag, CheckCircle2, Trash2, Plus, Minus, Tag, X, AlertCircle } from 'lucide-react';
 import { useCartContext } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice } from '@/config/shipping';
 import { commerce } from '@/lib/commerce';
 import { fbEvent, FB_EVENTS } from '@/lib/meta-pixel';
 import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
 import { PayPalCheckout } from '@/components/checkout/PayPalCheckout';
+import { LoyaltyRedemption } from '@/components/checkout/LoyaltyRedemption';
 import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
@@ -110,6 +112,7 @@ const TextAreaField = ({ label, name, register, errors, placeholder, required = 
 
 export const CheckoutPage = () => {
   const router = useRouter();
+  const { session } = useAuth();
   const stripeRef = React.useRef<StripeCheckoutHandle>(null);
   const { register, handleSubmit, trigger, control, setValue, formState: { errors } } = useForm({
     defaultValues: {
@@ -192,6 +195,15 @@ export const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
+
+  // Loyalty redemption state
+  const [loyaltyPointsToRedeem, setLoyaltyPointsToRedeem] = useState(0);
+  const [loyaltyDiscount, setLoyaltyDiscount] = useState(0); // in centavos
+
+  const handleLoyaltyRedemptionChange = React.useCallback((points: number, discountCentavos: number) => {
+    setLoyaltyPointsToRedeem(points);
+    setLoyaltyDiscount(discountCentavos);
+  }, []);
 
   // Debounce for quantity updates
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -325,8 +337,8 @@ export const CheckoutPage = () => {
   const selectedOptionAmount = selectedOption?.amount ?? 0;
   const shipping = cartShipping > 0 ? cartShipping : selectedOptionAmount;
   const total = cartShipping > 0
-    ? cartTotal
-    : (subtotal - discountTotal + shipping);
+    ? cartTotal - loyaltyDiscount
+    : (subtotal - discountTotal + shipping - loyaltyDiscount);
 
   const cartItems = cart?.lines ?? [];
 
@@ -362,6 +374,35 @@ export const CheckoutPage = () => {
 
   const handleRemovePromo = async (code: string) => {
     await removePromo(code);
+  };
+
+  // Redeem loyalty points after successful payment
+  const redeemLoyaltyPoints = async (orderDisplayId?: string) => {
+    if (loyaltyPointsToRedeem <= 0) return;
+    try {
+      const accessToken = session?.access_token;
+      if (!accessToken) {
+        console.warn('[Loyalty] No auth token available for redeeming points');
+        return;
+      }
+
+      await fetch('/api/loyalty', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          action: 'redeem',
+          points: loyaltyPointsToRedeem,
+          description: `Canje en pedido #${orderDisplayId || 'N/A'} — ${formatPrice(loyaltyDiscount, currencyCode)} de descuento`,
+        }),
+      });
+      console.log(`[Loyalty] Redeemed ${loyaltyPointsToRedeem} points for order #${orderDisplayId}`);
+    } catch (err) {
+      console.error('[Loyalty] Error redeeming points:', err);
+      // Non-blocking: payment already succeeded, log but don't break flow
+    }
   };
 
   const onSubmit = (data: any) => {
@@ -569,12 +610,21 @@ export const CheckoutPage = () => {
              )}
            </div>
 
+           {/* Loyalty Points Redemption */}
+           <LoyaltyRedemption
+             cartTotal={subtotal - discountTotal + shipping}
+             currencyCode={currencyCode}
+             onRedemptionChange={handleLoyaltyRedemptionChange}
+             disabled={cartUpdating}
+           />
+
            {/* Totals */}
            <div className="space-y-3 pt-6 border-t border-wood-200 text-sm">
               <div className="flex justify-between text-wood-600"><span>Subtotal</span><span>{formatPrice(subtotal, currencyCode)}</span></div>
               <div className="flex justify-between text-wood-600"><span>Envío</span><span>{quoteLoading ? 'Cotizando...' : isCalculatedShipping && shipping === 0 ? 'Por cotizar' : shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}</span></div>
               {discountTotal > 0 && <div className="flex justify-between text-green-700 font-medium"><span>Descuento</span><span>-{formatPrice(discountTotal, currencyCode)}</span></div>}
-              <div className="flex justify-between text-xl font-serif text-wood-900 pt-4 border-t border-wood-200 items-baseline"><span>Total</span><span className="font-bold">{formatPrice(total, currencyCode)}</span></div>
+              {loyaltyDiscount > 0 && <div className="flex justify-between text-accent-gold font-medium"><span>Puntos de lealtad</span><span>-{formatPrice(loyaltyDiscount, currencyCode)}</span></div>}
+              <div className="flex justify-between text-xl font-serif text-wood-900 pt-4 border-t border-wood-200 items-baseline"><span>Total</span><span className="font-bold">{formatPrice(Math.max(0, total), currencyCode)}</span></div>
            </div>
         </div>
       </aside>
@@ -875,8 +925,9 @@ export const CheckoutPage = () => {
                                   num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
                                 });
                                 paymentCompletedRef.current = true;
-                                clearCart();
                                 const orderId = data.order_display_id || 'pending';
+                                redeemLoyaltyPoints(orderId);
+                                clearCart();
                                 router.push(`/checkout/success?order=${orderId}&mp_id=${data.id}`);
                               }}
                               onPaymentError={(error) => {
@@ -917,8 +968,9 @@ export const CheckoutPage = () => {
                                     num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
                                   });
                                   paymentCompletedRef.current = true;
-                                  clearCart();
                                   const orderId = data.order_display_id || 'pending';
+                                  redeemLoyaltyPoints(orderId);
+                                  clearCart();
                                   router.push(`/checkout/success?order=${orderId}&provider=stripe&pi=${data.payment_intent_id || ''}`);
                                 }}
                                 onPaymentError={(error) => {
@@ -967,8 +1019,9 @@ export const CheckoutPage = () => {
                                   num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
                                 });
                                 paymentCompletedRef.current = true;
-                                clearCart();
                                 const orderId = data.order_display_id || 'pending';
+                                redeemLoyaltyPoints(orderId);
+                                clearCart();
                                 router.push(`/checkout/success?order=${orderId}&provider=paypal&pp=${data.paypal_order_id || ''}`);
                               }}
                               onPaymentError={(error) => {
