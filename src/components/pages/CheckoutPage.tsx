@@ -15,6 +15,8 @@ import { MercadoPagoBrick } from '@/components/checkout/MercadoPagoBrick';
 import { StripeCheckout, StripeCheckoutHandle } from '@/components/checkout/StripeCheckout';
 import { PayPalCheckout } from '@/components/checkout/PayPalCheckout';
 import { LoyaltyRedemption } from '@/components/checkout/LoyaltyRedemption';
+import { useLoyalty } from '@/hooks/useLoyalty';
+import { getTierConfig, normalizeTierId, getTierName } from '@/data/loyalty';
 import { LOCATIONS } from '@/data/locations';
 // CheckoutHeader/Footer are part of the left panel design, rendered inline below
 import { CheckoutFooter } from '@/components/layout/CheckoutFooter';
@@ -205,6 +207,13 @@ export const CheckoutPage = () => {
     setLoyaltyDiscount(discountCentavos);
   }, []);
 
+  // Tier discount — automatic permanent discount based on membership level
+  const { profile: loyaltyProfile } = useLoyalty();
+  const userTierId = normalizeTierId(loyaltyProfile?.current_tier || 'pino');
+  const userTierConfig = getTierConfig(userTierId);
+  const tierDiscountPercent = userTierConfig?.discount_percent || 0;
+  const tierDiscountAmount = tierDiscountPercent > 0 ? Math.round(cartSubtotal * tierDiscountPercent / 100) : 0;
+
   // Debounce for quantity updates
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -337,8 +346,8 @@ export const CheckoutPage = () => {
   const selectedOptionAmount = selectedOption?.amount ?? 0;
   const shipping = cartShipping > 0 ? cartShipping : selectedOptionAmount;
   const total = cartShipping > 0
-    ? cartTotal - loyaltyDiscount
-    : (subtotal - discountTotal + shipping - loyaltyDiscount);
+    ? cartTotal - loyaltyDiscount - tierDiscountAmount
+    : (subtotal - discountTotal - tierDiscountAmount + shipping - loyaltyDiscount);
 
   const cartItems = cart?.lines ?? [];
 
@@ -612,7 +621,7 @@ export const CheckoutPage = () => {
 
            {/* Loyalty Points Redemption */}
            <LoyaltyRedemption
-             cartTotal={subtotal - discountTotal + shipping}
+             cartTotal={subtotal - discountTotal - tierDiscountAmount + shipping}
              currencyCode={currencyCode}
              onRedemptionChange={handleLoyaltyRedemptionChange}
              disabled={cartUpdating}
@@ -623,6 +632,7 @@ export const CheckoutPage = () => {
               <div className="flex justify-between text-wood-600"><span>Subtotal</span><span>{formatPrice(subtotal, currencyCode)}</span></div>
               <div className="flex justify-between text-wood-600"><span>Envío</span><span>{quoteLoading ? 'Cotizando...' : isCalculatedShipping && shipping === 0 ? 'Por cotizar' : shipping === 0 ? 'Gratis' : formatPrice(shipping, currencyCode)}</span></div>
               {discountTotal > 0 && <div className="flex justify-between text-green-700 font-medium"><span>Descuento</span><span>-{formatPrice(discountTotal, currencyCode)}</span></div>}
+              {tierDiscountAmount > 0 && <div className="flex justify-between text-amber-700 font-medium"><span>Miembro {getTierName(userTierId)} ({tierDiscountPercent}%)</span><span>-{formatPrice(tierDiscountAmount, currencyCode)}</span></div>}
               {loyaltyDiscount > 0 && <div className="flex justify-between text-accent-gold font-medium"><span>Puntos de lealtad</span><span>-{formatPrice(loyaltyDiscount, currencyCode)}</span></div>}
               <div className="flex justify-between text-xl font-serif text-wood-900 pt-4 border-t border-wood-200 items-baseline"><span>Total</span><span className="font-bold">{formatPrice(Math.max(0, total), currencyCode)}</span></div>
            </div>
@@ -943,6 +953,7 @@ export const CheckoutPage = () => {
                                 amount={total}
                                 cartId={cart?.id || ''}
                                 payerEmail={watchedEmail || ''}
+                                loyaltyDiscountCentavos={loyaltyDiscount}
                                 payerFirstName={watchedFirstName || ''}
                                 payerLastName={watchedLastName || ''}
                                 shippingAddress={{

@@ -22,6 +22,7 @@ interface StripeCheckoutProps {
   onPaymentSuccess: (data: any) => void;
   onPaymentError: (error: any) => void;
   payerEmail?: string;
+  loyaltyDiscountCentavos?: number;
   payerFirstName?: string;
   payerLastName?: string;
   shippingAddress?: {
@@ -215,6 +216,7 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
   onPaymentSuccess,
   onPaymentError,
   payerEmail = '',
+  loyaltyDiscountCentavos = 0,
   payerFirstName = '',
   payerLastName = '',
   shippingAddress,
@@ -251,7 +253,7 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
         const res = await fetch('/api/stripe/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount, currency: 'mxn', cart_id: cartId }),
+          body: JSON.stringify({ amount, currency: 'mxn', cart_id: cartId, email: payerEmail, loyalty_discount: loyaltyDiscountCentavos }),
         });
         const data = await res.json();
         if (data.clientSecret) {
