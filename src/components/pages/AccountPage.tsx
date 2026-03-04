@@ -10,6 +10,7 @@ import { AccountSettings } from '@/components/account/AccountSettings';
 import { OrdersList } from '@/components/account/OrdersList';
 import { LoyaltyDashboard } from '@/components/account/LoyaltyDashboard';
 import { LOYALTY_TIERS } from '@/data/loyalty';
+import { useLoyalty } from '@/hooks/useLoyalty';
 import { AddressBook } from '@/components/account/AddressBook';
 import { Wallet } from '@/components/account/Wallet';
 import { Wishlist } from '@/components/account/Wishlist';
@@ -27,14 +28,15 @@ export type AccountSection = 'overview' | 'loyalty' | 'orders' | 'quotations' | 
 export const AccountPage = () => {
   const pathname = usePathname();
   const [activeSection, setActiveSection] = useState<AccountSection>('overview');
-  
-  // Mock User Data for Loyalty
-  const lifetimeSpend = 6500;
+  const { profile: loyaltyProfile } = useLoyalty();
+
+  // Derive tier from real loyalty data (lifetime_spend in centavos → pesos)
+  const lifetimeSpend = loyaltyProfile?.lifetime_spend ? loyaltyProfile.lifetime_spend / 100 : 0;
   const currentTier = LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend)) || LOYALTY_TIERS[0];
 
   const renderSection = () => {
     switch (activeSection) {
-      case 'overview': return <AccountOverview onChangeSection={setActiveSection} lifetimeSpend={lifetimeSpend} />;
+      case 'overview': return <AccountOverview onChangeSection={setActiveSection} />;
       case 'loyalty': return <LoyaltyDashboard />;
       case 'orders': return <OrdersList />;
       case 'quotations': return <QuotationsList />;
@@ -48,7 +50,7 @@ export const AccountPage = () => {
       case 'designs': return <SavedDesigns />;
       case 'business': return <BusinessDashboard />;
       case 'billing': return <BillingDashboard />;
-      default: return <AccountOverview onChangeSection={setActiveSection} lifetimeSpend={lifetimeSpend} />;
+      default: return <AccountOverview onChangeSection={setActiveSection} />;
     }
   };
 

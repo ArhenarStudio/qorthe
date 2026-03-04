@@ -1,20 +1,21 @@
 "use client";
 
 import React from 'react';
-import { Package, MapPin, CreditCard, ChevronRight, TrendingUp, Lock, Mail, Award, Clock, AlertCircle, CheckCircle, ArrowRight, Info } from 'lucide-react';
+import { Package, MapPin, CreditCard, ChevronRight, TrendingUp, Lock, Mail, Award, Clock, AlertCircle, CheckCircle, ArrowRight, Info, Loader2 } from 'lucide-react';
 import { AccountSection } from '@/components/pages/AccountPage';
 import { LOYALTY_TIERS } from '@/data/loyalty';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLoyalty } from '@/hooks/useLoyalty';
 const appleWalletImg = "/images/apple-wallet.png";
 const googleWalletImg = "/images/google-wallet.png";
 
 interface AccountOverviewProps {
   onChangeSection: (section: AccountSection) => void;
-  lifetimeSpend?: number;
 }
 
-export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSection, lifetimeSpend = 6500 }) => {
+export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSection }) => {
   const { user, medusaCustomer } = useAuth();
+  const { profile: loyaltyProfile, loading: loyaltyLoading } = useLoyalty();
 
   // Derive display name
   const displayName = medusaCustomer?.first_name
@@ -22,9 +23,23 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
     || user?.email?.split('@')[0]
     || 'Miembro';
 
-  // Derived Loyalty State (matching LoyaltyDashboard logic)
+  // Real Loyalty State from Supabase (with fallback to 0 for new users)
+  // lifetime_spend is stored in centavos in Supabase, convert to pesos for display
+  const lifetimeSpend = loyaltyProfile?.lifetime_spend ? loyaltyProfile.lifetime_spend / 100 : 0;
+  const currentPoints = loyaltyProfile?.points_balance ?? 0;
   const currentTier = LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend)) || LOYALTY_TIERS[0];
-  const currentPoints = 2540;
+
+  // Member since date from loyalty profile or user created_at
+  const memberSince = loyaltyProfile?.created_at
+    ? new Date(loyaltyProfile.created_at).toLocaleDateString('es-MX', { month: '2-digit', year: 'numeric' })
+    : user?.created_at
+      ? new Date(user.created_at).toLocaleDateString('es-MX', { month: '2-digit', year: 'numeric' })
+      : '--/--';
+
+  // Customer ID display (short hash from user id)
+  const customerIdDisplay = user?.id
+    ? `DS-${user.id.slice(-4).toUpperCase()}`
+    : 'DS-----';
 
   // Mock Data for Dashboard
   const activeOrder = {
@@ -164,11 +179,11 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                         <div className="flex justify-between items-end border-t border-wood-900/10 dark:border-white/10 pt-4">
                            <div>
                                <p className="text-[8px] uppercase tracking-widest mb-0.5 text-wood-500 dark:text-sand-500 font-bold">Miembro Desde</p>
-                               <p className="font-mono text-[10px] text-wood-800 dark:text-sand-200">12/2023</p>
+                               <p className="font-mono text-[10px] text-wood-800 dark:text-sand-200">{memberSince}</p>
                            </div>
                            <div className="text-right">
                                <p className="text-[8px] uppercase tracking-widest mb-0.5 text-wood-500 dark:text-sand-500 font-bold">ID Cliente</p>
-                               <p className="font-mono text-[10px] text-wood-800 dark:text-sand-200 tracking-wider">DS-8821</p>
+                               <p className="font-mono text-[10px] text-wood-800 dark:text-sand-200 tracking-wider">{customerIdDisplay}</p>
                            </div>
                         </div>
                      </div>
