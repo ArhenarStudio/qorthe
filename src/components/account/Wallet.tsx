@@ -6,10 +6,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { LOYALTY_TIERS } from '@/data/loyalty';
 
 export const Wallet = () => {
-  const platinumTier = LOYALTY_TIERS.find(t => t.id === 'platinum')!;
-  const cardStyle = platinumTier.styles.card;
-  const textStyle = platinumTier.styles.text;
-  const badgeStyle = platinumTier.styles.badge;
+  const ebanoTier = LOYALTY_TIERS.find(t => t.id === 'ebano')!;
+  const cardStyle = ebanoTier.styles.card;
+  const textStyle = ebanoTier.styles.text;
+  const badgeStyle = ebanoTier.styles.badge;
 
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [editingCard, setEditingCard] = useState<any>(null);

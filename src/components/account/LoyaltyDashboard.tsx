@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Award, Gift, TrendingUp, Info, ChevronRight, Check, Lock, AlertCircle, Plus, Minus, History, HelpCircle, Star, Loader2, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LOYALTY_TIERS } from '@/data/loyalty';
+import { LOYALTY_TIERS, normalizeTierId } from '@/data/loyalty';
 import { useAuth } from '@/contexts/AuthContext';
 
 // --- Types ---
@@ -35,7 +35,7 @@ const FAQS = [
   { q: '¿Cómo gano puntos?', a: 'Ganas 1 punto por cada $1 MXN gastado en productos elegibles. Los puntos se abonan una vez que tu pedido ha sido entregado.' },
   { q: '¿Cuánto valen mis puntos?', a: 'Cada punto equivale a $0.01 MXN. Por ejemplo, 1,000 puntos son $10 MXN de descuento.' },
   { q: '¿Cómo canjeo mis puntos?', a: 'Puedes canjear tus puntos directamente en el checkout. Selecciona la opción "Usar puntos" antes de finalizar tu compra.' },
-  { q: '¿Los puntos caducan?', a: 'Sí, los puntos tienen una vigencia de 12 meses desde la fecha en que fueron generados.' },
+  { q: '¿Los puntos caducan?', a: 'Sí, los puntos tienen una vigencia de 6 meses desde la fecha en que fueron generados.' },
   { q: '¿Cómo subo de nivel?', a: 'Subes de nivel acumulando compras. El nivel se calcula en base a tu gasto total histórico en la tienda.' },
 ];
 
@@ -130,9 +130,10 @@ export const LoyaltyDashboard = () => {
   const currentPoints = profile?.points || 0;
   const lifetimeSpend = profile ? profile.lifetime_spend / 100 : 0; // convert centavos to pesos
   
-  const currentTier = LOYALTY_TIERS.find(
-    t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend)
-  ) || LOYALTY_TIERS[0];
+  const rawTierId = profile?.tier || 'pino';
+  const currentTier = LOYALTY_TIERS.find(t => t.id === normalizeTierId(rawTierId))
+    || LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend))
+    || LOYALTY_TIERS[0];
   
   const nextTier = LOYALTY_TIERS.find(t => t.minSpend > lifetimeSpend);
   const nextTierThreshold = nextTier ? nextTier.minSpend : lifetimeSpend;
@@ -310,7 +311,7 @@ export const LoyaltyDashboard = () => {
                       </li>
                     ))}
                   </ul>
-                  {tier.minSpend >= 10000 && !isLocked && !isCurrent && (
+                  {tier.minSpend >= 800000 && !isLocked && !isCurrent && (
                     <div className="mt-6 pt-4 border-t border-wood-50 dark:border-wood-800/50 flex justify-center">
                        <span className="text-[10px] font-bold text-accent-gold uppercase tracking-widest flex items-center gap-1.5">
                          <Star className="w-3 h-3 fill-current" /> Nivel Exclusivo

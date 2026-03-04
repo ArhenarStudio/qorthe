@@ -41,7 +41,7 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({ activeSection, o
         </div>
         <div className="overflow-hidden">
           <p className="font-medium text-wood-900 dark:text-sand-100 truncate text-sm">Alejandro García</p>
-          <p className="text-[10px] uppercase tracking-widest text-wood-500 dark:text-sand-400 truncate">Socio {currentTierName || 'Bronce'}</p>
+          <p className="text-[10px] uppercase tracking-widest text-wood-500 dark:text-sand-400 truncate">Socio {currentTierName || 'Pino'}</p>
         </div>
       </div>
       

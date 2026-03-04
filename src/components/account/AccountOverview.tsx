@@ -3,7 +3,7 @@
 import React from 'react';
 import { Package, MapPin, CreditCard, ChevronRight, TrendingUp, Lock, Mail, Award, Clock, AlertCircle, CheckCircle, ArrowRight, Info, Loader2 } from 'lucide-react';
 import { AccountSection } from '@/components/pages/AccountPage';
-import { LOYALTY_TIERS } from '@/data/loyalty';
+import { LOYALTY_TIERS, getTierName, normalizeTierId } from '@/data/loyalty';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLoyalty } from '@/hooks/useLoyalty';
 const appleWalletImg = "/images/apple-wallet.png";
@@ -27,7 +27,10 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
   // lifetime_spend is stored in centavos in Supabase, convert to pesos for display
   const lifetimeSpend = loyaltyProfile?.lifetime_spend ? loyaltyProfile.lifetime_spend / 100 : 0;
   const currentPoints = loyaltyProfile?.points_balance ?? 0;
-  const currentTier = LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend)) || LOYALTY_TIERS[0];
+  const rawTierId = loyaltyProfile?.current_tier || 'pino';
+  const currentTier = LOYALTY_TIERS.find(t => t.id === normalizeTierId(rawTierId))
+    || LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend))
+    || LOYALTY_TIERS[0];
 
   // Member since date from loyalty profile or user created_at
   const memberSince = loyaltyProfile?.created_at
@@ -106,10 +109,10 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                       <div className="h-2.5 w-full bg-wood-100 dark:bg-wood-900 rounded-full overflow-hidden mb-3">
                          <div 
                            className={`h-full rounded-full transition-all duration-1000 ${
-                              currentTier.id === 'platinum' ? 'bg-zinc-400' :
-                              currentTier.id === 'gold' ? 'bg-yellow-500' :
-                              currentTier.id === 'silver' ? 'bg-neutral-400' :
-                              'bg-orange-500'
+                              currentTier.id === 'ebano' ? 'bg-indigo-500' :
+                              currentTier.id === 'parota' ? 'bg-yellow-600' :
+                              currentTier.id === 'nogal' ? 'bg-amber-700' :
+                              'bg-amber-500'
                            }`}
                            style={{ width: `${progressPercent}%` }}
                          ></div>
@@ -146,7 +149,7 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                               <p className="text-[9px] uppercase tracking-widest mt-1.5 text-wood-600 font-medium">Design Member</p>
                            </div>
                            <span className={`px-2.5 py-1 rounded border text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm ${currentTier.styles.badge.replace('bg-', 'bg-opacity-80 bg-')}`}>
-                              <div className={`w-1.5 h-1.5 rounded-full ${currentTier.id === 'platinum' ? 'bg-zinc-500' : currentTier.id === 'gold' ? 'bg-yellow-600' : currentTier.id === 'silver' ? 'bg-neutral-500' : 'bg-orange-600'}`}></div>
+                              <div className={`w-1.5 h-1.5 rounded-full ${currentTier.id === 'ebano' ? 'bg-indigo-600' : currentTier.id === 'parota' ? 'bg-yellow-700' : currentTier.id === 'nogal' ? 'bg-amber-800' : 'bg-amber-600'}`}></div>
                               {currentTier.name}
                            </span>
                         </div>
