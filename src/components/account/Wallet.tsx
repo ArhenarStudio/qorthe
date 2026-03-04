@@ -3,13 +3,17 @@
 import React, { useState } from 'react';
 import { CreditCard, Plus, Trash2, ShieldCheck, Lock, X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LOYALTY_TIERS } from '@/data/loyalty';
+import { getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
+import { useLoyalty } from '@/hooks/useLoyalty';
+import { useLoyaltyConfig } from '@/hooks/useLoyaltyConfig';
 
 export const Wallet = () => {
-  const ebanoTier = LOYALTY_TIERS.find(t => t.id === 'ebano')!;
-  const cardStyle = ebanoTier.styles.card;
-  const textStyle = ebanoTier.styles.text;
-  const badgeStyle = ebanoTier.styles.badge;
+  const { profile: loyaltyProfile } = useLoyalty();
+  const { config: loyaltyConfig } = useLoyaltyConfig();
+  const rawTierId = loyaltyProfile?.current_tier || 'pino';
+  const normalizedId = normalizeTierId(rawTierId);
+  const currentTierConfig = loyaltyConfig.tiers.find(t => t.id === normalizedId) || loyaltyConfig.tiers[0];
+  const tierStyles = getTierInlineStyles(currentTierConfig);
 
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [editingCard, setEditingCard] = useState<any>(null);
@@ -180,7 +184,8 @@ export const Wallet = () => {
         {/* DavidSon's Design Member Card (Hero) */}
         <motion.div 
            whileHover={{ y: -5 }}
-           className={`relative h-56 rounded-2xl p-8 border shadow-xl overflow-hidden group/card ${cardStyle} ${textStyle}`}
+           className="relative h-56 rounded-2xl p-8 border shadow-xl overflow-hidden group/card"
+           style={{ ...tierStyles.card, ...tierStyles.cardText, borderColor: currentTierConfig.colors.gradient_from + '60' }}
         >
              {/* Card Texture */}
              <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
@@ -194,7 +199,7 @@ export const Wallet = () => {
                       <h3 className="font-serif text-xl tracking-wide leading-none text-wood-900">DavidSon's</h3>
                       <p className="text-[9px] uppercase tracking-widest mt-1.5 text-wood-600 font-medium">Design Member</p>
                    </div>
-                   <span className={`px-2.5 py-1 rounded border text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm ${badgeStyle}`}>
+                   <span className="px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm" style={tierStyles.badge}>
                       <div className="w-1.5 h-1.5 rounded-full bg-zinc-500"></div>
                       Platinum
                    </span>

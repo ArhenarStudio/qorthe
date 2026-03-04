@@ -4,16 +4,17 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Award, Check, ChevronRight, Star, CreditCard, Gift, TrendingUp, Shield, Zap, Crown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { LoyaltyTier } from '@/data/loyalty';
+import { LoyaltyTier, LoyaltyTierConfig, getTierInlineStyles, getTierBenefits } from '@/data/loyalty';
 import { useLoyaltyConfig } from '@/hooks/useLoyaltyConfig';
 
 // --- Sub-components ---
 
-const LoyaltyCard = ({ tier, isHovered = false }: { tier: LoyaltyTier, isHovered?: boolean }) => {
+const LoyaltyCard = ({ tier }: { tier: LoyaltyTierConfig }) => {
+  const s = getTierInlineStyles(tier);
   return (
-    <div className={`relative w-full aspect-[1.586/1] rounded-2xl p-6 shadow-2xl overflow-hidden transition-all duration-500 ${isHovered ? 'scale-105 shadow-2xl z-10' : 'scale-100'}`}>
-      {/* Background Gradient & Texture */}
-      <div className={`absolute inset-0 ${tier.styles.card} rounded-2xl`} />
+    <div className="relative w-full aspect-[1.586/1] rounded-2xl p-6 shadow-2xl overflow-hidden transition-all duration-500 scale-105 z-10">
+      {/* Background Gradient */}
+      <div className="absolute inset-0 rounded-2xl" style={s.card} />
       
       {/* Noise Texture Overlay */}
       <div className="absolute inset-0 w-full h-full opacity-[0.03] rounded-2xl pointer-events-none" 
@@ -24,7 +25,7 @@ const LoyaltyCard = ({ tier, isHovered = false }: { tier: LoyaltyTier, isHovered
       <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none transform translate-x-[-100%] hover:translate-x-[100%]" />
 
       {/* Content */}
-      <div className={`relative z-10 h-full flex flex-col justify-between ${tier.styles.text}`}>
+      <div className="relative z-10 h-full flex flex-col justify-between" style={s.cardText}>
         <div className="flex justify-between items-start">
           <div className="flex flex-col">
             <span className="text-xs font-bold uppercase tracking-widest opacity-80">DavidSon's</span>
@@ -149,7 +150,7 @@ export const LoyaltyPage = () => {
                 pb-8 lg:pb-0
                 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']
               ">
-                {LOYALTY_TIERS.map((tier, index) => {
+                {config.tiers.map((tier, index) => {
                   // Desktop Positioning (Diagonal Cascade)
                   const desktopClasses = [
                     "lg:top-[68%] lg:left-[2%] lg:z-10 lg:scale-90 lg:opacity-90 lg:hover:z-50 lg:hover:scale-95",    
@@ -170,11 +171,11 @@ export const LoyaltyPage = () => {
                       `}
                     >
                        {/* Connection Line (Desktop Only) */}
-                       {index < LOYALTY_TIERS.length - 1 && (
+                       {index < config.tiers.length - 1 && (
                          <div className="hidden lg:block absolute top-1/2 -right-[15%] w-[30%] h-px bg-[#C5A065]/30 -z-10 rotate-[-15deg]" />
                        )}
                        
-                       <LoyaltyCard tier={tier} isHovered={true} />
+                       <LoyaltyCard tier={tier} />
                        
                        {/* Label (Desktop Only) */}
                        <div className="hidden lg:block absolute -bottom-8 left-6 text-wood-400 font-serif italic text-sm opacity-0 group-hover:opacity-100 transition-opacity">
@@ -247,19 +248,21 @@ export const LoyaltyPage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {LOYALTY_TIERS.map((tier) => {
-              const minPesos = Math.round(tier.minSpend / 100);
-              const maxPesos = tier.maxSpend ? Math.round(tier.maxSpend / 100) : null;
+            {config.tiers.map((tier) => {
+              const minPesos = Math.round(tier.min_spend / 100);
+              const maxPesos = tier.max_spend ? Math.round(tier.max_spend / 100) : null;
               const range = maxPesos 
                 ? `$${minPesos.toLocaleString()} - $${maxPesos.toLocaleString()}`
                 : `$${minPesos.toLocaleString()}+`;
+              const s = getTierInlineStyles(tier);
+              const benefits = getTierBenefits(tier);
               
               return (
                 <div key={tier.id} className="bg-white dark:bg-wood-900 rounded-2xl overflow-hidden shadow-xl border border-wood-100 dark:border-wood-800 flex flex-col hover:-translate-y-2 transition-transform duration-300">
                   {/* Visual Header */}
-                  <div className={`h-24 ${tier.styles.card} relative overflow-hidden flex items-center justify-center`}>
+                  <div className="h-24 relative overflow-hidden flex items-center justify-center" style={s.card}>
                     <div className="absolute inset-0 opacity-20 mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }} />
-                    <h3 className={`font-serif text-2xl font-bold ${tier.styles.text}`}>{tier.name}</h3>
+                    <h3 className="font-serif text-2xl font-bold" style={s.cardText}>{tier.name}</h3>
                   </div>
                   
                   <div className="p-6 flex-1 flex flex-col">
@@ -269,7 +272,7 @@ export const LoyaltyPage = () => {
                     </div>
                     
                     <ul className="space-y-3 mb-8 flex-1">
-                      {tier.benefits.map((benefit, i) => (
+                      {benefits.map((benefit, i) => (
                         <li key={i} className="flex items-start gap-3 text-sm text-wood-600 dark:text-sand-300">
                           <Check className="w-4 h-4 text-accent-gold mt-0.5 shrink-0" />
                           <span>{benefit}</span>
@@ -278,7 +281,7 @@ export const LoyaltyPage = () => {
                     </ul>
                     
                     <div className="mt-auto">
-                      <div className={`w-full h-1 ${tier.styles.card} rounded-full opacity-50`} />
+                      <div className="w-full h-1 rounded-full opacity-50" style={s.card} />
                     </div>
                   </div>
                 </div>

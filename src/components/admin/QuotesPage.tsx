@@ -34,12 +34,15 @@ const statusConfig: Record<QuoteStatus, { label: string; cls: string; dot: strin
   cancelada:          { label: 'Cancelada',          cls: 'bg-gray-200 text-gray-600',    dot: 'bg-gray-500' },
 };
 
-const tierConfig: Record<string, { label: string; cls: string; icon: string }> = {
-  bronce:  { label: 'Bronce',  cls: 'bg-amber-100 text-amber-700',       icon: '🥉' },
-  plata:   { label: 'Plata',   cls: 'bg-gray-100 text-gray-600',         icon: '🥈' },
-  oro:     { label: 'Oro',     cls: 'bg-accent-gold/20 text-accent-gold', icon: '🥇' },
-  platino: { label: 'Platino', cls: 'bg-slate-200 text-slate-700',       icon: '💎' },
-};
+import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
+
+const TIER_EMOJI_Q: Record<string, string> = { pino: '🌲', nogal: '🪵', parota: '✨', ebano: '🖤', bronce: '🌲', plata: '🪵', oro: '✨', platino: '🖤' };
+
+function getQuoteTierBadge(tierId: string) {
+  const normalized = normalizeTierId(tierId);
+  const tier = DEFAULT_LOYALTY_CONFIG.tiers.find(t => t.id === normalized) || DEFAULT_LOYALTY_CONFIG.tiers[0];
+  return { name: tier.name, styles: getTierInlineStyles(tier), emoji: TIER_EMOJI_Q[tierId] || '🌲' };
+}
 
 const CHART_COLORS = ['#C5A065', '#5D4037', '#A1887F', '#D7CCC8', '#8D6E63'];
 
@@ -252,7 +255,7 @@ const NewQuotesList: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) =>
                 </div>
                 <p className="text-xs text-wood-700 mt-1">
                   {q.customer.name}
-                  {q.customer.tier && <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded-full ${tierConfig[q.customer.tier]?.cls}`}>{tierConfig[q.customer.tier]?.icon} {tierConfig[q.customer.tier]?.label}</span>}
+                  {q.customer.tier && (() => { const tb = getQuoteTierBadge(q.customer.tier); return <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full" style={tb.styles.badge}>{tb.emoji} {tb.name}</span>; })()}
                   {q.customer.orders > 0 && <span className="text-wood-400 ml-2">— {q.customer.orders} pedidos previos</span>}
                 </p>
                 <p className="text-[11px] text-wood-400 mt-0.5">{q.customer.email}{q.customer.phone ? ` | ${q.customer.phone}` : ''}</p>
@@ -333,7 +336,7 @@ const NegotiationTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote)
                 <td className="px-4 py-3 text-xs text-wood-700">{q.customer.name}</td>
                 <td className="px-4 py-3">
                   {q.customer.tier ? (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${tierConfig[q.customer.tier]?.cls}`}>{tierConfig[q.customer.tier]?.label}</span>
+                    (() => { const tb = getQuoteTierBadge(q.customer.tier); return <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={tb.styles.badge}>{tb.name}</span>; })()
                   ) : <span className="text-[10px] text-wood-400">—</span>}
                 </td>
                 <td className="px-4 py-3 text-xs text-wood-600">{q.pieces.length}</td>
@@ -682,9 +685,10 @@ const QuoteDetail: React.FC<{ quote: FullQuote; onBack: () => void }> = ({ quote
             {q.customer.phone && <p className="text-[11px] text-wood-500">{q.customer.phone}</p>}
             {q.customer.tier && (
               <div className="flex items-center gap-2 mt-2">
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${tierConfig[q.customer.tier]?.cls}`}>
-                  {tierConfig[q.customer.tier]?.icon} {tierConfig[q.customer.tier]?.label}
-                </span>
+                {(() => { const tb = getQuoteTierBadge(q.customer.tier); return (
+                <span className="text-[10px] px-2 py-0.5 rounded-full" style={tb.styles.badge}>
+                  {tb.emoji} {tb.name}
+                </span>); })()}
                 <span className="text-[10px] text-wood-400">{q.customer.points.toLocaleString()} puntos</span>
               </div>
             )}

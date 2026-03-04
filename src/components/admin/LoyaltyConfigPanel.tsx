@@ -29,10 +29,10 @@ interface Toast {
 }
 
 const COLOR_PRESETS = [
-  { label: 'Pino (arena)', from: '#E8D5B7', via: '#C4A882', to: '#8B6F47' },
-  { label: 'Nogal (café)', from: '#8B6F47', via: '#5D4532', to: '#3A2A1C' },
-  { label: 'Parota (dorado)', from: '#D4A76A', via: '#B8860B', to: '#8B6914' },
-  { label: 'Ébano (azul)', from: '#1A1A2E', via: '#16213E', to: '#0F3460' },
+  { label: 'Pino (arena)', from: '#F2E6D0', via: '#D4B896', to: '#A08060' },
+  { label: 'Nogal (café)', from: '#8B7355', via: '#5C4033', to: '#3B2716' },
+  { label: 'Parota (dorado)', from: '#E8C87A', via: '#C49A3C', to: '#8B6F1E' },
+  { label: 'Ébano (negro)', from: '#2D2D3D', via: '#1A1A28', to: '#0D0D14' },
   { label: 'Rosa Morada', from: '#D4A0C0', via: '#9B4DCA', to: '#6B2FA0' },
   { label: 'Cedro Rojo', from: '#E8B4A0', via: '#CD5C5C', to: '#8B2500' },
 ];

@@ -3,6 +3,8 @@
 // Reads from /api/loyalty/config (Supabase), with hardcoded fallback
 // ═══════════════════════════════════════════════════════════
 
+import type React from "react";
+
 // ── Types ──────────────────────────────────────────────
 
 export interface LoyaltyTierColors {
@@ -94,7 +96,7 @@ export const DEFAULT_LOYALTY_CONFIG: LoyaltyConfig = {
       early_access_hours: 0,
       upgrade_gift: null,
       priority_support: false,
-      colors: { gradient_from: "#E8D5B7", gradient_via: "#C4A882", gradient_to: "#8B6F47" },
+      colors: { gradient_from: "#F2E6D0", gradient_via: "#D4B896", gradient_to: "#A08060" },
     },
     {
       id: "nogal",
@@ -105,7 +107,7 @@ export const DEFAULT_LOYALTY_CONFIG: LoyaltyConfig = {
       early_access_hours: 48,
       upgrade_gift: null,
       priority_support: false,
-      colors: { gradient_from: "#8B6F47", gradient_via: "#5D4532", gradient_to: "#3A2A1C" },
+      colors: { gradient_from: "#8B7355", gradient_via: "#5C4033", gradient_to: "#3B2716" },
     },
     {
       id: "parota",
@@ -116,7 +118,7 @@ export const DEFAULT_LOYALTY_CONFIG: LoyaltyConfig = {
       early_access_hours: 48,
       upgrade_gift: "coupon_15",
       priority_support: false,
-      colors: { gradient_from: "#D4A76A", gradient_via: "#B8860B", gradient_to: "#8B6914" },
+      colors: { gradient_from: "#E8C87A", gradient_via: "#C49A3C", gradient_to: "#8B6F1E" },
     },
     {
       id: "ebano",
@@ -127,7 +129,7 @@ export const DEFAULT_LOYALTY_CONFIG: LoyaltyConfig = {
       early_access_hours: 72,
       upgrade_gift: "gift_and_coupons",
       priority_support: true,
-      colors: { gradient_from: "#1A1A2E", gradient_via: "#16213E", gradient_to: "#0F3460" },
+      colors: { gradient_from: "#2D2D3D", gradient_via: "#1A1A28", gradient_to: "#0D0D14" },
     },
   ],
   points_per_mxn: 1,
@@ -190,6 +192,10 @@ const TIER_MIGRATION: Record<string, string> = {
   silver: "nogal",
   gold: "parota",
   platinum: "ebano",
+  bronce: "pino",
+  plata: "nogal",
+  oro: "parota",
+  platino: "ebano",
 };
 
 export function normalizeTierId(tierId: string): string {
@@ -261,9 +267,13 @@ export function getTierBenefits(tier: LoyaltyTierConfig): string[] {
 
 // ── Helper: Convert tier config to legacy LoyaltyTier ──
 // For backward compatibility with components that use the old format
+// NOTE: styles.card etc use Tailwind arbitrary values — these only work
+// if the exact string is present at build time. For dynamic colors from
+// the DB, components should use getTierInlineStyles() instead.
 
 export function tierConfigToLegacy(tier: LoyaltyTierConfig): LoyaltyTier {
   const { colors } = tier;
+  const isDark = isColorDark(colors.gradient_to);
   return {
     id: tier.id,
     name: tier.name,
@@ -272,15 +282,106 @@ export function tierConfigToLegacy(tier: LoyaltyTierConfig): LoyaltyTier {
     discountPercent: tier.discount_percent,
     benefits: getTierBenefits(tier),
     styles: {
-      card: `bg-gradient-to-br from-[${colors.gradient_from}] via-[${colors.gradient_via}] to-[${colors.gradient_to}]`,
-      icon: tier.id === "ebano"
-        ? `bg-[${colors.gradient_to}] text-[#C5A065]`
-        : `bg-[${colors.gradient_to}] text-[${colors.gradient_from}]`,
-      badge: `bg-[${colors.gradient_via}]/15 text-[${colors.gradient_to}] border border-[${colors.gradient_via}]/30`,
-      text: `text-[${colors.gradient_to}]`,
-      border: `border-[${colors.gradient_from}]/60`,
+      // These are kept for backward compat but components should prefer inline styles
+      card: "", // Deprecated — use getTierInlineStyles().card
+      icon: "", // Deprecated — use getTierInlineStyles().iconBg
+      badge: "", // Deprecated — use getTierInlineStyles().badge
+      text: "",  // Deprecated — use getTierInlineStyles().text
+      border: "", // Deprecated
     },
   };
+}
+
+// ── NEW: Inline style objects for dynamic tier colors ───
+// Use these in style={{}} props. Works with any colors from DB.
+
+export interface TierInlineStyles {
+  /** CSS for the main card/gradient background */
+  card: React.CSSProperties;
+  /** CSS for text on the gradient card */
+  cardText: React.CSSProperties;
+  /** CSS for the icon circle background */
+  iconBg: React.CSSProperties;
+  /** CSS for badge (light bg, dark text) */
+  badge: React.CSSProperties;
+  /** CSS for tier-colored text on light backgrounds */
+  text: React.CSSProperties;
+  /** CSS for border accent */
+  border: React.CSSProperties;
+  /** CSS for small avatar circle */
+  avatar: React.CSSProperties;
+  /** Whether the gradient_to color is dark (for choosing white vs dark text) */
+  isDark: boolean;
+  /** Raw color values for custom use */
+  colors: LoyaltyTierColors;
+}
+
+/** Determine if a hex color is dark (for contrast decisions) */
+function isColorDark(hex: string): boolean {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  // Relative luminance
+  return (r * 0.299 + g * 0.587 + b * 0.114) < 128;
+}
+
+/** Convert hex to rgba string */
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+export function getTierInlineStyles(tier: LoyaltyTierConfig): TierInlineStyles {
+  const { colors } = tier;
+  const isDark = isColorDark(colors.gradient_to);
+  const textOnCard = isDark ? '#FFFFFF' : colors.gradient_to;
+  const goldAccent = '#C5A065';
+
+  return {
+    card: {
+      background: `linear-gradient(135deg, ${colors.gradient_from}, ${colors.gradient_via}, ${colors.gradient_to})`,
+    },
+    cardText: {
+      color: isDark ? '#F5F3F0' : colors.gradient_to,
+    },
+    iconBg: {
+      background: colors.gradient_to,
+      color: isDark ? goldAccent : colors.gradient_from,
+    },
+    badge: {
+      background: hexToRgba(colors.gradient_via, 0.12),
+      color: colors.gradient_to,
+      borderColor: hexToRgba(colors.gradient_via, 0.25),
+      borderWidth: '1px',
+      borderStyle: 'solid',
+    },
+    text: {
+      color: colors.gradient_to,
+    },
+    border: {
+      borderColor: hexToRgba(colors.gradient_from, 0.5),
+    },
+    avatar: {
+      background: `linear-gradient(135deg, ${colors.gradient_from}, ${colors.gradient_to})`,
+      color: '#FFFFFF',
+    },
+    isDark,
+    colors,
+  };
+}
+
+/** Get inline styles from a LoyaltyTier (legacy format) by looking up tier config */
+export function getTierStylesFromId(
+  tierId: string,
+  config: LoyaltyConfig = DEFAULT_LOYALTY_CONFIG
+): TierInlineStyles {
+  const normalized = normalizeTierId(tierId);
+  const tierConfig = config.tiers.find(t => t.id === normalized) || config.tiers[0];
+  return getTierInlineStyles(tierConfig);
 }
 
 // ── Build LOYALTY_TIERS from config (backward compat) ──

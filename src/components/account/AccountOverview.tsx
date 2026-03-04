@@ -3,9 +3,10 @@
 import React from 'react';
 import { Package, MapPin, CreditCard, ChevronRight, TrendingUp, Lock, Mail, Award, Clock, AlertCircle, CheckCircle, ArrowRight, Info, Loader2 } from 'lucide-react';
 import { AccountSection } from '@/components/pages/AccountPage';
-import { LOYALTY_TIERS, getTierName, normalizeTierId } from '@/data/loyalty';
+import { getTierName, normalizeTierId, getTierInlineStyles, LoyaltyTierConfig } from '@/data/loyalty';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLoyalty } from '@/hooks/useLoyalty';
+import { useLoyaltyConfig } from '@/hooks/useLoyaltyConfig';
 const appleWalletImg = "/images/apple-wallet.png";
 const googleWalletImg = "/images/google-wallet.png";
 
@@ -16,6 +17,7 @@ interface AccountOverviewProps {
 export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSection }) => {
   const { user, medusaCustomer } = useAuth();
   const { profile: loyaltyProfile, loading: loyaltyLoading } = useLoyalty();
+  const { config: loyaltyConfig } = useLoyaltyConfig();
 
   // Derive display name
   const displayName = medusaCustomer?.first_name
@@ -28,9 +30,12 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
   const lifetimeSpend = loyaltyProfile?.lifetime_spend ? loyaltyProfile.lifetime_spend / 100 : 0;
   const currentPoints = loyaltyProfile?.points_balance ?? 0;
   const rawTierId = loyaltyProfile?.current_tier || 'pino';
-  const currentTier = LOYALTY_TIERS.find(t => t.id === normalizeTierId(rawTierId))
-    || LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend))
-    || LOYALTY_TIERS[0];
+  const normalizedId = normalizeTierId(rawTierId);
+  const lifetimeSpendCentavos = loyaltyProfile?.lifetime_spend ?? 0;
+  const currentTierConfig: LoyaltyTierConfig = loyaltyConfig.tiers.find(t => t.id === normalizedId)
+    || loyaltyConfig.tiers.find(t => lifetimeSpendCentavos >= t.min_spend && (t.max_spend === null || lifetimeSpendCentavos <= t.max_spend))
+    || loyaltyConfig.tiers[0];
+  const tierStyles = getTierInlineStyles(currentTierConfig);
 
   // Member since date from loyalty profile or user created_at
   const memberSince = loyaltyProfile?.created_at
@@ -91,9 +96,10 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                
                {/* Progress Bar Area */}
                {(() => {
-                  const nextTier = LOYALTY_TIERS.find(t => t.minSpend > lifetimeSpend);
-                  const nextTierThreshold = nextTier ? nextTier.minSpend : lifetimeSpend;
-                  const progressPercent = nextTier ? Math.min(100, (lifetimeSpend / nextTierThreshold) * 100) : 100;
+                  const nextTierConfig = loyaltyConfig.tiers.find(t => t.min_spend > lifetimeSpendCentavos);
+                  const nextTierThresholdPesos = nextTierConfig ? Math.round(nextTierConfig.min_spend / 100) : lifetimeSpend;
+                  const progressPercent = nextTierConfig ? Math.min(100, (lifetimeSpend / nextTierThresholdPesos) * 100) : 100;
+                  const nextTierStyles = nextTierConfig ? getTierInlineStyles(nextTierConfig) : null;
                   
                   return (
                     <div className="bg-white dark:bg-wood-800 rounded-xl p-5 border border-wood-100 dark:border-wood-700 shadow-sm mb-2">
@@ -101,27 +107,21 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                          <div className="flex items-center gap-2">
                            <Award className="w-4 h-4 text-accent-gold" />
                            <span className="text-xs font-bold uppercase tracking-wider text-wood-500 dark:text-sand-300">
-                              {nextTier ? `Próximo Nivel: ${nextTier.name}` : 'Nivel Máximo Alcanzado'}
+                              {nextTierConfig ? `Próximo Nivel: ${nextTierConfig.name}` : 'Nivel Máximo Alcanzado'}
                            </span>
                          </div>
                          <span className="text-xs font-bold text-wood-900 dark:text-sand-100">{Math.round(progressPercent)}%</span>
                       </div>
                       <div className="h-2.5 w-full bg-wood-100 dark:bg-wood-900 rounded-full overflow-hidden mb-3">
                          <div 
-                           className={`h-full rounded-full transition-all duration-1000 ${
-                              currentTier.id === 'ebano' ? 'bg-indigo-500' :
-                              currentTier.id === 'parota' ? 'bg-yellow-600' :
-                              currentTier.id === 'nogal' ? 'bg-amber-700' :
-                              'bg-amber-500'
-                           }`}
-                           style={{ width: `${progressPercent}%` }}
+                           className="h-full rounded-full transition-all duration-1000"
+                           style={{ width: `${progressPercent}%`, backgroundColor: currentTierConfig.colors.gradient_via }}
                          ></div>
                       </div>
                       <div className="flex justify-between items-start text-xs">
                          <span className="text-wood-500 dark:text-sand-400">
-                            {nextTier ? `Faltan $${(nextTierThreshold - lifetimeSpend).toLocaleString()} para subir de nivel` : 'Disfruta de tus beneficios exclusivos.'}
+                            {nextTierConfig ? `Faltan $${(nextTierThresholdPesos - lifetimeSpend).toLocaleString()} para subir de nivel` : 'Disfruta de tus beneficios exclusivos.'}
                          </span>
-                         {nextTier && <span className="font-medium text-wood-900 dark:text-sand-200 text-right max-w-[50%]">Desbloquea: {nextTier.benefits[nextTier.benefits.length - 1]}</span>}
                       </div>
                     </div>
                   );
@@ -133,7 +133,8 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                {/* Digital Card */}
                <div className="lg:col-span-7 xl:col-span-6">
                   <div 
-                     className={`w-full aspect-[1.58/1] rounded-2xl p-8 border shadow-xl relative overflow-hidden transition-transform duration-500 hover:scale-[1.01] cursor-pointer group/card ${currentTier.styles.card}`}
+                     className="w-full aspect-[1.58/1] rounded-2xl p-8 border shadow-xl relative overflow-hidden transition-transform duration-500 hover:scale-[1.01] cursor-pointer group/card"
+                     style={{ ...tierStyles.card, borderColor: currentTierConfig.colors.gradient_from + '60' }}
                      onClick={() => onChangeSection('wallet')}
                   >
                      {/* Card Texture */}
@@ -148,9 +149,9 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                               <h3 className="font-serif text-xl tracking-wide leading-none text-wood-900">DavidSon's</h3>
                               <p className="text-[9px] uppercase tracking-widest mt-1.5 text-wood-600 font-medium">Design Member</p>
                            </div>
-                           <span className={`px-2.5 py-1 rounded border text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm ${currentTier.styles.badge.replace('bg-', 'bg-opacity-80 bg-')}`}>
-                              <div className={`w-1.5 h-1.5 rounded-full ${currentTier.id === 'ebano' ? 'bg-indigo-600' : currentTier.id === 'parota' ? 'bg-yellow-700' : currentTier.id === 'nogal' ? 'bg-amber-800' : 'bg-amber-600'}`}></div>
-                              {currentTier.name}
+                           <span className="px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm" style={tierStyles.badge}>
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: currentTierConfig.colors.gradient_via }}></div>
+                              {currentTierConfig.name}
                            </span>
                         </div>
 

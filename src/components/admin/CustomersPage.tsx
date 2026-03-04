@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
+import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
 import {
   Search, Users, ArrowLeft, ShoppingBag, Mail, Phone, Plus,
   Download, MoreVertical, Filter, X, Star,
@@ -15,14 +16,22 @@ import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip as RTooltip }
 /* ================================================================
    TIER SYSTEM
    ================================================================ */
-type Tier = 'bronze' | 'silver' | 'gold' | 'platinum';
+// Map legacy tier IDs (bronze/silver/gold/platinum) → real tier IDs (pino/nogal/parota/ebano)
+type Tier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'pino' | 'nogal' | 'parota' | 'ebano';
 
-const tierConfig: Record<Tier, { label: string; badge: string; gradient: string; text: string; border: string; icon: string; min: number; max: number | null }> = {
-  bronze:   { label: 'Bronce',  badge: 'bg-gradient-to-r from-amber-200 to-amber-600 text-white', gradient: 'from-[#E7CBA5] via-[#CD7F32] to-[#A05A2C]', text: 'text-amber-700', border: 'border-amber-300', icon: '🥉', min: 0, max: 2999 },
-  silver:   { label: 'Plata',   badge: 'bg-gradient-to-r from-gray-200 to-gray-400 text-white', gradient: 'from-[#F5F5F7] via-[#D1D1D6] to-[#9CA3AF]', text: 'text-gray-600', border: 'border-gray-300', icon: '🥈', min: 3000, max: 9999 },
-  gold:     { label: 'Oro',     badge: 'bg-gradient-to-r from-yellow-300 to-yellow-600 text-white', gradient: 'from-[#FCEabb] via-[#F0C24D] to-[#BF953F]', text: 'text-accent-gold', border: 'border-accent-gold', icon: '🥇', min: 10000, max: 24999 },
-  platinum: { label: 'Platino', badge: 'bg-gradient-to-r from-gray-300 to-slate-500 text-white', gradient: 'from-[#F0F2F5] via-[#BCC6CC] to-[#788896]', text: 'text-slate-600', border: 'border-slate-400', icon: '💎', min: 25000, max: null },
-};
+const TIER_EMOJI: Record<string, string> = { pino: '🌲', nogal: '🪵', parota: '✨', ebano: '🖤', bronze: '🌲', silver: '🪵', gold: '✨', platinum: '🖤' };
+
+function getTierLabel(tierId: string): string {
+  const normalized = normalizeTierId(tierId);
+  const tier = DEFAULT_LOYALTY_CONFIG.tiers.find(t => t.id === normalized);
+  return tier?.name || tierId;
+}
+
+function getTierStyles(tierId: string) {
+  const normalized = normalizeTierId(tierId);
+  const tier = DEFAULT_LOYALTY_CONFIG.tiers.find(t => t.id === normalized) || DEFAULT_LOYALTY_CONFIG.tiers[0];
+  return getTierInlineStyles(tier);
+}
 
 /* ================================================================
    MOCK DATA
@@ -99,15 +108,18 @@ const mockActivity = [
    HELPERS
    ================================================================ */
 const TierBadge: React.FC<{ tier: Tier; size?: 'sm' | 'md' }> = ({ tier, size = 'sm' }) => {
-  const cfg = tierConfig[tier];
+  const s = getTierStyles(tier);
   return (
-    <span className={`inline-flex items-center gap-1 font-medium rounded-full ${cfg.badge} ${size === 'sm' ? 'text-[10px] px-2 py-0.5' : 'text-xs px-3 py-1'}`}>
-      {cfg.icon} {cfg.label}
+    <span
+      className={`inline-flex items-center gap-1 font-medium rounded-full text-white ${size === 'sm' ? 'text-[10px] px-2 py-0.5' : 'text-xs px-3 py-1'}`}
+      style={s.card}
+    >
+      {TIER_EMOJI[tier] || '🌲'} {getTierLabel(tier)}
     </span>
   );
 };
 
-const isVip = (t: Tier) => t === 'gold' || t === 'platinum';
+const isVip = (t: Tier) => ['gold', 'platinum', 'parota', 'ebano'].includes(t);
 const daysSince = (d: string) => d ? Math.floor((Date.now() - new Date(d).getTime()) / 86400000) : Infinity;
 
 /* ================================================================
@@ -287,7 +299,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
                         <td className="px-3 py-3"><input type="checkbox" checked={selected.has(c.id)} onChange={() => toggleSelect(c.id)} className="accent-accent-gold rounded" /></td>
                         <td className="px-3 py-3">
                           <button onClick={() => setSelectedCustomer(c)} className="flex items-center gap-2.5 hover:text-accent-gold transition-colors">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-medium flex-shrink-0 bg-gradient-to-br ${tierConfig[c.tier].gradient} text-white`}>
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-medium flex-shrink-0 text-white" style={getTierStyles(c.tier).avatar}>
                               {c.avatar}
                             </div>
                             <span className="text-xs text-wood-900 truncate max-w-[140px]">{c.name}</span>
@@ -355,9 +367,12 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
    ================================================================ */
 const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> = ({ customer, onBack }) => {
   const [profileTab, setProfileTab] = useState<'summary' | 'orders' | 'points' | 'addresses' | 'activity' | 'notes' | 'comms'>('summary');
-  const cfg = tierConfig[customer.tier];
-  const nextTier = customer.tier === 'bronze' ? 'silver' : customer.tier === 'silver' ? 'gold' : customer.tier === 'gold' ? 'platinum' : null;
-  const nextMin = nextTier ? tierConfig[nextTier].min : null;
+  const ts = getTierStyles(customer.tier);
+  const tierIds = DEFAULT_LOYALTY_CONFIG.tiers.map(t => t.id);
+  const currentNorm = normalizeTierId(customer.tier);
+  const currentIdx = tierIds.indexOf(currentNorm);
+  const nextTierConfig = currentIdx < tierIds.length - 1 ? DEFAULT_LOYALTY_CONFIG.tiers[currentIdx + 1] : null;
+  const nextMin = nextTierConfig ? Math.round(nextTierConfig.min_spend / 100) : null;
   const progressPct = nextMin ? Math.min(100, (customer.totalSpent / nextMin) * 100) : 100;
   const remaining = nextMin ? nextMin - customer.totalSpent : 0;
 
@@ -376,7 +391,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
       <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-6">
         <div className="flex flex-col lg:flex-row items-start gap-5">
           {/* Avatar */}
-          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-medium bg-gradient-to-br ${cfg.gradient} text-white flex-shrink-0`}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-medium text-white flex-shrink-0" style={ts.avatar}>
             {customer.avatar}
           </div>
 
@@ -396,13 +411,13 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
             {/* Tier progress */}
             <div className="mt-3 max-w-md">
               <div className="flex items-center justify-between text-[10px] text-wood-400 mb-1">
-                <span>{cfg.icon} {cfg.label} — {customer.points.toLocaleString()} puntos (${(customer.points * 0.01).toFixed(2)} MXN)</span>
-                {nextTier && <span>{tierConfig[nextTier].icon} {tierConfig[nextTier].label}</span>}
+                <span>{TIER_EMOJI[customer.tier] || '🌲'} {getTierLabel(customer.tier)} — {customer.points.toLocaleString()} puntos (${(customer.points * 0.01).toFixed(2)} MXN)</span>
+                {nextTierConfig && <span>{TIER_EMOJI[nextTierConfig.id] || '🌲'} {nextTierConfig.name}</span>}
               </div>
               <div className="h-2 bg-wood-100 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full bg-gradient-to-r ${cfg.gradient} transition-all`} style={{ width: `${progressPct}%` }} />
+                <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, ...ts.card }} />
               </div>
-              {nextTier && <p className="text-[10px] text-wood-400 mt-1">Le faltan ${remaining.toLocaleString()} para subir a {tierConfig[nextTier].label}</p>}
+              {nextTierConfig && <p className="text-[10px] text-wood-400 mt-1">Le faltan ${remaining.toLocaleString()} para subir a {nextTierConfig.name}</p>}
             </div>
 
             {/* Tags */}
@@ -541,7 +556,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                   </div>
                   <div className="text-center">
                     <p className="text-lg text-accent-gold">~4 meses</p>
-                    <p className="text-[10px] text-wood-400">Llegara a {nextTier ? tierConfig[nextTier].label : 'max'}</p>
+                    <p className="text-[10px] text-wood-400">Llegara a {nextTierConfig ? nextTierConfig.name : 'max'}</p>
                   </div>
                 </div>
               </div>
@@ -626,7 +641,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <div className="bg-white rounded-xl border border-wood-100 p-5 space-y-3">
                   <h4 className="text-xs text-wood-400 uppercase tracking-wider">Cambiar tier manualmente</h4>
                   <select className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
-                    {Object.entries(tierConfig).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
+                    {DEFAULT_LOYALTY_CONFIG.tiers.map(t => <option key={t.id} value={t.id}>{TIER_EMOJI[t.id] || '🌲'} {t.name}</option>)}
                   </select>
                   <input placeholder="Motivo del cambio" className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none" />
                   <div className="flex gap-2">
@@ -748,8 +763,8 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                   <option value="">Seleccionar plantilla...</option>
                   <option>Tenemos novedades para ti</option>
                   <option>Tus puntos estan por vencer</option>
-                  <option>Estas cerca de subir a {tierConfig[customer.tier === 'gold' ? 'platinum' : 'gold'].label}!</option>
-                  <option>Oferta exclusiva para miembros {tierConfig[customer.tier].label}</option>
+                  <option>Estas cerca de subir a {nextTierConfig ? nextTierConfig.name : getTierLabel(customer.tier)}!</option>
+                  <option>Oferta exclusiva para miembros {getTierLabel(customer.tier)}</option>
                   <option>Necesitamos tu opinion</option>
                   <option>Te extranamos</option>
                   <option>Mensaje personalizado</option>
@@ -807,10 +822,10 @@ const MembershipTab: React.FC<{ customers: CustomerFull[] }> = ({ customers }) =
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {tiers.map(t => {
-          const cfg = tierConfig[t.key];
+          const ts = getTierStyles(t.key);
           return (
-            <div key={t.key} className={`bg-white rounded-xl border ${cfg.border} shadow-sm overflow-hidden`}>
-              <div className={`h-1.5 bg-gradient-to-r ${cfg.gradient}`} />
+            <div key={t.key} className="bg-white rounded-xl border shadow-sm overflow-hidden" style={ts.border}>
+              <div className="h-1.5" style={ts.card} />
               <div className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <TierBadge tier={t.key} size="md" />
@@ -822,7 +837,7 @@ const MembershipTab: React.FC<{ customers: CustomerFull[] }> = ({ customers }) =
                   <div className="flex justify-between"><span className="text-wood-400">Gasto promedio</span><span className="text-wood-900">${t.avgSpend.toLocaleString()}</span></div>
                   <div className="flex justify-between"><span className="text-wood-400">Tasa recompra</span><span className="text-wood-900">{t.repurchase}</span></div>
                   <div className="flex justify-between"><span className="text-wood-400">Ingresos</span><span className="text-wood-900">${t.revenue.toLocaleString()}</span></div>
-                  <div className="flex justify-between"><span className="text-wood-400">% del ingreso total</span><span className={cfg.text}>{t.revPct}</span></div>
+                  <div className="flex justify-between"><span className="text-wood-400">% del ingreso total</span><span style={ts.text}>{t.revPct}</span></div>
                   <div className="flex justify-between"><span className="text-wood-400">Puntos totales</span><span className="text-wood-900">{t.totalPoints.toLocaleString()}</span></div>
                 </div>
                 <button className="mt-4 w-full text-center text-[11px] text-accent-gold hover:underline">Ver lista →</button>
@@ -936,290 +951,6 @@ const SegmentsTab: React.FC = () => {
             </div>
           </div>
         ))}
-      </div>
-    </div>
-  );
-};
-
-/* ================================================================
-   TAB 4: PROGRAM CONFIG
-   ================================================================ */
-const ProgramConfigTab: React.FC = () => {
-  const [configSection, setConfigSection] = useState<'general' | 'rules' | 'tiers' | 'emails' | 'metrics'>('general');
-
-  const sections = [
-    { id: 'general' as const, label: 'Programa general', icon: Settings2 },
-    { id: 'rules' as const, label: 'Reglas de puntos', icon: Star },
-    { id: 'tiers' as const, label: 'Tiers de membresia', icon: Crown },
-    { id: 'emails' as const, label: 'Emails automaticos', icon: Mail },
-    { id: 'metrics' as const, label: 'Metricas del programa', icon: BarChart3 },
-  ];
-
-  const pointsEmittedVsRedeemed = ['Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb'].map(m => ({
-    mes: m,
-    emitidos: Math.round(15000 + Math.random() * 10000),
-    canjeados: Math.round(5000 + Math.random() * 8000),
-  }));
-
-  return (
-    <div className="flex gap-6">
-      {/* Sidebar */}
-      <div className="w-48 flex-shrink-0 hidden lg:block">
-        <nav className="sticky top-4 space-y-0.5">
-          {sections.map(s => (
-            <button
-              key={s.id}
-              onClick={() => setConfigSection(s.id)}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-colors ${
-                configSection === s.id ? 'bg-accent-gold/10 text-accent-gold' : 'text-wood-500 hover:text-wood-700 hover:bg-sand-50'
-              }`}
-            >
-              <s.icon size={13} /> {s.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      <div className="flex-1 space-y-6 min-w-0">
-        {configSection === 'general' && (
-          <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-            <h4 className="text-xs text-wood-400 uppercase tracking-wider">Programa general</h4>
-            <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Nombre del programa</label>
-              <input defaultValue="DavidSon's Rewards" className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none" />
-            </div>
-            <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Estado</label>
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="progStatus" defaultChecked className="accent-accent-gold" /><span className="text-xs text-wood-700">Activo</span></label>
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="progStatus" className="accent-accent-gold" /><span className="text-xs text-wood-700">Pausado — mantienen puntos pero no ganan ni canjean</span></label>
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="progStatus" className="accent-accent-gold" /><span className="text-xs text-wood-700">Desactivado</span></label>
-              </div>
-            </div>
-            <button className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">Guardar cambios</button>
-          </div>
-        )}
-
-        {configSection === 'rules' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">Acumulacion</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-[10px] text-wood-400 block mb-1">Ganar</label>
-                  <div className="flex items-center gap-1">
-                    <input type="number" defaultValue={1} className="w-16 px-2 py-2 text-xs border border-wood-200 rounded-lg text-center outline-none" />
-                    <span className="text-xs text-wood-500">punto por cada $</span>
-                    <input type="number" defaultValue={1} className="w-16 px-2 py-2 text-xs border border-wood-200 rounded-lg text-center outline-none" />
-                    <span className="text-xs text-wood-500">MXN</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-[10px] text-wood-400 block mb-1">Redondeo</label>
-                  <select className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
-                    <option>Hacia abajo</option><option>Al mas cercano</option><option>Hacia arriba</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] text-wood-400 block mb-1">Acreditar cuando</label>
-                  <select className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
-                    <option>Al completar pago</option><option>Al entregar pedido</option><option>Despues de N dias</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">Canje</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] text-wood-400 block mb-1">Valor: 1 punto =</label>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-wood-500">$</span>
-                    <input type="number" defaultValue={0.01} step={0.01} className="w-20 px-2 py-2 text-xs border border-wood-200 rounded-lg text-center outline-none" />
-                    <span className="text-xs text-wood-500">MXN</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-[10px] text-wood-400 block mb-1">Minimo para canjear</label>
-                  <div className="flex items-center gap-1">
-                    <input type="number" defaultValue={100} className="w-20 px-2 py-2 text-xs border border-wood-200 rounded-lg text-center outline-none" />
-                    <span className="text-xs text-wood-500">puntos</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-1.5 text-xs text-wood-700"><input type="checkbox" defaultChecked className="accent-accent-gold rounded" /> Permitir canje parcial</label>
-                <label className="flex items-center gap-1.5 text-xs text-wood-700"><input type="checkbox" className="accent-accent-gold rounded" /> Combinar con cupones</label>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">Vigencia</h4>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-wood-500">Puntos expiran despues de</span>
-                <input type="number" defaultValue={12} className="w-16 px-2 py-2 text-xs border border-wood-200 rounded-lg text-center outline-none" />
-                <span className="text-xs text-wood-500">meses</span>
-              </div>
-              <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-1.5 text-xs text-wood-700"><input type="checkbox" defaultChecked className="accent-accent-gold rounded" /> Recordatorio 30 dias antes</label>
-                <label className="flex items-center gap-1.5 text-xs text-wood-700"><input type="checkbox" defaultChecked className="accent-accent-gold rounded" /> Recordatorio 7 dias antes</label>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">Exclusiones</h4>
-              <div className="space-y-1.5">
-                {['Costo de envio NO genera puntos', 'Impuestos NO generan puntos', 'Descuentos/cupones NO generan puntos sobre monto descontado', 'Producto "Grabado Laser" NO genera puntos'].map((e, i) => (
-                  <label key={i} className="flex items-center gap-1.5 text-xs text-wood-700"><input type="checkbox" defaultChecked={i < 3} className="accent-accent-gold rounded" /> {e}</label>
-                ))}
-              </div>
-            </div>
-            <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">Puntos bonus</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: 'Bono de bienvenida', val: 500 },
-                  { label: 'Bono por referido', val: 0 },
-                  { label: 'Bono de cumpleanos', val: 0 },
-                  { label: 'Bono por review', val: 0 },
-                ].map((b, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <label className="text-xs text-wood-600 flex-1">{b.label}</label>
-                    <input type="number" defaultValue={b.val} className="w-20 px-2 py-2 text-xs border border-wood-200 rounded-lg text-center outline-none" />
-                    <span className="text-[10px] text-wood-400">pts</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">Guardar reglas</button>
-          </div>
-        )}
-
-        {configSection === 'tiers' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">Metodo de clasificacion</h4>
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="tierMethod" defaultChecked className="accent-accent-gold" /><span className="text-xs text-wood-700">Gasto acumulado total</span></label>
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="tierMethod" className="accent-accent-gold" /><span className="text-xs text-wood-700">Gasto en ultimos 12 meses</span></label>
-                <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="tierMethod" className="accent-accent-gold" /><span className="text-xs text-wood-700">Puntos acumulados</span></label>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
-                <h4 className="text-xs text-wood-400 uppercase tracking-wider">Tiers de membresia</h4>
-                <button className="text-[11px] text-accent-gold hover:underline flex items-center gap-1"><Plus size={11} /> Agregar tier</button>
-              </div>
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
-                    <th className="px-5 py-2.5">Tier</th><th className="px-5 py-2.5">Desde</th><th className="px-5 py-2.5">Hasta</th><th className="px-5 py-2.5 hidden md:table-cell">Multiplicador</th><th className="px-5 py-2.5 hidden md:table-cell">Descuento</th><th className="px-5 py-2.5">Beneficios</th><th className="px-5 py-2.5 w-10"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-wood-50">
-                  {[
-                    { tier: 'bronze' as Tier, from: '$0', to: '$2,999', mult: '1.0x', disc: '0%', benefits: 3 },
-                    { tier: 'silver' as Tier, from: '$3,000', to: '$9,999', mult: '1.2x', disc: '0%', benefits: 5 },
-                    { tier: 'gold' as Tier, from: '$10,000', to: '$24,999', mult: '1.5x', disc: '0%', benefits: 8 },
-                    { tier: 'platinum' as Tier, from: '$25,000', to: 'Sin limite', mult: '2.0x', disc: '5%', benefits: 12 },
-                  ].map((t, i) => (
-                    <tr key={i} className="hover:bg-sand-50/30">
-                      <td className="px-5 py-3"><TierBadge tier={t.tier} /></td>
-                      <td className="px-5 py-3 text-xs text-wood-900">{t.from}</td>
-                      <td className="px-5 py-3 text-xs text-wood-900">{t.to}</td>
-                      <td className="px-5 py-3 text-xs text-wood-600 hidden md:table-cell">{t.mult}</td>
-                      <td className="px-5 py-3 text-xs text-wood-600 hidden md:table-cell">{t.disc}</td>
-                      <td className="px-5 py-3 text-xs text-wood-500">{t.benefits} configurados</td>
-                      <td className="px-5 py-3"><button className="text-[10px] text-accent-gold hover:underline">Editar</button></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="text-[10px] text-wood-400">Al cambiar los rangos, los clientes se reclasifican automaticamente.</p>
-          </div>
-        )}
-
-        {configSection === 'emails' && (
-          <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-1">
-            <h4 className="text-xs text-wood-400 uppercase tracking-wider mb-3">Emails automaticos del programa</h4>
-            {[
-              { name: 'Bienvenida al programa', trigger: 'Al registrarse', enabled: true },
-              { name: 'Puntos ganados', trigger: 'Despues de cada compra', enabled: true },
-              { name: 'Subiste de tier', trigger: 'Al cambiar de nivel', enabled: true },
-              { name: 'Puntos por vencer (30d)', trigger: '30 dias antes de vencer', enabled: true },
-              { name: 'Puntos por vencer (7d)', trigger: '7 dias antes de vencer', enabled: true },
-              { name: 'Resumen mensual de puntos', trigger: 'Primer dia del mes', enabled: false },
-              { name: 'Incentivo de reactivacion', trigger: 'Cliente inactivo >90d', enabled: true },
-            ].map((em, i) => (
-              <div key={i} className="flex items-center justify-between py-3 border-b border-wood-50 last:border-0">
-                <div>
-                  <p className="text-xs text-wood-900">{em.name}</p>
-                  <p className="text-[10px] text-wood-400">{em.trigger}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button className="text-[10px] text-accent-gold hover:underline">Preview</button>
-                  <div className={`w-9 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${em.enabled ? 'bg-green-500' : 'bg-wood-200'}`}>
-                    <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${em.enabled ? 'translate-x-4' : 'translate-x-0'}`} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {configSection === 'metrics' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {[
-                { val: '856,300', label: 'Puntos en circulacion', sub: '$8,563 MXN en pasivos' },
-                { val: '124,500', label: 'Puntos emitidos (periodo)', sub: '' },
-                { val: '42,200', label: 'Puntos canjeados', sub: 'Tasa canje: 33.9%' },
-                { val: '8,400', label: 'Puntos vencidos', sub: '' },
-              ].map((m, i) => (
-                <div key={i} className="bg-white rounded-xl border border-wood-100 p-4">
-                  <p className="text-lg text-wood-900">{m.val}</p>
-                  <p className="text-[10px] text-wood-500">{m.label}</p>
-                  {m.sub && <p className="text-[10px] text-wood-400">{m.sub}</p>}
-                </div>
-              ))}
-            </div>
-            <div className="bg-white rounded-xl border border-wood-100 p-5">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider mb-3">Puntos emitidos vs canjeados por mes</h4>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={pointsEmittedVsRedeemed}>
-                    <XAxis dataKey="mes" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} />
-                    <RTooltip contentStyle={{ fontSize: '10px', borderRadius: '8px' }} />
-                    <Bar dataKey="emitidos" fill="#C5A065" radius={[3, 3, 0, 0]} name="Emitidos" />
-                    <Bar dataKey="canjeados" fill="#2d2419" radius={[3, 3, 0, 0]} name="Canjeados" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl border border-wood-100 p-5 space-y-3">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">Impacto del programa</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <p className="text-lg text-wood-900">68%</p>
-                  <p className="text-[10px] text-wood-400">Tasa participacion</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg text-green-600">+18%</p>
-                  <p className="text-[10px] text-wood-400">Incremento recompra</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg text-green-600">+$220</p>
-                  <p className="text-[10px] text-wood-400">Incremento ticket (+25%)</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg text-accent-gold">343x</p>
-                  <p className="text-[10px] text-wood-400">ROI del programa</p>
-                </div>
-              </div>
-              <p className="text-[10px] text-wood-400 text-center">Ingresos incrementales $145,000 / Costo puntos canjeados $422 = 343x ROI</p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

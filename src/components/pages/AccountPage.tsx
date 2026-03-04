@@ -9,7 +9,8 @@ import { AccountOverview } from '@/components/account/AccountOverview';
 import { AccountSettings } from '@/components/account/AccountSettings';
 import { OrdersList } from '@/components/account/OrdersList';
 import { LoyaltyDashboard } from '@/components/account/LoyaltyDashboard';
-import { LOYALTY_TIERS } from '@/data/loyalty';
+import { normalizeTierId } from '@/data/loyalty';
+import { useLoyaltyConfig } from '@/hooks/useLoyaltyConfig';
 import { useLoyalty } from '@/hooks/useLoyalty';
 import { AddressBook } from '@/components/account/AddressBook';
 import { Wallet } from '@/components/account/Wallet';
@@ -29,10 +30,15 @@ export const AccountPage = () => {
   const pathname = usePathname();
   const [activeSection, setActiveSection] = useState<AccountSection>('overview');
   const { profile: loyaltyProfile } = useLoyalty();
+  const { config: loyaltyConfig } = useLoyaltyConfig();
 
-  // Derive tier from real loyalty data (lifetime_spend in centavos → pesos)
-  const lifetimeSpend = loyaltyProfile?.lifetime_spend ? loyaltyProfile.lifetime_spend / 100 : 0;
-  const currentTier = LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend)) || LOYALTY_TIERS[0];
+  // Derive tier from real loyalty data
+  const lifetimeSpendCentavos = loyaltyProfile?.lifetime_spend ?? 0;
+  const rawTierId = loyaltyProfile?.current_tier || 'pino';
+  const normalizedId = normalizeTierId(rawTierId);
+  const currentTierConfig = loyaltyConfig.tiers.find(t => t.id === normalizedId)
+    || loyaltyConfig.tiers.find(t => lifetimeSpendCentavos >= t.min_spend && (t.max_spend === null || lifetimeSpendCentavos <= t.max_spend))
+    || loyaltyConfig.tiers[0];
 
   const renderSection = () => {
     switch (activeSection) {
@@ -88,7 +94,7 @@ export const AccountPage = () => {
             <AccountSidebar 
               activeSection={activeSection} 
               onNavigate={setActiveSection} 
-              currentTierName={currentTier.name}
+              currentTierName={currentTierConfig.name}
             />
           </div>
 

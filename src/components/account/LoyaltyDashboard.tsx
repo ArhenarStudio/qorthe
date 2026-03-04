@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Award, Gift, TrendingUp, Info, ChevronRight, Check, Lock, AlertCircle, Plus, Minus, History, HelpCircle, Star, Loader2, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LOYALTY_TIERS, normalizeTierId } from '@/data/loyalty';
+import { normalizeTierId, getTierInlineStyles, getTierBenefits, LoyaltyTierConfig, DEFAULT_LOYALTY_CONFIG } from '@/data/loyalty';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLoyaltyConfig } from '@/hooks/useLoyaltyConfig';
 
 // --- Types ---
 interface LoyaltyProfile {
@@ -51,6 +52,7 @@ function formatDate(dateStr: string): string {
 // --- Main Component ---
 export const LoyaltyDashboard = () => {
   const { user, session } = useAuth();
+  const { config: loyaltyConfig } = useLoyaltyConfig();
   const [profile, setProfile] = useState<LoyaltyProfile | null>(null);
   const [transactions, setTransactions] = useState<LoyaltyTransaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,14 +133,17 @@ export const LoyaltyDashboard = () => {
   const lifetimeSpend = profile ? profile.lifetime_spend / 100 : 0; // convert centavos to pesos
   
   const rawTierId = profile?.tier || 'pino';
-  const currentTier = LOYALTY_TIERS.find(t => t.id === normalizeTierId(rawTierId))
-    || LOYALTY_TIERS.find(t => lifetimeSpend >= t.minSpend && (t.maxSpend === null || lifetimeSpend <= t.maxSpend))
-    || LOYALTY_TIERS[0];
+  const normalizedId = normalizeTierId(rawTierId);
+  const lifetimeSpendCentavos = profile?.lifetime_spend ?? 0;
+  const currentTierConfig: LoyaltyTierConfig = loyaltyConfig.tiers.find(t => t.id === normalizedId)
+    || loyaltyConfig.tiers.find(t => lifetimeSpendCentavos >= t.min_spend && (t.max_spend === null || lifetimeSpendCentavos <= t.max_spend))
+    || loyaltyConfig.tiers[0];
+  const tierStyles = getTierInlineStyles(currentTierConfig);
   
-  const nextTier = LOYALTY_TIERS.find(t => t.minSpend > lifetimeSpend);
-  const nextTierThreshold = nextTier ? nextTier.minSpend : lifetimeSpend;
-  const spendProgress = nextTier ? Math.min(100, (lifetimeSpend / nextTierThreshold) * 100) : 100;
-  const pointsValueMXN = (currentPoints * 0.01).toFixed(2);
+  const nextTierConfig = loyaltyConfig.tiers.find(t => t.min_spend > lifetimeSpendCentavos);
+  const nextTierThresholdPesos = nextTierConfig ? Math.round(nextTierConfig.min_spend / 100) : lifetimeSpend;
+  const spendProgress = nextTierConfig ? Math.min(100, (lifetimeSpend / nextTierThresholdPesos) * 100) : 100;
+  const pointsValueMXN = (currentPoints * loyaltyConfig.point_value_mxn).toFixed(2);
 
   // Filter transactions
   const filteredTx = txFilter === 'all'
@@ -174,15 +179,15 @@ export const LoyaltyDashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       {/* Header Summary Card */}
-      <div className={`rounded-2xl p-6 md:p-10 border shadow-xl relative overflow-hidden transition-colors duration-500 ${currentTier.styles.card}`}>
+      <div className="rounded-2xl p-6 md:p-10 border shadow-xl relative overflow-hidden transition-colors duration-500" style={{ ...tierStyles.card, borderColor: currentTierConfig.colors.gradient_from + '60' }}>
         {/* Noise Texture */}
         <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm ${currentTier.styles.badge}`}>
-                Nivel {currentTier.name}
+              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm" style={tierStyles.badge}>
+                Nivel {currentTierConfig.name}
               </span>
               {profile?.points_multiplier && profile.points_multiplier > 1 && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700 border border-green-200">
@@ -219,13 +224,13 @@ export const LoyaltyDashboard = () => {
       </div>
 
       {/* Progress Bar Section */}
-      {nextTier && (
+      {nextTierConfig && (
         <div className="bg-white dark:bg-wood-900 rounded-2xl p-6 border border-wood-100 dark:border-wood-800 shadow-sm">
           <div className="flex justify-between items-end mb-4">
             <div>
-              <h3 className="text-wood-900 dark:text-sand-100 font-medium mb-1">Tu progreso a nivel {nextTier.name}</h3>
+              <h3 className="text-wood-900 dark:text-sand-100 font-medium mb-1">Tu progreso a nivel {nextTierConfig?.name || 'máximo'}</h3>
               <p className="text-sm text-wood-500 dark:text-sand-400">
-                Te faltan <span className="font-bold text-wood-800 dark:text-sand-200">${(nextTierThreshold - lifetimeSpend).toLocaleString()} MXN</span> para desbloquear nuevos beneficios.
+                Te faltan <span className="font-bold text-wood-800 dark:text-sand-200">${(nextTierThresholdPesos - lifetimeSpend).toLocaleString()} MXN</span> para desbloquear nuevos beneficios.
               </p>
             </div>
             <span className="text-sm font-medium text-wood-600 dark:text-sand-300 bg-wood-50 dark:bg-wood-800 px-3 py-1 rounded-lg">
@@ -244,7 +249,7 @@ export const LoyaltyDashboard = () => {
           
           <div className="flex justify-between text-xs text-wood-400 dark:text-sand-500 font-medium tracking-wide">
             <span>${lifetimeSpend.toLocaleString()} MXN Acumulados</span>
-            <span>Meta: ${nextTierThreshold.toLocaleString()} MXN</span>
+            <span>Meta: ${nextTierThresholdPesos.toLocaleString()} MXN</span>
           </div>
         </div>
       )}
@@ -253,9 +258,13 @@ export const LoyaltyDashboard = () => {
       <div id="benefits" className="space-y-6">
         <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100">Niveles del Programa</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {LOYALTY_TIERS.map((tier) => {
-            const isCurrent = currentTier.id === tier.id;
-            const isLocked = lifetimeSpend < tier.minSpend;
+          {loyaltyConfig.tiers.map((tier) => {
+            const isCurrent = currentTierConfig.id === tier.id;
+            const isLocked = lifetimeSpendCentavos < tier.min_spend;
+            const s = getTierInlineStyles(tier);
+            const benefits = getTierBenefits(tier);
+            const minPesos = Math.round(tier.min_spend / 100);
+            const maxPesos = tier.max_spend ? Math.round(tier.max_spend / 100) : null;
             
             return (
               <div 
@@ -266,7 +275,7 @@ export const LoyaltyDashboard = () => {
                     : 'border-wood-100 dark:border-wood-800 hover:border-wood-300 dark:hover:border-wood-700 hover:shadow-lg'
                 } ${isLocked ? 'opacity-75 grayscale-[0.1]' : ''}`}
               >
-                <div className={`h-1.5 w-full ${tier.styles.card}`}></div>
+                <div className="h-1.5 w-full" style={s.card}></div>
                 <div className="p-6 flex flex-col h-full relative">
                   {isCurrent && (
                     <div className="absolute top-4 right-4">
@@ -276,23 +285,23 @@ export const LoyaltyDashboard = () => {
                     </div>
                   )}
                   <div className="mb-6">
-                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner mb-4 transition-transform group-hover:scale-105 duration-500 ${tier.styles.icon}`}>
+                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner mb-4 transition-transform group-hover:scale-105 duration-500" style={s.iconBg}>
                         {isLocked ? <Lock className="w-6 h-6" /> : <Award className="w-7 h-7" />}
                      </div>
                      <h4 className="font-serif text-2xl font-bold text-wood-900 dark:text-sand-50 mb-2">{tier.name}</h4>
                      <div className="flex flex-col">
                        <span className="text-[10px] font-bold uppercase tracking-wider text-wood-400 dark:text-wood-500 mb-0.5">Gasto Acumulado</span>
                        <span className="font-sans font-medium text-wood-700 dark:text-sand-200">
-                        {tier.maxSpend 
-                          ? `$${tier.minSpend.toLocaleString()} - $${tier.maxSpend.toLocaleString()}`
-                          : `$${tier.minSpend.toLocaleString()}+`
+                        {maxPesos 
+                          ? `$${minPesos.toLocaleString()} - $${maxPesos.toLocaleString()}`
+                          : `$${minPesos.toLocaleString()}+`
                         }
                        </span>
                      </div>
                   </div>
                   <div className="h-px w-full bg-wood-100 dark:bg-wood-800 mb-6"></div>
                   <ul className="space-y-3.5 flex-1">
-                    {tier.benefits.map((benefit, idx) => (
+                    {benefits.map((benefit, idx) => (
                       <li key={idx} className="flex items-start gap-3 text-sm group/item">
                         <div className={`mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
                           isLocked 
@@ -311,7 +320,7 @@ export const LoyaltyDashboard = () => {
                       </li>
                     ))}
                   </ul>
-                  {tier.minSpend >= 800000 && !isLocked && !isCurrent && (
+                  {tier.min_spend >= 800000 && !isLocked && !isCurrent && (
                     <div className="mt-6 pt-4 border-t border-wood-50 dark:border-wood-800/50 flex justify-center">
                        <span className="text-[10px] font-bold text-accent-gold uppercase tracking-widest flex items-center gap-1.5">
                          <Star className="w-3 h-3 fill-current" /> Nivel Exclusivo
