@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
@@ -33,43 +33,71 @@ function getTierStyles(tierId: string) {
 }
 
 /* ================================================================
-   MOCK DATA
+   TYPES (matching API response)
    ================================================================ */
 interface CustomerFull {
   id: string;
   name: string;
   email: string;
-  phone: string;
-  avatar: string;
+  phone: string | null;
+  avatar_url: string | null;
   tier: Tier;
   points: number;
+  lifetime_points: number;
+  lifetime_spend: number;
+  points_multiplier: number;
+  total_spent: number;
+  total_spent_display: number;
+  avg_ticket: number;
+  order_count: number;
+  last_order_at: string | null;
+  days_since_order: number;
+  registered_at: string;
+  location: string | null;
+  status: 'active' | 'inactive' | 'lead';
+  tags: string[];
+  has_loyalty: boolean;
+  supabase_user_id: string | null;
+  // Computed for UI compatibility
+  avatar: string;
   totalSpent: number;
   orders: number;
   lastOrder: string;
   registered: string;
-  location: string;
-  status: 'active' | 'inactive';
-  tags: string[];
   avgTicket: number;
   purchasesPerMonth: number;
   engravedPct: number;
   repurchaseProb: number;
 }
 
-const mockCustomers: CustomerFull[] = [
-  { id: 'c1', name: 'David Alejandro Perez Rea', email: 'rocksagecapital@gmail.com', phone: '662-361-0742', avatar: 'DP', tier: 'gold', points: 12340, totalSpent: 12340, orders: 14, lastOrder: '2026-02-28', registered: '2025-02-25', location: 'Hermosillo, Sonora', status: 'active', tags: ['VIP', 'Grabado frecuente', 'Hermosillo'], avgTicket: 881, purchasesPerMonth: 3.2, engravedPct: 65, repurchaseProb: 78 },
-  { id: 'c2', name: 'Pedro Sanchez Morales', email: 'pedro@empresa.mx', phone: '33-9876-5432', avatar: 'PS', tier: 'platinum', points: 28500, totalSpent: 28500, orders: 22, lastOrder: '2026-02-26', registered: '2025-01-01', location: 'Guadalajara, Jalisco', status: 'active', tags: ['VIP', 'Corporativo'], avgTicket: 1295, purchasesPerMonth: 1.6, engravedPct: 45, repurchaseProb: 95 },
-  { id: 'c3', name: 'Maria Lopez Gutierrez', email: 'maria@email.com', phone: '55-1234-5678', avatar: 'ML', tier: 'silver', points: 5200, totalSpent: 5200, orders: 6, lastOrder: '2026-02-20', registered: '2025-01-10', location: 'CDMX', status: 'active', tags: ['Cerca de Oro'], avgTicket: 867, purchasesPerMonth: 0.5, engravedPct: 33, repurchaseProb: 62 },
-  { id: 'c4', name: 'Test FixV2', email: 'designdavidsons@gmail.com', phone: '55-1234-5678', avatar: 'TF', tier: 'bronze', points: 1000, totalSpent: 1000, orders: 1, lastOrder: '2026-02-27', registered: '2026-02-27', location: 'Hermosillo, Sonora', status: 'active', tags: ['Nuevo'], avgTicket: 1000, purchasesPerMonth: 1, engravedPct: 100, repurchaseProb: 35 },
-  { id: 'c5', name: 'Ana Garcia Flores', email: 'ana@email.com', phone: '', avatar: 'AG', tier: 'bronze', points: 0, totalSpent: 0, orders: 0, lastOrder: '', registered: '2026-02-15', location: '', status: 'inactive', tags: ['Lead'], avgTicket: 0, purchasesPerMonth: 0, engravedPct: 0, repurchaseProb: 5 },
-  { id: 'c6', name: 'Carlos Ramirez Luna', email: 'carlos@corp.com', phone: '33-5555-6666', avatar: 'CR', tier: 'gold', points: 14800, totalSpent: 14800, orders: 12, lastOrder: '2026-02-26', registered: '2025-01-10', location: 'Guadalajara, Jalisco', status: 'active', tags: ['VIP', 'Corporativo'], avgTicket: 1233, purchasesPerMonth: 0.9, engravedPct: 50, repurchaseProb: 80 },
-  { id: 'c7', name: 'Sofia Hernandez Diaz', email: 'sofia@gmail.com', phone: '55-2222-1111', avatar: 'SH', tier: 'silver', points: 6900, totalSpent: 6900, orders: 6, lastOrder: '2026-02-20', registered: '2025-04-12', location: 'CDMX', status: 'active', tags: ['Cerca de Oro'], avgTicket: 1150, purchasesPerMonth: 0.6, engravedPct: 83, repurchaseProb: 70 },
-  { id: 'c8', name: 'Roberto Mendoza Vega', email: 'roberto@test.com', phone: '55-7777-8888', avatar: 'RM', tier: 'bronze', points: 590, totalSpent: 590, orders: 2, lastOrder: '2025-11-02', registered: '2025-11-01', location: 'Monterrey, NL', status: 'active', tags: [], avgTicket: 295, purchasesPerMonth: 0.5, engravedPct: 0, repurchaseProb: 18 },
-  { id: 'c9', name: 'Elena Vargas Rico', email: 'elena@empresa.mx', phone: '81-6666-5555', avatar: 'EV', tier: 'bronze', points: 0, totalSpent: 0, orders: 0, lastOrder: '', registered: '2026-02-10', location: 'Monterrey, NL', status: 'inactive', tags: ['Lead'], avgTicket: 0, purchasesPerMonth: 0, engravedPct: 0, repurchaseProb: 8 },
-  { id: 'c10', name: 'Miguel Angel Ruiz', email: 'miguel@outlook.com', phone: '33-8888-9999', avatar: 'MR', tier: 'bronze', points: 2450, totalSpent: 2450, orders: 3, lastOrder: '2026-01-15', registered: '2025-06-15', location: 'Hermosillo, Sonora', status: 'active', tags: ['Hermosillo'], avgTicket: 817, purchasesPerMonth: 0.4, engravedPct: 33, repurchaseProb: 30 },
-  { id: 'c11', name: 'Platino Corp SA', email: 'compras@platinocorp.mx', phone: '55-3333-4444', avatar: 'PC', tier: 'platinum', points: 35200, totalSpent: 35200, orders: 28, lastOrder: '2026-02-25', registered: '2024-11-15', location: 'CDMX', status: 'active', tags: ['VIP', 'Corporativo', 'B2B'], avgTicket: 1257, purchasesPerMonth: 1.8, engravedPct: 71, repurchaseProb: 98 },
-  { id: 'c12', name: 'Laura Martinez Soto', email: 'laura@mail.com', phone: '662-555-1234', avatar: 'LM', tier: 'platinum', points: 26100, totalSpent: 26100, orders: 18, lastOrder: '2026-02-22', registered: '2025-02-01', location: 'Hermosillo, Sonora', status: 'active', tags: ['VIP', 'Hermosillo', 'Grabado frecuente'], avgTicket: 1450, purchasesPerMonth: 1.5, engravedPct: 78, repurchaseProb: 92 },
-];
+interface CustomerStats {
+  total: number;
+  active: number;
+  inactive: number;
+  leads: number;
+  tierCounts: Record<string, number>;
+  avgLtv: number;
+  repurchaseRate: number;
+  vipCount: number;
+}
+
+/** Map API response to UI-compatible CustomerFull */
+function mapApiCustomer(c: any): CustomerFull {
+  const initials = (c.name || '?').split(' ').map((w: string) => w[0]?.toUpperCase() || '').join('').slice(0, 2);
+  const monthsSinceReg = c.registered_at ? Math.max(1, Math.floor((Date.now() - new Date(c.registered_at).getTime()) / (30 * 86400000))) : 1;
+  return {
+    ...c,
+    avatar: initials,
+    totalSpent: c.total_spent_display || 0,
+    orders: c.order_count || 0,
+    lastOrder: c.last_order_at || '',
+    registered: c.registered_at || '',
+    avgTicket: c.avg_ticket || 0,
+    purchasesPerMonth: monthsSinceReg > 0 ? Number(((c.order_count || 0) / monthsSinceReg).toFixed(1)) : 0,
+    engravedPct: 0, // TODO: calculate from order metadata
+    repurchaseProb: c.order_count > 3 ? 80 : c.order_count > 1 ? 50 : c.order_count === 1 ? 25 : 5,
+  };
+}
 
 const mockSpendChart = ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb'].map(m => ({
   mes: m,
@@ -135,27 +163,56 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
   const [contextMenu, setContextMenu] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  const filtered = useMemo(() => {
-    let list = [...mockCustomers];
-    if (searchQ) {
-      const q = searchQ.toLowerCase();
-      list = list.filter(c => c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.phone.includes(q));
+  // ── Live data from API ─────────────────────────────────
+  const [allCustomers, setAllCustomers] = useState<CustomerFull[]>([]);
+  const [apiStats, setApiStats] = useState<CustomerStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+
+  const fetchCustomers = useCallback(async (silent = false) => {
+    try {
+      if (!silent) setLoading(true);
+      const params = new URLSearchParams();
+      if (searchQ) params.set('search', searchQ);
+      if (filterTier !== 'all') params.set('tier', filterTier);
+      if (filterActivity === 'inactive') params.set('status', 'inactive');
+      if (filterActivity === 'recent') params.set('status', 'active');
+      params.set('limit', '200');
+      const res = await fetch(`/api/admin/customers?${params}`);
+      if (!res.ok) throw new Error('Failed');
+      const data = await res.json();
+      setAllCustomers((data.customers || []).map(mapApiCustomer));
+      if (data.stats) setApiStats(data.stats);
+      setIsLive(true);
+    } catch (err) {
+      console.error('[CustomersPage] fetch error:', err);
+      if (!silent) setIsLive(false);
+    } finally {
+      setLoading(false);
     }
-    if (filterTier !== 'all') list = list.filter(c => c.tier === filterTier);
-    if (filterActivity === 'inactive') list = list.filter(c => daysSince(c.lastOrder) > 90);
-    if (filterActivity === 'recent') list = list.filter(c => daysSince(c.lastOrder) <= 30);
-    return list;
   }, [searchQ, filterTier, filterActivity]);
 
+  useEffect(() => {
+    fetchCustomers();
+    const interval = setInterval(() => fetchCustomers(true), 60000);
+    return () => clearInterval(interval);
+  }, [fetchCustomers]);
+
+  const filtered = allCustomers; // Filtering is done server-side
+
   const kpis = useMemo(() => {
-    const total = mockCustomers.length;
-    const newThisMonth = mockCustomers.filter(c => daysSince(c.registered) <= 30).length;
-    const withOrders = mockCustomers.filter(c => c.orders > 0);
-    const avgLtv = withOrders.length > 0 ? Math.round(withOrders.reduce((s, c) => s + c.totalSpent, 0) / withOrders.length) : 0;
-    const repurchase = withOrders.length > 0 ? Math.round(withOrders.filter(c => c.orders > 1).length / withOrders.length * 100) : 0;
-    const vips = mockCustomers.filter(c => isVip(c.tier)).length;
-    return { total, newThisMonth, avgLtv, repurchase, vips, vipPct: Math.round(vips / total * 100) };
-  }, []);
+    if (apiStats) {
+      return {
+        total: apiStats.total,
+        newThisMonth: allCustomers.filter(c => daysSince(c.registered) <= 30).length,
+        avgLtv: apiStats.avgLtv,
+        repurchase: apiStats.repurchaseRate,
+        vips: apiStats.vipCount,
+        vipPct: apiStats.total > 0 ? Math.round(apiStats.vipCount / apiStats.total * 100) : 0,
+      };
+    }
+    return { total: 0, newThisMonth: 0, avgLtv: 0, repurchase: 0, vips: 0, vipPct: 0 };
+  }, [apiStats, allCustomers]);
 
   const toggleSelect = (id: string) => setSelected(prev => {
     const n = new Set(prev);
@@ -306,7 +363,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
                           </button>
                         </td>
                         <td className="px-3 py-3 text-xs text-wood-500 hidden lg:table-cell truncate max-w-[180px]">{c.email}</td>
-                        <td className="px-3 py-3 text-xs text-wood-500 hidden md:table-cell">{c.phone || '—'}</td>
+                        <td className="px-3 py-3 text-xs text-wood-500 hidden md:table-cell">{c.phone || '—'}</td>  
                         <td className="px-3 py-3"><TierBadge tier={c.tier} /></td>
                         <td className="px-3 py-3 text-xs text-wood-600 hidden lg:table-cell">{c.points.toLocaleString()}</td>
                         <td className="px-3 py-3 text-xs text-wood-900">${c.totalSpent.toLocaleString()}</td>
@@ -351,7 +408,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
       )}
 
       {/* TAB 2: POR MEMBRESÍA */}
-      {tab === 'membership' && <MembershipTab customers={mockCustomers} />}
+      {tab === 'membership' && <MembershipTab customers={allCustomers} />}
 
       {/* TAB 3: SEGMENTOS */}
       {tab === 'segments' && <SegmentsTab />}
