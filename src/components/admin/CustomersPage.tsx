@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
+import { TierIcon, getTierSymbol } from '@/components/ui/TierIcons';
 import {
   Search, Users, ArrowLeft, ShoppingBag, Mail, Phone, Plus,
   Download, MoreVertical, Filter, X, Star,
@@ -18,8 +19,6 @@ import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip as RTooltip }
    ================================================================ */
 // Map legacy tier IDs (bronze/silver/gold/platinum) → real tier IDs (pino/nogal/parota/ebano)
 type Tier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'pino' | 'nogal' | 'parota' | 'ebano';
-
-const TIER_EMOJI: Record<string, string> = { pino: '🌲', nogal: '🪵', parota: '✨', ebano: '🖤', bronze: '🌲', silver: '🪵', gold: '✨', platinum: '🖤' };
 
 function getTierLabel(tierId: string): string {
   const normalized = normalizeTierId(tierId);
@@ -109,12 +108,13 @@ const mockActivity = [
    ================================================================ */
 const TierBadge: React.FC<{ tier: Tier; size?: 'sm' | 'md' }> = ({ tier, size = 'sm' }) => {
   const s = getTierStyles(tier);
+  const iconSize = size === 'sm' ? 12 : 16;
   return (
     <span
       className={`inline-flex items-center gap-1 font-medium rounded-full text-white ${size === 'sm' ? 'text-[10px] px-2 py-0.5' : 'text-xs px-3 py-1'}`}
       style={s.card}
     >
-      {TIER_EMOJI[tier] || '🌲'} {getTierLabel(tier)}
+      <TierIcon tierId={tier} size={iconSize} /> {getTierLabel(tier)}
     </span>
   );
 };
@@ -411,8 +411,8 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
             {/* Tier progress */}
             <div className="mt-3 max-w-md">
               <div className="flex items-center justify-between text-[10px] text-wood-400 mb-1">
-                <span>{TIER_EMOJI[customer.tier] || '🌲'} {getTierLabel(customer.tier)} — {customer.points.toLocaleString()} puntos (${(customer.points * 0.01).toFixed(2)} MXN)</span>
-                {nextTierConfig && <span>{TIER_EMOJI[nextTierConfig.id] || '🌲'} {nextTierConfig.name}</span>}
+                <span className="inline-flex items-center gap-1"><TierIcon tierId={customer.tier} size={12} /> {getTierLabel(customer.tier)} — {customer.points.toLocaleString()} puntos (${(customer.points * 0.01).toFixed(2)} MXN)</span>
+                {nextTierConfig && <span className="inline-flex items-center gap-1"><TierIcon tierId={nextTierConfig.id} size={12} /> {nextTierConfig.name}</span>}
               </div>
               <div className="h-2 bg-wood-100 rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, ...ts.card }} />
@@ -641,7 +641,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <div className="bg-white rounded-xl border border-wood-100 p-5 space-y-3">
                   <h4 className="text-xs text-wood-400 uppercase tracking-wider">Cambiar tier manualmente</h4>
                   <select className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
-                    {DEFAULT_LOYALTY_CONFIG.tiers.map(t => <option key={t.id} value={t.id}>{TIER_EMOJI[t.id] || '🌲'} {t.name}</option>)}
+                    {DEFAULT_LOYALTY_CONFIG.tiers.map(t => <option key={t.id} value={t.id}>{getTierSymbol(t.id)} {t.name}</option>)}
                   </select>
                   <input placeholder="Motivo del cambio" className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none" />
                   <div className="flex gap-2">

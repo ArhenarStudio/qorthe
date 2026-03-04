@@ -59,8 +59,7 @@ const positionLabels: Record<string, string> = {
 };
 
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
-
-const TIER_EMOJI_ORD: Record<string, string> = { pino: '🌲', nogal: '🪵', parota: '✨', ebano: '🖤', bronze: '🌲', silver: '🪵', gold: '✨' };
+import { TierIcon } from '@/components/ui/TierIcons';
 
 // ===== Helper: map Medusa order to mock Order shape (for list display) =====
 const fmtPrice = (n: number) => `${n.toLocaleString('es-MX', { minimumFractionDigits: 0 })}`;
@@ -690,7 +689,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
             {order.customer.tier && (
               <div className="space-y-2 pt-3 border-t border-wood-100">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">{TIER_EMOJI_ORD[order.customer.tier] || '🌲'}</span>
+                  <TierIcon tierId={order.customer.tier!} size={16} />
                   <span className="text-[11px] font-medium" style={getTierInlineStyles(DEFAULT_LOYALTY_CONFIG.tiers.find(t => t.id === normalizeTierId(order.customer.tier!)) || DEFAULT_LOYALTY_CONFIG.tiers[0]).text}>
                     Miembro {DEFAULT_LOYALTY_CONFIG.tiers.find(t => t.id === normalizeTierId(order.customer.tier!))?.name || order.customer.tier} ({order.customer.points?.toLocaleString()} pts)
                   </span>
