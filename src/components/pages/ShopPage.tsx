@@ -6,11 +6,14 @@ import { SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { useProducts } from '../../hooks/useProducts';
 import { useCartContext } from '@/contexts/CartContext';
+import { useLoyalty } from '@/hooks/useLoyalty';
 import type { CommerceProduct } from '@/lib/commerce';
 import { getMetafield } from '@/lib/commerce/types';
+import type { EarlyAccessInfo } from '@/lib/early-access';
 
 export const ShopPage = () => {
-  const { products, loading } = useProducts();
+  const { profile: loyaltyProfile } = useLoyalty();
+  const { productsWithAccess, loading } = useProducts(50, loyaltyProfile?.current_tier);
   const { addItem } = useCartContext();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<string | 'All'>('All');
@@ -20,33 +23,33 @@ export const ShopPage = () => {
   // Extract unique materials from product metadata
   const materials = useMemo(() => {
     const mats = new Set<string>();
-    products.forEach(p => {
+    productsWithAccess.forEach(({ product: p }) => {
       const mat = getMetafield(p, "materials", "primary_wood");
       if (mat) mats.add(mat);
     });
     return ['All', ...Array.from(mats)];
-  }, [products]);
+  }, [productsWithAccess]);
 
   const filteredProducts = useMemo(() => {
-    let result = [...products];
+    let result = [...productsWithAccess];
 
     if (selectedMaterial !== 'All') {
-      result = result.filter(p => getMetafield(p, "materials", "primary_wood") === selectedMaterial);
+      result = result.filter(({ product: p }) => getMetafield(p, "materials", "primary_wood") === selectedMaterial);
     }
 
-    result = result.filter(p => {
+    result = result.filter(({ product: p }) => {
       const price = p.priceRange.minVariantPrice.amount;
       return price >= priceRange[0] && price <= priceRange[1];
     });
 
     if (sortBy === 'price-asc') {
-      result.sort((a, b) => a.priceRange.minVariantPrice.amount - b.priceRange.minVariantPrice.amount);
+      result.sort((a, b) => a.product.priceRange.minVariantPrice.amount - b.product.priceRange.minVariantPrice.amount);
     } else if (sortBy === 'price-desc') {
-      result.sort((a, b) => b.priceRange.minVariantPrice.amount - a.priceRange.minVariantPrice.amount);
+      result.sort((a, b) => b.product.priceRange.minVariantPrice.amount - a.product.priceRange.minVariantPrice.amount);
     }
 
     return result;
-  }, [products, selectedMaterial, priceRange, sortBy]);
+  }, [productsWithAccess, selectedMaterial, priceRange, sortBy]);
 
   return (
     <div className="bg-sand-100 dark:bg-wood-950 min-h-screen pt-24 pb-20 transition-colors duration-300">
@@ -94,7 +97,7 @@ export const ShopPage = () => {
 
           <div className="flex items-center gap-4">
              <span className="text-sm text-wood-500 dark:text-sand-400 hidden md:inline-block">
-               {loading ? 'Cargando...' : `Mostrando ${filteredProducts.length} resultados`}
+               {loading ? 'Cargando...' : `Mostrando ${filteredProducts.length} resultado${filteredProducts.length !== 1 ? 's' : ''}`}
              </span>
              <div className="flex items-center gap-2 relative group">
                <span className="text-xs text-wood-500 dark:text-sand-400 uppercase tracking-widest">Ordenar por:</span>
@@ -182,8 +185,13 @@ export const ShopPage = () => {
             ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                 <AnimatePresence>
-                  {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} onAddToCart={(variantId) => addItem(variantId)} />
+                  {filteredProducts.map(({ product, earlyAccess }) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={(variantId) => addItem(variantId)}
+                      earlyAccess={earlyAccess}
+                    />
                   ))}
                 </AnimatePresence>
               </div>

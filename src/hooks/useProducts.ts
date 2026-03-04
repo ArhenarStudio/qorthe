@@ -5,14 +5,33 @@
 //
 // Expone CommerceProduct directamente. Los componentes consumen
 // la interfaz del commerce layer, no datos mock.
+//
+// Fase 9.D: Soporta filtrado por acceso anticipado (early access).
+// Productos con metadata "launch_date" futura solo son visibles
+// para usuarios cuyo tier tenga early_access_hours suficiente.
 // ═══════════════════════════════════════════════════════════════
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { commerce } from "@/lib/commerce";
 import type { CommerceProduct } from "@/lib/commerce";
+import {
+  filterProductsByAccess,
+  annotateProductsWithAccess,
+  type EarlyAccessInfo,
+} from "@/lib/early-access";
+import type { LoyaltyConfig } from "@/data/loyalty";
 
-export function useProducts(limit = 50) {
-  const [products, setProducts] = useState<CommerceProduct[]>([]);
+export interface ProductWithAccess {
+  product: CommerceProduct;
+  earlyAccess: EarlyAccessInfo;
+}
+
+export function useProducts(
+  limit = 50,
+  userTierId?: string | null,
+  loyaltyConfig?: LoyaltyConfig
+) {
+  const [allProducts, setAllProducts] = useState<CommerceProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +43,7 @@ export function useProducts(limit = 50) {
         setLoading(true);
         const data = await commerce.getProducts(limit);
         if (!cancelled) {
-          setProducts(data);
+          setAllProducts(data);
           setError(null);
         }
       } catch (err) {
@@ -41,7 +60,19 @@ export function useProducts(limit = 50) {
     return () => { cancelled = true; };
   }, [limit]);
 
-  return { products, loading, error };
+  // Filter by early access tier
+  const products = useMemo(
+    () => filterProductsByAccess(allProducts, userTierId, loyaltyConfig),
+    [allProducts, userTierId, loyaltyConfig]
+  );
+
+  // Annotated list with early access info (for badges)
+  const productsWithAccess: ProductWithAccess[] = useMemo(
+    () => annotateProductsWithAccess(allProducts, userTierId, loyaltyConfig),
+    [allProducts, userTierId, loyaltyConfig]
+  );
+
+  return { products, productsWithAccess, loading, error };
 }
 
 export function useProduct(handle: string) {

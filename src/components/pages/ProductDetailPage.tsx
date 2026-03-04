@@ -10,10 +10,12 @@ import { LaserEngravingCustomization } from '@/components/shop/LaserEngravingCus
 import { ProductReviews } from '@/components/reviews/ProductReviews';
 import { useProduct, useProducts } from '../../hooks/useProducts';
 import { useCartContext } from '@/contexts/CartContext';
+import { useLoyalty } from '@/hooks/useLoyalty';
 import { getMetafield } from '@/lib/commerce/types';
 import type { LaserCustomizationData } from '@/lib/commerce/types';
 import { LASER_SERVICE_VARIANT_ID } from '@/config/laser-engraving';
 import { fbEvent, FB_EVENTS } from '@/lib/meta-pixel';
+import { checkEarlyAccess, formatLaunchCountdown } from '@/lib/early-access';
 
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
 
@@ -23,6 +25,10 @@ export const ProductDetailPage = () => {
   const { product, loading } = useProduct(handle ?? "");
   const { products: allProducts } = useProducts();
   const { addItem, updating: cartUpdating } = useCartContext();
+  const { profile: loyaltyProfile } = useLoyalty();
+
+  // Check early access for this product
+  const earlyAccess = product ? checkEarlyAccess(product, loyaltyProfile?.current_tier) : null;
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -58,6 +64,42 @@ export const ProductDetailPage = () => {
         <div className="text-center">
           <p className="text-wood-500 dark:text-sand-300 font-serif text-xl mb-4">Producto no encontrado</p>
           <Link href="/shop" className="text-accent-gold underline">Volver al catálogo</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Early Access Gate ────────────────────────────────────────
+  // If product has a future launch_date and user's tier doesn't
+  // grant enough early_access_hours, show a restricted message.
+  if (earlyAccess && !earlyAccess.isVisible) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-sand-100 dark:bg-wood-950">
+        <div className="text-center max-w-md px-6">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center">
+            <Star className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-2xl font-serif text-wood-900 dark:text-sand-100 mb-3">
+            Acceso Anticipado
+          </h2>
+          <p className="text-wood-600 dark:text-sand-300 mb-2">
+            Este producto aún no está disponible para el público.
+          </p>
+          <p className="text-wood-500 dark:text-sand-400 text-sm mb-6">
+            {formatLaunchCountdown(earlyAccess.hoursUntilPublic)} para el público general.
+            Los miembros de tiers superiores tienen acceso anticipado.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/loyalty"
+              className="inline-block bg-gradient-to-r from-amber-600 to-yellow-500 text-white font-medium px-6 py-3 rounded-sm hover:opacity-90 transition-opacity"
+            >
+              Ver programa de lealtad
+            </Link>
+            <Link href="/shop" className="text-accent-gold underline text-sm">
+              Volver al catálogo
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -222,6 +264,21 @@ export const ProductDetailPage = () => {
                   {material || product.productType || "Artesanal"}
                 </span>
               </div>
+
+              {/* Early Access Badge (detail view) */}
+              {earlyAccess?.isEarlyAccess && (
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-yellow-500 text-white text-xs font-bold px-3 py-1.5 rounded-sm uppercase tracking-wider">
+                    <Star className="w-3.5 h-3.5" />
+                    Acceso Anticipado
+                  </span>
+                  {earlyAccess.hoursUntilPublic > 0 && (
+                    <span className="text-xs text-wood-500 dark:text-sand-400">
+                      {formatLaunchCountdown(earlyAccess.hoursUntilPublic)}
+                    </span>
+                  )}
+                </div>
+              )}
 
               <h1 className="text-4xl md:text-5xl font-serif text-wood-900 dark:text-sand-100 mb-6 leading-[1.1]">
                 {product.title}

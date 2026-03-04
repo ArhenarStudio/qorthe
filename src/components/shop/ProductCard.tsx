@@ -2,21 +2,24 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { ShoppingBag, Heart } from 'lucide-react';
+import { ShoppingBag, Heart, Clock, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { CommerceProduct } from '@/lib/commerce';
 import { getMetafield } from '@/lib/commerce/types';
 import { formatPrice } from '@/config/shipping';
+import type { EarlyAccessInfo } from '@/lib/early-access';
+import { formatLaunchCountdown } from '@/lib/early-access';
 
 interface ProductCardProps {
   product: CommerceProduct;
   onAddToCart?: (variantId: string) => void;
+  earlyAccess?: EarlyAccessInfo;
 }
 
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1621868315576-90f772719277?q=80&w=1000&auto=format&fit=crop";
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, earlyAccess }) => {
   const router = useRouter();
   const mainImage = product.featuredImage?.url ?? PLACEHOLDER_IMG;
   const price = product.priceRange.minVariantPrice;
@@ -47,6 +50,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
     >
       {/* Badges */}
       <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+        {earlyAccess?.isEarlyAccess && (
+          <span className="bg-gradient-to-r from-amber-600 to-yellow-500 text-white text-[10px] font-bold px-2.5 py-1 uppercase tracking-widest shadow-md flex items-center gap-1">
+            <Star className="w-3 h-3" />
+            Acceso Anticipado
+          </span>
+        )}
+        {earlyAccess?.isEarlyAccess && earlyAccess.hoursUntilPublic > 0 && (
+          <span className="bg-wood-900/80 backdrop-blur-sm text-sand-100 text-[10px] font-medium px-2 py-1 shadow-sm flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {formatLaunchCountdown(earlyAccess.hoursUntilPublic)}
+          </span>
+        )}
         {!inStock && (
           <span className="bg-red-800 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest shadow-sm">
             Agotado
