@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = "https://davidsonsdesign.com";
+const BASE_URL = "https://www.davidsonsdesign.com";
 
 // Static pages with priorities
 const staticPages = [
@@ -28,14 +28,21 @@ async function getProductSlugs(): Promise<string[]> {
     const medusaUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL;
     if (!medusaUrl) return [];
 
-    const resp = await fetch(`${medusaUrl}/store/products?limit=200&fields=handle`, {
+    const resp = await fetch(`${medusaUrl}/store/products?limit=200&fields=handle,metadata`, {
       headers: { "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "" },
       next: { revalidate: 3600 }, // Cache 1 hour
     });
 
     if (!resp.ok) return [];
     const data = await resp.json();
-    return (data.products || []).map((p: any) => p.handle).filter(Boolean);
+    return (data.products || [])
+      .filter((p: any) => {
+        // Exclude service products (laser engraving) and hidden catalog items
+        const meta = p.metadata || {};
+        return !meta.is_service && !meta.hide_from_catalog;
+      })
+      .map((p: any) => p.handle)
+      .filter(Boolean);
   } catch {
     return [];
   }
