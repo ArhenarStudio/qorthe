@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { Award, Check, ChevronRight, Star, CreditCard, Gift, TrendingUp, Shield, Zap, Crown } from 'lucide-react';
+import { Award, Check, ChevronRight, Star, CreditCard, Gift, TrendingUp, Shield, Zap, Crown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { LOYALTY_TIERS, LoyaltyTier } from '@/data/loyalty';
+import { LoyaltyTier } from '@/data/loyalty';
+import { useLoyaltyConfig } from '@/hooks/useLoyaltyConfig';
 
 // --- Sub-components ---
 
@@ -76,6 +77,16 @@ const StepCard = ({ number, title, description, icon: Icon }: { number: string, 
 // --- Main Page Component ---
 
 export const LoyaltyPage = () => {
+  const { tiers: LOYALTY_TIERS, config, loading } = useLoyaltyConfig();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-wood-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-wood-400" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-wood-900 transition-colors duration-300">
       
@@ -193,7 +204,7 @@ export const LoyaltyPage = () => {
             <StepCard 
               number="01"
               title="Compra y Acumula"
-              description="Por cada $1 MXN que inviertes en piezas DavidSon's, recibes 1 punto en tu cuenta automáticamente."
+              description={`Por cada $1 MXN que inviertes en piezas DavidSon's, recibes ${config.points_per_mxn} punto${config.points_per_mxn > 1 ? 's' : ''} en tu cuenta automáticamente.`}
               icon={CreditCard}
             />
             <StepCard 
@@ -205,7 +216,7 @@ export const LoyaltyPage = () => {
             <StepCard 
               number="03"
               title="Disfruta"
-              description="Usa tus puntos como dinero efectivo en el checkout. 100 puntos equivalen a $1.00 MXN de descuento directo."
+              description={`Usa tus puntos como dinero efectivo en el checkout. ${config.min_redeem_points} puntos equivalen a $${(config.min_redeem_points * config.point_value_mxn).toFixed(2)} MXN de descuento directo.`}
               icon={Gift}
             />
           </div>
@@ -213,14 +224,14 @@ export const LoyaltyPage = () => {
           {/* Conversion Infographic */}
           <div className="mt-16 bg-wood-50 dark:bg-wood-800 rounded-2xl p-8 max-w-3xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 border border-wood-100 dark:border-wood-700">
             <div className="text-center">
-              <span className="block text-4xl font-serif font-bold text-wood-900 dark:text-sand-50 mb-1">1</span>
-              <span className="text-xs uppercase tracking-widest text-wood-500 dark:text-sand-400">Punto</span>
+              <span className="block text-4xl font-serif font-bold text-wood-900 dark:text-sand-50 mb-1">{config.points_per_mxn}</span>
+              <span className="text-xs uppercase tracking-widest text-wood-500 dark:text-sand-400">Punto{config.points_per_mxn > 1 ? 's' : ''}</span>
             </div>
             <div className="h-px w-20 bg-wood-300 dark:bg-wood-600 relative">
                <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 text-wood-400 dark:text-sand-500">=</div>
             </div>
             <div className="text-center">
-              <span className="block text-4xl font-serif font-bold text-accent-gold mb-1">$0.01</span>
+              <span className="block text-4xl font-serif font-bold text-accent-gold mb-1">${config.point_value_mxn}</span>
               <span className="text-xs uppercase tracking-widest text-wood-500 dark:text-sand-400">MXN</span>
             </div>
           </div>
@@ -237,9 +248,11 @@ export const LoyaltyPage = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {LOYALTY_TIERS.map((tier) => {
-              const range = tier.maxSpend 
-                ? `$${tier.minSpend.toLocaleString()} - $${tier.maxSpend.toLocaleString()}`
-                : `$${tier.minSpend.toLocaleString()}+`;
+              const minPesos = Math.round(tier.minSpend / 100);
+              const maxPesos = tier.maxSpend ? Math.round(tier.maxSpend / 100) : null;
+              const range = maxPesos 
+                ? `$${minPesos.toLocaleString()} - $${maxPesos.toLocaleString()}`
+                : `$${minPesos.toLocaleString()}+`;
               
               return (
                 <div key={tier.id} className="bg-white dark:bg-wood-900 rounded-2xl overflow-hidden shadow-xl border border-wood-100 dark:border-wood-800 flex flex-col hover:-translate-y-2 transition-transform duration-300">
