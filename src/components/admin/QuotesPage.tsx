@@ -18,7 +18,7 @@ import {
 import { toast } from 'sonner';
 
 // ===== CONSTANTS =====
-type TabId = 'nuevas' | 'negociacion' | 'aprobadas' | 'produccion' | 'historial' | 'analisis';
+type TabId = 'nuevas' | 'negociacion' | 'aprobadas' | 'produccion' | 'historial' | 'analisis' | 'precios';
 
 const statusConfig: Record<QuoteStatus, { label: string; cls: string; dot: string }> = {
   nueva:              { label: 'Nueva',              cls: 'bg-blue-50 text-blue-600',    dot: 'bg-blue-500' },
@@ -35,6 +35,7 @@ const statusConfig: Record<QuoteStatus, { label: string; cls: string; dot: strin
 };
 
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
+import { QuotePricingPanel } from './QuotePricingPanel';
 import { TierIcon } from '@/components/ui/TierIcons';
 
 function getQuoteTierBadge(tierId: string) {
@@ -144,6 +145,7 @@ export const QuotesPage: React.FC = () => {
     produccion:  ['en_produccion'],
     historial:   ['completada', 'rechazada', 'vencida', 'cancelada'],
     analisis:    [],
+    precios:     [],
   };
 
   const filtered = useMemo(() => {
@@ -176,6 +178,7 @@ export const QuotesPage: React.FC = () => {
     produccion: allQ.filter(q => q.status === 'en_produccion').length,
     historial: closedQuotes.length,
     analisis: 0,
+    precios: 0,
   };
 
   const tabs: { id: TabId; label: string }[] = [
@@ -185,6 +188,7 @@ export const QuotesPage: React.FC = () => {
     { id: 'produccion', label: 'En producción' },
     { id: 'historial', label: 'Historial' },
     { id: 'analisis', label: 'Análisis' },
+    { id: 'precios', label: 'Precios' },
   ];
 
   // ===== DETAIL VIEW =====
@@ -272,7 +276,9 @@ export const QuotesPage: React.FC = () => {
       </div>
 
       {/* Content */}
-      {tab === 'analisis' ? (
+      {tab === 'precios' ? (
+        <QuotePricingPanel />
+      ) : tab === 'analisis' ? (
         <AnalyticsTab />
       ) : tab === 'nuevas' ? (
         <NewQuotesList quotes={filtered} onSelect={setSelectedQuote} />
