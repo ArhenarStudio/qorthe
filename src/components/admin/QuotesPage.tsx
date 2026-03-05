@@ -103,6 +103,36 @@ export const QuotesPage: React.FC = () => {
   const [tab, setTab] = useState<TabId>('nuevas');
   const [search, setSearch] = useState('');
   const [selectedQuote, setSelectedQuote] = useState<FullQuote | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newQuoteForm, setNewQuoteForm] = useState({ customer_name: '', customer_email: '', customer_phone: '', project_name: '', description: '', timeline: '3-4 semanas' });
+
+  const refreshQuotes = () => fetch('/api/admin/quotes').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveQuotes(d); });
+
+  const handleCreateQuote = async () => {
+    if (!newQuoteForm.customer_email || !newQuoteForm.customer_name) { toast.error('Nombre y email requeridos'); return; }
+    setCreating(true);
+    try {
+      const res = await fetch('/api/admin/quotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_email: newQuoteForm.customer_email,
+          customer_name: newQuoteForm.customer_name,
+          customer_phone: newQuoteForm.customer_phone,
+          project_name: newQuoteForm.project_name,
+          timeline: newQuoteForm.timeline,
+          messages: newQuoteForm.description ? [{ id: `m_${Date.now()}`, sender: 'client', senderName: newQuoteForm.customer_name, date: new Date().toISOString(), text: newQuoteForm.description }] : [],
+        }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      toast.success('Cotización creada');
+      setShowCreateForm(false);
+      setNewQuoteForm({ customer_name: '', customer_email: '', customer_phone: '', project_name: '', description: '', timeline: '3-4 semanas' });
+      refreshQuotes();
+    } catch { toast.error('Error al crear cotización'); }
+    finally { setCreating(false); }
+  };
   const [newMessage, setNewMessage] = useState('');
   const [newNote, setNewNote] = useState('');
 
@@ -159,7 +189,7 @@ export const QuotesPage: React.FC = () => {
 
   // ===== DETAIL VIEW =====
   if (selectedQuote) {
-    return <QuoteDetail quote={selectedQuote} onBack={() => setSelectedQuote(null)} />;
+    return <QuoteDetail quote={selectedQuote} onBack={() => setSelectedQuote(null)} onRefresh={() => { fetch('/api/admin/quotes').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveQuotes(d); }); }} />;
   }
 
   return (
@@ -170,14 +200,36 @@ export const QuotesPage: React.FC = () => {
           <FileText size={20} className="text-accent-gold" /> Cotizaciones
         </h3>
         <div className="flex items-center gap-2">
-          <button onClick={() => toast.success('Modal de creación próximamente')} className="flex items-center gap-1.5 px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors">
+          <button onClick={() => setShowCreateForm(true)} className="flex items-center gap-1.5 px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors">
             <Plus size={14} /> Crear Cotización Manual
           </button>
-          <button onClick={() => toast.success('Exportación iniciada')} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
+          <button onClick={() => { /* TODO: CSV export from /api/admin/importexport?type=quotes */ toast.info('Exportaci\u00f3n en desarrollo'); }} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
             <Download size={14} /> Exportar
           </button>
         </div>
       </div>
+
+      {/* Create Quote Form */}
+      {showCreateForm && (
+        <div className="bg-white rounded-xl border border-accent-gold/30 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-sm font-medium text-wood-900">Nueva Cotización</h4>
+            <button onClick={() => setShowCreateForm(false)} className="text-wood-400 hover:text-wood-600"><span className="text-lg">&times;</span></button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div><label className="text-[10px] text-wood-400 uppercase block mb-1">Nombre del cliente *</label><input value={newQuoteForm.customer_name} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_name: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-accent-gold/40" placeholder="María López" /></div>
+            <div><label className="text-[10px] text-wood-400 uppercase block mb-1">Email *</label><input type="email" value={newQuoteForm.customer_email} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_email: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-accent-gold/40" placeholder="maria@email.com" /></div>
+            <div><label className="text-[10px] text-wood-400 uppercase block mb-1">Teléfono</label><input value={newQuoteForm.customer_phone} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_phone: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-accent-gold/40" placeholder="662-123-4567" /></div>
+            <div><label className="text-[10px] text-wood-400 uppercase block mb-1">Nombre del proyecto</label><input value={newQuoteForm.project_name} onChange={e => setNewQuoteForm(prev => ({ ...prev, project_name: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-accent-gold/40" placeholder="Regalos corporativos" /></div>
+            <div><label className="text-[10px] text-wood-400 uppercase block mb-1">Timeline estimado</label><select value={newQuoteForm.timeline} onChange={e => setNewQuoteForm(prev => ({ ...prev, timeline: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white"><option>2-3 semanas</option><option>3-4 semanas</option><option>4-6 semanas</option><option>6-8 semanas</option></select></div>
+          </div>
+          <div className="mt-3"><label className="text-[10px] text-wood-400 uppercase block mb-1">Descripción / Solicitud del cliente</label><textarea value={newQuoteForm.description} onChange={e => setNewQuoteForm(prev => ({ ...prev, description: e.target.value }))} rows={3} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs outline-none resize-none focus:border-accent-gold/40" placeholder="Describe lo que el cliente necesita..." /></div>
+          <div className="flex justify-end gap-2 mt-4">
+            <button onClick={() => setShowCreateForm(false)} className="px-4 py-2 text-xs text-wood-500 hover:text-wood-700">Cancelar</button>
+            <button onClick={handleCreateQuote} disabled={creating} className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50">{creating ? 'Creando...' : 'Crear Cotización'}</button>
+          </div>
+        </div>
+      )}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -536,8 +588,24 @@ const EmptyState: React.FC<{ text: string }> = ({ text }) => (
 );
 
 // ===== QUOTE DETAIL =====
-const QuoteDetail: React.FC<{ quote: FullQuote; onBack: () => void }> = ({ quote: initialQuote, onBack }) => {
+const QuoteDetail: React.FC<{ quote: FullQuote; onBack: () => void; onRefresh?: () => void }> = ({ quote: initialQuote, onBack, onRefresh }) => {
   const [q, setQ] = useState(initialQuote);
+  const [saving, setSaving] = useState(false);
+
+  // Persist changes to Supabase
+  const persistQuote = async (updates: any) => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/quotes', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: q.id, ...updates }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      onRefresh?.();
+    } catch { toast.error('Error al guardar'); }
+    finally { setSaving(false); }
+  };
   const [newMsg, setNewMsg] = useState('');
   const [newNote, setNewNote] = useState('');
 
@@ -554,16 +622,20 @@ const QuoteDetail: React.FC<{ quote: FullQuote; onBack: () => void }> = ({ quote
   const handleSendMessage = () => {
     if (!newMsg.trim()) return;
     const msg = { id: `m_new_${Date.now()}`, sender: 'admin' as const, senderName: "DavidSon's Design", date: new Date().toISOString(), text: newMsg };
-    setQ(prev => ({ ...prev, messages: [...prev.messages, msg] }));
+    const updatedMessages = [...q.messages, msg];
+    setQ(prev => ({ ...prev, messages: updatedMessages }));
     setNewMsg('');
+    persistQuote({ messages: updatedMessages });
     toast.success('Mensaje enviado');
   };
 
   const handleAddNote = () => {
     if (!newNote.trim()) return;
     const note = { id: `n_new_${Date.now()}`, author: 'David (Admin)', date: new Date().toISOString(), text: newNote };
-    setQ(prev => ({ ...prev, internalNotes: [...prev.internalNotes, note] }));
+    const updatedNotes = [...q.internalNotes, note];
+    setQ(prev => ({ ...prev, internalNotes: updatedNotes }));
     setNewNote('');
+    persistQuote({ internal_notes: updatedNotes });
     toast.success('Nota agregada');
   };
 
@@ -586,7 +658,7 @@ const QuoteDetail: React.FC<{ quote: FullQuote; onBack: () => void }> = ({ quote
         </div>
         <select
           value={q.status}
-          onChange={e => { setQ(prev => ({ ...prev, status: e.target.value as QuoteStatus })); toast.success(`Estado cambiado a ${statusConfig[e.target.value as QuoteStatus].label}`); }}
+          onChange={e => { const newStatus = e.target.value as QuoteStatus; setQ(prev => ({ ...prev, status: newStatus })); persistQuote({ status: newStatus }); toast.success(`Estado cambiado a ${statusConfig[newStatus].label}`); }}
           className="text-xs bg-sand-50 border border-wood-200 rounded-lg px-3 py-2 text-wood-900 outline-none"
         >
           {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
