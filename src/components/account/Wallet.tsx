@@ -42,7 +42,7 @@ export const Wallet = () => {
         {/* DavidSon's Design Member Card (Real Data) */}
         <motion.div 
            whileHover={{ y: -5 }}
-           className="relative h-56 rounded-2xl p-8 border shadow-xl overflow-hidden group/card"
+           className="relative aspect-[1.58/1] max-w-md rounded-2xl p-8 border shadow-xl overflow-hidden group/card"
            style={{ ...tierStyles.card, ...tierStyles.cardText, borderColor: currentTierConfig.colors.gradient_from + '60' }}
         >
              {/* Card Texture */}
