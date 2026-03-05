@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   DollarSign, TrendingUp, TrendingDown, Package, CreditCard, ArrowUpRight, ArrowDownRight,
@@ -1250,6 +1250,14 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
 
 // ===== MAIN COMPONENT =====
 export const FinancesPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveFinances, setLiveFinances] = useState<any>(null);
+  const [financesLoading, setFinancesLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/finances').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveFinances(d); }).catch(() => {}).finally(() => setFinancesLoading(false));
+  }, []);
+
   const [activeTab, setActiveTab] = useState<TabId>('general');
   const [period, setPeriod] = useState('Este mes');
   const [showConfig, setShowConfig] = useState(false);

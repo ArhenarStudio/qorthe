@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import {
   Search, FileText, Plus, Download, ArrowLeft, Eye, Zap, MoreHorizontal,
@@ -92,6 +92,14 @@ const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; s
 
 // ===== MAIN COMPONENT =====
 export const QuotesPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveQuotes, setLiveQuotes] = useState<any>(null);
+  const [quotesLoading, setQuotesLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/quotes').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveQuotes(d); }).catch(() => {}).finally(() => setQuotesLoading(false));
+  }, []);
+
   const [tab, setTab] = useState<TabId>('nuevas');
   const [search, setSearch] = useState('');
   const [selectedQuote, setSelectedQuote] = useState<FullQuote | null>(null);

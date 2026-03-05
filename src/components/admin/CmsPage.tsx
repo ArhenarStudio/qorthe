@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   FileText, Menu, Home, PenLine, MessageSquare, Image, Type, Search,
@@ -1513,6 +1513,14 @@ function SeoTab() {
 
 // ===== MAIN COMPONENT =====
 export const CmsPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveCms, setLiveCms] = useState<any>(null);
+  const [cmsLoading, setCmsLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/cms').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveCms(d); }).catch(() => {}).finally(() => setCmsLoading(false));
+  }, []);
+
   const [activeTab, setActiveTab] = useState<CmsTab>('pages');
 
   const tabContent: Record<CmsTab, React.ReactNode> = {

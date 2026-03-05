@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   RotateCcw, Search, Eye, MessageSquare,
@@ -326,6 +326,14 @@ function MetricsTab() {
 
 // ===== MAIN =====
 export const ReturnsRmaPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveReturns, setLiveReturns] = useState<any>(null);
+  const [returnsLoading, setReturnsLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/returns').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveReturns(d); }).catch(() => {}).finally(() => setReturnsLoading(false));
+  }, []);
+
   const [tab, setTab] = useState<RmaTab>('list');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<RmaStatus | 'all'>('all');

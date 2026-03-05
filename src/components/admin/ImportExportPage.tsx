@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   ArrowUpDown, Upload, Download, FileSpreadsheet, Database, Check,
@@ -426,6 +426,14 @@ function HistoryTab() {
 
 // ===== MAIN =====
 export const ImportExportPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveExport, setLiveExport] = useState<any>(null);
+  const [exportLoading, setExportLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/importexport').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveExport(d); }).catch(() => {}).finally(() => setExportLoading(false));
+  }, []);
+
   const [tab, setTab] = useState<IETab>('import');
 
   const tabs: Array<{ id: IETab; label: string; icon: React.ElementType }> = [

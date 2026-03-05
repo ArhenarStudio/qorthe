@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Target, Plus, TrendingUp, TrendingDown, DollarSign, Users,
   ShoppingBag, Star, BarChart3, Clock, CheckCircle, XCircle,
@@ -282,6 +282,14 @@ function RankingTab() {
 
 // ===== MAIN =====
 export const GoalsOkrsPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveGoals, setLiveGoals] = useState<any>(null);
+  const [goalsLoading, setGoalsLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/goals').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveGoals(d); }).catch(() => {}).finally(() => setGoalsLoading(false));
+  }, []);
+
   const [tab, setTab] = useState<GoalsTab>('active');
 
   const tabs: Array<{ id: GoalsTab; label: string; icon: React.ElementType }> = [

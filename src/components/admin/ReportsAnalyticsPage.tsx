@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   BarChart3, ShoppingCart, Users, Package, Settings2, Plus,
@@ -1097,6 +1097,14 @@ function CustomTab() {
 
 // ===== MAIN COMPONENT =====
 export const ReportsAnalyticsPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveReports, setLiveReports] = useState<any>(null);
+  const [reportsLoading, setReportsLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/reports').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveReports(d); }).catch(() => {}).finally(() => setReportsLoading(false));
+  }, []);
+
   const [activeTab, setActiveTab] = useState<TabId>('resumen');
   const [period, setPeriod] = useState('Este mes');
 

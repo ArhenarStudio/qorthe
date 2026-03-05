@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Zap, Plus, Search, Filter, Play, Pause, Trash2, Copy, MoreHorizontal,
@@ -813,6 +813,14 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
 
 // ===== MAIN COMPONENT =====
 export const AutomationsPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveAuto, setLiveAuto] = useState<any>(null);
+  const [automationsLoading, setAutomationsLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/automations').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveAuto(d); }).catch(() => {}).finally(() => setAutomationsLoading(false));
+  }, []);
+
   const [view, setView] = useState<ViewMode>('list');
   const [automations, setAutomations] = useState(mockAutomations);
   const [editingAuto, setEditingAuto] = useState<Automation | null>(null);

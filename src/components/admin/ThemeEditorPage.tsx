@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Palette, ChevronDown, Monitor, Tablet, Smartphone,
@@ -843,6 +843,14 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
 
 // ===== MAIN COMPONENT =====
 export const ThemeEditorPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveTheme, setLiveTheme] = useState<any>(null);
+  const [themeLoading, setThemeLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/theme').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveTheme(d); }).catch(() => {}).finally(() => setThemeLoading(false));
+  }, []);
+
   const [theme, setTheme] = useState<ThemeConfig>(themePresets[0].config);
   const [openSection, setOpenSection] = useState<EditorSection | null>('branding');
   const [previewPage, setPreviewPage] = useState<PreviewPage>('home');

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Headphones, Search, Clock, CheckCircle, AlertTriangle,
@@ -248,6 +248,14 @@ function MetricsTab() {
 
 // ===== MAIN =====
 export const HelpDeskPage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveHelpdesk, setLiveHelpdesk] = useState<any>(null);
+  const [helpdeskLoading, setHelpdeskLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/helpdesk').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveHelpdesk(d); }).catch(() => {}).finally(() => setHelpdeskLoading(false));
+  }, []);
+
   const [tab, setTab] = useState<HelpTab>('inbox');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<TicketStatus | 'all'>('all');

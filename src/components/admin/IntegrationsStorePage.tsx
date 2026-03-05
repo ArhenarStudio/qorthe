@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Plug, Search, Filter, Grid3X3, List, Star, Check, X, ChevronRight,
@@ -884,6 +884,14 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
 
 // ===== MAIN COMPONENT =====
 export const IntegrationsStorePage: React.FC = () => {
+
+  // ── Live data from API ──
+  const [liveInteg, setLiveInteg] = useState<any>(null);
+  const [integrationsLoading, setIntegrationsLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/admin/automations').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveInteg(d); }).catch(() => {}).finally(() => setIntegrationsLoading(false));
+  }, []);
+
   const [view, setView] = useState<ViewMode>('marketplace');
   const [selectedApp, setSelectedApp] = useState<IntegrationApp | null>(null);
 
