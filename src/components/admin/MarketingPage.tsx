@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search, Plus, Tag, Mail, Image, Zap, Users, BarChart3,
@@ -494,16 +494,43 @@ const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null | undefined>(undefined);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
 
-  const filtered = useMemo(() => {
-    let list = [...mockCoupons];
-    if (statusFilter !== 'all') list = list.filter(c => c.status === statusFilter);
-    if (typeFilter !== 'all') list = list.filter(c => c.type === typeFilter);
-    if (search) {
-      const s = search.toLowerCase();
-      list = list.filter(c => c.code.toLowerCase().includes(s) || c.internalName.toLowerCase().includes(s));
+  // ── Live promotions from Medusa ──
+  const [livePromotions, setLivePromotions] = useState<Coupon[] | null>(null);
+  const [promoLoading, setPromoLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+
+  const fetchPromotions = React.useCallback(async (silent = false) => {
+    try {
+      if (!silent) setPromoLoading(true);
+      const params = new URLSearchParams();
+      if (statusFilter !== 'all') params.set('status', statusFilter);
+      if (search) params.set('search', search);
+      const res = await fetch(`/api/admin/marketing?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setLivePromotions(data.promotions || []);
+        setIsLive(true);
+      }
+    } catch (err) {
+      console.error('[CuponesTab] fetch error:', err);
+      if (!silent) setIsLive(false);
+    } finally {
+      setPromoLoading(false);
     }
+  }, [statusFilter, search]);
+
+  React.useEffect(() => {
+    fetchPromotions();
+    const interval = setInterval(() => fetchPromotions(true), 60000);
+    return () => clearInterval(interval);
+  }, [fetchPromotions]);
+
+  const filtered = useMemo(() => {
+    let list = livePromotions || [];
+    // Status and search already filtered server-side, but apply type filter client-side
+    if (typeFilter !== 'all') list = list.filter(c => c.type === typeFilter);
     return list;
-  }, [statusFilter, typeFilter, search]);
+  }, [livePromotions, typeFilter]);
 
   return (
     <>
@@ -1262,9 +1289,25 @@ export const MarketingPage: React.FC = () => {
   const [tab, setTab] = useState<TabId>('cupones');
   const [search, setSearch] = useState('');
 
-  // KPIs
-  const activeCoupons = mockCoupons.filter(c => c.status === 'active' || c.status === 'auto').length;
-  const expiringCoupons = mockCoupons.filter(c => c.status === 'active' && c.endDate && new Date(c.endDate).getTime() - Date.now() < 7 * 86400000).length;
+  // ── Live promotion stats ──
+  const [promoStats, setPromoStats] = useState<{ total: number; active: number; scheduled: number; expired: number }>({ total: 0, active: 0, scheduled: 0, expired: 0 });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/admin/marketing?limit=200');
+        if (res.ok) {
+          const data = await res.json();
+          setPromoStats(data.stats || { total: 0, active: 0, scheduled: 0, expired: 0 });
+        }
+      } catch {}
+    }
+    fetchStats();
+  }, []);
+
+  // KPIs (real for coupons, mock for campaigns/flash until those phases are built)
+  const activeCoupons = promoStats.active;
+  const expiringCoupons = 0; // TODO: calculate from promotions with endDate < 7 days
   const activeCampaigns = mockEmailCampaigns.filter(c => c.status === 'sent').length;
   const scheduledCampaigns = mockEmailCampaigns.filter(c => c.status === 'scheduled').length;
   const activeFlash = mockFlashSales.filter(f => f.status === 'active').length;
