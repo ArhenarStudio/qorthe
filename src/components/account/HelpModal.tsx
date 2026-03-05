@@ -41,13 +41,8 @@ const FAQS = [
   }
 ];
 
-const MOCK_TICKETS = [
-  { id: 'T-1023', subject: 'Problema con la factura', status: 'open', date: 'Hace 2 horas', lastUpdate: 'Esperando respuesta de soporte' },
-  { id: 'T-0992', subject: 'Consulta sobre garantía', status: 'closed', date: '10 Feb 2024', lastUpdate: 'Resuelto' },
-];
-
-const MOCK_CHAT_HISTORY = [
-  { id: 1, sender: 'bot', text: '¡Hola! Soy el asistente virtual de DavidSon\'s. ¿En qué puedo ayudarte hoy?', time: '10:00 AM' },
+const INITIAL_CHAT = [
+  { id: 1, sender: 'bot', text: '¡Hola! Soy el asistente virtual de DavidSon\'s. ¿En qué puedo ayudarte hoy?', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
 ];
 
 export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
@@ -56,11 +51,11 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
   
   // Ticket State
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
-  const [tickets, setTickets] = useState(MOCK_TICKETS);
+  const [tickets, setTickets] = useState<any[]>([]);
   const [newTicket, setNewTicket] = useState({ subject: '', category: 'general', message: '' });
 
   // Chat State
-  const [chatMessages, setChatMessages] = useState(MOCK_CHAT_HISTORY);
+  const [chatMessages, setChatMessages] = useState(INITIAL_CHAT);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 

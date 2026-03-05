@@ -25,17 +25,18 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({ activeSection, o
     { id: 'overview', label: 'Resumen', icon: LayoutDashboard },
     { id: 'loyalty', label: 'Lealtad', icon: Award },
     { id: 'orders', label: 'Mis Pedidos', icon: Package },
-    { id: 'business', label: 'Espacio B2B', icon: Briefcase },
-    { id: 'billing', label: 'Facturación', icon: Receipt },
-    { id: 'quotations', label: 'Cotizaciones', icon: FileText },
-    { id: 'designs', label: 'Mis Diseños', icon: Palette },
-    { id: 'subscriptions', label: 'Suscripciones', icon: RefreshCw },
     { id: 'reviews', label: 'Mis Opiniones', icon: MessageSquare },
+    { id: 'wishlist', label: 'Wishlist', icon: Heart },
     { id: 'addresses', label: 'Direcciones', icon: MapPin },
     { id: 'wallet', label: 'Pagos', icon: CreditCard },
     { id: 'security', label: 'Seguridad', icon: ShieldCheck },
-    { id: 'wishlist', label: 'Wishlist', icon: Heart },
     { id: 'settings', label: 'Cuenta', icon: Settings },
+    // Próximamente (ocultas hasta implementación):
+    // { id: 'business', label: 'Espacio B2B', icon: Briefcase },
+    // { id: 'billing', label: 'Facturación', icon: Receipt },
+    // { id: 'quotations', label: 'Cotizaciones', icon: FileText },
+    // { id: 'designs', label: 'Mis Diseños', icon: Palette },
+    // { id: 'subscriptions', label: 'Suscripciones', icon: RefreshCw },
   ];
 
   return (

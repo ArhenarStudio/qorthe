@@ -225,16 +225,17 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
 
                {/* Action Buttons (Right Grid) */}
                <div className="lg:col-span-5 xl:col-span-6 flex flex-col gap-4 h-full">
-                   {/* Wallet Integration Actions */}
+                   {/* Wallet Integration — Próximamente */}
                    <div className="grid grid-cols-2 gap-3 shrink-0">
-                       <button className="group hover:scale-[1.02] active:scale-95 transition-all w-full h-12 bg-black text-white rounded-xl shadow-md flex items-center justify-center px-2">
-                          <span className="text-xs font-medium text-white/80 mr-1.5">Add to</span>
+                       <button disabled className="w-full h-12 bg-black/40 text-white/50 rounded-xl flex items-center justify-center px-2 cursor-not-allowed relative">
+                          <span className="text-xs font-medium mr-1.5">Add to</span>
                           <span className="text-sm font-bold tracking-wide">Apple Wallet</span>
+                          <span className="absolute -top-2 -right-2 text-[8px] bg-accent-gold text-white px-1.5 py-0.5 rounded-full font-bold">Pronto</span>
                        </button>
-
-                       <button className="group hover:scale-[1.02] active:scale-95 transition-all w-full h-12 bg-black text-white rounded-xl shadow-md flex items-center justify-center px-2">
-                          <span className="text-xs font-medium text-white/80 mr-1.5">Add to</span>
+                       <button disabled className="w-full h-12 bg-black/40 text-white/50 rounded-xl flex items-center justify-center px-2 cursor-not-allowed relative">
+                          <span className="text-xs font-medium mr-1.5">Add to</span>
                           <span className="text-sm font-bold tracking-wide">Google Wallet</span>
+                          <span className="absolute -top-2 -right-2 text-[8px] bg-accent-gold text-white px-1.5 py-0.5 rounded-full font-bold">Pronto</span>
                        </button>
                    </div>
 
