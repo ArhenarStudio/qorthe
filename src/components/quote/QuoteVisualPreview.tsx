@@ -34,12 +34,15 @@ const TEXTILE_COLORS: Record<TextileColor, string> = {
 
 // ── Zone position map (relative to board) ───────────────────
 
-const ZONE_POSITIONS: Record<EngravingZone, { cx: number; cy: number; label: string }> = {
+const ZONE_POSITIONS: Partial<Record<EngravingZone, { cx: number; cy: number; label: string }>> = {
   Centro:           { cx: 0.5,  cy: 0.5,  label: 'C' },
   Esquina:          { cx: 0.15, cy: 0.85, label: 'E' },
   'Borde superior': { cx: 0.5,  cy: 0.12, label: 'B' },
   Reverso:          { cx: 0.85, cy: 0.85, label: 'R' },
   'Multi-zona':     { cx: 0.5,  cy: 0.5,  label: 'M' },
+  'Lateral izquierdo': { cx: 0.05, cy: 0.5, label: 'LI' },
+  'Lateral derecho':   { cx: 0.95, cy: 0.5, label: 'LD' },
+  'Frontal completo':  { cx: 0.5,  cy: 0.5, label: 'F' },
 };
 
 // ── Wood Board Preview ──────────────────────────────────────

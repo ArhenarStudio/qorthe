@@ -86,7 +86,20 @@ export type EngravingType =
 
 export type EngravingComplexity = 'Básico' | 'Intermedio' | 'Detallado' | 'Premium';
 
-export type EngravingZone = 'Centro' | 'Esquina' | 'Borde superior' | 'Reverso' | 'Multi-zona';
+export type EngravingZone = 'Centro' | 'Esquina' | 'Borde superior' | 'Reverso' | 'Multi-zona'
+  | 'Lateral izquierdo' | 'Lateral derecho' | 'Frontal completo';
+
+export interface ZoneEngravingConfig {
+  zone: EngravingZone;
+  type: EngravingType;
+  complexity: EngravingComplexity;
+  customText?: string;
+  qrUrl?: string;
+  file?: File | null;
+  fileName?: string;
+  templateId?: string;
+  templateName?: string;
+}
 
 export interface EngravingConfig {
   enabled: boolean;
@@ -99,6 +112,8 @@ export interface EngravingConfig {
   fileName?: string;
   templateId?: string;
   templateName?: string;
+  /** Per-zone config (optional, for advanced multi-zone) */
+  zoneConfigs?: ZoneEngravingConfig[];
 }
 
 // ── Textile Customization ───────────────────────────────────

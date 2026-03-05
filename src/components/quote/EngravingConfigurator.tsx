@@ -29,7 +29,12 @@ const COMPLEXITIES: { value: EngravingComplexity; label: string }[] = [
   { value: 'Premium', label: 'Premium' },
 ];
 
-const ZONES: EngravingZone[] = ['Centro', 'Esquina', 'Borde superior', 'Reverso', 'Multi-zona'];
+const ZONE_GROUPS = [
+  { label: 'Frontal', zones: ['Centro', 'Esquina', 'Borde superior', 'Frontal completo'] as EngravingZone[] },
+  { label: 'Laterales', zones: ['Lateral izquierdo', 'Lateral derecho'] as EngravingZone[] },
+  { label: 'Posterior', zones: ['Reverso'] as EngravingZone[] },
+  { label: 'Avanzado', zones: ['Multi-zona'] as EngravingZone[] },
+];
 
 export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
   config,
@@ -160,28 +165,31 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
                     <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
                       Ubicación en la pieza
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {ZONES.map((zone) => {
-                        const sel = config.zones.includes(zone);
-                        return (
-                          <button
-                            key={zone}
-                            onClick={() => handleZoneToggle(zone)}
-                            className={`flex items-center gap-2 px-3 py-2 text-xs rounded-lg border transition-all ${
-                              sel
-                                ? 'bg-accent-gold/10 border-accent-gold text-wood-900 dark:text-accent-gold font-bold'
-                                : 'bg-wood-50 dark:bg-wood-800 border-wood-200 dark:border-wood-700 text-wood-500'
-                            }`}
-                          >
-                            <div
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                sel ? 'bg-accent-gold' : 'bg-wood-300'
-                              }`}
-                            />
-                            {zone}
-                          </button>
-                        );
-                      })}
+                    <div className="space-y-3">
+                      {ZONE_GROUPS.map((group) => (
+                        <div key={group.label}>
+                          <span className="text-[9px] font-bold text-wood-300 uppercase tracking-widest mb-1.5 block">{group.label}</span>
+                          <div className="grid grid-cols-2 gap-1.5">
+                            {group.zones.map((zone) => {
+                              const sel = config.zones.includes(zone);
+                              return (
+                                <button
+                                  key={zone}
+                                  onClick={() => handleZoneToggle(zone)}
+                                  className={`flex items-center gap-2 px-3 py-2 text-xs rounded-lg border transition-all ${
+                                    sel
+                                      ? 'bg-accent-gold/10 border-accent-gold text-wood-900 dark:text-accent-gold font-bold'
+                                      : 'bg-wood-50 dark:bg-wood-800 border-wood-200 dark:border-wood-700 text-wood-500'
+                                  }`}
+                                >
+                                  <div className={`w-1.5 h-1.5 rounded-full ${sel ? 'bg-accent-gold' : 'bg-wood-300'}`} />
+                                  {zone}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                     {config.zones.length > 1 && (
                       <p className="text-[10px] text-accent-gold">
