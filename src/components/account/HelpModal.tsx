@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, HelpCircle, ChevronDown, ChevronUp, MessageCircle, 
   Mail, Search, Ticket, Plus, Send, FileText, CheckCircle, Clock, AlertCircle 
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { createClient } from '@/lib/supabase/client';
 
 interface HelpModalProps {
   isOpen: boolean;
@@ -54,10 +55,96 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
   const [tickets, setTickets] = useState<any[]>([]);
   const [newTicket, setNewTicket] = useState({ subject: '', category: 'general', message: '' });
 
-  // Chat State
-  const [chatMessages, setChatMessages] = useState(INITIAL_CHAT);
+  // Chat State — connected to Supabase
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Get user email
+  useEffect(() => {
+    async function getEmail() {
+      const supabase = createClient();
+      if (!supabase) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) setUserEmail(user.email);
+    }
+    getEmail();
+  }, []);
+
+  // Load conversation when chat tab is opened
+  useEffect(() => {
+    if (activeTab !== 'chat' || !userEmail) return;
+    async function loadChat() {
+      setChatLoading(true);
+      try {
+        const res = await fetch(`/api/chat?email=${encodeURIComponent(userEmail!)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.conversation) {
+            setConversationId(data.conversation.id);
+            setChatMessages((data.messages || []).map((m: any) => ({
+              id: m.id,
+              sender: m.sender === 'customer' ? 'user' : m.sender === 'admin' ? 'bot' : 'bot',
+              text: m.text,
+              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isAdmin: m.sender === 'admin',
+            })));
+          } else {
+            setChatMessages(INITIAL_CHAT);
+          }
+        } else {
+          setChatMessages(INITIAL_CHAT);
+        }
+      } catch {
+        setChatMessages(INITIAL_CHAT);
+      } finally {
+        setChatLoading(false);
+      }
+    }
+    loadChat();
+  }, [activeTab, userEmail]);
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!conversationId) return;
+    const supabase = createClient();
+    if (!supabase) return;
+
+    const channel = supabase
+      .channel(`chat-${conversationId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'chat_messages',
+        filter: `conversation_id=eq.${conversationId}`,
+      }, (payload: any) => {
+        const m = payload.new;
+        if (m.sender !== 'customer') {
+          setChatMessages(prev => [
+            ...prev,
+            {
+              id: m.id,
+              sender: 'bot',
+              text: m.text,
+              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isAdmin: m.sender === 'admin',
+            },
+          ]);
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [conversationId]);
+
+  // Auto-scroll chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   // FAQ State
   const [openFaqIndex, setOpenFaqIndex] = useState<string | null>(null);
@@ -96,21 +183,25 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || !userEmail) return;
 
-    const userMsg = { id: Date.now(), sender: 'user', text: chatInput, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+    const text = chatInput.trim();
+    const userMsg = { id: Date.now(), sender: 'user', text, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     setChatMessages(prev => [...prev, userMsg]);
     setChatInput('');
-    setIsTyping(true);
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botMsg = { id: Date.now() + 1, sender: 'bot', text: 'Gracias por tu mensaje. Un agente se conectará contigo en breve.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-      setChatMessages(prev => [...prev, botMsg]);
-      setIsTyping(false);
-    }, 1500);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail, text, conversation_id: conversationId }),
+      });
+      if (!res.ok) throw new Error('Failed');
+    } catch {
+      toast.error('Error al enviar mensaje');
+    }
   };
 
   // Filter FAQs
@@ -322,6 +413,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                 )}
+                <div ref={chatEndRef} />
              </div>
 
              {/* Input Area */}

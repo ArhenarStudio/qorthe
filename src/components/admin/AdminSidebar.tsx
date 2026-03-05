@@ -9,12 +9,12 @@ import {
   BarChart3, FileEdit, Bell, Settings,
   ExternalLink, LogOut, Zap, Plug, Palette,
   RotateCcw, Headphones, ArrowUpDown, Target, Search, ChevronDown, X,
-  PanelLeftClose, PanelLeft
+  PanelLeftClose, PanelLeft, MessageSquare
 } from 'lucide-react';
 
 export type AdminPage =
   | 'dashboard' | 'orders' | 'shipping' | 'products' | 'categories'
-  | 'customers' | 'reviews' | 'quotes' | 'marketing'
+  | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
   | 'integrations' | 'theme' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
   | 'pos';
@@ -65,6 +65,7 @@ const navGroups: NavGroup[] = [
     items: [
       { id: 'customers', label: 'Clientes', icon: Users },
       { id: 'reviews', label: 'Reviews', icon: Star, badge: 3 },
+      { id: 'chat', label: 'Chat en Vivo', icon: MessageSquare },
       { id: 'helpdesk', label: 'Soporte', icon: Headphones, badge: 7 },
     ],
   },
