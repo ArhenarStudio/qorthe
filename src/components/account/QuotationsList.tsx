@@ -290,6 +290,16 @@ export const QuotationsList = () => {
 
                     {/* Actions */}
                     <div className="flex flex-wrap gap-2 pt-2">
+                      {/* Pay button — only for approved quotes */}
+                      {(quote.status === 'aprobada' || quote.status === 'anticipo_recibido') && (
+                        <a
+                          href={`/quote/pay?id=${quote.id}`}
+                          className="flex items-center gap-1.5 px-4 py-2 bg-accent-gold text-wood-900 rounded-lg text-xs font-bold uppercase tracking-wider hover:shadow-md transition-all"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                          Pagar Cotización
+                        </a>
+                      )}
                       <a
                         href={`/quote/pdf?id=${quote.id}`}
                         target="_blank"

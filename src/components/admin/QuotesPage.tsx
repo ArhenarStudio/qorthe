@@ -603,6 +603,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
   const [rejectReason, setRejectReason] = useState('');
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [converting, setConverting] = useState(false);
+  const [convertTarget, setConvertTarget] = useState<'order' | 'pos'>('order');
 
   // Persist changes to Supabase
   const persistQuote = async (updates: any) => {
@@ -981,7 +982,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
       {showConvertModal && (
         <InlineModal
           title="🛒 Convertir Cotización a Pedido"
-          confirmLabel={converting ? 'Procesando...' : 'Crear Pedido en Medusa'}
+          confirmLabel={converting ? 'Procesando...' : convertTarget === 'pos' ? 'Enviar al POS' : 'Crear Pedido'}
           confirmColor="bg-accent-gold"
           onCancel={() => !converting && setShowConvertModal(false)}
           onConfirm={async () => {
@@ -991,7 +992,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               const res = await fetch('/api/admin/quotes/convert', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ quote_id: q.id }),
+                body: JSON.stringify({ quote_id: q.id, target: convertTarget }),
               });
               const data = await res.json();
               if (res.ok && data.success) {
@@ -1009,17 +1010,36 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
             }
           }}
         >
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="bg-sand-50 rounded-lg p-3 text-xs space-y-1.5">
               <div className="flex justify-between"><span className="text-wood-500">Cotización</span><span className="text-wood-900 font-bold">{q.number}</span></div>
               <div className="flex justify-between"><span className="text-wood-500">Cliente</span><span className="text-wood-900">{q.customer.name}</span></div>
               <div className="flex justify-between"><span className="text-wood-500">Total</span><span className="text-wood-900 font-bold">{fmt(totalConIva)}</span></div>
               <div className="flex justify-between"><span className="text-wood-500">Piezas</span><span className="text-wood-900">{getPieceCount(q)}</span></div>
             </div>
-            <p className="text-[11px] text-wood-500">Esto creará una orden draft en Medusa con las piezas de la cotización. El estado cambiará a "En producción".</p>
+
+            {/* Target selector */}
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-2">Destino</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={() => setConvertTarget('order')}
+                  className={`p-3 rounded-lg border-2 text-center text-xs transition-all ${convertTarget === 'order' ? 'border-accent-gold bg-accent-gold/5 text-wood-900 font-bold' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
+                  <ShoppingCart size={16} className="mx-auto mb-1" />
+                  Orden Medusa
+                  <span className="block text-[9px] text-wood-400 mt-0.5">Orden directa en el sistema</span>
+                </button>
+                <button onClick={() => setConvertTarget('pos')}
+                  className={`p-3 rounded-lg border-2 text-center text-xs transition-all ${convertTarget === 'pos' ? 'border-accent-gold bg-accent-gold/5 text-wood-900 font-bold' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
+                  <Zap size={16} className="mx-auto mb-1" />
+                  Punto de Venta
+                  <span className="block text-[9px] text-wood-400 mt-0.5">Aparece en historial POS</span>
+                </button>
+              </div>
+            </div>
+
             {!['aprobada', 'anticipo_recibido'].includes(q.status) && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <p className="text-[11px] text-amber-700">⚠️ Esta cotización tiene estado "{statusConfig[q.status].label}". Normalmente se convierte cuando está aprobada o con anticipo recibido.</p>
+                <p className="text-[11px] text-amber-700">⚠️ Estado actual: "{statusConfig[q.status].label}". Se recomienda convertir cuando esté aprobada o con anticipo.</p>
               </div>
             )}
           </div>

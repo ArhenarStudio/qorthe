@@ -937,8 +937,8 @@ const OrderHistory: React.FC<{ orders: any[]; stats?: any }> = ({ orders, stats 
 
             return (
               <div key={o.id} className="flex items-center gap-4 px-4 py-3 hover:bg-wood-50/50 transition-colors">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isPos ? "bg-[#C5A065]/10" : "bg-blue-50"}`}>
-                  {isPos ? <Zap size={14} className="text-[#C5A065]" /> : <Globe size={14} className="text-blue-500" />}
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isPos ? "bg-[#C5A065]/10" : o.source === "quote" ? "bg-purple-50" : "bg-blue-50"}`}>
+                  {isPos ? <Zap size={14} className="text-[#C5A065]" /> : o.source === "quote" ? <FileText size={14} className="text-purple-500" /> : <Globe size={14} className="text-blue-500" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
