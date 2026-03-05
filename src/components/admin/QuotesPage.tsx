@@ -447,7 +447,7 @@ const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
                 <td className="px-4 py-3 text-xs text-wood-500">{fmtDate(q.date)}</td>
                 <td className="px-4 py-3 flex items-center gap-1">
                   {!q.depositPaid && (
-                    <button onClick={() => { const amt = prompt('Monto del anticipo:'); if (amt) { fetch('/api/admin/quotes', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: q.id, status: 'anticipo_recibido', deposit_paid: { amount: parseFloat(amt.replace(/[^0-9.]/g, '')), method: 'Transferencia', ref: `DEP-${Date.now()}`, date: new Date().toISOString() } }) }).then(() => toast.success('Anticipo registrado')); } }} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors">
+                    <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors">
                       💰 Registrar anticipo
                     </button>
                   )}
@@ -505,8 +505,8 @@ const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote
                 </td>
                 <td className="px-4 py-3 text-xs text-wood-500">~15 Mar</td>
                 <td className="px-4 py-3 flex items-center gap-1">
-                  <button onClick={() => { const completed = prompt('Piezas completadas:'); if (completed) { const total = q.pieces.reduce((s: number, p: any) => s + p.quantity, 0); fetch('/api/admin/quotes', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: q.id, production_progress: { completed: parseInt(completed), total } }) }).then(() => toast.success(`Progreso actualizado: ${completed}/${total}`)); } }} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
-                    📸 Update
+                  <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
+                    📸 Actualizar
                   </button>
                   <button onClick={() => onSelect(q)} className="text-[11px] text-accent-gold hover:underline ml-1">Ver</button>
                 </td>
@@ -569,10 +569,40 @@ const EmptyState: React.FC<{ text: string }> = ({ text }) => (
   </div>
 );
 
+// ===== INLINE MODAL (replaces browser prompt()) =====
+const InlineModal: React.FC<{
+  title: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  confirmLabel?: string;
+  confirmColor?: string;
+  children: React.ReactNode;
+}> = ({ title, onConfirm, onCancel, confirmLabel = 'Confirmar', confirmColor = 'bg-wood-900', children }) => (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onCancel}>
+    <div className="bg-white dark:bg-wood-900 rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+      <h4 className="text-sm font-serif font-bold text-wood-900 dark:text-sand-100">{title}</h4>
+      {children}
+      <div className="flex justify-end gap-2 pt-2">
+        <button onClick={onCancel} className="px-4 py-2 text-xs text-wood-500 hover:text-wood-700">Cancelar</button>
+        <button onClick={onConfirm} className={`px-4 py-2 text-xs text-sand-100 rounded-lg hover:opacity-90 ${confirmColor}`}>{confirmLabel}</button>
+      </div>
+    </div>
+  </div>
+);
+
 // ===== QUOTE DETAIL =====
 const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?: () => void }> = ({ quote: initialQuote, onBack, onRefresh }) => {
   const [q, setQ] = useState(initialQuote);
   const [saving, setSaving] = useState(false);
+
+  // Modal states (replace browser prompt())
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositMethod, setDepositMethod] = useState('Transferencia');
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [showConvertModal, setShowConvertModal] = useState(false);
+  const [converting, setConverting] = useState(false);
 
   // Persist changes to Supabase
   const persistQuote = async (updates: any) => {
@@ -853,16 +883,11 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               }} accent />
               <ActionButton icon={<CheckCircle size={13} />} label="Marcar como aprobada" onClick={() => { setQ(p => ({...p, status:'aprobada'})); persistQuote({ status: 'aprobada' }); toast.success('Cotización aprobada'); }} />
               <ActionButton icon={<DollarSign size={13} />} label="Registrar anticipo recibido" onClick={() => {
-                const amount = prompt(`Monto del anticipo (sugerido: ${Math.round(q.pieces.reduce((s: number, p: any) => s + ((p.adminPrice || p.autoPrice) * p.quantity), 0) * q.depositPercent / 100).toLocaleString()})`);
-                if (amount) {
-                  const depositData = { amount: parseFloat(amount.replace(/[^0-9.]/g, '')), method: 'Transferencia', ref: `DEP-${Date.now()}`, date: new Date().toISOString() };
-                  setQ(p => ({...p, status: 'anticipo_recibido', depositPaid: depositData}));
-                  persistQuote({ status: 'anticipo_recibido', deposit_paid: depositData });
-                  toast.success(`Anticipo de ${depositData.amount.toLocaleString()} registrado`);
-                }
+                setDepositAmount(String(Math.round(totalConIva * q.depositPercent / 100)));
+                setShowDepositModal(true);
               }} />
               <ActionButton icon={<Hammer size={13} />} label="Iniciar producción" onClick={() => { setQ(p => ({...p, status:'en_produccion', productionProgress: { completed: 0, total: p.pieces.reduce((s: number, pc: any) => s + pc.quantity, 0) }})); persistQuote({ status: 'en_produccion', production_progress: { completed: 0, total: q.pieces.reduce((s: number, pc: any) => s + pc.quantity, 0) } }); toast.success('Producción iniciada'); }} />
-              <ActionButton icon={<ShoppingCart size={13} />} label="Convertir a pedido" onClick={() => { setQ(p => ({...p, status:'completada'})); persistQuote({ status: 'completada' }); toast.success('Cotización marcada como completada'); }} />
+              <ActionButton icon={<ShoppingCart size={13} />} label="Convertir a pedido" onClick={() => setShowConvertModal(true)} />
               <div className="border-t border-wood-100 pt-2 mt-2" />
               <ActionButton icon={<Copy size={13} />} label="Duplicar cotización" onClick={async () => {
                 try {
@@ -871,14 +896,135 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
                 } catch { toast.error('Error al duplicar'); }
               }} subtle />
               <ActionButton icon={<Printer size={13} />} label="Imprimir" onClick={() => window.print()} subtle />
-              <ActionButton icon={<XCircle size={13} />} label="Rechazar / Cancelar" onClick={() => {
-                const reason = prompt('Motivo de rechazo/cancelación:');
-                if (reason) { setQ(p => ({...p, status:'rechazada', rejectionReason: reason})); persistQuote({ status: 'rechazada', rejection_reason: reason }); toast.success('Cotización rechazada'); }
-              }} danger />
+              <ActionButton icon={<XCircle size={13} />} label="Rechazar / Cancelar" onClick={() => setShowRejectModal(true)} danger />
             </div>
           </div>
         </div>
       </div>
+
+      {/* ── DEPOSIT MODAL ── */}
+      {showDepositModal && (
+        <InlineModal
+          title="💰 Registrar Anticipo"
+          confirmLabel="Registrar Anticipo"
+          confirmColor="bg-green-600"
+          onCancel={() => setShowDepositModal(false)}
+          onConfirm={() => {
+            const amt = parseFloat(depositAmount.replace(/[^0-9.]/g, ''));
+            if (!amt || amt <= 0) { toast.error('Monto inválido'); return; }
+            const depositData = { amount: amt, method: depositMethod, ref: `DEP-${Date.now()}`, date: new Date().toISOString() };
+            setQ(p => ({ ...p, status: 'anticipo_recibido', depositPaid: depositData }));
+            persistQuote({ status: 'anticipo_recibido', deposit_paid: depositData });
+            toast.success(`Anticipo de ${fmt(amt)} registrado`);
+            setShowDepositModal(false);
+          }}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Monto del anticipo</label>
+              <input type="text" value={depositAmount} onChange={e => setDepositAmount(e.target.value)}
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none"
+                placeholder="0.00" autoFocus />
+              <p className="text-[10px] text-wood-400 mt-1">Sugerido ({q.depositPercent}%): {fmt(totalConIva * q.depositPercent / 100)}</p>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Método de pago</label>
+              <select value={depositMethod} onChange={e => setDepositMethod(e.target.value)}
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg outline-none">
+                <option>Transferencia</option>
+                <option>Efectivo</option>
+                <option>Tarjeta</option>
+                <option>OXXO</option>
+                <option>PayPal</option>
+              </select>
+            </div>
+          </div>
+        </InlineModal>
+      )}
+
+      {/* ── REJECT MODAL ── */}
+      {showRejectModal && (
+        <InlineModal
+          title="❌ Rechazar / Cancelar Cotización"
+          confirmLabel="Confirmar Rechazo"
+          confirmColor="bg-red-600"
+          onCancel={() => setShowRejectModal(false)}
+          onConfirm={() => {
+            if (!rejectReason.trim()) { toast.error('Escribe un motivo'); return; }
+            setQ(p => ({ ...p, status: 'rechazada', rejectionReason: rejectReason }));
+            persistQuote({ status: 'rechazada', rejection_reason: rejectReason });
+            toast.success('Cotización rechazada');
+            setShowRejectModal(false);
+            setRejectReason('');
+          }}
+        >
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Motivo de rechazo</label>
+              <textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)}
+                rows={3} placeholder="Precio alto, timeline largo, cambió de opinión..."
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none resize-none" autoFocus />
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {['Precio alto', 'Timeline largo', 'Cambió de opinión', 'Sin respuesta', 'Otro proveedor'].map(r => (
+                <button key={r} onClick={() => setRejectReason(r)}
+                  className={`text-[10px] px-2 py-1 rounded-md border transition-colors ${rejectReason === r ? 'border-red-400 bg-red-50 text-red-600' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+        </InlineModal>
+      )}
+
+      {/* ── CONVERT TO ORDER MODAL ── */}
+      {showConvertModal && (
+        <InlineModal
+          title="🛒 Convertir Cotización a Pedido"
+          confirmLabel={converting ? 'Procesando...' : 'Crear Pedido en Medusa'}
+          confirmColor="bg-accent-gold"
+          onCancel={() => !converting && setShowConvertModal(false)}
+          onConfirm={async () => {
+            if (converting) return;
+            setConverting(true);
+            try {
+              const res = await fetch('/api/admin/quotes/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quote_id: q.id }),
+              });
+              const data = await res.json();
+              if (res.ok && data.success) {
+                setQ(p => ({ ...p, status: 'en_produccion' }));
+                onRefresh?.();
+                toast.success(data.message || 'Orden creada exitosamente');
+                setShowConvertModal(false);
+              } else {
+                toast.error(data.error || 'Error al convertir');
+              }
+            } catch {
+              toast.error('Error de conexión');
+            } finally {
+              setConverting(false);
+            }
+          }}
+        >
+          <div className="space-y-3">
+            <div className="bg-sand-50 rounded-lg p-3 text-xs space-y-1.5">
+              <div className="flex justify-between"><span className="text-wood-500">Cotización</span><span className="text-wood-900 font-bold">{q.number}</span></div>
+              <div className="flex justify-between"><span className="text-wood-500">Cliente</span><span className="text-wood-900">{q.customer.name}</span></div>
+              <div className="flex justify-between"><span className="text-wood-500">Total</span><span className="text-wood-900 font-bold">{fmt(totalConIva)}</span></div>
+              <div className="flex justify-between"><span className="text-wood-500">Piezas</span><span className="text-wood-900">{getPieceCount(q)}</span></div>
+            </div>
+            <p className="text-[11px] text-wood-500">Esto creará una orden draft en Medusa con las piezas de la cotización. El estado cambiará a "En producción".</p>
+            {!['aprobada', 'anticipo_recibido'].includes(q.status) && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-[11px] text-amber-700">⚠️ Esta cotización tiene estado "{statusConfig[q.status].label}". Normalmente se convierte cuando está aprobada o con anticipo recibido.</p>
+              </div>
+            )}
+          </div>
+        </InlineModal>
+      )}
     </div>
   );
 };
