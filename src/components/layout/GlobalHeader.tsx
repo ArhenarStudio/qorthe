@@ -325,7 +325,7 @@ export const GlobalHeader = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -5, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="mt-2 pointer-events-auto"
+              className="mt-2 pointer-events-none"
             >
               <div className="px-3 py-1 bg-white/60 dark:bg-wood-950/60 backdrop-blur-md rounded-full border border-wood-100 dark:border-wood-800 shadow-sm flex items-center justify-center">
                 <span className="text-[10px] uppercase tracking-widest font-bold text-wood-500 dark:text-sand-400 font-serif">
