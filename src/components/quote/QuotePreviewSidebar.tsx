@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ProductItem } from './types';
 import { calculateItemPrice, formatMXN } from './pricing';
 import { getProductIcon } from './QuoteIcons';
+import { QuoteVisualPreview } from './QuoteVisualPreview';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface QuotePreviewSidebarProps {
@@ -76,6 +77,11 @@ export const QuotePreviewSidebar: React.FC<QuotePreviewSidebarProps> = ({ item }
             className="overflow-hidden"
           >
             <div className="p-4 md:p-5 space-y-4">
+              {/* Visual 2D Preview */}
+              <div className="border border-wood-100 dark:border-wood-800 rounded-xl bg-wood-50/50 dark:bg-wood-900/30 overflow-hidden">
+                <QuoteVisualPreview item={item} />
+              </div>
+
               {/* Specs */}
               <div className="space-y-2">
                 <Row label="Material" value={materialLabel()} />
