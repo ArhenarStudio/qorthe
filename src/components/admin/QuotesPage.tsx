@@ -203,7 +203,7 @@ export const QuotesPage: React.FC = () => {
           <button onClick={() => setShowCreateForm(true)} className="flex items-center gap-1.5 px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors">
             <Plus size={14} /> Crear Cotización Manual
           </button>
-          <button onClick={() => { /* TODO: CSV export from /api/admin/importexport?type=quotes */ toast.info('Exportaci\u00f3n en desarrollo'); }} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
+          <button onClick={() => { /* TODO: CSV export from /api/admin/importexport?type=quotes */ fetch('/api/admin/importexport?type=orders').then(r => r.json()).then(d => { const csv = [Object.keys(d.data?.[0] || {}).join(','), ...(d.data || []).map((r: any) => Object.values(r).join(','))].join('\n'); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cotizaciones.csv'; a.click(); toast.success('CSV descargado'); }).catch(() => toast.error('Error')); }} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
             <Download size={14} /> Exportar
           </button>
         </div>
@@ -355,7 +355,7 @@ const NewQuotesList: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) =>
               <button onClick={() => onSelect(q)} className="flex items-center gap-1 px-3 py-1.5 bg-wood-900 text-sand-100 text-[11px] rounded-lg hover:bg-wood-800 transition-colors">
                 <Eye size={12} /> Revisar completa
               </button>
-              <button onClick={() => toast.success('Respuesta rápida próximamente')} className="flex items-center gap-1 px-3 py-1.5 bg-accent-gold/15 text-accent-gold text-[11px] rounded-lg hover:bg-accent-gold/25 transition-colors">
+              <button onClick={() => onSelect(q)} className="flex items-center gap-1 px-3 py-1.5 bg-accent-gold/15 text-accent-gold text-[11px] rounded-lg hover:bg-accent-gold/25 transition-colors">
                 <Zap size={12} /> Responder rápido
               </button>
               <button className="p-1.5 text-wood-400 hover:text-wood-700 transition-colors">
@@ -465,7 +465,7 @@ const ApprovedTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) =>
                 <td className="px-4 py-3 text-xs text-wood-500">{fmtDate(q.date)}</td>
                 <td className="px-4 py-3 flex items-center gap-1">
                   {!q.depositPaid && (
-                    <button onClick={() => toast.success('Registro de anticipo próximamente')} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors">
+                    <button onClick={() => { const amt = prompt('Monto del anticipo:'); if (amt) { fetch('/api/admin/quotes', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: q.id, status: 'anticipo_recibido', deposit_paid: { amount: parseFloat(amt.replace(/[^0-9.]/g, '')), method: 'Transferencia', ref: `DEP-${Date.now()}`, date: new Date().toISOString() } }) }).then(() => toast.success('Anticipo registrado')); } }} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors">
                       💰 Registrar anticipo
                     </button>
                   )}
@@ -523,7 +523,7 @@ const ProductionTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) 
                 </td>
                 <td className="px-4 py-3 text-xs text-wood-500">~15 Mar</td>
                 <td className="px-4 py-3 flex items-center gap-1">
-                  <button onClick={() => toast.success('Actualización enviada')} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
+                  <button onClick={() => { const completed = prompt('Piezas completadas:'); if (completed) { const total = q.pieces.reduce((s: number, p: any) => s + p.quantity, 0); fetch('/api/admin/quotes', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: q.id, production_progress: { completed: parseInt(completed), total } }) }).then(() => toast.success(`Progreso actualizado: ${completed}/${total}`)); } }} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
                     📸 Update
                   </button>
                   <button onClick={() => onSelect(q)} className="text-[11px] text-accent-gold hover:underline ml-1">Ver</button>
@@ -862,16 +862,37 @@ const QuoteDetail: React.FC<{ quote: FullQuote; onBack: () => void; onRefresh?: 
           <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
             <h4 className="text-[11px] text-wood-400 uppercase tracking-wider mb-3">Acciones</h4>
             <div className="space-y-2">
-              <ActionButton icon={<FileText size={13} />} label="Generar PDF de cotización" onClick={() => toast.success('PDF generado')} />
-              <ActionButton icon={<Mail size={13} />} label="Enviar cotización al cliente" onClick={() => toast.success('Cotización enviada por email')} accent />
-              <ActionButton icon={<CheckCircle size={13} />} label="Marcar como aprobada" onClick={() => { setQ(p => ({...p, status:'aprobada'})); toast.success('Cotización aprobada'); }} />
-              <ActionButton icon={<DollarSign size={13} />} label="Registrar anticipo recibido" onClick={() => toast.success('Formulario de anticipo próximamente')} />
-              <ActionButton icon={<Hammer size={13} />} label="Iniciar producción" onClick={() => { setQ(p => ({...p, status:'en_produccion'})); toast.success('Producción iniciada'); }} />
-              <ActionButton icon={<ShoppingCart size={13} />} label="Convertir a pedido" onClick={() => toast.success('Conversión a pedido próximamente')} />
+              <ActionButton icon={<FileText size={13} />} label="Generar PDF de cotización" onClick={() => { window.print(); }} />
+              <ActionButton icon={<Mail size={13} />} label="Enviar cotización al cliente" onClick={async () => {
+                try {
+                  const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subject: `Cotización ${q.number}`, category: 'cotizacion', message: `Estimado/a ${q.customer.name},\n\nAdjunto encontrará su cotización ${q.number} por un total de ${(q.pieces.reduce((s: number, p: any) => s + ((p.adminPrice || p.autoPrice) * p.quantity), 0)).toLocaleString()} MXN.\n\nVigencia: ${q.validityDays} días.\nTimeline: ${q.timeline}.\n\nQuedamos a sus órdenes.\nDavidSon's Design`, email: q.customer.email }) });
+                  if (res.ok) { setQ(p => ({...p, status: p.status === 'nueva' ? 'cotizacion_enviada' : p.status})); persistQuote({ status: q.status === 'nueva' ? 'cotizacion_enviada' : q.status }); toast.success(`Cotización enviada a ${q.customer.email}`); } else throw new Error();
+                } catch { toast.error('Error al enviar email'); }
+              }} accent />
+              <ActionButton icon={<CheckCircle size={13} />} label="Marcar como aprobada" onClick={() => { setQ(p => ({...p, status:'aprobada'})); persistQuote({ status: 'aprobada' }); toast.success('Cotización aprobada'); }} />
+              <ActionButton icon={<DollarSign size={13} />} label="Registrar anticipo recibido" onClick={() => {
+                const amount = prompt(`Monto del anticipo (sugerido: ${Math.round(q.pieces.reduce((s: number, p: any) => s + ((p.adminPrice || p.autoPrice) * p.quantity), 0) * q.depositPercent / 100).toLocaleString()})`);
+                if (amount) {
+                  const depositData = { amount: parseFloat(amount.replace(/[^0-9.]/g, '')), method: 'Transferencia', ref: `DEP-${Date.now()}`, date: new Date().toISOString() };
+                  setQ(p => ({...p, status: 'anticipo_recibido', depositPaid: depositData}));
+                  persistQuote({ status: 'anticipo_recibido', deposit_paid: depositData });
+                  toast.success(`Anticipo de ${depositData.amount.toLocaleString()} registrado`);
+                }
+              }} />
+              <ActionButton icon={<Hammer size={13} />} label="Iniciar producción" onClick={() => { setQ(p => ({...p, status:'en_produccion', productionProgress: { completed: 0, total: p.pieces.reduce((s: number, pc: any) => s + pc.quantity, 0) }})); persistQuote({ status: 'en_produccion', production_progress: { completed: 0, total: q.pieces.reduce((s: number, pc: any) => s + pc.quantity, 0) } }); toast.success('Producción iniciada'); }} />
+              <ActionButton icon={<ShoppingCart size={13} />} label="Convertir a pedido" onClick={() => { setQ(p => ({...p, status:'completada'})); persistQuote({ status: 'completada' }); toast.success('Cotización marcada como completada'); }} />
               <div className="border-t border-wood-100 pt-2 mt-2" />
-              <ActionButton icon={<Copy size={13} />} label="Duplicar cotización" onClick={() => toast.success('Cotización duplicada')} subtle />
-              <ActionButton icon={<Printer size={13} />} label="Imprimir" onClick={() => toast.success('Imprimiendo...')} subtle />
-              <ActionButton icon={<XCircle size={13} />} label="Rechazar / Cancelar" onClick={() => toast.info('Motivo requerido')} danger />
+              <ActionButton icon={<Copy size={13} />} label="Duplicar cotización" onClick={async () => {
+                try {
+                  const res = await fetch('/api/admin/quotes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer_email: q.customer.email, customer_name: q.customer.name, customer_phone: q.customer.phone, project_name: q.projectName ? `${q.projectName} (copia)` : 'Copia', pieces: q.pieces, discount: q.discount, conditions: q.conditions, timeline: q.timeline, validity_days: q.validityDays, deposit_percent: q.depositPercent, shipping_included: q.shippingIncluded }) });
+                  if (res.ok) { onRefresh?.(); toast.success('Cotización duplicada'); } else throw new Error();
+                } catch { toast.error('Error al duplicar'); }
+              }} subtle />
+              <ActionButton icon={<Printer size={13} />} label="Imprimir" onClick={() => window.print()} subtle />
+              <ActionButton icon={<XCircle size={13} />} label="Rechazar / Cancelar" onClick={() => {
+                const reason = prompt('Motivo de rechazo/cancelación:');
+                if (reason) { setQ(p => ({...p, status:'rechazada', rejectionReason: reason})); persistQuote({ status: 'rechazada', rejection_reason: reason }); toast.success('Cotización rechazada'); }
+              }} danger />
             </div>
           </div>
         </div>
@@ -1148,7 +1169,7 @@ const AnalyticsTab: React.FC = () => {
 
       {/* Export */}
       <div className="flex justify-end">
-        <button onClick={() => toast.success('Reporte exportado')} className="flex items-center gap-1.5 px-4 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
+        <button onClick={() => window.print()} className="flex items-center gap-1.5 px-4 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
           <Download size={14} /> Exportar reporte (PDF)
         </button>
       </div>
