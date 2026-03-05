@@ -8,24 +8,6 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { useProducts } from '@/hooks/useProducts';
 import { toast } from 'sonner';
 
-const MOCK_WISHLIST_ITEMS = [
-  {
-    id: "mock-1",
-    name: "Tabla de Nogal Premium",
-    price: "$2,850",
-    image: "https://images.unsplash.com/photo-1624821588759-2443c7268dff?auto=format&fit=crop&q=80&w=400",
-    inStock: true,
-    handle: "tabla-nogal-premium",
-  },
-  {
-    id: "mock-2",
-    name: "Cuchillo Chef Damasco",
-    price: "$4,200",
-    image: "https://images.unsplash.com/photo-1593618998160-e34015e672a9?auto=format&fit=crop&q=80&w=400",
-    inStock: false,
-    handle: "cuchillo-chef",
-  },
-];
 
 const fmtMXN = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);

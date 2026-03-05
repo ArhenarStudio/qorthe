@@ -6,31 +6,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
-const MOCK_ADDRESSES = [
-  {
-    id: 1,
-    label: "Casa Principal",
-    type: "home",
-    name: "Alejandro García",
-    street: "Av. Reforma 222, Piso 18",
-    city: "Cuauhtémoc, CDMX",
-    zip: "06600",
-    phone: "+52 55 1234 5678",
-    default: true
-  },
-  {
-    id: 2,
-    label: "Oficina",
-    type: "work",
-    name: "Alejandro García",
-    street: "Blvd. Kukulcán Km 12",
-    city: "Cancún, Quintana Roo",
-    zip: "77500",
-    phone: "+52 998 888 9999",
-    default: false
-  }
-];
-
 // Helper: map Medusa address to display format
 function mapMedusaAddress(a: any) {
   return {
@@ -80,7 +55,7 @@ export const AddressBook = () => {
 
   useEffect(() => { fetchAddresses(); }, [fetchAddresses]);
 
-  const ADDRESSES = isLive ? liveAddresses! : MOCK_ADDRESSES;
+  const ADDRESSES = liveAddresses || [];
 
   const [addressForm, setAddressForm] = useState({
     label: '',

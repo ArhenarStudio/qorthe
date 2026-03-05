@@ -130,7 +130,7 @@ export const OrdersList = () => {
   const [invoiceOrderId, setInvoiceOrderId] = useState<string | undefined>(undefined);
 
   // ── Live orders from Medusa ──
-  const [liveOrders, setLiveOrders] = useState<typeof MOCK_ORDERS | null>(null);
+  const [liveOrders, setLiveOrders] = useState<any[] | null>(null);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [isLive, setIsLive] = useState(false);
 
@@ -332,7 +332,7 @@ export const OrdersList = () => {
                               {/* Connector Line */}
                               <div className="absolute top-3.5 left-0 right-0 h-0.5 bg-wood-200 dark:bg-wood-700 -z-0"></div>
                               
-                              {order.timeline.map((step, idx) => (
+                              {order.timeline.map((step: any, idx: number) => (
                                 <div key={idx} className="relative z-10 flex flex-col items-center">
                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
                                     step.completed 
@@ -353,7 +353,7 @@ export const OrdersList = () => {
                             <div className="flex-1 space-y-8">
                               <h4 className="text-xs font-bold text-wood-900 dark:text-sand-100 uppercase tracking-widest border-b border-wood-200 dark:border-wood-700 pb-2 transition-colors">Artículos del Pedido</h4>
                               <div className="space-y-6">
-                                  {order.items.map((item, idx) => (
+                                  {order.items.map((item: any, idx: number) => (
                                     <div key={idx} className="bg-white dark:bg-wood-800 p-5 rounded-xl border border-wood-100/50 dark:border-wood-700 shadow-sm transition-colors">
                                       <div className="flex gap-5 items-start">
                                         <div className="w-20 h-20 rounded-lg overflow-hidden bg-wood-100 dark:bg-wood-700 shrink-0 transition-colors group relative cursor-pointer">
