@@ -183,7 +183,7 @@ export const QuotesPage: React.FC = () => {
           <button onClick={() => setShowCreateForm(true)} className="flex items-center gap-1.5 px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors">
             <Plus size={14} /> Crear Cotización Manual
           </button>
-          <button onClick={() => { /* TODO: CSV export from /api/admin/importexport?type=quotes */ fetch('/api/admin/importexport?type=orders').then(r => r.json()).then(d => { const csv = [Object.keys(d.data?.[0] || {}).join(','), ...(d.data || []).map((r: any) => Object.values(r).join(','))].join('\n'); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cotizaciones.csv'; a.click(); toast.success('CSV descargado'); }).catch(() => toast.error('Error')); }} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
+          <button onClick={() => { fetch('/api/admin/importexport?type=quotes').then(r => r.json()).then(d => { const rows = d.data || []; if (!rows.length) { toast.error('No hay datos para exportar'); return; } const csv = [Object.keys(rows[0]).join(','), ...rows.map((r: Record<string, unknown>) => Object.values(r).map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))].join('\n'); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cotizaciones.csv'; a.click(); URL.revokeObjectURL(url); toast.success('CSV descargado'); }).catch(() => toast.error('Error al exportar')); }} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-700 text-xs rounded-lg hover:bg-sand-50 transition-colors">
             <Download size={14} /> Exportar
           </button>
         </div>
@@ -503,7 +503,7 @@ const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote
                     <span className="text-[10px] text-wood-600">{pct}%</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-xs text-wood-500">~15 Mar</td>
+                <td className="px-4 py-3 text-xs text-wood-500">{q.timeline || '—'}</td>
                 <td className="px-4 py-3 flex items-center gap-1">
                   <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
                     📸 Actualizar
