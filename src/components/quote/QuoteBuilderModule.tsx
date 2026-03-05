@@ -11,10 +11,12 @@ import { ProductItem, CustomerDetails, DEFAULT_PRODUCT, QuotePiece } from './typ
 import { QuoteWizardModal } from './QuoteWizardModal';
 import { getProductIcon } from './QuoteIcons';
 import { calculateItemPrice, calculateTotalPrice, formatMXN } from './pricing';
+import { useQuotePricing } from '@/hooks/useQuotePricing';
 
 // ── Component ───────────────────────────────────────────────
 
 export const QuoteBuilderModule = () => {
+  const { config: pricingConfig, tierName, tierDiscountPercent, isLoggedIn } = useQuotePricing();
   const [items, setItems] = useState<ProductItem[]>([]);
   const [editingItem, setEditingItem] = useState<ProductItem | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -69,10 +71,10 @@ export const QuoteBuilderModule = () => {
     setSubmitting(true);
 
     try {
-      const totals = calculateTotalPrice(items);
+      const totals = calculateTotalPrice(items, pricingConfig, tierDiscountPercent, tierName);
 
       const pieces: QuotePiece[] = items.map((item) => {
-        const bp = calculateItemPrice(item);
+        const bp = calculateItemPrice(item, pricingConfig);
         return {
           type: item.type,
           category: item.category,
@@ -141,7 +143,7 @@ export const QuoteBuilderModule = () => {
 
   // ── Price ───────────────────────────────────────────────
 
-  const totals = calculateTotalPrice(items);
+  const totals = calculateTotalPrice(items, pricingConfig, tierDiscountPercent, tierName);
 
   // ── Success State ───────────────────────────────────────
 
@@ -211,6 +213,27 @@ export const QuoteBuilderModule = () => {
           )}
         </div>
 
+        {/* Tier discount banner */}
+        {isLoggedIn && tierDiscountPercent > 0 && (
+          <div className="mb-6 px-4 py-3 bg-accent-gold/10 border border-accent-gold/30 rounded-xl flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-accent-gold/20 flex items-center justify-center text-accent-gold text-sm font-bold">
+              %
+            </div>
+            <div className="text-sm">
+              <span className="font-bold text-wood-900 dark:text-sand-100">Miembro {tierName}</span>
+              <span className="text-wood-600 dark:text-wood-400"> — {tierDiscountPercent}% de descuento aplicado a tu cotización</span>
+            </div>
+          </div>
+        )}
+        {!isLoggedIn && items.length > 0 && (
+          <div className="mb-6 px-4 py-3 bg-wood-100/50 dark:bg-wood-900/50 border border-wood-200 dark:border-wood-800 rounded-xl flex items-center gap-3">
+            <div className="text-sm text-wood-500">
+              <a href="/auth" className="text-accent-gold font-bold hover:underline">Inicia sesión</a>{' '}
+              para obtener descuentos exclusivos de membresía en tu cotización.
+            </div>
+          </div>
+        )}
+
         {/* Empty State */}
         {items.length === 0 ? (
           <div className="py-20 text-center border-2 border-dashed border-wood-200 dark:border-wood-800 rounded-3xl bg-white/50 dark:bg-wood-900/20 max-w-2xl mx-auto">
@@ -235,7 +258,7 @@ export const QuoteBuilderModule = () => {
               <AnimatePresence mode="popLayout">
                 {items.map((item, idx) => {
                   const Icon = getProductIcon(item.type);
-                  const bp = calculateItemPrice(item);
+                  const bp = calculateItemPrice(item, pricingConfig);
                   return (
                     <motion.div
                       layout
@@ -368,10 +391,17 @@ export const QuoteBuilderModule = () => {
                       <span className="font-serif text-3xl md:text-4xl leading-none">
                         {formatMXN(totals.total)}
                       </span>
-                      {totals.totalDiscount > 0 && (
-                        <span className="text-xs text-green-600 block">
-                          Ahorro: {formatMXN(totals.totalDiscount)}
-                        </span>
+                      {(totals.volumeDiscount > 0 || totals.tierDiscount.tierDiscountAmount > 0) && (
+                        <div className="text-xs text-green-600 block">
+                          {totals.volumeDiscount > 0 && (
+                            <span>Volumen: −{formatMXN(totals.volumeDiscount)}</span>
+                          )}
+                          {totals.tierDiscount.tierDiscountAmount > 0 && (
+                            <span className="ml-2">
+                              {totals.tierDiscount.tierName}: −{formatMXN(totals.tierDiscount.tierDiscountAmount)}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
                     <button

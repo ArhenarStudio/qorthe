@@ -1,141 +1,150 @@
 // ═══════════════════════════════════════════════════════════════
 // COTIZADOR PRO — Motor de Precios
-// Calcula precio estimado por pieza y total del pedido
+// Fase 10B: Configurable por admin + descuento por tier
+//
+// Prices can be overridden via QuotePricingConfig from Supabase.
+// Tier discounts come from loyalty_config (same as checkout).
 // ═══════════════════════════════════════════════════════════════
 
 import {
   ProductItem,
-  ProductCategory,
   WoodType,
   EngravingComplexity,
   TextileTechnique,
 } from './types';
 
-// ── Base Prices per m² (MXN) ────────────────────────────────
+// ── Pricing Config (can be overridden from API) ─────────────
 
-const WOOD_PRICE_M2: Record<WoodType, number> = {
-  Cedro: 3500,
-  Nogal: 5500,
-  Encino: 3000,
-  Parota: 6000,
-  Combinación: 5000,
+export interface QuotePricingConfig {
+  wood_prices_m2: Record<string, number>;
+  textile_base_prices: Record<string, number>;
+  engraving_prices: Record<string, number>;
+  engraving_zone_extra: number;
+  engraving_qr_extra: number;
+  textile_technique_prices: Record<string, number>;
+  textile_full_panel_extra: number;
+  wood_min_price: number;
+  wood_thickness_standard: number;
+  volume_discounts: { min_qty: number; percent: number }[];
+  tier_discount_enabled: boolean;
+}
+
+// ── Hardcoded defaults (fallback if API unavailable) ────────
+
+export const DEFAULT_PRICING_CONFIG: QuotePricingConfig = {
+  wood_prices_m2: {
+    Cedro: 3500,
+    Nogal: 5500,
+    Encino: 3000,
+    Parota: 6000,
+    Combinación: 5000,
+  },
+  textile_base_prices: {
+    'Tote bag': 180,
+    'Mandil de cocina': 350,
+    Servilletas: 120,
+    'Funda de cojín': 280,
+  },
+  engraving_prices: {
+    Básico: 70,
+    Intermedio: 150,
+    Detallado: 250,
+    Premium: 400,
+  },
+  engraving_zone_extra: 50,
+  engraving_qr_extra: 30,
+  textile_technique_prices: {
+    Sublimación: 80,
+    'Vinilo HTV': 60,
+    Transfer: 50,
+  },
+  textile_full_panel_extra: 40,
+  wood_min_price: 350,
+  wood_thickness_standard: 3,
+  volume_discounts: [
+    { min_qty: 5, percent: 5 },
+    { min_qty: 10, percent: 10 },
+    { min_qty: 20, percent: 15 },
+    { min_qty: 50, percent: 20 },
+  ],
+  tier_discount_enabled: true,
 };
 
-// Base prices for textile products (per unit)
-const TEXTILE_BASE_PRICES: Record<string, number> = {
-  'Tote bag': 180,
-  'Mandil de cocina': 350,
-  'Servilletas': 120,
-  'Funda de cojín': 280,
-};
+// ── Volume Discount Lookup ──────────────────────────────────
 
-// ── Engraving Prices ────────────────────────────────────────
-
-const ENGRAVING_PRICES: Record<EngravingComplexity, number> = {
-  Básico: 70,
-  Intermedio: 150,
-  Detallado: 250,
-  Premium: 400,
-};
-
-// Extra per zone after the first
-const ENGRAVING_ZONE_EXTRA = 50;
-
-// QR type adds a small premium
-const ENGRAVING_QR_EXTRA = 30;
-
-// ── Textile Customization Prices ────────────────────────────
-
-const TEXTILE_TECHNIQUE_PRICES: Record<TextileTechnique, number> = {
-  Sublimación: 80,
-  'Vinilo HTV': 60,
-  Transfer: 50,
-};
-
-const TEXTILE_FULL_PANEL_EXTRA = 40;
-
-// ── Volume Discounts ────────────────────────────────────────
-
-function getVolumeDiscount(quantity: number): number {
-  if (quantity >= 50) return 0.20;
-  if (quantity >= 20) return 0.15;
-  if (quantity >= 10) return 0.10;
-  if (quantity >= 5) return 0.05;
+function getVolumeDiscount(quantity: number, config: QuotePricingConfig): number {
+  const sorted = [...config.volume_discounts].sort((a, b) => b.min_qty - a.min_qty);
+  for (const tier of sorted) {
+    if (quantity >= tier.min_qty) return tier.percent / 100;
+  }
   return 0;
 }
 
-// ── Calculate Wood Product Price ────────────────────────────
+// ── Wood Price ──────────────────────────────────────────────
 
-function calcWoodPrice(item: ProductItem): number {
+function calcWoodPrice(item: ProductItem, cfg: QuotePricingConfig): number {
   const { length, width, thickness } = item.dimensions;
-  const area = (length * width) / 10000; // cm² → m²
+  const area = (length * width) / 10000;
 
-  // Base: area × price per m²
-  const wood = item.woods.length > 0 ? item.woods[0] : 'Cedro';
-  let basePrice = area * (WOOD_PRICE_M2[wood] || 3500);
+  const wood: WoodType = item.woods.length > 0 ? item.woods[0] : 'Cedro';
+  let base = area * (cfg.wood_prices_m2[wood] ?? 3500);
 
-  // Thickness multiplier (standard = 3cm, thicker = more)
-  const thickFactor = Math.max(1, thickness / 3);
-  basePrice *= thickFactor;
+  const thickFactor = Math.max(1, thickness / (cfg.wood_thickness_standard || 3));
+  base *= thickFactor;
 
-  // Minimum $350 for any wood piece
-  basePrice = Math.max(350, basePrice);
+  base = Math.max(cfg.wood_min_price || 350, base);
 
-  return Math.round(basePrice);
+  return Math.round(base);
 }
 
-// ── Calculate Textile Product Price ─────────────────────────
+// ── Textile Price ───────────────────────────────────────────
 
-function calcTextilePrice(item: ProductItem): number {
-  let base = TEXTILE_BASE_PRICES[item.type] || 200;
+function calcTextilePrice(item: ProductItem, cfg: QuotePricingConfig): number {
+  let base = cfg.textile_base_prices[item.type] ?? 200;
 
-  // Add customization cost
   if (item.textile) {
-    base += TEXTILE_TECHNIQUE_PRICES[item.textile.technique] || 0;
+    base += cfg.textile_technique_prices[item.textile.technique] ?? 0;
     if (item.textile.printZone === 'Panel completo') {
-      base += TEXTILE_FULL_PANEL_EXTRA;
+      base += cfg.textile_full_panel_extra;
     }
   }
 
   return Math.round(base);
 }
 
-// ── Calculate Engraving Price ───────────────────────────────
+// ── Engraving Price ─────────────────────────────────────────
 
-function calcEngravingPrice(item: ProductItem): number {
+function calcEngravingPrice(item: ProductItem, cfg: QuotePricingConfig): number {
   if (!item.engraving.enabled) return 0;
 
-  let price = ENGRAVING_PRICES[item.engraving.complexity] || 70;
+  let price = cfg.engraving_prices[item.engraving.complexity] ?? 70;
 
-  // Extra zones
   const extraZones = Math.max(0, item.engraving.zones.length - 1);
-  price += extraZones * ENGRAVING_ZONE_EXTRA;
+  price += extraZones * cfg.engraving_zone_extra;
 
-  // QR premium
   if (item.engraving.type === 'Código QR') {
-    price += ENGRAVING_QR_EXTRA;
+    price += cfg.engraving_qr_extra;
   }
 
   return Math.round(price);
 }
 
-// ── Calculate Service Engraving Price ───────────────────────
+// ── Service Price ───────────────────────────────────────────
 
-function calcServicePrice(item: ProductItem): number {
-  // Engraving-only service on external materials
-  let base = ENGRAVING_PRICES[item.engraving.complexity] || 70;
+function calcServicePrice(item: ProductItem, cfg: QuotePricingConfig): number {
+  let base = cfg.engraving_prices[item.engraving.complexity] ?? 70;
 
   const extraZones = Math.max(0, item.engraving.zones.length - 1);
-  base += extraZones * ENGRAVING_ZONE_EXTRA;
+  base += extraZones * cfg.engraving_zone_extra;
 
   if (item.engraving.type === 'Código QR') {
-    base += ENGRAVING_QR_EXTRA;
+    base += cfg.engraving_qr_extra;
   }
 
   return Math.round(Math.max(70, base));
 }
 
-// ── Public API ──────────────────────────────────────────────
+// ── Price Breakdown ─────────────────────────────────────────
 
 export interface PriceBreakdown {
   base: number;
@@ -148,28 +157,30 @@ export interface PriceBreakdown {
   quantity: number;
 }
 
-export function calculateItemPrice(item: ProductItem): PriceBreakdown {
+export function calculateItemPrice(
+  item: ProductItem,
+  config: QuotePricingConfig = DEFAULT_PRICING_CONFIG
+): PriceBreakdown {
   let base: number;
   let engraving = 0;
 
   switch (item.category) {
     case 'madera':
-      base = calcWoodPrice(item);
-      engraving = calcEngravingPrice(item);
+      base = calcWoodPrice(item, config);
+      engraving = calcEngravingPrice(item, config);
       break;
     case 'textil':
-      base = calcTextilePrice(item);
-      // Textiles can also have engraving (heat press = similar concept)
+      base = calcTextilePrice(item, config);
       break;
     case 'grabado':
-      base = calcServicePrice(item);
+      base = calcServicePrice(item, config);
       break;
     default:
       base = 0;
   }
 
   const subtotalUnit = base + engraving;
-  const discountPct = getVolumeDiscount(item.quantity);
+  const discountPct = getVolumeDiscount(item.quantity, config);
   const discountAmount = Math.round(subtotalUnit * discountPct);
   const unitAfterDiscount = subtotalUnit - discountAmount;
   const lineTotal = unitAfterDiscount * item.quantity;
@@ -186,31 +197,73 @@ export function calculateItemPrice(item: ProductItem): PriceBreakdown {
   };
 }
 
-export function calculateTotalPrice(items: ProductItem[]): {
+// ── Tier Discount ───────────────────────────────────────────
+
+export interface TierDiscountInfo {
+  tierName: string;
+  tierDiscountPercent: number;
+  tierDiscountAmount: number;
+}
+
+export function applyTierDiscount(
+  subtotal: number,
+  tierDiscountPercent: number,
+  tierName: string
+): TierDiscountInfo {
+  if (tierDiscountPercent <= 0) {
+    return { tierName, tierDiscountPercent: 0, tierDiscountAmount: 0 };
+  }
+  const tierDiscountAmount = Math.round(subtotal * tierDiscountPercent / 100);
+  return { tierName, tierDiscountPercent, tierDiscountAmount };
+}
+
+// ── Total Calculation ───────────────────────────────────────
+
+export interface TotalBreakdown {
   subtotal: number;
-  totalDiscount: number;
+  volumeDiscount: number;
+  tierDiscount: TierDiscountInfo;
   total: number;
-} {
+}
+
+export function calculateTotalPrice(
+  items: ProductItem[],
+  config: QuotePricingConfig = DEFAULT_PRICING_CONFIG,
+  tierDiscountPercent = 0,
+  tierName = 'Pino'
+): TotalBreakdown {
   let subtotal = 0;
-  let totalDiscount = 0;
+  let volumeDiscount = 0;
 
   items.forEach((item) => {
-    const bp = calculateItemPrice(item);
+    const bp = calculateItemPrice(item, config);
     subtotal += bp.subtotalUnit * bp.quantity;
-    totalDiscount += bp.volumeDiscount * bp.quantity;
+    volumeDiscount += bp.volumeDiscount * bp.quantity;
   });
+
+  const afterVolume = subtotal - volumeDiscount;
+  const tierDiscount = config.tier_discount_enabled
+    ? applyTierDiscount(afterVolume, tierDiscountPercent, tierName)
+    : { tierName, tierDiscountPercent: 0, tierDiscountAmount: 0 };
+
+  const total = afterVolume - tierDiscount.tierDiscountAmount;
 
   return {
     subtotal,
-    totalDiscount,
-    total: subtotal - totalDiscount,
+    volumeDiscount,
+    tierDiscount,
+    total: Math.max(0, total),
   };
 }
 
-// ── Helpers for display ─────────────────────────────────────
+// ── Helpers ─────────────────────────────────────────────────
 
 export function formatMXN(amount: number): string {
   return `$${amount.toLocaleString('es-MX')}`;
 }
 
-export { ENGRAVING_PRICES, WOOD_PRICE_M2, TEXTILE_BASE_PRICES, getVolumeDiscount };
+// Re-export for convenience (used by EngravingConfigurator)
+export { DEFAULT_PRICING_CONFIG as PRICING_CONFIG };
+
+// Backward compat exports for components
+export const ENGRAVING_PRICES = DEFAULT_PRICING_CONFIG.engraving_prices;
