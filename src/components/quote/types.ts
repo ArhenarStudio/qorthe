@@ -103,6 +103,32 @@ export interface EngravingConfig {
 
 // ── Textile Customization ───────────────────────────────────
 
+// ── Board Design (wood customization) ────────────────────────
+
+export type BoardShape = 'Rectangular' | 'Redonda' | 'Ovalada' | 'Corazón' | 'Irregular' | 'Personalizada';
+
+export interface BoardDesign {
+  shape: BoardShape;
+  customShapeNotes?: string;
+  hasJuiceGroove: boolean;
+  hasHandleHoles: boolean;
+  hasRubberFeet: boolean;
+  hasLiveEdge: boolean;
+  finishType: 'Aceite mineral' | 'Cera de abeja' | 'Sin acabado';
+  notes?: string;
+}
+
+export const DEFAULT_BOARD_DESIGN: BoardDesign = {
+  shape: 'Rectangular',
+  hasJuiceGroove: false,
+  hasHandleHoles: false,
+  hasRubberFeet: false,
+  hasLiveEdge: false,
+  finishType: 'Aceite mineral',
+};
+
+// ── Textile Customization ────────────────────────────────────
+
 export interface TextileConfig {
   technique: TextileTechnique;
   color: TextileColor;
@@ -129,6 +155,8 @@ export interface ProductItem {
     width: number;
     thickness: number;
   };
+  // Board design (wood only)
+  boardDesign?: BoardDesign;
   // Textile fields
   textile?: TextileConfig;
   // Engraving service fields

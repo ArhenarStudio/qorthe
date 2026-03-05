@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronRight, ChevronLeft, Check } from 'lucide-react';
 import {
   ProductItem, ProductType, ProductCategory, WoodProductType,
-  TextileProductType, WizardStep, DEFAULT_ENGRAVING, DEFAULT_TEXTILE,
+  TextileProductType, WizardStep, DEFAULT_ENGRAVING, DEFAULT_TEXTILE, DEFAULT_BOARD_DESIGN,
 } from './types';
 import { WoodSelector } from './WoodSelector';
 import { EngravingConfigurator } from './EngravingConfigurator';
 import { TextileConfigurator } from './TextileConfigurator';
+import { BoardDesignConfigurator } from './BoardDesignConfigurator';
 import { QuotePreviewSidebar } from './QuotePreviewSidebar';
 import { getProductIcon, PRODUCT_ICON_MAP, MATERIAL_ICON_MAP } from './QuoteIcons';
 import { calculateItemPrice, formatMXN } from './pricing';
@@ -65,6 +66,7 @@ function getSteps(category: ProductCategory): WizardStep[] {
     { id: 'type', label: 'Tipo', title: 'Elige el Producto', subtitle: '¿Qué tipo de pieza deseas?' },
     { id: 'material', label: 'Material', title: 'Elige la Madera', subtitle: 'La esencia de tu creación' },
     { id: 'dimensions', label: 'Medidas', title: 'Dimensiones', subtitle: 'Largo, ancho y espesor en cm' },
+    { id: 'design', label: 'Diseño', title: 'Diseño de la Pieza', subtitle: 'Forma, acabados y extras' },
     { id: 'engraving', label: 'Grabado', title: 'Grabado Láser', subtitle: 'Personaliza con grabado' },
     { id: 'quantity', label: 'Cantidad', title: 'Cantidad y Notas', subtitle: '¿Cuántas piezas necesitas?' },
   ];
@@ -137,6 +139,7 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
       base.engraving = item.engraving.enabled
         ? item.engraving
         : { ...DEFAULT_ENGRAVING };
+      base.boardDesign = item.boardDesign || { ...DEFAULT_BOARD_DESIGN };
     }
     setItem((prev) => ({ ...prev, ...base }));
     setActiveTab(opt.category);
@@ -441,6 +444,14 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                         })}
                       </div>
                     </div>
+                  )}
+
+                  {/* ═══ STEP: BOARD DESIGN (wood only) ═══ */}
+                  {step.id === 'design' && item.boardDesign && (
+                    <BoardDesignConfigurator
+                      design={item.boardDesign}
+                      onChange={(bd) => setItem({ ...item, boardDesign: bd })}
+                    />
                   )}
 
                   {/* ═══ STEP: ENGRAVING ═══ */}
