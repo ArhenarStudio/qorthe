@@ -9,40 +9,15 @@ import {
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Mock Data
-const ACTIVE_SESSIONS = [
-  {
-    id: 'sess-01',
-    device: 'Chrome en MacBook Pro',
-    location: 'Ciudad de México, MX',
-    ip: '189.203.45.12',
-    lastActive: 'Ahora',
-    current: true,
-    icon: Globe
-  },
-  {
-    id: 'sess-02',
-    device: 'Safari en iPhone 13',
-    location: 'Ciudad de México, MX',
-    ip: '187.190.22.89',
-    lastActive: 'Hace 2 horas',
-    current: false,
-    icon: Smartphone
-  }
-];
-
-const ACCESS_HISTORY = [
-  { id: 1, action: 'Inicio de sesión exitoso', device: 'Chrome / MacOS', date: 'Hoy, 10:23 AM', status: 'success' },
-  { id: 2, action: 'Cambio de contraseña', device: 'Chrome / MacOS', date: 'Ayer, 15:45 PM', status: 'warning' },
-  { id: 3, action: 'Intento fallido', device: 'Firefox / Windows', date: '12 Feb, 09:12 AM', status: 'danger' },
-  { id: 4, action: 'Inicio de sesión exitoso', device: 'Safari / iOS', date: '10 Feb, 18:30 PM', status: 'success' },
-];
+// Session and history data derived from auth state (no mock)
 
 export const AccountSecurity = () => {
   const { supabase } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [sessions, setSessions] = useState(ACTIVE_SESSIONS);
+  const [sessions, setSessions] = useState<{ id: string; device: string; location: string; ip: string; lastActive: string; current: boolean; icon: any }[]>([
+    { id: 'current', device: 'Sesión actual', location: '', ip: '', lastActive: 'Ahora', current: true, icon: Globe }
+  ]);
   const [updatingPassword, setUpdatingPassword] = useState(false);
 
   // Password Form State
@@ -271,28 +246,11 @@ export const AccountSecurity = () => {
               <Clock className="w-4 h-4 text-wood-400" /> Historial de Accesos
             </h3>
 
-            <div className="relative border-l border-wood-200 dark:border-wood-800 ml-3 space-y-6 pb-2">
-              {ACCESS_HISTORY.map((event) => (
-                <div key={event.id} className="relative pl-6">
-                  <span className={`absolute -left-1.5 top-1.5 w-3 h-3 rounded-full border-2 border-white dark:border-wood-900 ${
-                    event.status === 'success' ? 'bg-emerald-500' :
-                    event.status === 'warning' ? 'bg-amber-500' : 'bg-red-500'
-                  }`} />
-                  <p className="text-sm font-medium text-wood-900 dark:text-sand-100">
-                    {event.action}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-wood-500 dark:text-wood-400 mt-1">
-                    <span>{event.device}</span>
-                    <span>•</span>
-                    <span>{event.date}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-6">
+              <Clock className="w-8 h-8 mx-auto mb-2 text-wood-200 dark:text-wood-700" />
+              <p className="text-sm text-wood-400 dark:text-sand-500">El historial de accesos estará disponible próximamente.</p>
+              <p className="text-xs text-wood-300 dark:text-wood-600 mt-1">Registraremos inicios de sesión, cambios de contraseña y actividad de seguridad.</p>
             </div>
-            
-            <button className="w-full mt-2 text-xs font-bold text-wood-500 hover:text-wood-900 dark:text-wood-400 dark:hover:text-sand-100 uppercase tracking-widest flex items-center justify-center gap-1 transition-colors">
-              Ver historial completo <ChevronRight size={12} />
-            </button>
           </section>
 
         </div>
