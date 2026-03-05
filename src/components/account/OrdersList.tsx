@@ -162,7 +162,7 @@ export const OrdersList = () => {
     fetchOrders();
   }, [session?.access_token]);
 
-  const ORDERS = isLive ? liveOrders! : MOCK_ORDERS;
+  const ORDERS = liveOrders || [];
 
   // Filter Logic
   const filteredOrders = ORDERS.filter(order => {

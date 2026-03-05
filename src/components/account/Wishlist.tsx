@@ -57,7 +57,7 @@ export const Wishlist = () => {
       .filter(Boolean) as { id: string; name: string; price: string; image: string | null; inStock: boolean; handle: string }[];
   }, [wishlist, products, isLive, productsLoading]);
 
-  const displayItems = isLive ? wishlistItems : MOCK_WISHLIST_ITEMS;
+  const displayItems = wishlistItems;
 
   const handleRemove = async (productId: string) => {
     await toggle({ id: productId });

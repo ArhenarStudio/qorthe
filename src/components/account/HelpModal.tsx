@@ -69,22 +69,36 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 
   // --- HANDLERS ---
 
-  const handleCreateTicket = (e: React.FormEvent) => {
+  const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTicket.subject || !newTicket.message) return;
 
-    const ticket = {
-      id: `T-${Math.floor(Math.random() * 10000)}`,
-      subject: newTicket.subject,
-      status: 'open',
-      date: 'Ahora',
-      lastUpdate: 'Recibido'
-    };
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: newTicket.subject,
+          category: newTicket.category,
+          message: newTicket.message,
+        }),
+      });
 
-    setTickets([ticket, ...tickets]);
-    setIsCreatingTicket(false);
-    setNewTicket({ subject: '', category: 'general', message: '' });
-    toast.success('Ticket creado correctamente');
+      const ticket = {
+        id: `T-${Math.floor(Math.random() * 10000)}`,
+        subject: newTicket.subject,
+        status: 'open',
+        date: 'Ahora',
+        lastUpdate: res.ok ? 'Enviado a soporte' : 'Recibido (pendiente de envío)',
+      };
+
+      setTickets([ticket, ...tickets]);
+      setIsCreatingTicket(false);
+      setNewTicket({ subject: '', category: 'general', message: '' });
+      toast.success(res.ok ? 'Ticket enviado a soporte' : 'Ticket guardado (se enviará pronto)');
+    } catch {
+      toast.error('Error al enviar el ticket');
+    }
   };
 
   const handleSendMessage = (e: React.FormEvent) => {

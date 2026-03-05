@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, MapPin, CreditCard, ChevronRight, TrendingUp, Lock, Mail, Award, Clock, AlertCircle, CheckCircle, ArrowRight, Info, Loader2 } from 'lucide-react';
 import { AccountSection } from '@/components/pages/AccountPage';
 import { getTierName, normalizeTierId, getTierInlineStyles, LoyaltyTierConfig } from '@/data/loyalty';
@@ -49,26 +49,55 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
     ? `DS-${user.id.slice(-4).toUpperCase()}`
     : 'DS-----';
 
-  // Mock Data for Dashboard
-  const activeOrder = {
-    id: '4829',
-    status: 'En Producción',
-    date: '14 Feb 2024',
-    items: ['Cartera Bifold - Piel Exótica', 'Cinturón Clásico'],
-    total: '$3,850 MXN',
-    progress: 2 // 0: Placed, 1: Confirmed, 2: Production, 3: Shipped, 4: Delivered
+  // ── Fetch last order from Medusa ──
+  const [lastOrder, setLastOrder] = useState<any>(null);
+  const [orderLoading, setOrderLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLastOrder() {
+      try {
+        if (!user?.email) return;
+        const res = await fetch(`/api/account/orders?limit=1`);
+        if (res.ok) {
+          const data = await res.json();
+          const orders = data.orders || [];
+          if (orders.length > 0) setLastOrder(orders[0]);
+        }
+      } catch { /* silent */ }
+      finally { setOrderLoading(false); }
+    }
+    fetchLastOrder();
+  }, [user?.email]);
+
+  // Derive order progress from fulfillment_status
+  const getOrderProgress = (order: any): number => {
+    if (!order) return 0;
+    const fs = order.fulfillment_status;
+    if (fs === 'fulfilled' || fs === 'delivered') return 4;
+    if (fs === 'shipped' || fs === 'partially_shipped') return 3;
+    if (fs === 'partially_fulfilled') return 2;
+    // not_fulfilled but payment captured = confirmed/in production
+    if (order.payment_status === 'captured') return 1;
+    return 0;
   };
 
-  const activeServices = [
-    { id: 1, name: 'Grabado de Iniciales', item: 'Cartera Bifold', status: 'En proceso' }
-  ];
+  const activeOrder = lastOrder ? {
+    id: String(lastOrder.display_id || '').padStart(4, '0'),
+    status: lastOrder.fulfillment_status || 'pending',
+    date: new Date(lastOrder.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }),
+    items: (lastOrder.items || []).map((i: any) => i.title || 'Producto'),
+    total: `${((lastOrder.total || 0) / 100).toLocaleString()} MXN`,
+    progress: getOrderProgress(lastOrder),
+  } : null;
 
-  const notifications = [
-    { id: 1, text: 'Tu devolución del pedido #4102 ha sido aprobada.', date: 'Hace 2 horas', type: 'success' },
-    { id: 2, text: 'Tienes un cupón de 10% por vencer en 3 días.', date: 'Hace 1 día', type: 'warning' }
-  ];
-
-  const walletBalance = 1200.00;
+  // Dynamic notifications based on real state
+  const notifications: { id: number; text: string; date: string; type: string }[] = [];
+  if (currentPoints >= 1000) {
+    notifications.push({ id: 1, text: `Tienes ${currentPoints.toLocaleString()} puntos disponibles (${(currentPoints * 0.01).toFixed(2)} MXN). ¡Úsalos en tu próxima compra!`, date: 'Programa de lealtad', type: 'success' });
+  }
+  if (activeOrder && activeOrder.progress < 4 && activeOrder.progress > 0) {
+    notifications.push({ id: 2, text: `Tu pedido #${activeOrder.id} está en proceso.`, date: activeOrder.date, type: 'warning' });
+  }
 
   return (
     <div className="space-y-6">
@@ -245,12 +274,22 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
 
       {/* Middle Row: Active Order Tracking */}
       <div className="bg-white dark:bg-wood-900 rounded-2xl p-6 md:p-8 border border-wood-100 dark:border-wood-800 shadow-sm">
+        {orderLoading ? (
+          <div className="flex items-center justify-center py-8 text-wood-400"><Loader2 className="w-5 h-5 animate-spin mr-2" /> Cargando pedidos...</div>
+        ) : !activeOrder ? (
+          <div className="text-center py-8">
+            <Package className="w-10 h-10 mx-auto mb-3 text-wood-200 dark:text-wood-700" />
+            <p className="text-sm text-wood-500 dark:text-sand-400 mb-3">Aún no tienes pedidos</p>
+            <a href="/shop" className="text-sm text-accent-gold hover:underline font-medium">Explorar productos →</a>
+          </div>
+        ) : (
+        <>
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h3 className="font-serif text-xl text-wood-900 dark:text-sand-100">Último Pedido</h3>
               <span className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                #{activeOrder.id}
+                #DSD-{activeOrder.id}
               </span>
             </div>
             <p className="text-sm text-wood-500 dark:text-sand-400">Realizado el {activeOrder.date} • Total: <span className="font-medium text-wood-900 dark:text-sand-200">{activeOrder.total}</span></p>
@@ -339,31 +378,35 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
             )}
           </div>
         </div>
+        </>
+        )}
       </div>
 
       {/* Bottom Row: Services & Notifications */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        {/* Active Services */}
+        {/* Quick Actions */}
         <div className="bg-white dark:bg-wood-900 rounded-2xl p-6 border border-wood-100 dark:border-wood-800 shadow-sm">
           <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-4 flex items-center gap-2">
             <Clock className="w-4 h-4 text-accent-gold" />
-            Servicios Activos
+            Acciones Rápidas
           </h3>
           <div className="space-y-3">
-            {activeServices.map(service => (
-              <div key={service.id} className="flex items-center justify-between p-3 bg-wood-50 dark:bg-wood-800/30 rounded-xl border border-wood-100 dark:border-wood-800/50">
+            {[
+              { label: 'Mis Pedidos', desc: 'Ver historial de compras', section: 'orders' as AccountSection, icon: Package },
+              { label: 'Mis Direcciones', desc: 'Gestionar direcciones de envío', section: 'addresses' as AccountSection, icon: MapPin },
+              { label: 'Programa de Lealtad', desc: `${currentPoints.toLocaleString()} puntos disponibles`, section: 'loyalty' as AccountSection, icon: Award },
+            ].map((action) => (
+              <button key={action.label} onClick={() => onChangeSection(action.section)} className="w-full flex items-center justify-between p-3 bg-wood-50 dark:bg-wood-800/30 rounded-xl border border-wood-100 dark:border-wood-800/50 hover:bg-wood-100 dark:hover:bg-wood-800 transition-colors text-left">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></div>
+                  <action.icon className="w-4 h-4 text-wood-400" />
                   <div>
-                    <p className="text-sm font-medium text-wood-900 dark:text-sand-100">{service.name}</p>
-                    <p className="text-xs text-wood-500 dark:text-sand-400">{service.item}</p>
+                    <p className="text-sm font-medium text-wood-900 dark:text-sand-100">{action.label}</p>
+                    <p className="text-xs text-wood-500 dark:text-sand-400">{action.desc}</p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/20 px-2 py-1 rounded-md uppercase tracking-wider">
-                  {service.status}
-                </span>
-              </div>
+                <ChevronRight className="w-4 h-4 text-wood-300" />
+              </button>
             ))}
           </div>
         </div>
@@ -375,7 +418,9 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
             Avisos Importantes
           </h3>
           <div className="space-y-4">
-            {notifications.map(notif => (
+            {notifications.length === 0 ? (
+              <p className="text-sm text-wood-400 dark:text-sand-500 py-4 text-center">Todo en orden. Sin avisos pendientes.</p>
+            ) : notifications.map(notif => (
               <div key={notif.id} className="flex gap-3 items-start group cursor-pointer hover:bg-wood-50 dark:hover:bg-wood-800/30 p-2 -mx-2 rounded-lg transition-colors">
                  <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
                    notif.type === 'success' ? 'bg-green-500' : 'bg-yellow-500'
