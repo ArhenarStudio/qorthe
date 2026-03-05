@@ -13,7 +13,14 @@ interface AccountSidebarProps {
 }
 
 export const AccountSidebar: React.FC<AccountSidebarProps> = ({ activeSection, onNavigate, currentTierName }) => {
-  const { signOut } = useAuth();
+  const { signOut, user, medusaCustomer } = useAuth();
+
+  const displayName = medusaCustomer?.first_name
+    ? [medusaCustomer.first_name, medusaCustomer.last_name].filter(Boolean).join(' ')
+    : user?.user_metadata?.full_name
+    || user?.email?.split('@')[0]
+    || 'Miembro';
+  const initials = displayName.split(' ').map((w: string) => w[0]?.toUpperCase() || '').join('').slice(0, 2) || 'DS';
   const menuItems = [
     { id: 'overview', label: 'Resumen', icon: LayoutDashboard },
     { id: 'loyalty', label: 'Lealtad', icon: Award },
@@ -37,10 +44,10 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({ activeSection, o
       {/* User Mini Profile */}
       <div className="flex items-center gap-4 p-4 mb-2 bg-wood-50/50 dark:bg-wood-800/50 rounded-xl border border-wood-100/50 dark:border-wood-700">
         <div className="w-10 h-10 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-full flex items-center justify-center font-serif text-lg shadow-md shrink-0">
-          AG
+          {initials}
         </div>
         <div className="overflow-hidden">
-          <p className="font-medium text-wood-900 dark:text-sand-100 truncate text-sm">Alejandro García</p>
+          <p className="font-medium text-wood-900 dark:text-sand-100 truncate text-sm">{displayName}</p>
           <p className="text-[10px] uppercase tracking-widest text-wood-500 dark:text-sand-400 truncate">Socio {currentTierName || 'Pino'}</p>
         </div>
       </div>

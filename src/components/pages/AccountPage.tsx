@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { AccountSidebar } from '@/components/account/AccountSidebar';
 import { AccountOverview } from '@/components/account/AccountOverview';
@@ -29,8 +29,16 @@ export type AccountSection = 'overview' | 'loyalty' | 'orders' | 'quotations' | 
 export const AccountPage = () => {
   const pathname = usePathname();
   const [activeSection, setActiveSection] = useState<AccountSection>('overview');
+  const { user, medusaCustomer } = useAuth();
   const { profile: loyaltyProfile } = useLoyalty();
   const { config: loyaltyConfig } = useLoyaltyConfig();
+
+  const displayName = medusaCustomer?.first_name
+    ? [medusaCustomer.first_name, medusaCustomer.last_name].filter(Boolean).join(' ')
+    : user?.user_metadata?.full_name
+    || user?.email?.split('@')[0]
+    || 'Miembro';
+  const firstName = displayName.split(' ')[0];
 
   // Derive tier from real loyalty data
   const lifetimeSpendCentavos = loyaltyProfile?.lifetime_spend ?? 0;
@@ -80,7 +88,7 @@ export const AccountPage = () => {
                transition={{ delay: 0.1 }}
                className="text-wood-500 dark:text-sand-400 font-light text-lg"
              >
-               Bienvenido de nuevo, <span className="font-medium text-wood-800 dark:text-sand-200">Alejandro</span>
+               Bienvenido de nuevo, <span className="font-medium text-wood-800 dark:text-sand-200">{firstName}</span>
              </motion.p>
           </div>
           <div className="text-sm text-wood-400 dark:text-sand-500 font-medium tracking-widest uppercase">

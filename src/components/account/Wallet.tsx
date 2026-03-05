@@ -6,8 +6,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
 import { useLoyalty } from '@/hooks/useLoyalty';
 import { useLoyaltyConfig } from '@/hooks/useLoyaltyConfig';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const Wallet = () => {
+  const { user, medusaCustomer } = useAuth();
   const { profile: loyaltyProfile } = useLoyalty();
   const { config: loyaltyConfig } = useLoyaltyConfig();
   const rawTierId = loyaltyProfile?.current_tier || 'pino';
@@ -272,7 +274,7 @@ export const Wallet = () => {
           <div className="flex justify-between items-end relative z-10">
             <div>
               <p className="text-[9px] uppercase tracking-widest opacity-50 mb-1">Titular</p>
-              <p className="font-medium text-sm tracking-widest">ALEJANDRO GARCIA</p>
+              <p className="font-medium text-sm tracking-widest">{(medusaCustomer?.first_name ? [medusaCustomer.first_name, medusaCustomer.last_name].filter(Boolean).join(' ') : user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'MIEMBRO').toUpperCase()}</p>
             </div>
             <div>
               <p className="text-[9px] uppercase tracking-widest opacity-50 mb-1 text-right">Expira</p>
