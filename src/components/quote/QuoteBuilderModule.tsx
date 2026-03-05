@@ -502,7 +502,7 @@ export const QuoteBuilderModule = () => {
                     </div>
                     <button
                       onClick={() => setShowCheckout(true)}
-                      className="flex items-center gap-3 px-8 py-4 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:-translate-y-0.5 hover:shadow-xl transition-all"
+                      className="flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:-translate-y-0.5 hover:shadow-xl transition-all"
                     >
                       <Send className="w-4 h-4" />
                       Solicitar Cotización
@@ -611,7 +611,7 @@ export const QuoteBuilderModule = () => {
                       <button
                         onClick={handleSubmit}
                         disabled={submitting}
-                        className="flex items-center gap-2 px-8 py-4 bg-accent-gold text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 bg-accent-gold text-wood-900 rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {submitting ? (
                           <Loader2 className="w-4 h-4 animate-spin" />

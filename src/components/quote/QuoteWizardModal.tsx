@@ -543,24 +543,24 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
         </div>
 
         {/* ── Footer ─────────────────────────────── */}
-        <div className="flex-none px-5 py-4 border-t border-wood-100 dark:border-wood-800 bg-white dark:bg-wood-950 flex justify-between items-center">
+        <div className="flex-none px-4 py-3 md:px-5 md:py-4 border-t border-wood-100 dark:border-wood-800 bg-white dark:bg-wood-950 flex justify-between items-center gap-2">
           <button
             onClick={() => nav(-1)}
             disabled={stepIdx === 0}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-2.5 md:px-5 rounded-xl font-medium text-sm transition-all shrink-0 ${
               stepIdx === 0
                 ? 'opacity-0 pointer-events-none'
                 : 'text-wood-500 hover:text-wood-900 dark:hover:text-sand-100 hover:bg-wood-100 dark:hover:bg-wood-800'
             }`}
           >
             <ChevronLeft className="w-4 h-4" />
-            Anterior
+            <span className="hidden sm:inline">Anterior</span>
           </button>
 
           {/* Mobile price */}
-          <div className="md:hidden text-center">
+          <div className="md:hidden text-center min-w-0">
             <span className="text-[10px] text-wood-400 block">Estimado</span>
-            <span className="font-serif text-lg font-bold text-wood-900 dark:text-sand-100">
+            <span className="font-serif text-base font-bold text-wood-900 dark:text-sand-100 truncate">
               {formatMXN(calculateItemPrice(item).lineTotal)}
             </span>
           </div>
@@ -568,17 +568,17 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
           {isLast ? (
             <button
               onClick={() => onSave(item)}
-              className="flex items-center gap-2 px-8 py-3 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              className="flex items-center gap-1.5 px-4 py-2.5 md:px-8 md:py-3 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:shadow-xl transition-all shrink-0"
             >
               <Check className="w-4 h-4" />
-              Guardar Pieza
+              <span>Guardar</span>
             </button>
           ) : (
             <button
               onClick={() => nav(1)}
-              className="flex items-center gap-2 px-8 py-3 bg-accent-gold text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              className="flex items-center gap-1.5 px-4 py-2.5 md:px-8 md:py-3 bg-accent-gold text-wood-900 rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:shadow-lg transition-all shrink-0"
             >
-              Siguiente
+              <span>Siguiente</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           )}
