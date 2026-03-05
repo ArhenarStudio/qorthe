@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   FolderTree, Tag, Plus, Search, TreePine, List, ChevronRight, ChevronDown,
@@ -245,28 +245,66 @@ export const CategoriesPage: React.FC = () => {
   const [editing, setEditing] = useState<Category | null | 'new'>(null);
   const [editingCollection, setEditingCollection] = useState<Collection | null | 'new'>(null);
   const [contextMenu, setContextMenu] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(['cat-1', 'cat-2']));
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [reorderMode, setReorderMode] = useState(false);
 
-  const rootCats = useMemo(() => mockCategories.filter(c => c.parentId === null).sort((a, b) => a.order - b.order), []);
-  const getChildren = useCallback((parentId: string) => mockCategories.filter(c => c.parentId === parentId).sort((a, b) => a.order - b.order), []);
+  // ── Live categories from Medusa ──
+  const [liveCategories, setLiveCategories] = useState<Category[]>([]);
+  const [catLoading, setCatLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
 
-  const filteredCats = useMemo(() => {
-    if (!searchQ) return mockCategories;
-    const q = searchQ.toLowerCase();
-    return mockCategories.filter(c => c.name.toLowerCase().includes(q) || c.slug.includes(q));
+  const fetchCategories = useCallback(async (silent = false) => {
+    try {
+      if (!silent) setCatLoading(true);
+      const params = new URLSearchParams();
+      if (searchQ) params.set('search', searchQ);
+      const res = await fetch(`/api/admin/categories?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setLiveCategories(data.categories || []);
+        setIsLive(true);
+        // Auto-expand root categories
+        if (expanded.size === 0) {
+          const roots = (data.categories || []).filter((c: any) => !c.parentId).map((c: any) => c.id);
+          setExpanded(new Set(roots.slice(0, 3)));
+        }
+      }
+    } catch (err) {
+      console.error('[CategoriesPage] fetch error:', err);
+      if (!silent) {
+        setIsLive(false);
+        setLiveCategories(mockCategories); // fallback to mock
+      }
+    } finally {
+      setCatLoading(false);
+    }
   }, [searchQ]);
 
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const allCategories = isLive ? liveCategories : mockCategories;
+
+  const rootCats = useMemo(() => allCategories.filter(c => c.parentId === null).sort((a, b) => a.order - b.order), [allCategories]);
+  const getChildren = useCallback((parentId: string) => allCategories.filter(c => c.parentId === parentId).sort((a, b) => a.order - b.order), [allCategories]);
+
+  const filteredCats = useMemo(() => {
+    if (!searchQ) return allCategories;
+    const q = searchQ.toLowerCase();
+    return allCategories.filter(c => c.name.toLowerCase().includes(q) || c.slug.includes(q));
+  }, [searchQ, allCategories]);
+
   const kpis = useMemo(() => {
-    const cats = mockCategories.filter(c => c.parentId === null);
-    const withSub = mockCategories.filter(c => c.parentId !== null);
-    const empty = mockCategories.filter(c => c.products === 0);
-    const totalProducts = mockCategories.filter(c => c.parentId === null).reduce((s, c) => s + c.products, 0);
+    const cats = allCategories.filter(c => c.parentId === null);
+    const withSub = allCategories.filter(c => c.parentId !== null);
+    const empty = allCategories.filter(c => c.products === 0);
+    const totalProducts = allCategories.reduce((s, c) => s + c.products, 0);
     const uncategorized = 0;
     const activeCols = mockCollections.filter(c => c.status === 'active').length;
     const expiredCols = mockCollections.filter(c => c.status === 'expired').length;
     return { totalCats: cats.length, subCats: withSub.length, totalProducts, uncategorized, empty: empty.length, activeCols, expiredCols };
-  }, []);
+  }, [allCategories]);
 
   const toggleExpand = (id: string) => setExpanded(prev => {
     const next = new Set(prev);
@@ -276,7 +314,7 @@ export const CategoriesPage: React.FC = () => {
 
   /* --- If editing category --- */
   if (editing !== null) {
-    return <CategoryForm category={editing === 'new' ? null : editing} onBack={() => setEditing(null)} />;
+    return <CategoryForm category={editing === 'new' ? null : editing} onBack={() => { setEditing(null); fetchCategories(); }} allCategories={allCategories} />;
   }
 
   /* --- If editing collection --- */
@@ -549,12 +587,12 @@ export const CategoriesPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-wood-50">
-                    {mockCategories.sort((a, b) => {
-                      const aRoot = a.parentId === null ? a.order : mockCategories.find(c => c.id === a.parentId)!.order + a.order * 0.1;
-                      const bRoot = b.parentId === null ? b.order : mockCategories.find(c => c.id === b.parentId)!.order + b.order * 0.1;
+                    {[...allCategories].sort((a, b) => {
+                      const aRoot = a.parentId === null ? a.order : (allCategories.find(c => c.id === a.parentId)?.order || 0) + a.order * 0.1;
+                      const bRoot = b.parentId === null ? b.order : (allCategories.find(c => c.id === b.parentId)?.order || 0) + b.order * 0.1;
                       return aRoot - bRoot;
                     }).map(cat => {
-                      const parent = cat.parentId ? mockCategories.find(c => c.id === cat.parentId) : null;
+                      const parent = cat.parentId ? allCategories.find(c => c.id === cat.parentId) : null;
                       const orderLabel = parent
                         ? `${parent.order}.${cat.order}`
                         : `${cat.order}`;
@@ -664,9 +702,10 @@ export const CategoriesPage: React.FC = () => {
 interface CategoryFormProps {
   category: Category | null;
   onBack: () => void;
+  allCategories?: Category[];
 }
 
-const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack }) => {
+const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCategories = [] }) => {
   const isEditing = !!category;
   const [activeSection, setActiveSection] = useState('basic');
   const [form, setForm] = useState({
@@ -775,7 +814,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack }) => {
                 className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-700 outline-none bg-white focus:border-accent-gold/40"
               >
                 <option value="">— Ninguna (categoria raiz) —</option>
-                {mockCategories.filter(c => c.parentId === null && c.id !== category?.id).map(c => (
+                {allCategories.filter(c => c.parentId === null && c.id !== category?.id).map(c => (
                   <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                 ))}
               </select>
