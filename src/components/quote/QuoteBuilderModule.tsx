@@ -175,11 +175,20 @@ export const QuoteBuilderModule = () => {
             >
               Nueva Cotización
             </button>
+            <button
+              onClick={() => {
+                const msg = `Hola, acabo de solicitar la cotizaci\u00f3n ${submitted} en DavidSon's Design. Me gustar\u00eda recibir m\u00e1s informaci\u00f3n.`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+              }}
+              className="w-full py-4 bg-green-600 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-green-700 transition-colors"
+            >
+              Compartir por WhatsApp
+            </button>
             <a
-              href="/shop"
+              href="/account"
               className="block w-full py-4 border-2 border-wood-200 dark:border-wood-700 rounded-xl font-bold uppercase tracking-widest text-xs text-wood-600 hover:border-accent-gold transition-colors text-center"
             >
-              Ver Catálogo
+              Ver Mis Cotizaciones
             </a>
           </div>
         </motion.div>
