@@ -11,6 +11,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { medusaAdminFetch } from "../_helpers";
 
+const REGION_ID = process.env.MEDUSA_REGION_ID || "reg_01KJ4BB2Z46YY1HWG0Q2N4KBVX";
+
 // ── POST: Create draft order ──
 export async function POST(req: NextRequest) {
   try {
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
     // Medusa v2 uses POST /admin/draft-orders
     const draftPayload: any = {
       email: customer.email,
-      region_id: process.env.MEDUSA_REGION_ID || "reg_01JMJK3Q1BFGG7T5V9YJNM3ZQP",
+      region_id: REGION_ID,
       items: items.map((item: any) => ({
         variant_id: item.variant_id,
         quantity: item.quantity,

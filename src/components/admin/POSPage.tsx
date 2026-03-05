@@ -40,6 +40,7 @@ interface POSProduct {
   handle: string;
   thumbnail: string | null;
   status: string;
+  category: string | null;
   variants: POSVariant[];
 }
 
@@ -135,23 +136,31 @@ export const POSPage: React.FC = () => {
 
   const products: POSProduct[] = useMemo(() => {
     if (!productsData?.products) return [];
-    return productsData.products.map((p: any) => ({
-      id: p.id,
-      title: p.title,
-      handle: p.handle,
-      thumbnail: p.thumbnail,
-      status: p.status,
-      variants: (p.variants || []).map((v: any) => ({
-        id: v.id,
-        title: v.title || "Default",
-        sku: v.sku,
-        inventory_quantity: v.inventory_quantity ?? 0,
-        prices: (v.prices || []).map((pr: any) => ({
-          amount: pr.amount,
-          currency_code: pr.currency_code || "mxn",
+    return productsData.products
+      .filter((p: any) => {
+        // Exclude service products (laser engraving service) from POS catalog
+        if (p.handle === 'servicio-grabado-laser') return false;
+        if (p.variants?.[0]?.sku?.startsWith('DSD-LASER')) return false;
+        return true;
+      })
+      .map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        handle: p.handle,
+        thumbnail: p.thumbnail,
+        status: p.status,
+        category: p.categories?.[0]?.name || null,
+        variants: (p.variants || []).map((v: any) => ({
+          id: v.id,
+          title: v.title || "Default",
+          sku: v.sku,
+          inventory_quantity: v.inventory_quantity ?? 0,
+          prices: (v.prices || []).map((pr: any) => ({
+            amount: pr.amount,
+            currency_code: pr.currency_code || "mxn",
+          })),
         })),
-      })),
-    }));
+      }));
   }, [productsData]);
 
   const filteredProducts = useMemo(() => {
@@ -394,15 +403,34 @@ export const POSPage: React.FC = () => {
                   <p className="text-sm">No se encontraron productos</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                  {filteredProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAdd={addToCart}
-                      cartItems={cart}
-                    />
-                  ))}
+                <div className="space-y-6">
+                  {(() => {
+                    // Group products by category
+                    const grouped = new Map<string, POSProduct[]>();
+                    filteredProducts.forEach((p) => {
+                      const cat = p.category || "Sin categoría";
+                      if (!grouped.has(cat)) grouped.set(cat, []);
+                      grouped.get(cat)!.push(p);
+                    });
+                    return Array.from(grouped.entries()).map(([cat, prods]) => (
+                      <div key={cat}>
+                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-wood-400 mb-2 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
+                          {cat} ({prods.length})
+                        </h3>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                          {prods.map((product) => (
+                            <ProductCard
+                              key={product.id}
+                              product={product}
+                              onAdd={addToCart}
+                              cartItems={cart}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ));
+                  })()}
                 </div>
               )}
             </div>
