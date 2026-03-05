@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
@@ -99,11 +100,6 @@ function mapApiCustomer(c: any): CustomerFull {
   };
 }
 
-// mockSpendChart remains for Summary tab (no real API for per-customer spend breakdown yet)
-const mockSpendChart = ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb'].map(m => ({
-  mes: m,
-  gasto: Math.round(500 + Math.random() * 1500),
-}));
 
 /* ================================================================
    HELPERS
@@ -423,6 +419,131 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
     }
     fetchDetail();
   }, [customer.id]);
+
+  // ── Form state: Points adjustment ──
+  const [pointsAction, setPointsAction] = useState<'add' | 'remove'>('add');
+  const [pointsAmount, setPointsAmount] = useState('');
+  const [pointsReason, setPointsReason] = useState('');
+  const [pointsNote, setPointsNote] = useState('');
+  const [pointsSaving, setPointsSaving] = useState(false);
+
+  // ── Form state: Tier change ──
+  const [newTier, setNewTier] = useState<string>(customer.tier);
+  const [tierReason, setTierReason] = useState('');
+  const [tierSaving, setTierSaving] = useState(false);
+
+  // ── Form state: Notes ──
+  const [notes, setNotes] = useState<any[]>([]);
+  const [newNote, setNewNote] = useState('');
+  const [notesSaving, setNotesSaving] = useState(false);
+  const [notesLoading, setNotesLoading] = useState(false);
+
+  // Fetch notes
+  useEffect(() => {
+    async function fetchNotes() {
+      try {
+        setNotesLoading(true);
+        const res = await fetch(`/api/admin/customers/notes?email=${encodeURIComponent(customer.email)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setNotes(data.notes || []);
+        }
+      } catch { /* notes table may not exist yet */ }
+      finally { setNotesLoading(false); }
+    }
+    fetchNotes();
+  }, [customer.email]);
+
+  // Refetch detail helper
+  const refetchDetail = async () => {
+    try {
+      const res = await fetch(`/api/admin/customers?id=${customer.id}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setDetailOrders(data.orders || []);
+      setDetailTransactions(data.transactions || []);
+    } catch {}
+  };
+
+  // Handle points adjustment
+  const handleAdjustPoints = async () => {
+    const amount = parseInt(pointsAmount);
+    if (!amount || amount <= 0) { toast.error('Ingresa una cantidad v\u00e1lida'); return; }
+    setPointsSaving(true);
+    try {
+      const pts = pointsAction === 'add' ? amount : -amount;
+      const reason = [pointsReason, pointsNote].filter(Boolean).join(' — ');
+      const res = await fetch('/api/admin/customers', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: customer.email, action: 'adjust_points', points: pts, reason }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      const data = await res.json();
+      toast.success(`${pointsAction === 'add' ? '+' : '-'}${amount} puntos aplicados. Nuevo balance: ${data.new_balance}`);
+      setPointsAmount(''); setPointsReason(''); setPointsNote('');
+      refetchDetail();
+    } catch { toast.error('Error al ajustar puntos'); }
+    finally { setPointsSaving(false); }
+  };
+
+  // Handle tier change
+  const handleChangeTier = async () => {
+    if (newTier === customer.tier && !tierReason) { toast.error('Selecciona un tier diferente'); return; }
+    setTierSaving(true);
+    try {
+      const res = await fetch('/api/admin/customers', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: customer.email, action: 'change_tier', new_tier: newTier, reason: tierReason }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      toast.success(`Tier cambiado a ${getTierLabel(newTier)}`);
+      setTierReason('');
+      refetchDetail();
+    } catch { toast.error('Error al cambiar tier'); }
+    finally { setTierSaving(false); }
+  };
+
+  // Handle add note
+  const handleAddNote = async () => {
+    if (!newNote.trim()) return;
+    setNotesSaving(true);
+    try {
+      const res = await fetch('/api/admin/customers/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: customer.email, text: newNote.trim() }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNotes(prev => [data.note, ...prev]);
+        setNewNote('');
+        toast.success('Nota guardada');
+      } else { toast.error('Error al guardar nota'); }
+    } catch { toast.error('Error al guardar nota'); }
+    finally { setNotesSaving(false); }
+  };
+
+  // Build spend chart from real orders
+  const spendChartData = useMemo(() => {
+    const months: Record<string, number> = {};
+    const now = new Date();
+    // Initialize last 12 months
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = d.toLocaleDateString('es-MX', { month: 'short' }).replace('.', '');
+      months[key] = 0;
+    }
+    // Fill with order data
+    for (const o of detailOrders) {
+      const d = new Date(o.created_at);
+      const key = d.toLocaleDateString('es-MX', { month: 'short' }).replace('.', '');
+      if (key in months) months[key] += o.total || 0;
+    }
+    return Object.entries(months).map(([mes, gasto]) => ({ mes, gasto }));
+  }, [detailOrders]);
+
   const ts = getTierStyles(customer.tier);
   const tierIds = DEFAULT_LOYALTY_CONFIG.tiers.map(t => t.id);
   const currentNorm = normalizeTierId(customer.tier);
@@ -543,7 +664,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <h4 className="text-xs text-wood-400 uppercase tracking-wider mb-3">Gasto por mes (ultimos 12 meses)</h4>
                 <div className="h-44">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={mockSpendChart}>
+                    <BarChart data={spendChartData}>
                       <XAxis dataKey="mes" tick={{ fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 10 }} />
                       <RTooltip contentStyle={{ fontSize: '10px', borderRadius: '8px' }} formatter={(v: any) => [`$${v.toLocaleString()}`, 'Gasto']} />
@@ -693,35 +814,29 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <div className="bg-white rounded-xl border border-wood-100 p-5 space-y-3">
                   <h4 className="text-xs text-wood-400 uppercase tracking-wider">Ajustar puntos</h4>
                   <div className="flex gap-2">
-                    <select className="px-2 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
-                      <option>Agregar</option>
-                      <option>Quitar</option>
+                    <select value={pointsAction} onChange={e => setPointsAction(e.target.value as 'add' | 'remove')} className="px-2 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
+                      <option value="add">Agregar</option>
+                      <option value="remove">Quitar</option>
                     </select>
-                    <input type="number" placeholder="Cantidad" className="flex-1 px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none" />
+                    <input type="number" value={pointsAmount} onChange={e => setPointsAmount(e.target.value)} placeholder="Cantidad" min="1" className="flex-1 px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none" />
                   </div>
-                  <select className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
+                  <select value={pointsReason} onChange={e => setPointsReason(e.target.value)} className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
                     <option value="">Motivo...</option>
-                    <option>Cortesia</option>
-                    <option>Correccion</option>
-                    <option>Bonificacion</option>
-                    <option>Promocion</option>
+                    <option value="Cortesia">Cortes\u00eda</option>
+                    <option value="Correccion">Correcci\u00f3n</option>
+                    <option value="Bonificacion">Bonificaci\u00f3n</option>
+                    <option value="Promocion">Promoci\u00f3n</option>
                   </select>
-                  <textarea placeholder="Nota (opcional)" rows={2} className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none resize-none" />
-                  <label className="flex items-center gap-1.5 text-[10px] text-wood-500"><input type="checkbox" className="accent-accent-gold rounded" /> Notificar al cliente</label>
-                  <button className="w-full px-3 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">Aplicar ajuste</button>
+                  <textarea value={pointsNote} onChange={e => setPointsNote(e.target.value)} placeholder="Nota (opcional)" rows={2} className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none resize-none" />
+                  <button onClick={handleAdjustPoints} disabled={pointsSaving || !pointsAmount} className="w-full px-3 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed">{pointsSaving ? 'Aplicando...' : 'Aplicar ajuste'}</button>
                 </div>
                 <div className="bg-white rounded-xl border border-wood-100 p-5 space-y-3">
                   <h4 className="text-xs text-wood-400 uppercase tracking-wider">Cambiar tier manualmente</h4>
-                  <select className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
+                  <select value={newTier} onChange={e => setNewTier(e.target.value)} className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
                     {DEFAULT_LOYALTY_CONFIG.tiers.map(t => <option key={t.id} value={t.id}>{getTierSymbol(t.id)} {t.name}</option>)}
                   </select>
-                  <input placeholder="Motivo del cambio" className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none" />
-                  <div className="flex gap-2">
-                    <label className="flex items-center gap-1.5 text-xs text-wood-700"><input type="radio" name="tierDur" defaultChecked className="accent-accent-gold" /> Permanente</label>
-                    <label className="flex items-center gap-1.5 text-xs text-wood-700"><input type="radio" name="tierDur" className="accent-accent-gold" /> Temporal</label>
-                  </div>
-                  <label className="flex items-center gap-1.5 text-[10px] text-wood-500"><input type="checkbox" className="accent-accent-gold rounded" /> Notificar al cliente</label>
-                  <button className="w-full px-3 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">Cambiar tier</button>
+                  <input value={tierReason} onChange={e => setTierReason(e.target.value)} placeholder="Motivo del cambio" className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none" />
+                  <button onClick={handleChangeTier} disabled={tierSaving} className="w-full px-3 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed">{tierSaving ? 'Cambiando...' : 'Cambiar tier'}</button>
                 </div>
               </div>
 
@@ -844,21 +959,23 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <p className="text-[10px] text-wood-400">El cliente NO ve estas notas</p>
               </div>
               <div className="flex gap-2">
-                <textarea placeholder="Agregar nota..." className="flex-1 px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none resize-none" rows={2} />
-                <button className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 self-end">Guardar</button>
+                <textarea value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="Agregar nota..." className="flex-1 px-3 py-2 text-xs border border-wood-200 rounded-lg text-wood-900 outline-none resize-none" rows={2} />
+                <button onClick={handleAddNote} disabled={notesSaving || !newNote.trim()} className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 self-end disabled:opacity-50">{notesSaving ? 'Guardando...' : 'Guardar'}</button>
               </div>
+              {notesLoading ? (
+                <div className="p-4 text-center text-wood-400 text-xs">Cargando notas...</div>
+              ) : notes.length === 0 ? (
+                <div className="p-4 text-center text-wood-400 text-xs">Sin notas. Agrega la primera.</div>
+              ) : (
               <div className="space-y-3">
-                {[
-                  { author: 'Admin', date: '28 Feb 2026, 14:30', text: 'Cliente solicito factura para su empresa. Datos enviados por email.', pinned: true },
-                  { author: 'Admin', date: '15 Feb 2026, 10:00', text: 'Interesado en set corporativo para 20 empleados. Dar seguimiento la proxima semana.', pinned: false },
-                ].map((n, i) => (
-                  <div key={i} className={`p-3 rounded-xl ${n.pinned ? 'bg-accent-gold/5 border border-accent-gold/20' : 'bg-sand-50'}`}>
-                    {n.pinned && <p className="text-[9px] text-accent-gold uppercase tracking-wider mb-1">📌 Fijada</p>}
+                {notes.map((n: any, i: number) => (
+                  <div key={n.id || i} className="p-3 rounded-xl bg-sand-50">
                     <p className="text-xs text-wood-700">{n.text}</p>
-                    <p className="text-[10px] text-wood-400 mt-1">{n.author} — {n.date}</p>
+                    <p className="text-[10px] text-wood-400 mt-1">{n.author || 'Admin'} — {new Date(n.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
                 ))}
               </div>
+              )}
             </div>
           )}
 
