@@ -97,6 +97,8 @@ export interface EngravingConfig {
   complexity: EngravingComplexity;
   file?: File | null;
   fileName?: string;
+  templateId?: string;
+  templateName?: string;
 }
 
 // ── Textile Customization ───────────────────────────────────
@@ -108,6 +110,8 @@ export interface TextileConfig {
   customText?: string;
   file?: File | null;
   fileName?: string;
+  templateId?: string;
+  templateName?: string;
 }
 
 // ── Product Item ────────────────────────────────────────────

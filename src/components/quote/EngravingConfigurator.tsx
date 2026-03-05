@@ -2,11 +2,11 @@
 
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Type, Image as ImageIcon, Sparkles, LayoutTemplate } from 'lucide-react';
 import { EngravingConfig, EngravingType, EngravingComplexity, EngravingZone } from './types';
 import { GrabadoIcon, QRIcon } from './QuoteIcons';
 import { ENGRAVING_PRICES } from './pricing';
-import { Type, Image as ImageIcon, Sparkles, LayoutTemplate } from 'lucide-react';
+import { DesignGallery, DesignTemplate } from './DesignGallery';
 
 interface EngravingConfiguratorProps {
   config: EngravingConfig;
@@ -37,7 +37,20 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
   forceEnabled = false,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showGallery, setShowGallery] = React.useState(false);
   const isEnabled = forceEnabled || config.enabled;
+
+  const handleSelectTemplate = (template: DesignTemplate) => {
+    onChange({
+      ...config,
+      templateId: template.id,
+      templateName: template.name,
+      customText: template.defaultText || config.customText,
+      file: null,
+      fileName: undefined,
+    });
+    setShowGallery(false);
+  };
 
   const handleToggle = () => {
     if (forceEnabled) return;
@@ -259,6 +272,49 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
                       </div>
                     )}
                   </div>
+                </div>
+
+                {/* Template selection indicator */}
+                {config.templateId && (
+                  <div className="mt-4 flex items-center gap-2 px-3 py-2 bg-accent-gold/10 border border-accent-gold/30 rounded-lg">
+                    <Sparkles className="w-4 h-4 text-accent-gold" />
+                    <span className="text-xs font-bold text-wood-900 dark:text-sand-100">
+                      Plantilla: {config.templateName}
+                    </span>
+                    <button
+                      onClick={() => onChange({ ...config, templateId: undefined, templateName: undefined })}
+                      className="ml-auto p-1 hover:bg-red-100 hover:text-red-500 rounded-full text-wood-400 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Gallery button + panel */}
+                <div className="mt-4">
+                  <button
+                    onClick={() => setShowGallery(!showGallery)}
+                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed transition-all text-xs font-bold uppercase tracking-wider ${
+                      showGallery
+                        ? 'border-accent-gold bg-accent-gold/5 text-accent-gold'
+                        : 'border-wood-200 dark:border-wood-700 text-wood-400 hover:border-accent-gold hover:text-accent-gold'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {showGallery ? 'Cerrar galería' : 'Elegir de la galería de diseños'}
+                  </button>
+                  <AnimatePresence>
+                    {showGallery && (
+                      <div className="mt-3">
+                        <DesignGallery
+                          productCategory="madera"
+                          selectedId={config.templateId}
+                          onSelect={handleSelectTemplate}
+                          onClose={() => setShowGallery(false)}
+                        />
+                      </div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Complexity / Price */}
