@@ -27,6 +27,7 @@ export interface QuotePricingConfig {
   wood_thickness_standard: number;
   volume_discounts: { min_qty: number; percent: number }[];
   tier_discount_enabled: boolean;
+  bundle_discounts_enabled?: boolean;
 }
 
 // ── Hardcoded defaults (fallback if API unavailable) ────────
@@ -222,6 +223,8 @@ export function applyTierDiscount(
 export interface TotalBreakdown {
   subtotal: number;
   volumeDiscount: number;
+  bundleDiscount: number;
+  bundleDiscountPercent: number;
   tierDiscount: TierDiscountInfo;
   total: number;
 }
@@ -230,7 +233,8 @@ export function calculateTotalPrice(
   items: ProductItem[],
   config: QuotePricingConfig = DEFAULT_PRICING_CONFIG,
   tierDiscountPercent = 0,
-  tierName = 'Pino'
+  tierName = 'Pino',
+  bundleDiscountPercent = 0
 ): TotalBreakdown {
   let subtotal = 0;
   let volumeDiscount = 0;
@@ -242,15 +246,26 @@ export function calculateTotalPrice(
   });
 
   const afterVolume = subtotal - volumeDiscount;
+
+  // Bundle discount applies after volume discount
+  const effectiveBundlePct = (config.bundle_discounts_enabled !== false && bundleDiscountPercent > 0)
+    ? bundleDiscountPercent
+    : 0;
+  const bundleDiscount = Math.round(afterVolume * effectiveBundlePct / 100);
+  const afterBundle = afterVolume - bundleDiscount;
+
+  // Tier discount applies last
   const tierDiscount = config.tier_discount_enabled
-    ? applyTierDiscount(afterVolume, tierDiscountPercent, tierName)
+    ? applyTierDiscount(afterBundle, tierDiscountPercent, tierName)
     : { tierName, tierDiscountPercent: 0, tierDiscountAmount: 0 };
 
-  const total = afterVolume - tierDiscount.tierDiscountAmount;
+  const total = afterBundle - tierDiscount.tierDiscountAmount;
 
   return {
     subtotal,
     volumeDiscount,
+    bundleDiscount,
+    bundleDiscountPercent: effectiveBundlePct,
     tierDiscount,
     total: Math.max(0, total),
   };

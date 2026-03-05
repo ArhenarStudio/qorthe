@@ -24,6 +24,35 @@ export type ServiceProductType = 'Servicio de Grabado';
 
 export type ProductType = WoodProductType | TextileProductType | ServiceProductType;
 
+// ── Bundles ──────────────────────────────────────────────────
+
+export type BundleId =
+  | 'kit-corporativo'
+  | 'kit-boda'
+  | 'kit-restaurante'
+  | 'kit-home-chef'
+  | 'kit-navidad';
+
+export interface BundleItem {
+  category: ProductCategory;
+  type: ProductType;
+  quantity: number;
+  woods?: WoodType[];
+  dimensions?: { length: number; width: number; thickness: number };
+  textile?: TextileConfig;
+  engraving?: Partial<EngravingConfig>;
+  notes?: string;
+}
+
+export interface BundleTemplate {
+  id: BundleId;
+  name: string;
+  desc: string;
+  segment: string;
+  items: BundleItem[];
+  discountPercent: number;
+}
+
 // ── Materials ───────────────────────────────────────────────
 
 export type WoodType =

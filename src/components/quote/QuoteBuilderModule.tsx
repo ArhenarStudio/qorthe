@@ -7,17 +7,19 @@ import {
   Plus, Edit2, Trash2, Copy, ShoppingBag,
   ArrowRight, Package, CheckCircle2, Loader2, Send,
 } from 'lucide-react';
-import { ProductItem, CustomerDetails, DEFAULT_PRODUCT, QuotePiece } from './types';
+import { ProductItem, CustomerDetails, DEFAULT_PRODUCT, QuotePiece, BundleTemplate, DEFAULT_ENGRAVING, DEFAULT_TEXTILE } from './types';
 import { QuoteWizardModal } from './QuoteWizardModal';
 import { getProductIcon } from './QuoteIcons';
 import { calculateItemPrice, calculateTotalPrice, formatMXN } from './pricing';
 import { useQuotePricing } from '@/hooks/useQuotePricing';
+import { BUNDLE_TEMPLATES, BUNDLE_ICON_MAP } from './bundles';  // .tsx
 
 // ── Component ───────────────────────────────────────────────
 
 export const QuoteBuilderModule = () => {
   const { config: pricingConfig, tierName, tierDiscountPercent, isLoggedIn } = useQuotePricing();
   const [items, setItems] = useState<ProductItem[]>([]);
+  const [activeBundle, setActiveBundle] = useState<BundleTemplate | null>(null);
   const [editingItem, setEditingItem] = useState<ProductItem | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -54,6 +56,30 @@ export const QuoteBuilderModule = () => {
     setEditingItem({ ...DEFAULT_PRODUCT, id: uuidv4() });
   };
 
+  // ── Bundle handler ──────────────────────────────────────
+
+  const handleApplyBundle = (bundle: BundleTemplate) => {
+    const bundleItems: ProductItem[] = bundle.items.map((bi) => ({
+      id: uuidv4(),
+      category: bi.category,
+      type: bi.type,
+      woods: bi.woods || [],
+      dimensions: bi.dimensions || { length: 40, width: 25, thickness: 3 },
+      textile: bi.textile ? { ...DEFAULT_TEXTILE, ...bi.textile } : undefined,
+      quantity: bi.quantity,
+      engraving: bi.engraving
+        ? { ...DEFAULT_ENGRAVING, ...bi.engraving }
+        : { ...DEFAULT_ENGRAVING },
+      notes: bi.notes,
+    }));
+    setItems(bundleItems);
+    setActiveBundle(bundle);
+  };
+
+  const handleClearBundle = () => {
+    setActiveBundle(null);
+  };
+
   // ── Submit to API ───────────────────────────────────────
 
   const handleSubmit = async () => {
@@ -71,7 +97,7 @@ export const QuoteBuilderModule = () => {
     setSubmitting(true);
 
     try {
-      const totals = calculateTotalPrice(items, pricingConfig, tierDiscountPercent, tierName);
+      const totals = calculateTotalPrice(items, pricingConfig, tierDiscountPercent, tierName, activeBundle?.discountPercent || 0);
 
       const pieces: QuotePiece[] = items.map((item) => {
         const bp = calculateItemPrice(item, pricingConfig);
@@ -143,7 +169,7 @@ export const QuoteBuilderModule = () => {
 
   // ── Price ───────────────────────────────────────────────
 
-  const totals = calculateTotalPrice(items, pricingConfig, tierDiscountPercent, tierName);
+  const totals = calculateTotalPrice(items, pricingConfig, tierDiscountPercent, tierName, activeBundle?.discountPercent || 0);
 
   // ── Success State ───────────────────────────────────────
 
@@ -243,25 +269,85 @@ export const QuoteBuilderModule = () => {
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Empty State + Bundle Selection */}
         {items.length === 0 ? (
-          <div className="py-20 text-center border-2 border-dashed border-wood-200 dark:border-wood-800 rounded-3xl bg-white/50 dark:bg-wood-900/20 max-w-2xl mx-auto">
-            <div className="w-20 h-20 bg-wood-100 dark:bg-wood-800 rounded-full flex items-center justify-center mx-auto mb-6 text-wood-400">
-              <Package className="w-8 h-8" />
+          <div className="space-y-10">
+            {/* Start from scratch */}
+            <div className="py-16 text-center border-2 border-dashed border-wood-200 dark:border-wood-800 rounded-3xl bg-white/50 dark:bg-wood-900/20 max-w-2xl mx-auto">
+              <div className="w-16 h-16 bg-wood-100 dark:bg-wood-800 rounded-full flex items-center justify-center mx-auto mb-5 text-wood-400">
+                <Package className="w-7 h-7" />
+              </div>
+              <h3 className="text-2xl font-serif mb-2">Pieza Individual</h3>
+              <p className="text-wood-500 mb-6 max-w-md mx-auto text-sm">
+                Configura una pieza personalizada desde cero.
+              </p>
+              <button
+                onClick={handleAddNew}
+                className="px-8 py-4 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:scale-105 transition-transform shadow-xl"
+              >
+                Crear Pieza
+              </button>
             </div>
-            <h3 className="text-2xl font-serif mb-3">Tu cotización está vacía</h3>
-            <p className="text-wood-500 mb-8 max-w-md mx-auto">
-              Comienza configurando tu primera pieza personalizada.
-            </p>
-            <button
-              onClick={handleAddNew}
-              className="px-10 py-5 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-xl font-bold uppercase tracking-widest text-xs hover:scale-105 transition-transform shadow-xl"
-            >
-              Crear Primera Pieza
-            </button>
+
+            {/* Bundle Selection */}
+            <div>
+              <h2 className="font-serif text-2xl mb-1">Paquetes Populares</h2>
+              <p className="text-wood-500 text-sm mb-6">
+                Selecciona un paquete predise\u00f1ado con descuento. Puedes personalizar cada pieza despu\u00e9s.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {BUNDLE_TEMPLATES.map((bundle) => {
+                  const BIcon = BUNDLE_ICON_MAP[bundle.id];
+                  return (
+                    <button
+                      key={bundle.id}
+                      onClick={() => handleApplyBundle(bundle)}
+                      className="group bg-white dark:bg-wood-950 border border-wood-100 dark:border-wood-800 rounded-2xl p-5 text-left hover:border-accent-gold/50 hover:shadow-lg transition-all"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="w-10 h-10 rounded-xl bg-accent-gold/10 text-accent-gold flex items-center justify-center group-hover:bg-accent-gold group-hover:text-wood-900 transition-colors">
+                          <BIcon size={20} />
+                        </div>
+                        <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold rounded-full">
+                          \u2212{bundle.discountPercent}%
+                        </span>
+                      </div>
+                      <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-0.5 group-hover:text-accent-gold transition-colors">
+                        {bundle.name}
+                      </h3>
+                      <p className="text-xs text-wood-500 mb-2">{bundle.desc}</p>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-wood-400">
+                        {bundle.segment}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-10">
+            {/* Bundle Active Banner */}
+            {activeBundle && (
+              <div className="px-4 py-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center text-green-600 text-sm font-bold">
+                    %
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-bold text-wood-900 dark:text-sand-100">{activeBundle.name}</span>
+                    <span className="text-wood-600 dark:text-wood-400"> \u2014 {activeBundle.discountPercent}% de descuento aplicado</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleClearBundle}
+                  className="text-[10px] text-wood-400 hover:text-red-500 uppercase tracking-widest font-bold transition-colors"
+                >
+                  Quitar paquete
+                </button>
+              </div>
+            )}
+
             {/* Items Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               <AnimatePresence mode="popLayout">
@@ -400,15 +486,16 @@ export const QuoteBuilderModule = () => {
                       <span className="font-serif text-3xl md:text-4xl leading-none">
                         {formatMXN(totals.total)}
                       </span>
-                      {(totals.volumeDiscount > 0 || totals.tierDiscount.tierDiscountAmount > 0) && (
-                        <div className="text-xs text-green-600 block">
+                      {(totals.volumeDiscount > 0 || totals.bundleDiscount > 0 || totals.tierDiscount.tierDiscountAmount > 0) && (
+                        <div className="text-xs text-green-600 block space-x-2">
                           {totals.volumeDiscount > 0 && (
                             <span>Volumen: −{formatMXN(totals.volumeDiscount)}</span>
                           )}
+                          {totals.bundleDiscount > 0 && (
+                            <span>Paquete: −{formatMXN(totals.bundleDiscount)}</span>
+                          )}
                           {totals.tierDiscount.tierDiscountAmount > 0 && (
-                            <span className="ml-2">
-                              {totals.tierDiscount.tierName}: −{formatMXN(totals.tierDiscount.tierDiscountAmount)}
-                            </span>
+                            <span>{totals.tierDiscount.tierName}: −{formatMXN(totals.tierDiscount.tierDiscountAmount)}</span>
                           )}
                         </div>
                       )}
