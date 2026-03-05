@@ -309,7 +309,7 @@ export const QuoteBuilderModule = () => {
                           <BIcon size={20} />
                         </div>
                         <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold rounded-full">
-                          \u2212{bundle.discountPercent}%
+                          -{bundle.discountPercent}%
                         </span>
                       </div>
                       <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100 mb-0.5 group-hover:text-accent-gold transition-colors">
@@ -336,7 +336,7 @@ export const QuoteBuilderModule = () => {
                   </div>
                   <div className="text-sm">
                     <span className="font-bold text-wood-900 dark:text-sand-100">{activeBundle.name}</span>
-                    <span className="text-wood-600 dark:text-wood-400"> \u2014 {activeBundle.discountPercent}% de descuento aplicado</span>
+                    <span className="text-wood-600 dark:text-wood-400"> &mdash; {activeBundle.discountPercent}% de descuento aplicado</span>
                   </div>
                 </div>
                 <button

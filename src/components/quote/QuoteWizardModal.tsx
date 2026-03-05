@@ -11,7 +11,7 @@ import { WoodSelector } from './WoodSelector';
 import { EngravingConfigurator } from './EngravingConfigurator';
 import { TextileConfigurator } from './TextileConfigurator';
 import { QuotePreviewSidebar } from './QuotePreviewSidebar';
-import { getProductIcon, PRODUCT_ICON_MAP } from './QuoteIcons';
+import { getProductIcon, PRODUCT_ICON_MAP, MATERIAL_ICON_MAP } from './QuoteIcons';
 import { calculateItemPrice, formatMXN } from './pricing';
 
 // ── Product catalog ─────────────────────────────────────────
@@ -73,12 +73,12 @@ function getSteps(category: ProductCategory): WizardStep[] {
 // ── Engraving materials for service ─────────────────────────
 
 const ENGRAVE_MATERIALS = [
-  { label: 'Madera', emoji: '🪵' },
-  { label: 'Cuero', emoji: '🟤' },
-  { label: 'Metal / Termo', emoji: '⚙️' },
-  { label: 'Acrílico', emoji: '💠' },
-  { label: 'Vidrio', emoji: '🔮' },
-  { label: 'Otro', emoji: '📦' },
+  { label: 'Madera' },
+  { label: 'Cuero' },
+  { label: 'Metal / Termo' },
+  { label: 'Acrílico' },
+  { label: 'Vidrio' },
+  { label: 'Otro' },
 ];
 
 // ── Component ───────────────────────────────────────────────
@@ -240,10 +240,10 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
               {/* Step Content */}
               <AnimatePresence mode="wait" custom={dir}>
                 <motion.div
-                  key={`${item.category}-${step.id}`}
+                  key={step.id === 'type' ? 'type-step' : `${item.category}-${step.id}`}
                   custom={dir}
                   variants={variants}
-                  initial="enter"
+                  initial={step.id === 'type' ? false : 'enter'}
                   animate="center"
                   exit="exit"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -264,10 +264,10 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                             }`}
                           >
                             {tab === 'madera'
-                              ? '🪵 Madera'
+                              ? 'Madera'
                               : tab === 'textil'
-                              ? '🧵 Textil'
-                              : '✂️ Grabado'}
+                              ? 'Textil'
+                              : 'Grabado'}
                           </button>
                         ))}
                       </div>
@@ -357,7 +357,7 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                                   : 'border-wood-100 dark:border-wood-800 bg-white dark:bg-wood-900 hover:border-wood-300 text-wood-700 dark:text-sand-200'
                               }`}
                             >
-                              <span className="text-2xl">{m.emoji}</span>
+                              {(() => { const MIcon = MATERIAL_ICON_MAP[m.label]; return MIcon ? <MIcon size={28} /> : null; })()}
                               <span className="font-serif font-medium text-sm">{m.label}</span>
                             </button>
                           );

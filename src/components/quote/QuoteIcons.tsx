@@ -142,3 +142,50 @@ export const PRODUCT_ICON_MAP: Record<ProductType, React.FC<IconProps>> = {
 export function getProductIcon(type: ProductType): React.FC<IconProps> {
   return PRODUCT_ICON_MAP[type] || TablaIconPicar;
 }
+
+// ── Material Icons (for engraving service) ───────────────────
+
+export const MaterialMaderaIcon: React.FC<IconProps> = ({ className, size = defaults.size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <ellipse cx="12" cy="12" rx="8" ry="10" /><ellipse cx="12" cy="12" rx="5" ry="7" opacity="0.5" /><ellipse cx="12" cy="12" rx="2" ry="3" opacity="0.3" />
+  </svg>
+);
+
+export const MaterialCueroIcon: React.FC<IconProps> = ({ className, size = defaults.size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 9h18" strokeDasharray="3 2" opacity="0.5" /><path d="M7 5v14" strokeDasharray="2 3" opacity="0.4" /><path d="M17 5v14" strokeDasharray="2 3" opacity="0.4" />
+  </svg>
+);
+
+export const MaterialMetalIcon: React.FC<IconProps> = ({ className, size = defaults.size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <ellipse cx="12" cy="5" rx="6" ry="2" /><path d="M6 5v14c0 1.1 2.7 2 6 2s6-.9 6-2V5" /><path d="M6 12c0 1.1 2.7 2 6 2s6-.9 6-2" opacity="0.4" />
+  </svg>
+);
+
+export const MaterialAcrilicoIcon: React.FC<IconProps> = ({ className, size = defaults.size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect x="4" y="3" width="16" height="18" rx="2" /><path d="M4 3l16 18" opacity="0.2" /><path d="M8 3l12 14" opacity="0.15" /><circle cx="12" cy="12" r="3" opacity="0.3" />
+  </svg>
+);
+
+export const MaterialVidrioIcon: React.FC<IconProps> = ({ className, size = defaults.size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M8 3h8l-1 8c0 2-2 3-3 3s-3-1-3-3L8 3z" /><line x1="12" y1="14" x2="12" y2="19" /><line x1="9" y1="19" x2="15" y2="19" /><path d="M9 6h6" opacity="0.3" />
+  </svg>
+);
+
+export const MaterialOtroIcon: React.FC<IconProps> = ({ className, size = defaults.size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2z" /><path d="M12 12l8-4.5" opacity="0.4" /><path d="M12 12L4 7.5" opacity="0.4" /><line x1="12" y1="12" x2="12" y2="22" opacity="0.4" />
+  </svg>
+);
+
+export const MATERIAL_ICON_MAP: Record<string, React.FC<IconProps>> = {
+  'Madera': MaterialMaderaIcon,
+  'Cuero': MaterialCueroIcon,
+  'Metal / Termo': MaterialMetalIcon,
+  'Acrílico': MaterialAcrilicoIcon,
+  'Vidrio': MaterialVidrioIcon,
+  'Otro': MaterialOtroIcon,
+};
