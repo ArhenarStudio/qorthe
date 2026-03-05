@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { medusaAdminFetch } from "../_helpers";
 
 function getSupabaseAdmin() {
   return createClient(
@@ -56,7 +57,37 @@ export async function GET(req: NextRequest) {
         .update({ unread_admin: 0 })
         .eq("id", conversationId);
 
-      return NextResponse.json({ conversation: conv, messages: messages || [] });
+      // ── Enrich with customer data ──
+      let customerInfo: any = null;
+      try {
+        const email = conv.customer_email;
+        // Medusa orders
+        const ordersRes = await medusaAdminFetch(`/admin/orders?q=${encodeURIComponent(email)}&limit=5&order=-created_at`);
+        const ordersData = ordersRes.ok ? await ordersRes.json() : { orders: [] };
+        // Supabase loyalty
+        const { data: loyaltyProfile } = await supabase
+          .from("loyalty_profiles")
+          .select("current_tier, points_balance, lifetime_spend")
+          .eq("email", email)
+          .single();
+
+        customerInfo = {
+          email,
+          name: conv.customer_name || email.split("@")[0],
+          orders: (ordersData.orders || []).map((o: any) => ({
+            id: o.display_id,
+            total: o.total ? (o.total / 100) : 0,
+            status: o.fulfillment_status || o.status,
+            date: o.created_at,
+          })),
+          orderCount: ordersData.count || (ordersData.orders || []).length,
+          tier: loyaltyProfile?.current_tier || "pino",
+          points: loyaltyProfile?.points_balance || 0,
+          lifetimeSpend: loyaltyProfile?.lifetime_spend ? loyaltyProfile.lifetime_spend / 100 : 0,
+        };
+      } catch { /* silent — customer info is optional */ }
+
+      return NextResponse.json({ conversation: conv, messages: messages || [], customerInfo });
     }
 
     // List all conversations
