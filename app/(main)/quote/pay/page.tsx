@@ -98,31 +98,35 @@ export default function QuotePayPage() {
     fetchQuote();
   }, [quoteId]);
 
-  const handleProceedToCheckout = async () => {
+  const handleProceedToCheckout = async (payType: "deposit" | "full" = "deposit") => {
     if (!quote || processing) return;
     setProcessing(true);
+    setError(null);
 
     try {
-      // For now, redirect to contact with quote reference
-      // Full cart-from-quote integration requires Medusa cart creation with custom line items
-      const message = encodeURIComponent(
-        `Hola, quiero proceder con el pago de mi cotización ${quote.number} por ${formatMXN(quote.total)}. Mi nombre es ${quote.customer_name}.`
-      );
-      window.open(`https://wa.me/526621234567?text=${message}`, "_blank");
-
-      // Also notify admin
-      await fetch("/api/contact", {
+      const res = await fetch("/api/quotes/pay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: quote.customer_email,
-          subject: `Pago cotización ${quote.number}`,
-          category: "cotizacion",
-          message: `El cliente ${quote.customer_name} (${quote.customer_email}) quiere pagar la cotización ${quote.number} por ${formatMXN(quote.total)}.`,
+          quote_id: quote.id,
+          pay_type: payType,
         }),
-      }).catch(() => {});
-    } catch {
-      // Silent
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Error al crear sesión de pago");
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else {
+        throw new Error("No se recibió URL de pago");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error de conexión");
     } finally {
       setProcessing(false);
     }
@@ -257,19 +261,34 @@ export default function QuotePayPage() {
         <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Timeline: {quote.timeline}</span>
       </div>
 
-      {/* Pay button */}
+      {/* Pay buttons */}
       {!isExpired && (
-        <button
-          onClick={handleProceedToCheckout}
-          disabled={processing}
-          className="w-full py-4 bg-gradient-to-r from-accent-gold to-[#B08D55] text-wood-900 rounded-xl text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-xl disabled:opacity-50 transition-all"
-        >
-          {processing ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Procesando...</>
-          ) : (
-            <><CreditCard className="w-4 h-4" /> Proceder al Pago — {formatMXN(depositAmount)}</>
+        <div className="space-y-3">
+          <button
+            onClick={() => handleProceedToCheckout("deposit")}
+            disabled={processing}
+            className="w-full py-4 bg-gradient-to-r from-accent-gold to-[#B08D55] text-wood-900 rounded-xl text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-xl disabled:opacity-50 transition-all"
+          >
+            {processing ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Procesando...</>
+            ) : (
+              <><CreditCard className="w-4 h-4" /> Pagar Anticipo — {formatMXN(depositAmount)}</>
+            )}
+          </button>
+          <button
+            onClick={() => handleProceedToCheckout("full")}
+            disabled={processing}
+            className="w-full py-3 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 text-wood-700 dark:text-wood-300 rounded-xl text-xs font-medium flex items-center justify-center gap-2 hover:bg-wood-50 disabled:opacity-50 transition-all"
+          >
+            <CreditCard className="w-3.5 h-3.5" /> Pagar total completo — {formatMXN(quote.total)}
+          </button>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+              <p className="text-xs text-red-600">{error}</p>
+            </div>
           )}
-        </button>
+        </div>
       )}
 
       <p className="text-[10px] text-wood-400 text-center mt-3">
