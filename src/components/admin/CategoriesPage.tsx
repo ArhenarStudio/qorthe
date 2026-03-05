@@ -10,6 +10,7 @@ import {
   Globe, Settings2, Shield, Info, Upload, Zap
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RTooltip, XAxis } from 'recharts';
+import { toast } from 'sonner';
 
 /* ================================================================
    MOCK DATA
@@ -767,8 +768,47 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
         </div>
         <div className="flex items-center gap-2">
           <button onClick={onBack} className="px-3 py-2 text-xs text-wood-500 hover:text-wood-700 transition-colors">Cancelar</button>
-          <button className="px-3 py-2 text-xs text-wood-600 bg-white border border-wood-200 rounded-lg hover:bg-sand-50 transition-colors">Guardar borrador</button>
-          <button className="px-4 py-2 text-xs text-sand-100 bg-wood-900 rounded-lg hover:bg-wood-800 transition-colors">Publicar</button>
+          <button onClick={async () => {
+            try {
+              const res = await fetch('/api/admin/categories', {
+                method: isEditing ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  ...(isEditing ? { id: category?.id } : {}),
+                  name: form.name,
+                  handle: form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+                  description: form.description,
+                  parent_category_id: form.parentId || undefined,
+                  is_active: false,
+                  metadata: { icon: form.icon, metaTitle: form.metaTitle, metaDescription: form.metaDescription },
+                }),
+              });
+              if (!res.ok) throw new Error('Failed');
+              toast.success('Borrador guardado');
+              onBack();
+            } catch { toast.error('Error al guardar'); }
+          }} className="px-3 py-2 text-xs text-wood-600 bg-white border border-wood-200 rounded-lg hover:bg-sand-50 transition-colors">Guardar borrador</button>
+          <button onClick={async () => {
+            if (!form.name.trim()) { toast.error('El nombre es obligatorio'); return; }
+            try {
+              const res = await fetch('/api/admin/categories', {
+                method: isEditing ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  ...(isEditing ? { id: category?.id } : {}),
+                  name: form.name,
+                  handle: form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+                  description: form.description,
+                  parent_category_id: form.parentId || undefined,
+                  is_active: true,
+                  metadata: { icon: form.icon, metaTitle: form.metaTitle, metaDescription: form.metaDescription },
+                }),
+              });
+              if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed'); }
+              toast.success(isEditing ? 'Categor\u00eda actualizada' : 'Categor\u00eda creada');
+              onBack();
+            } catch (e: any) { toast.error(e.message || 'Error al publicar'); }
+          }} className="px-4 py-2 text-xs text-sand-100 bg-wood-900 rounded-lg hover:bg-wood-800 transition-colors">Publicar</button>
         </div>
       </div>
 
@@ -779,7 +819,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
             {sections.map(s => (
               <button
                 key={s.id}
-                onClick={() => setActiveSection(s.id)}
+                onClick={() => { setActiveSection(s.id); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-colors ${
                   activeSection === s.id ? 'bg-accent-gold/10 text-accent-gold' : 'text-wood-500 hover:text-wood-700 hover:bg-sand-50'
                 }`}
