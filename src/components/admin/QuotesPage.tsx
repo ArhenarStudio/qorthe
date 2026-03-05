@@ -9,8 +9,10 @@ import {
   Hammer, Target, BarChart3, ExternalLink, XCircle
 } from 'lucide-react';
 import {
-  fullQuotes, type FullQuote, type QuoteStatus, type QuotePiece
-} from '@/data/adminMockData';
+  AdminQuote, QuoteStatus, QuotePiece, QUOTE_STATUS_CONFIG,
+  getQuoteTotal, getQuoteCost, getPieceCount, hoursAgo,
+  fmt, fmtDate, fmtDateTime, ACTIVE_STATUSES,
+} from './quotes/types';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip,
   ResponsiveContainer, PieChart, Pie, Cell
@@ -20,19 +22,8 @@ import { toast } from 'sonner';
 // ===== CONSTANTS =====
 type TabId = 'nuevas' | 'negociacion' | 'aprobadas' | 'produccion' | 'historial' | 'analisis' | 'precios';
 
-const statusConfig: Record<QuoteStatus, { label: string; cls: string; dot: string }> = {
-  nueva:              { label: 'Nueva',              cls: 'bg-blue-50 text-blue-600',    dot: 'bg-blue-500' },
-  en_revision:        { label: 'En revisión',        cls: 'bg-amber-50 text-amber-600',  dot: 'bg-amber-500' },
-  cotizacion_enviada: { label: 'Cotización enviada', cls: 'bg-purple-50 text-purple-600', dot: 'bg-purple-500' },
-  en_negociacion:     { label: 'En negociación',     cls: 'bg-orange-50 text-orange-600', dot: 'bg-orange-500' },
-  aprobada:           { label: 'Aprobada',           cls: 'bg-green-50 text-green-600',   dot: 'bg-green-500' },
-  anticipo_recibido:  { label: 'Anticipo recibido',  cls: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-600' },
-  en_produccion:      { label: 'En producción',      cls: 'bg-yellow-50 text-yellow-700', dot: 'bg-yellow-500' },
-  completada:         { label: 'Completada',         cls: 'bg-gray-100 text-green-600',   dot: 'bg-green-400' },
-  rechazada:          { label: 'Rechazada',          cls: 'bg-red-50 text-red-500',       dot: 'bg-red-500' },
-  vencida:            { label: 'Vencida',            cls: 'bg-gray-100 text-gray-500',    dot: 'bg-gray-400' },
-  cancelada:          { label: 'Cancelada',          cls: 'bg-gray-200 text-gray-600',    dot: 'bg-gray-500' },
-};
+// statusConfig now imported as QUOTE_STATUS_CONFIG from ./quotes/types
+const statusConfig = QUOTE_STATUS_CONFIG;
 
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
 import { QuotePricingPanel } from './QuotePricingPanel';
@@ -46,35 +37,16 @@ function getQuoteTierBadge(tierId: string) {
 
 const CHART_COLORS = ['#C5A065', '#5D4037', '#A1887F', '#D7CCC8', '#8D6E63'];
 
-// ===== HELPERS =====
-const fmt = (n: number) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n);
-const fmtDate = (d: string) => new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
-const fmtDateTime = (d: string) => new Date(d).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+// ===== HELPERS (getQuoteTotal, fmt, etc. imported from ./quotes/types) =====
 
-function getQuoteTotal(q: FullQuote) {
-  const subtotal = q.pieces.reduce((s, p) => s + (p.adminPrice ?? p.autoPrice) * p.quantity, 0);
-  const disc = q.discount ? subtotal * (q.discount.percent / 100) : 0;
-  return subtotal - disc;
-}
-function getQuoteCost(q: FullQuote) {
-  return q.pieces.reduce((s, p) => s + (p.costEstimate ?? 0) * p.quantity, 0);
-}
-function getPieceCount(q: FullQuote) {
-  return q.pieces.reduce((s, p) => s + p.quantity, 0);
-}
-
-function getClientBadge(q: FullQuote) {
+function getClientBadge(q: AdminQuote) {
   const { tier, orders } = q.customer;
   const badges: { text: string; cls: string }[] = [];
-  if (tier === 'oro' || tier === 'platino') badges.push({ text: '⚡ Cliente VIP', cls: 'bg-accent-gold/15 text-accent-gold' });
+  if (tier === 'parota' || tier === 'ebano' || tier === 'oro' || tier === 'platino') badges.push({ text: '⚡ Cliente VIP', cls: 'bg-accent-gold/15 text-accent-gold' });
   if (orders === 0) badges.push({ text: '🆕 Cliente nuevo', cls: 'bg-blue-50 text-blue-600' });
   const usage = q.pieces[0]?.usage;
   if (usage === 'Evento / regalo corporativo' || usage === 'Restaurante / volumen alto') badges.push({ text: '🏢 Corporativo', cls: 'bg-purple-50 text-purple-600' });
   return badges;
-}
-
-function hoursAgo(d: string) {
-  return Math.floor((Date.now() - new Date(d).getTime()) / 3600000);
 }
 
 // ===== KPI CARD =====
@@ -94,8 +66,8 @@ const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; s
 // ===== MAIN COMPONENT =====
 export const QuotesPage: React.FC = () => {
 
-  // ── Live data from API ──
-  const [liveQuotes, setLiveQuotes] = useState<any>(null);
+  // ── Live data from API (no mock fallback) ──
+  const [liveQuotes, setLiveQuotes] = useState<{ quotes: AdminQuote[]; stats: any } | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(true);
   useEffect(() => {
     fetch('/api/admin/quotes').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveQuotes(d); }).catch(() => {}).finally(() => setQuotesLoading(false));
@@ -103,7 +75,7 @@ export const QuotesPage: React.FC = () => {
 
   const [tab, setTab] = useState<TabId>('nuevas');
   const [search, setSearch] = useState('');
-  const [selectedQuote, setSelectedQuote] = useState<FullQuote | null>(null);
+  const [selectedQuote, setSelectedQuote] = useState<AdminQuote | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newQuoteForm, setNewQuoteForm] = useState({ customer_name: '', customer_email: '', customer_phone: '', project_name: '', description: '', timeline: '3-4 semanas' });
@@ -139,35 +111,39 @@ export const QuotesPage: React.FC = () => {
 
   // Filter quotes by tab
   const tabFilters: Record<TabId, QuoteStatus[]> = {
-    nuevas:      ['nueva'],
-    negociacion: ['en_revision', 'cotizacion_enviada', 'en_negociacion'],
-    aprobadas:   ['aprobada', 'anticipo_recibido'],
-    produccion:  ['en_produccion'],
-    historial:   ['completada', 'rechazada', 'vencida', 'cancelada'],
-    analisis:    [],
-    precios:     [],
+    nuevas:      ['nueva'] as QuoteStatus[],
+    negociacion: ['en_revision', 'cotizacion_enviada', 'en_negociacion'] as QuoteStatus[],
+    aprobadas:   ['aprobada', 'anticipo_recibido'] as QuoteStatus[],
+    produccion:  ['en_produccion'] as QuoteStatus[],
+    historial:   ['completada', 'rechazada', 'vencida', 'cancelada'] as QuoteStatus[],
+    analisis:    [] as QuoteStatus[],
+    precios:     [] as QuoteStatus[],
   };
 
   const filtered = useMemo(() => {
     const statuses = tabFilters[tab];
-    const allQuotes = (liveQuotes?.quotes?.length > 0 ? liveQuotes.quotes : fullQuotes) as FullQuote[];
+    const allQuotes = (liveQuotes?.quotes || []) as AdminQuote[];
     let list = statuses.length ? allQuotes.filter(q => statuses.includes(q.status)) : allQuotes;
     if (search) {
       const s = search.toLowerCase();
       list = list.filter(q => q.number.toLowerCase().includes(s) || q.customer.name.toLowerCase().includes(s) || q.pieces.some(p => p.type.toLowerCase().includes(s)));
     }
     return list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [tab, search]);
+  }, [tab, search, liveQuotes]);
 
   // KPIs
-  const activeStatuses: QuoteStatus[] = ['nueva', 'en_revision', 'cotizacion_enviada', 'en_negociacion', 'aprobada', 'anticipo_recibido', 'en_produccion'];
-  const allQ = (liveQuotes?.quotes?.length > 0 ? liveQuotes.quotes : fullQuotes) as FullQuote[];
-  const activeQuotes = allQ.filter(q => activeStatuses.includes(q.status));
+  const allQ = (liveQuotes?.quotes || []) as AdminQuote[];
+  const activeQuotes = allQ.filter(q => ACTIVE_STATUSES.includes(q.status));
   const newQuotes = allQ.filter(q => q.status === 'nueva');
   const urgentNew = newQuotes.filter(q => hoursAgo(q.date) > 48);
   const pipelineValue = activeQuotes.reduce((s, q) => s + getQuoteTotal(q), 0);
   const completedQuotes = allQ.filter(q => q.status === 'completada');
   const closedQuotes = allQ.filter(q => ['completada', 'rechazada', 'vencida', 'cancelada'].includes(q.status));
+  const expiringThisWeek = allQ.filter(q => {
+    if (!ACTIVE_STATUSES.includes(q.status)) return false;
+    const exp = new Date(q.validUntil).getTime();
+    return exp < Date.now() + 7 * 86400000 && exp > Date.now();
+  }).length;
   const conversionRate = closedQuotes.length ? Math.round((completedQuotes.length / closedQuotes.length) * 100) : 0;
   const avgTicket = activeQuotes.length ? activeQuotes.reduce((s, q) => s + getQuoteTotal(q), 0) / activeQuotes.length : 0;
 
@@ -237,7 +213,7 @@ export const QuotesPage: React.FC = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <KpiCard icon={<FileText size={16} className="text-accent-gold" />} value={String(activeQuotes.length)} label="Cotizaciones activas" sub={`${allQ.filter(q => new Date(q.validUntil) < new Date(Date.now() + 7 * 86400000) && activeStatuses.includes(q.status)).length} vencen esta semana`} accent />
+        <KpiCard icon={<FileText size={16} className="text-accent-gold" />} value={String(activeQuotes.length)} label="Cotizaciones activas" sub={`${expiringThisWeek} vencen esta semana`} accent />
         <KpiCard icon={<Clock size={16} className="text-amber-600" />} value={String(newQuotes.length)} label="Nuevas sin responder" sub={`${urgentNew.length} hace +48h ⚠️`} />
         <KpiCard icon={<DollarSign size={16} className="text-green-600" />} value={fmt(pipelineValue)} label="Valor en pipeline" sub="+15% vs prev" />
         <KpiCard icon={<BarChart3 size={16} className="text-blue-600" />} value={`${conversionRate}%`} label="Tasa de conversión" sub="Cot → Pedido" />
@@ -279,7 +255,7 @@ export const QuotesPage: React.FC = () => {
       {tab === 'precios' ? (
         <QuotePricingPanel />
       ) : tab === 'analisis' ? (
-        <AnalyticsTab />
+        <AnalyticsTab quotes={allQ} />
       ) : tab === 'nuevas' ? (
         <NewQuotesList quotes={filtered} onSelect={setSelectedQuote} />
       ) : tab === 'negociacion' ? (
@@ -296,7 +272,7 @@ export const QuotesPage: React.FC = () => {
 };
 
 // ===== NEW QUOTES LIST (cards) =====
-const NewQuotesList: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) => void }> = ({ quotes, onSelect }) => (
+const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
   <div className="space-y-3">
     <p className="text-xs text-wood-500">⏳ {quotes.length} cotizaciones nuevas</p>
     {quotes.map(q => {
@@ -377,7 +353,7 @@ const NewQuotesList: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) =>
 );
 
 // ===== NEGOTIATION TABLE =====
-const NegotiationTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) => void }> = ({ quotes, onSelect }) => (
+const NegotiationTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
   <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[700px]">
@@ -434,7 +410,7 @@ const NegotiationTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote)
 );
 
 // ===== APPROVED TABLE =====
-const ApprovedTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) => void }> = ({ quotes, onSelect }) => (
+const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
   <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[700px]">
@@ -488,7 +464,7 @@ const ApprovedTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) =>
 );
 
 // ===== PRODUCTION TABLE =====
-const ProductionTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) => void }> = ({ quotes, onSelect }) => (
+const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
   <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[750px]">
@@ -545,7 +521,7 @@ const ProductionTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) 
 );
 
 // ===== HISTORY TABLE =====
-const HistoryTable: React.FC<{ quotes: FullQuote[]; onSelect: (q: FullQuote) => void }> = ({ quotes, onSelect }) => (
+const HistoryTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
   <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[750px]">
@@ -594,7 +570,7 @@ const EmptyState: React.FC<{ text: string }> = ({ text }) => (
 );
 
 // ===== QUOTE DETAIL =====
-const QuoteDetail: React.FC<{ quote: FullQuote; onBack: () => void; onRefresh?: () => void }> = ({ quote: initialQuote, onBack, onRefresh }) => {
+const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?: () => void }> = ({ quote: initialQuote, onBack, onRefresh }) => {
   const [q, setQ] = useState(initialQuote);
   const [saving, setSaving] = useState(false);
 
@@ -997,46 +973,56 @@ const PieceCard: React.FC<{ piece: QuotePiece; index: number; total: number }> =
   );
 };
 
-// ===== ANALYTICS TAB =====
-const AnalyticsTab: React.FC = () => {
+// ===== ANALYTICS TAB (computed from real data) =====
+const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
+  const total = quotes.length;
+  const responded = quotes.filter(q => q.messages.length > 1 || q.status !== 'nueva').length;
+  const negotiating = quotes.filter(q => ['en_revision','cotizacion_enviada','en_negociacion'].includes(q.status)).length;
+  const approved = quotes.filter(q => ['aprobada','anticipo_recibido','en_produccion','completada'].includes(q.status)).length;
+  const completed = quotes.filter(q => q.status === 'completada').length;
+
   const funnelData = [
-    { stage: 'Recibidas', count: 48, pct: 100 },
-    { stage: 'Respondidas', count: 42, pct: 87.5 },
-    { stage: 'En negociación', count: 28, pct: 58.3 },
-    { stage: 'Aprobadas', count: 20, pct: 41.7 },
-    { stage: 'Completadas', count: 18, pct: 37.5 },
+    { stage: 'Recibidas', count: total, pct: 100 },
+    { stage: 'Respondidas', count: responded, pct: total ? Math.round(responded/total*100) : 0 },
+    { stage: 'En negociación', count: negotiating, pct: total ? Math.round(negotiating/total*100) : 0 },
+    { stage: 'Aprobadas', count: approved, pct: total ? Math.round(approved/total*100) : 0 },
+    { stage: 'Completadas', count: completed, pct: total ? Math.round(completed/total*100) : 0 },
   ];
 
-  const rejectionData = [
-    { name: 'Precio alto', value: 40 },
-    { name: 'Timeline largo', value: 20 },
-    { name: 'Cambió de opinión', value: 15 },
-    { name: 'Sin respuesta', value: 15 },
-    { name: 'Otro proveedor', value: 10 },
-  ];
+  // Rejection reasons from real data
+  const rejected = quotes.filter(q => q.status === 'rechazada');
+  const reasonCounts: Record<string, number> = {};
+  rejected.forEach(q => { const r = q.rejectionReason || 'Sin motivo'; reasonCounts[r] = (reasonCounts[r] || 0) + 1; });
+  const rejectionData = Object.entries(reasonCounts).map(([name, value]) => ({ name, value: rejected.length ? Math.round(value/rejected.length*100) : 0 })).sort((a,b) => b.value - a.value).slice(0, 5);
+  if (rejectionData.length === 0) rejectionData.push({ name: 'Sin datos', value: 100 });
 
-  const productData = [
-    { name: 'Tabla charcutería', pct: 38 },
-    { name: 'Servicio grabado', pct: 22 },
-    { name: 'Tabla de picar', pct: 18 },
-    { name: 'Tabla decoración', pct: 12 },
-    { name: 'Caja personalizada', pct: 10 },
-  ];
+  // Most quoted product types from real data
+  const typeCounts: Record<string, number> = {};
+  quotes.forEach(q => q.pieces.forEach(p => { typeCounts[p.type] = (typeCounts[p.type] || 0) + p.quantity; }));
+  const totalPieces = Object.values(typeCounts).reduce((s,v) => s+v, 0) || 1;
+  const productData = Object.entries(typeCounts).map(([name, count]) => ({ name, pct: Math.round(count/totalPieces*100) })).sort((a,b) => b.pct - a.pct).slice(0, 5);
 
-  const woodData = [
-    { name: 'Parota', pct: 45 },
-    { name: 'Nogal', pct: 25 },
-    { name: 'Cedro', pct: 15 },
-    { name: 'Combinación', pct: 10 },
-    { name: 'Encino', pct: 5 },
-  ];
+  // Most requested woods
+  const woodCounts: Record<string, number> = {};
+  quotes.forEach(q => q.pieces.forEach(p => { if (p.wood) woodCounts[p.wood] = (woodCounts[p.wood] || 0) + p.quantity; }));
+  const totalWood = Object.values(woodCounts).reduce((s,v) => s+v, 0) || 1;
+  const woodData = Object.entries(woodCounts).map(([name, count]) => ({ name, pct: Math.round(count/totalWood*100) })).sort((a,b) => b.pct - a.pct).slice(0, 5);
 
-  const clientTypeData = [
-    { name: 'Corporativo/Evento', pct: 42, ticket: '$12,400' },
-    { name: 'Personal/Regalo', pct: 35, ticket: '$1,800' },
-    { name: 'Restaurante/Volumen', pct: 15, ticket: '$28,000' },
-    { name: 'Decorativo', pct: 8, ticket: '$2,200' },
-  ];
+  // Avg response time (hours between creation and first admin message)
+  const responseTimes: number[] = [];
+  quotes.forEach(q => {
+    const adminMsg = q.messages.find(m => m.sender === 'admin');
+    if (adminMsg) responseTimes.push(hoursAgo(q.date) - hoursAgo(adminMsg.date));
+  });
+  const avgResponseHours = responseTimes.length ? Math.round(responseTimes.reduce((s,v)=>s+v,0) / responseTimes.length * 10) / 10 : 0;
+
+  // Completed value
+  const completedValue = quotes.filter(q => q.status === 'completada').reduce((s, q) => s + getQuoteTotal(q), 0);
+
+  // Quote vs catalog ratio
+  const quoteRevenue = quotes.filter(q => ACTIVE_STATUSES.includes(q.status) || q.status === 'completada').reduce((s, q) => s + getQuoteTotal(q), 0);
+
+  const hasData = total > 0;
 
   return (
     <div className="space-y-6">
@@ -1073,17 +1059,21 @@ const AnalyticsTab: React.FC = () => {
           ))}
         </div>
         <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-          <p className="text-xs text-blue-700">💡 La mayor pérdida es de "Respondidas" a "En negociación" (29.2%). Posible causa: precio alto en primera cotización. Sugerencia: Enviar opciones de precio (básico/premium).</p>
+          {hasData ? (
+            <p className="text-xs text-blue-700">💡 {funnelData[4].pct > 30 ? `Buena tasa de conversión (${funnelData[4].pct}%). ` : `Tasa de conversión: ${funnelData[4].pct}%. `}{rejected.length > 0 ? `Principal motivo de rechazo: ${rejectionData[0]?.name || 'N/A'}.` : 'Aún sin rechazos registrados.'}</p>
+          ) : (
+            <p className="text-xs text-blue-700">💡 Los datos del funnel se poblarán conforme recibas y gestiones cotizaciones.</p>
+          )}
         </div>
       </div>
 
       {/* Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Tiempo promedio respuesta', value: '4.2 horas' },
-          { label: 'Tiempo cierre (cot→pedido)', value: '12 días' },
-          { label: 'Valor completadas (periodo)', value: '$68,400' },
-          { label: 'Ingresos cot. vs catálogo', value: '22%' },
+          { label: 'Tiempo promedio respuesta', value: avgResponseHours ? `${avgResponseHours}h` : '—' },
+          { label: 'Cotizaciones completadas', value: String(completed) },
+          { label: 'Valor completadas', value: completedValue ? fmt(completedValue) : '—' },
+          { label: 'Tasa conversión', value: total ? `${funnelData[4].pct}%` : '—' },
         ].map(m => (
           <div key={m.label} className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
             <p className="text-lg text-wood-900">{m.value}</p>
@@ -1135,6 +1125,9 @@ const AnalyticsTab: React.FC = () => {
         {/* Most Requested Woods */}
         <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
           <h5 className="text-xs text-wood-900 mb-4">Maderas Más Solicitadas</h5>
+          {woodData.length === 0 ? (
+            <p className="text-xs text-wood-400 text-center py-8">Sin datos aún</p>
+          ) : (
           <div className="space-y-2">
             {woodData.map((w, i) => (
               <div key={w.name}>
@@ -1148,28 +1141,34 @@ const AnalyticsTab: React.FC = () => {
               </div>
             ))}
           </div>
+          )}
         </div>
 
-        {/* Client Type */}
+        {/* Summary */}
         <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
-          <h5 className="text-xs text-wood-900 mb-4">Tipo de Cliente que Cotiza</h5>
-          <div className="space-y-3">
-            {clientTypeData.map(c => (
-              <div key={c.name} className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-wood-700">{c.name}</p>
-                  <p className="text-[10px] text-wood-400">{c.pct}% de cotizaciones</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-wood-900">{c.ticket}</p>
-                  <p className="text-[10px] text-wood-400">ticket prom.</p>
-                </div>
+          <h5 className="text-xs text-wood-900 mb-4">Resumen</h5>
+          {!hasData ? (
+            <p className="text-xs text-wood-400 text-center py-8">Aún no hay suficientes cotizaciones para generar análisis detallado. Los datos se poblarán conforme se reciban cotizaciones.</p>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-wood-600">Total cotizaciones</span>
+                <span className="text-wood-900 font-bold">{total}</span>
               </div>
-            ))}
-            <div className="p-2 bg-green-50 rounded-lg mt-2">
-              <p className="text-[10px] text-green-700">← Restaurante/Volumen tiene el mayor potencial ($28,000 ticket promedio)</p>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-wood-600">Valor total pipeline</span>
+                <span className="text-wood-900 font-bold">{fmt(quoteRevenue)}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-wood-600">Rechazadas</span>
+                <span className="text-wood-900">{rejected.length}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-wood-600">Productos únicos cotizados</span>
+                <span className="text-wood-900">{Object.keys(typeCounts).length}</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

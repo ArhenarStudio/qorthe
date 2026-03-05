@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Save, Loader2, RotateCcw, Plus, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Save, Loader2, RotateCcw, Plus, Trash2, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Edit3, GripVertical } from 'lucide-react';
 import { FullQuoteConfig, DEFAULT_FULL_CONFIG } from '@/components/quote/quoteConfig';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -467,39 +467,201 @@ function DescuentosSection({ config, onChange }: { config: FullQuoteConfig; onCh
 // ── BUNDLES ─────────────────────────────────────────────────
 
 function BundlesSection({ config, onChange }: { config: FullQuoteConfig; onChange: (p: Partial<FullQuoteConfig>) => void }) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newBundle, setNewBundle] = useState({ name: '', desc: '', segment: '', discountPercent: 10 });
+
+  const handleAdd = () => {
+    if (!newBundle.name.trim()) return;
+    const id = `bundle-${Date.now()}`;
+    onChange({
+      bundles: [...config.bundles, {
+        id,
+        name: newBundle.name,
+        desc: newBundle.desc,
+        segment: newBundle.segment,
+        discountPercent: newBundle.discountPercent,
+        enabled: true,
+        items: [],
+      }],
+    });
+    setNewBundle({ name: '', desc: '', segment: '', discountPercent: 10 });
+    setShowAddForm(false);
+    setExpandedId(id);
+  };
+
+  const handleDelete = (idx: number) => {
+    if (!confirm(`¿Eliminar paquete "${config.bundles[idx].name}"?`)) return;
+    onChange({ bundles: config.bundles.filter((_, i) => i !== idx) });
+  };
+
+  const updateBundle = (idx: number, updates: Partial<FullQuoteConfig['bundles'][0]>) => {
+    const arr = [...config.bundles];
+    arr[idx] = { ...arr[idx], ...updates };
+    onChange({ bundles: arr });
+  };
+
+  const addItem = (bundleIdx: number) => {
+    const bundle = config.bundles[bundleIdx];
+    updateBundle(bundleIdx, {
+      items: [...bundle.items, { category: 'madera' as const, type: 'Tabla de picar', quantity: 1 }],
+    });
+  };
+
+  const updateItem = (bundleIdx: number, itemIdx: number, updates: Partial<FullQuoteConfig['bundles'][0]['items'][0]>) => {
+    const bundle = config.bundles[bundleIdx];
+    const items = [...bundle.items];
+    items[itemIdx] = { ...items[itemIdx], ...updates };
+    updateBundle(bundleIdx, { items });
+  };
+
+  const removeItem = (bundleIdx: number, itemIdx: number) => {
+    const bundle = config.bundles[bundleIdx];
+    updateBundle(bundleIdx, { items: bundle.items.filter((_, i) => i !== itemIdx) });
+  };
+
+  const allProducts = [...config.woodProducts, ...config.textileProducts].filter(p => p.enabled);
+  const categoryOptions = [
+    { value: 'madera', label: 'Madera' },
+    { value: 'textil', label: 'Textil' },
+    { value: 'grabado', label: 'Grabado' },
+  ];
+
   return (
     <div className="space-y-6">
-      <SectionTitle title="Paquetes Predefinidos" subtitle="Activa/desactiva paquetes y ajusta descuentos" />
+      <SectionTitle title="Paquetes Predefinidos" subtitle="Crea, edita y gestiona paquetes con descuento para el cotizador" />
+
+      {/* Bundle list */}
       <div className="space-y-3">
-        {config.bundles.map((b, i) => (
-          <div key={i} className="px-4 py-4 bg-sand-50 dark:bg-wood-900/50 rounded-xl space-y-3">
-            <div className="flex items-center gap-4">
-              <EnableToggle enabled={b.enabled} onChange={(v) => {
-                const arr = [...config.bundles]; arr[i] = { ...b, enabled: v }; onChange({ bundles: arr });
-              }} />
-              <div className="flex-1 min-w-0">
-                <span className="font-bold text-sm text-wood-900 dark:text-sand-100">{b.name}</span>
-                <span className="text-xs text-wood-400 ml-2">{b.segment}</span>
+        {config.bundles.map((b, i) => {
+          const isExpanded = expandedId === b.id;
+          return (
+            <div key={b.id} className="bg-sand-50 dark:bg-wood-900/50 rounded-xl border border-wood-100 dark:border-wood-800 overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center gap-3 px-4 py-3">
+                <EnableToggle enabled={b.enabled} onChange={(v) => updateBundle(i, { enabled: v })} />
+                <button onClick={() => setExpandedId(isExpanded ? null : b.id)} className="flex-1 flex items-center gap-3 text-left min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <span className="font-bold text-sm text-wood-900 dark:text-sand-100 block truncate">{b.name}</span>
+                    <span className="text-[10px] text-wood-400">{b.segment || 'Sin segmento'} · {b.items.length} items</span>
+                  </div>
+                  {isExpanded ? <ChevronUp className="w-4 h-4 text-wood-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-wood-400 shrink-0" />}
+                </button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <input type="number" value={b.discountPercent}
+                    onChange={(e) => updateBundle(i, { discountPercent: Number(e.target.value) })}
+                    className="w-14 px-2 py-1 text-center text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded focus:border-accent-gold outline-none" />
+                  <span className="text-[10px] text-wood-400">%</span>
+                </div>
+                <button onClick={() => handleDelete(i)} className="p-1.5 text-wood-300 hover:text-red-500 shrink-0 transition-colors"><Trash2 className="w-4 h-4" /></button>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-[10px] text-wood-400">Descuento</span>
-                <input type="number" value={b.discountPercent}
-                  onChange={(e) => {
-                    const arr = [...config.bundles]; arr[i] = { ...b, discountPercent: Number(e.target.value) }; onChange({ bundles: arr });
-                  }}
-                  className="w-14 px-2 py-1 text-center text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded focus:border-accent-gold outline-none" />
-                <span className="text-[10px] text-wood-400">%</span>
-              </div>
+
+              {/* Expanded content */}
+              {isExpanded && (
+                <div className="px-4 pb-4 space-y-4 border-t border-wood-100 dark:border-wood-800 pt-3">
+                  {/* Editable fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Nombre</label>
+                      <input value={b.name} onChange={(e) => updateBundle(i, { name: e.target.value })}
+                        className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Segmento</label>
+                      <input value={b.segment} onChange={(e) => updateBundle(i, { segment: e.target.value })}
+                        placeholder="B2B, Novios, Restaurantes..."
+                        className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Descuento %</label>
+                      <input type="number" value={b.discountPercent} onChange={(e) => updateBundle(i, { discountPercent: Number(e.target.value) })}
+                        className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Descripción</label>
+                    <input value={b.desc} onChange={(e) => updateBundle(i, { desc: e.target.value })}
+                      placeholder="Describe el paquete..."
+                      className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                  </div>
+
+                  {/* Items */}
+                  <div>
+                    <label className="text-[10px] font-bold text-wood-400 uppercase block mb-2">Productos del paquete</label>
+                    <div className="space-y-2">
+                      {b.items.map((item, j) => (
+                        <div key={j} className="flex items-center gap-2 bg-white dark:bg-wood-800 rounded-lg p-2 border border-wood-100 dark:border-wood-700">
+                          <select value={item.category} onChange={(e) => {
+                            const cat = e.target.value as 'madera' | 'textil' | 'grabado';
+                            const defaultType = cat === 'madera' ? 'Tabla de picar' : cat === 'textil' ? 'Tote bag' : 'Servicio de Grabado';
+                            updateItem(i, j, { category: cat, type: defaultType });
+                          }} className="text-xs bg-sand-50 dark:bg-wood-900 border border-wood-200 dark:border-wood-600 rounded px-2 py-1.5 outline-none">
+                            {categoryOptions.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                          </select>
+                          <select value={item.type} onChange={(e) => updateItem(i, j, { type: e.target.value })}
+                            className="flex-1 text-xs bg-sand-50 dark:bg-wood-900 border border-wood-200 dark:border-wood-600 rounded px-2 py-1.5 outline-none min-w-0">
+                            {allProducts.filter(p => p.category === item.category).map(p => <option key={p.type} value={p.type}>{p.label}</option>)}
+                            {item.category === 'grabado' && <option value="Servicio de Grabado">Servicio de Grabado</option>}
+                          </select>
+                          <span className="text-[10px] text-wood-400 shrink-0">×</span>
+                          <input type="number" min={1} value={item.quantity} onChange={(e) => updateItem(i, j, { quantity: Number(e.target.value) || 1 })}
+                            className="w-14 text-center text-xs bg-sand-50 dark:bg-wood-900 border border-wood-200 dark:border-wood-600 rounded px-1 py-1.5 outline-none" />
+                          <button onClick={() => removeItem(i, j)} className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      ))}
+                    </div>
+                    <button onClick={() => addItem(i)} className="flex items-center gap-1.5 text-xs font-bold text-accent-gold hover:underline mt-2">
+                      <Plus className="w-3.5 h-3.5" /> Agregar producto al paquete
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-            <p className="text-xs text-wood-500 pl-10">{b.desc}</p>
-            <div className="pl-10 text-[10px] text-wood-400">
-              {b.items.map((item, j) => (
-                <span key={j}>{j > 0 ? ' + ' : ''}{item.quantity}× {item.type}</span>
-              ))}
+          );
+        })}
+      </div>
+
+      {/* Add new bundle */}
+      {showAddForm ? (
+        <div className="bg-white dark:bg-wood-900 rounded-xl border border-accent-gold/30 p-4 space-y-3">
+          <h4 className="text-sm font-medium text-wood-900 dark:text-sand-100">Nuevo Paquete</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Nombre *</label>
+              <input value={newBundle.name} onChange={e => setNewBundle(p => ({ ...p, name: e.target.value }))}
+                placeholder="Kit Corporativo"
+                className="w-full px-3 py-2 text-sm bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Segmento</label>
+              <input value={newBundle.segment} onChange={e => setNewBundle(p => ({ ...p, segment: e.target.value }))}
+                placeholder="B2B / Empresas"
+                className="w-full px-3 py-2 text-sm bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
             </div>
           </div>
-        ))}
-      </div>
+          <div>
+            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Descripción</label>
+            <input value={newBundle.desc} onChange={e => setNewBundle(p => ({ ...p, desc: e.target.value }))}
+              placeholder="10 tablas con logo + 10 tote bags"
+              className="w-full px-3 py-2 text-sm bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+          </div>
+          <div className="flex items-center gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Descuento %</label>
+              <input type="number" value={newBundle.discountPercent} onChange={e => setNewBundle(p => ({ ...p, discountPercent: Number(e.target.value) }))}
+                className="w-20 px-3 py-2 text-sm bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+            </div>
+            <div className="flex items-center gap-2 mt-5">
+              <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-xs text-wood-500 hover:text-wood-700">Cancelar</button>
+              <button onClick={handleAdd} disabled={!newBundle.name.trim()} className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50">Crear Paquete</button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setShowAddForm(true)} className="flex items-center gap-2 text-xs font-bold text-accent-gold hover:underline">
+          <Plus className="w-3.5 h-3.5" /> Crear nuevo paquete
+        </button>
+      )}
     </div>
   );
 }
