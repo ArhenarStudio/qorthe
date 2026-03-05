@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Headphones, Search, Clock, CheckCircle, AlertTriangle,
@@ -249,12 +249,32 @@ function MetricsTab() {
 // ===== MAIN =====
 export const HelpDeskPage: React.FC = () => {
 
-  // ── Live data from API ──
+  // ── Live data from APIs ──
   const [liveHelpdesk, setLiveHelpdesk] = useState<any>(null);
+  const [liveTickets, setLiveTickets] = useState<any>(null);
+  const [liveWarranty, setLiveWarranty] = useState<any>(null);
   const [helpdeskLoading, setHelpdeskLoading] = useState(true);
-  useEffect(() => {
-    fetch('/api/admin/helpdesk').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveHelpdesk(d); }).catch(() => {}).finally(() => setHelpdeskLoading(false));
+
+  const refreshData = useCallback(async () => {
+    try {
+      const [hd, tk, wr] = await Promise.all([
+        fetch('/api/admin/helpdesk').then(r => r.ok ? r.json() : null),
+        fetch('/api/admin/tickets').then(r => r.ok ? r.json() : null),
+        fetch('/api/admin/warranty').then(r => r.ok ? r.json() : null),
+      ]);
+      if (hd) setLiveHelpdesk(hd);
+      if (tk) setLiveTickets(tk);
+      if (wr) setLiveWarranty(wr);
+    } catch {} finally { setHelpdeskLoading(false); }
   }, []);
+
+  useEffect(() => { refreshData(); }, [refreshData]);
+
+  // Use live tickets if available
+  const activeTickets = liveTickets?.tickets || [];
+  const warrantyClaims = liveWarranty?.claims || [];
+  const ticketStats = liveTickets?.stats || {};
+  const warrantyStats = liveWarranty?.stats || {};
 
   const [tab, setTab] = useState<HelpTab>('inbox');
   const [search, setSearch] = useState('');

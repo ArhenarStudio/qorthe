@@ -151,23 +151,51 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 
   // --- HANDLERS ---
 
+  // Load real tickets from Supabase
+  useEffect(() => {
+    if (!userEmail) return;
+    async function loadTickets() {
+      try {
+        const res = await fetch(`/api/support?email=${encodeURIComponent(userEmail!)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.tickets?.length) {
+            setTickets(data.tickets.map((t: any) => ({
+              id: `T-${t.ticket_number}`,
+              subject: t.subject,
+              status: t.status,
+              date: new Date(t.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }),
+              lastUpdate: t.status === 'resolved' ? 'Resuelto' : t.status === 'in_progress' ? 'En proceso' : 'Abierto',
+            })));
+          }
+        }
+      } catch {}
+    }
+    loadTickets();
+  }, [userEmail]);
+
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTicket.subject || !newTicket.message) return;
 
     try {
-      const res = await fetch('/api/contact', {
+      // Create real ticket in Supabase
+      const res = await fetch('/api/support', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          _type: 'ticket',
+          email: userEmail,
+          name: userEmail?.split('@')[0],
           subject: newTicket.subject,
           category: newTicket.category,
-          message: newTicket.message,
+          description: newTicket.message,
         }),
       });
 
+      const data = res.ok ? await res.json() : null;
       const ticket = {
-        id: `T-${Math.floor(Math.random() * 10000)}`,
+        id: data?.ticket?.ticket_number ? `T-${data.ticket.ticket_number}` : `T-${Math.floor(Math.random() * 10000)}`,
         subject: newTicket.subject,
         status: 'open',
         date: 'Ahora',
