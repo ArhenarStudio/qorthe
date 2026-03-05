@@ -7,19 +7,38 @@ import {
   Plus, Edit2, Trash2, Copy, ShoppingBag,
   ArrowRight, Package, CheckCircle2, Loader2, Send,
 } from 'lucide-react';
-import { ProductItem, CustomerDetails, DEFAULT_PRODUCT, QuotePiece, BundleTemplate, DEFAULT_ENGRAVING, DEFAULT_TEXTILE } from './types';
+import { ProductItem, CustomerDetails, DEFAULT_PRODUCT, QuotePiece, DEFAULT_ENGRAVING, DEFAULT_TEXTILE } from './types';
+import { QuoteBundleConfig } from './quoteConfig';
 import { QuoteWizardModal } from './QuoteWizardModal';
 import { getProductIcon } from './QuoteIcons';
-import { calculateItemPrice, calculateTotalPrice, formatMXN } from './pricing';
-import { useQuotePricing } from '@/hooks/useQuotePricing';
-import { BUNDLE_TEMPLATES, BUNDLE_ICON_MAP } from './bundles';  // .tsx
+import { calculateItemPrice, calculateTotalPrice, formatMXN, QuotePricingConfig, DEFAULT_PRICING_CONFIG } from './pricing';
+import { useQuoteConfig } from '@/hooks/useQuoteConfig';
+import { BUNDLE_ICON_MAP } from './bundles';
 
 // ── Component ───────────────────────────────────────────────
 
 export const QuoteBuilderModule = () => {
-  const { config: pricingConfig, tierName, tierDiscountPercent, isLoggedIn } = useQuotePricing();
+  const { config: fullConfig, tierName, tierDiscountPercent, isLoggedIn } = useQuoteConfig();
+
+  // Derive pricing config from full config for the pricing engine
+  const pricingConfig: QuotePricingConfig = {
+    wood_prices_m2: Object.fromEntries(fullConfig.woodOptions.filter(w => w.enabled).map(w => [w.label, w.priceM2])),
+    textile_base_prices: DEFAULT_PRICING_CONFIG.textile_base_prices,
+    engraving_prices: Object.fromEntries(fullConfig.engravingPrices.map(e => [e.complexity, e.price])),
+    engraving_zone_extra: fullConfig.engravingZoneExtra,
+    engraving_qr_extra: fullConfig.engravingQrExtra,
+    textile_technique_prices: Object.fromEntries(fullConfig.textileTechniques.filter(t => t.enabled).map(t => [t.label, t.price])),
+    textile_full_panel_extra: fullConfig.textileFullPanelExtra,
+    wood_min_price: fullConfig.woodMinPrice,
+    wood_thickness_standard: fullConfig.woodThicknessStandard,
+    volume_discounts: fullConfig.volumeDiscounts,
+    tier_discount_enabled: fullConfig.tierDiscountEnabled,
+  };
+
+  // Filter enabled bundles
+  const enabledBundles = fullConfig.bundles.filter(b => b.enabled);
   const [items, setItems] = useState<ProductItem[]>([]);
-  const [activeBundle, setActiveBundle] = useState<BundleTemplate | null>(null);
+  const [activeBundle, setActiveBundle] = useState<QuoteBundleConfig | null>(null);
   const [editingItem, setEditingItem] = useState<ProductItem | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -58,18 +77,15 @@ export const QuoteBuilderModule = () => {
 
   // ── Bundle handler ──────────────────────────────────────
 
-  const handleApplyBundle = (bundle: BundleTemplate) => {
+  const handleApplyBundle = (bundle: QuoteBundleConfig) => {
     const bundleItems: ProductItem[] = bundle.items.map((bi) => ({
       id: uuidv4(),
       category: bi.category,
-      type: bi.type,
-      woods: bi.woods || [],
-      dimensions: bi.dimensions || { length: 40, width: 25, thickness: 3 },
-      textile: bi.textile ? { ...DEFAULT_TEXTILE, ...bi.textile } : undefined,
+      type: bi.type as ProductItem['type'],
+      woods: (bi.woods || []) as ProductItem['woods'],
+      dimensions: { length: 40, width: 25, thickness: 3 },
       quantity: bi.quantity,
-      engraving: bi.engraving
-        ? { ...DEFAULT_ENGRAVING, ...bi.engraving }
-        : { ...DEFAULT_ENGRAVING },
+      engraving: { ...DEFAULT_ENGRAVING },
       notes: bi.notes,
     }));
     setItems(bundleItems);
@@ -296,8 +312,8 @@ export const QuoteBuilderModule = () => {
                 Selecciona un paquete predise\u00f1ado con descuento. Puedes personalizar cada pieza despu\u00e9s.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {BUNDLE_TEMPLATES.map((bundle) => {
-                  const BIcon = BUNDLE_ICON_MAP[bundle.id];
+                {enabledBundles.map((bundle) => {
+                  const BIcon = BUNDLE_ICON_MAP[bundle.id as keyof typeof BUNDLE_ICON_MAP] || Package;
                   return (
                     <button
                       key={bundle.id}
