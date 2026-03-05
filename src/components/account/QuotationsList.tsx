@@ -291,11 +291,12 @@ export const QuotationsList = () => {
                     {/* Actions */}
                     <div className="flex flex-wrap gap-2 pt-2">
                       <a
-                        href="/quote"
+                        href={`/quote/pdf?id=${quote.id}`}
+                        target="_blank"
                         className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 dark:bg-sand-100 text-sand-100 dark:text-wood-900 rounded-lg text-xs font-bold uppercase tracking-wider hover:shadow-md transition-all"
                       >
-                        <Send className="w-3.5 h-3.5" />
-                        Nueva Cotización
+                        <FileText className="w-3.5 h-3.5" />
+                        Ver PDF
                       </a>
                       <button
                         onClick={() => {
