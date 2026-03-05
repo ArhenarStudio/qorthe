@@ -6,8 +6,8 @@ import { Package, ChevronRight, CheckCircle, Clock, Truck, RefreshCcw, ExternalL
 import { InvoiceRequestModal } from './billing/InvoiceRequestModal';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Enhanced Mock Data with Customizations and Timeline
-const MOCK_ORDERS = [
+// MOCK_ORDERS removed — component uses live data from /api/account/orders
+const _MOCK_ORDERS_REMOVED = [
   {
     id: "ORD-8921",
     date: "10 Feb 2026",

@@ -285,7 +285,7 @@ export const Wallet = () => {
           {/* Hover Actions */}
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 z-20">
              <button 
-               onClick={() => openEditModal({ last4: '4242', holder: 'ALEJANDRO GARCIA', expiry: '12/28' })}
+               onClick={() => openEditModal({ last4: '4242', holder: (medusaCustomer?.first_name ? [medusaCustomer.first_name, medusaCustomer.last_name].filter(Boolean).join(' ') : user?.user_metadata?.full_name || 'TITULAR').toUpperCase(), expiry: '12/28' })}
                className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-lg text-xs font-bold uppercase tracking-widest transition-colors"
              >
                Editar
@@ -326,7 +326,7 @@ export const Wallet = () => {
           <div className="flex justify-between items-end relative z-10 opacity-80">
             <div>
               <p className="text-[9px] uppercase tracking-widest opacity-50 mb-1">Titular</p>
-              <p className="font-medium text-sm tracking-widest">ALEJANDRO GARCIA</p>
+              <p className="font-medium text-sm tracking-widest">{(medusaCustomer?.first_name ? [medusaCustomer.first_name, medusaCustomer.last_name].filter(Boolean).join(' ') : user?.user_metadata?.full_name || 'TITULAR').toUpperCase()}</p>
             </div>
             <div>
               <p className="text-[9px] uppercase tracking-widest opacity-50 mb-1 text-right">Expira</p>
@@ -336,7 +336,7 @@ export const Wallet = () => {
 
           <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 z-20">
              <button 
-               onClick={() => openEditModal({ last4: '8821', holder: 'ALEJANDRO GARCIA', expiry: '09/27' })}
+               onClick={() => openEditModal({ last4: '8821', holder: (medusaCustomer?.first_name ? [medusaCustomer.first_name, medusaCustomer.last_name].filter(Boolean).join(' ') : user?.user_metadata?.full_name || 'TITULAR').toUpperCase(), expiry: '09/27' })}
                className="px-4 py-2 bg-wood-900/10 hover:bg-wood-900/20 backdrop-blur-md rounded-lg text-xs font-bold uppercase tracking-widest transition-colors text-wood-900"
              >
                Editar
