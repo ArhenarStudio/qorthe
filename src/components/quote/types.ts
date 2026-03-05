@@ -1,56 +1,189 @@
-export type ProductType = 
-  | 'Tabla de decoración'
+// ═══════════════════════════════════════════════════════════════
+// COTIZADOR PRO — Types
+// Fase 10: Rediseño completo con línea madera + textil
+// ═══════════════════════════════════════════════════════════════
+
+// ── Product Categories ──────────────────────────────────────
+
+export type ProductCategory = 'madera' | 'textil' | 'grabado';
+
+export type WoodProductType =
   | 'Tabla de picar'
   | 'Tabla de charcutería'
+  | 'Tabla de decoración'
   | 'Plato decorativo'
-  | 'Caja personalizada'
-  | 'Servicio de Grabado'
-  | 'Otro';
+  | 'Caja personalizada';
 
-export type WoodType = 
+export type TextileProductType =
+  | 'Tote bag'
+  | 'Mandil de cocina'
+  | 'Servilletas'
+  | 'Funda de cojín';
+
+export type ServiceProductType = 'Servicio de Grabado';
+
+export type ProductType = WoodProductType | TextileProductType | ServiceProductType;
+
+// ── Materials ───────────────────────────────────────────────
+
+export type WoodType =
   | 'Cedro'
   | 'Nogal'
   | 'Encino'
   | 'Parota'
   | 'Combinación';
 
-export type UsageType = 
-  | 'Decorativo'
-  | 'Funcional (cocina)'
-  | 'Evento / regalo corporativo'
-  | 'Restaurante / volumen alto';
+export type TextileColor =
+  | 'Natural'
+  | 'Negro'
+  | 'Blanco'
+  | 'Azul Marino'
+  | 'Terracota'
+  | 'Verde Olivo';
+
+export type TextileTechnique =
+  | 'Sublimación'
+  | 'Vinilo HTV'
+  | 'Transfer';
+
+// ── Engraving ───────────────────────────────────────────────
+
+export type EngravingType =
+  | 'Texto'
+  | 'Logotipo'
+  | 'Imagen personalizada'
+  | 'Código QR'
+  | 'Combinación';
+
+export type EngravingComplexity = 'Básico' | 'Intermedio' | 'Detallado' | 'Premium';
+
+export type EngravingZone = 'Centro' | 'Esquina' | 'Borde superior' | 'Reverso' | 'Multi-zona';
 
 export interface EngravingConfig {
   enabled: boolean;
-  type: 'Texto' | 'Logotipo' | 'Imagen personalizada' | 'Combinación';
-  zones: string[];
+  type: EngravingType;
+  zones: EngravingZone[];
   customText?: string;
-  complexity: 'Básico' | 'Intermedio' | 'Detallado';
-  file?: File | null; // In a real app, this would be handled differently
+  qrUrl?: string;
+  complexity: EngravingComplexity;
+  file?: File | null;
+  fileName?: string;
 }
+
+// ── Textile Customization ───────────────────────────────────
+
+export interface TextileConfig {
+  technique: TextileTechnique;
+  color: TextileColor;
+  printZone: 'Frente' | 'Reverso' | 'Bolsillo' | 'Panel completo';
+  customText?: string;
+  file?: File | null;
+  fileName?: string;
+}
+
+// ── Product Item ────────────────────────────────────────────
 
 export interface ProductItem {
   id: string;
+  category: ProductCategory;
   type: ProductType;
-  customType?: string;
+  // Wood fields
   woods: WoodType[];
   primaryWood?: WoodType;
   secondaryWood?: WoodType;
-  woodProportion?: number; // 0-100
   dimensions: {
     length: number;
     width: number;
     thickness: number;
   };
+  // Textile fields
+  textile?: TextileConfig;
+  // Engraving service fields
+  materialToEngrave?: string;
+  // Shared
   quantity: number;
-  usage: UsageType;
   engraving: EngravingConfig;
-  materialToEngrave?: string; // For 'Servicio de Grabado'
+  notes?: string;
 }
+
+// ── Customer ────────────────────────────────────────────────
 
 export interface CustomerDetails {
   name: string;
   company?: string;
   phone: string;
   email: string;
+  notes?: string;
 }
+
+// ── Wizard Step Definition ──────────────────────────────────
+
+export interface WizardStep {
+  id: string;
+  label: string;
+  title: string;
+  subtitle: string;
+}
+
+// ── Quote Submission ────────────────────────────────────────
+
+export interface QuoteSubmission {
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  project_name: string;
+  pieces: QuotePiece[];
+  subtotal: number;
+  total: number;
+  timeline: string;
+  notes?: string;
+}
+
+export interface QuotePiece {
+  type: ProductType;
+  category: ProductCategory;
+  material: string;
+  dimensions?: string;
+  quantity: number;
+  engraving?: {
+    type: EngravingType;
+    complexity: EngravingComplexity;
+    zones: string[];
+    text?: string;
+    hasFile: boolean;
+  };
+  textile?: {
+    technique: TextileTechnique;
+    color: TextileColor;
+    printZone: string;
+    hasFile: boolean;
+  };
+  unitPrice: number;
+  lineTotal: number;
+  notes?: string;
+}
+
+// ── Defaults ────────────────────────────────────────────────
+
+export const DEFAULT_ENGRAVING: EngravingConfig = {
+  enabled: false,
+  type: 'Texto',
+  zones: ['Centro'],
+  complexity: 'Básico',
+};
+
+export const DEFAULT_TEXTILE: TextileConfig = {
+  technique: 'Sublimación',
+  color: 'Natural',
+  printZone: 'Frente',
+};
+
+export const DEFAULT_PRODUCT: ProductItem = {
+  id: '',
+  category: 'madera',
+  type: 'Tabla de picar',
+  woods: [],
+  dimensions: { length: 40, width: 25, thickness: 3 },
+  quantity: 1,
+  engraving: { ...DEFAULT_ENGRAVING },
+};

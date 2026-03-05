@@ -2,8 +2,11 @@
 
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, X, Image as ImageIcon, Sparkles, LayoutTemplate, Type, MousePointer2 } from 'lucide-react';
-import { EngravingConfig } from './types';
+import { Upload, X } from 'lucide-react';
+import { EngravingConfig, EngravingType, EngravingComplexity, EngravingZone } from './types';
+import { GrabadoIcon, QRIcon } from './QuoteIcons';
+import { ENGRAVING_PRICES } from './pricing';
+import { Type, Image as ImageIcon, Sparkles, LayoutTemplate } from 'lucide-react';
 
 interface EngravingConfiguratorProps {
   config: EngravingConfig;
@@ -11,83 +14,89 @@ interface EngravingConfiguratorProps {
   forceEnabled?: boolean;
 }
 
-// Card Selector Component moved outside
-const ConfigCard = ({ icon: Icon, label, isActive, onClick, subtext }: any) => (
-  <motion.button
-    whileHover={{ y: -2 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={onClick}
-    className={`relative p-4 rounded-xl text-left border transition-all h-full flex flex-col justify-between ${
-      isActive 
-        ? 'bg-wood-900 text-sand-100 border-wood-900 dark:bg-sand-100 dark:text-wood-900 dark:border-sand-100 shadow-lg' 
-        : 'bg-white dark:bg-wood-900/40 border-wood-200 dark:border-wood-700 hover:border-wood-400 text-wood-600 dark:text-sand-300'
-    }`}
-  >
-    <div className={`p-2 rounded-full w-fit mb-3 ${isActive ? 'bg-white/10' : 'bg-wood-100 dark:bg-wood-800'}`}>
-      <Icon className="w-5 h-5" />
-    </div>
-    <div>
-      <span className="block font-bold text-sm tracking-wide mb-1">{label}</span>
-      {subtext && <span className="text-[10px] opacity-70 uppercase tracking-wider block">{subtext}</span>}
-    </div>
-  </motion.button>
-);
+const TYPES: { value: EngravingType; label: string; desc: string; Icon: React.FC<any> }[] = [
+  { value: 'Texto', label: 'Texto', desc: 'Nombres, frases', Icon: Type },
+  { value: 'Logotipo', label: 'Logotipo', desc: 'SVG / Vector', Icon: LayoutTemplate },
+  { value: 'Imagen personalizada', label: 'Imagen', desc: 'Foto / Ilustración', Icon: ImageIcon },
+  { value: 'Código QR', label: 'Código QR', desc: 'URL, menú, playlist', Icon: QRIcon },
+  { value: 'Combinación', label: 'Mixto', desc: 'Diseño complejo', Icon: Sparkles },
+];
 
-export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({ config, onChange, forceEnabled = false }) => {
+const COMPLEXITIES: { value: EngravingComplexity; label: string }[] = [
+  { value: 'Básico', label: 'Básico' },
+  { value: 'Intermedio', label: 'Intermedio' },
+  { value: 'Detallado', label: 'Detallado' },
+  { value: 'Premium', label: 'Premium' },
+];
+
+const ZONES: EngravingZone[] = ['Centro', 'Esquina', 'Borde superior', 'Reverso', 'Multi-zona'];
+
+export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
+  config,
+  onChange,
+  forceEnabled = false,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isEnabled = forceEnabled || config.enabled;
 
   const handleToggle = () => {
     if (forceEnabled) return;
     onChange({ ...config, enabled: !config.enabled });
   };
 
-  const handleZoneToggle = (zone: string) => {
+  const handleZoneToggle = (zone: EngravingZone) => {
     const zones = config.zones.includes(zone)
       ? config.zones.filter((z) => z !== zone)
       : [...config.zones, zone];
-    onChange({ ...config, zones });
+    onChange({ ...config, zones: zones.length > 0 ? zones : [zone] });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onChange({ ...config, file: e.target.files[0] });
+    if (e.target.files?.[0]) {
+      onChange({ ...config, file: e.target.files[0], fileName: e.target.files[0].name });
     }
   };
 
-  const isEnabled = forceEnabled || config.enabled;
-
   return (
-    <div className="pt-8 border-t border-dashed border-wood-300 dark:border-wood-700/50">
-      
-      {/* Header / Toggle */}
-      <div 
-        className={`flex items-center justify-between group select-none mb-6 ${forceEnabled ? 'cursor-default' : 'cursor-pointer'}`}
-        onClick={handleToggle}
-      >
-        <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isEnabled ? 'bg-accent-gold text-white shadow-lg shadow-accent-gold/20' : 'bg-wood-100 dark:bg-wood-800 text-wood-400'}`}>
-                <Sparkles className="w-6 h-6" />
+    <div className="space-y-6">
+      {/* Toggle Header (hidden if forceEnabled) */}
+      {!forceEnabled && (
+        <button
+          onClick={handleToggle}
+          className="w-full flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                isEnabled
+                  ? 'bg-accent-gold text-wood-900 shadow-lg shadow-accent-gold/20'
+                  : 'bg-wood-100 dark:bg-wood-800 text-wood-400'
+              }`}
+            >
+              <GrabadoIcon size={20} />
             </div>
-            <div>
-                <h4 className="font-serif text-xl font-medium text-wood-900 dark:text-sand-100 group-hover:text-accent-gold transition-colors">
-                    Personalización Láser
-                </h4>
-                <p className="text-xs text-wood-500 font-medium uppercase tracking-wider">
-                    {isEnabled ? 'Activado' : 'Añadir grabado personalizado'}
-                </p>
+            <div className="text-left">
+              <h4 className="font-serif text-lg text-wood-900 dark:text-sand-100 group-hover:text-accent-gold transition-colors">
+                Grabado Láser
+              </h4>
+              <p className="text-[11px] text-wood-500">
+                {isEnabled ? 'Activado' : 'Añadir personalización'}
+              </p>
             </div>
-        </div>
-        
-        {!forceEnabled && (
-            <div className={`w-14 h-8 rounded-full transition-colors duration-300 relative ${isEnabled ? 'bg-wood-900 dark:bg-accent-gold' : 'bg-wood-200 dark:bg-wood-700'}`}>
-                <motion.div
-                    layout
-                    className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md"
-                    animate={{ x: isEnabled ? 24 : 0 }}
-                />
-            </div>
-        )}
-      </div>
+          </div>
+          <div
+            className={`w-12 h-7 rounded-full transition-colors relative ${
+              isEnabled ? 'bg-accent-gold' : 'bg-wood-200 dark:bg-wood-700'
+            }`}
+          >
+            <motion.div
+              layout
+              className="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md"
+              animate={{ x: isEnabled ? 20 : 0 }}
+            />
+          </div>
+        </button>
+      )}
 
       <AnimatePresence>
         {isEnabled && (
@@ -97,139 +106,199 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({ co
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="pl-4 md:pl-16 space-y-8 pb-4">
-              
-              {/* Type Selection Grid */}
+            <div className="space-y-6">
+              {/* Type */}
               <div className="space-y-3">
-                <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest block">Estilo de Grabado</label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <ConfigCard 
-                    icon={Type} 
-                    label="Solo Texto" 
-                    subtext="Nombres / Frases"
-                    isActive={config.type === 'Texto'} 
-                    onClick={() => onChange({ ...config, type: 'Texto' })}
-                  />
-                  <ConfigCard 
-                    icon={LayoutTemplate} 
-                    label="Logotipo" 
-                    subtext="Vector (.SVG, .AI)"
-                    isActive={config.type === 'Logotipo'} 
-                    onClick={() => onChange({ ...config, type: 'Logotipo' })}
-                  />
-                  <ConfigCard 
-                    icon={ImageIcon} 
-                    label="Imagen" 
-                    subtext="Foto / Ilustración"
-                    isActive={config.type === 'Imagen personalizada'} 
-                    onClick={() => onChange({ ...config, type: 'Imagen personalizada' })}
-                  />
-                  <ConfigCard 
-                    icon={Sparkles} 
-                    label="Mixto" 
-                    subtext="Diseño Complejo"
-                    isActive={config.type === 'Combinación'} 
-                    onClick={() => onChange({ ...config, type: 'Combinación' })}
-                  />
+                <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
+                  Estilo de Grabado
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  {TYPES.map((t) => {
+                    const sel = config.type === t.value;
+                    return (
+                      <button
+                        key={t.value}
+                        onClick={() => onChange({ ...config, type: t.value })}
+                        className={`p-3 rounded-xl border-2 text-center transition-all ${
+                          sel
+                            ? 'bg-wood-900 dark:bg-sand-100 border-wood-900 dark:border-sand-100 text-sand-100 dark:text-wood-900 shadow-lg'
+                            : 'bg-white dark:bg-wood-900 border-wood-100 dark:border-wood-800 hover:border-wood-300 text-wood-600'
+                        }`}
+                      >
+                        <t.Icon
+                          className={`w-5 h-5 mx-auto mb-1.5 ${sel ? '' : 'text-wood-400'}`}
+                          size={20}
+                        />
+                        <span className="block text-xs font-bold">{t.label}</span>
+                        <span className={`block text-[9px] mt-0.5 ${sel ? 'opacity-70' : 'text-wood-400'}`}>
+                          {t.desc}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Dynamic Content based on Type */}
-              <div className="bg-sand-50 dark:bg-wood-800/50 rounded-xl p-6 border border-wood-100 dark:border-wood-700/50">
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Zone Selector */}
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest block">Ubicación</label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {['Centro', 'Esq. Inferior', 'Borde Sup.', 'Reverso'].map((zone) => (
-                                <button
-                                key={zone}
-                                onClick={() => handleZoneToggle(zone)}
-                                className={`flex items-center gap-2 px-3 py-2 text-xs rounded-lg border transition-all ${
-                                    config.zones.includes(zone)
-                                    ? 'bg-accent-gold/10 border-accent-gold text-wood-900 dark:text-accent-gold font-bold'
-                                    : 'bg-white dark:bg-wood-900 border-wood-200 dark:border-wood-700 text-wood-500'
-                                }`}
-                                >
-                                <div className={`w-1.5 h-1.5 rounded-full ${config.zones.includes(zone) ? 'bg-accent-gold' : 'bg-wood-300'}`} />
-                                {zone}
-                                </button>
-                            ))}
-                        </div>
+              {/* Content area */}
+              <div className="bg-white dark:bg-wood-900/40 rounded-xl p-5 border border-wood-100 dark:border-wood-700/50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Zones */}
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
+                      Ubicación en la pieza
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {ZONES.map((zone) => {
+                        const sel = config.zones.includes(zone);
+                        return (
+                          <button
+                            key={zone}
+                            onClick={() => handleZoneToggle(zone)}
+                            className={`flex items-center gap-2 px-3 py-2 text-xs rounded-lg border transition-all ${
+                              sel
+                                ? 'bg-accent-gold/10 border-accent-gold text-wood-900 dark:text-accent-gold font-bold'
+                                : 'bg-wood-50 dark:bg-wood-800 border-wood-200 dark:border-wood-700 text-wood-500'
+                            }`}
+                          >
+                            <div
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                sel ? 'bg-accent-gold' : 'bg-wood-300'
+                              }`}
+                            />
+                            {zone}
+                          </button>
+                        );
+                      })}
                     </div>
+                    {config.zones.length > 1 && (
+                      <p className="text-[10px] text-accent-gold">
+                        +${50 * (config.zones.length - 1)} por zona adicional
+                      </p>
+                    )}
+                  </div>
 
-                    {/* Inputs */}
-                    <div className="space-y-4">
-                        {(config.type === 'Texto' || config.type === 'Combinación') && (
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest block">Texto a Grabar</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="Escribe aquí..."
-                                    value={config.customText || ''}
-                                    onChange={(e) => onChange({...config, customText: e.target.value})}
-                                    className="w-full bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-600 rounded-lg px-4 py-3 text-sm focus:border-accent-gold outline-none shadow-sm transition-all"
-                                />
-                            </div>
-                        )}
+                  {/* Inputs */}
+                  <div className="space-y-4">
+                    {/* Text input */}
+                    {(config.type === 'Texto' || config.type === 'Combinación') && (
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
+                          Texto a grabar
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Nombre, fecha, frase..."
+                          value={config.customText || ''}
+                          onChange={(e) => onChange({ ...config, customText: e.target.value })}
+                          className="w-full bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-600 rounded-lg px-4 py-3 text-sm focus:border-accent-gold outline-none transition-colors"
+                        />
+                      </div>
+                    )}
 
-                        {(config.type !== 'Texto') && (
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest block">Subir Archivo</label>
-                                <div 
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="border-2 border-dashed border-wood-300 dark:border-wood-600 hover:border-accent-gold dark:hover:border-accent-gold rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-white/50 dark:bg-wood-900/50 min-h-[100px]"
-                                >
-                                    <input 
-                                        ref={fileInputRef}
-                                        type="file" 
-                                        accept=".svg,.png,.jpg,.ai" 
-                                        className="hidden" 
-                                        onChange={handleFileUpload}
-                                    />
-                                    {config.file ? (
-                                        <div className="flex items-center gap-2 text-accent-gold animate-fadeIn">
-                                            <div className="p-2 bg-accent-gold/10 rounded-full">
-                                                <ImageIcon className="w-4 h-4" />
-                                            </div>
-                                            <span className="text-xs font-bold truncate max-w-[120px]">{config.file.name}</span>
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); onChange({...config, file: null}); }}
-                                                className="p-1 hover:bg-red-100 hover:text-red-500 rounded-full text-wood-400 transition-colors"
-                                            >
-                                                <X className="w-3 h-3" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <Upload className="w-5 h-5 text-wood-400 mb-2" />
-                                            <span className="text-[10px] text-wood-500 uppercase font-medium">Click para subir</span>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                 </div>
+                    {/* QR URL input */}
+                    {config.type === 'Código QR' && (
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
+                          URL para el QR
+                        </label>
+                        <input
+                          type="url"
+                          placeholder="https://..."
+                          value={config.qrUrl || ''}
+                          onChange={(e) => onChange({ ...config, qrUrl: e.target.value })}
+                          className="w-full bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-600 rounded-lg px-4 py-3 text-sm focus:border-accent-gold outline-none transition-colors"
+                        />
+                        <p className="text-[10px] text-wood-400">
+                          Menú digital, Spotify playlist, video dedicatoria, etc.
+                        </p>
+                      </div>
+                    )}
 
-                 {/* Complexity Footer */}
-                 <div className="mt-6 pt-4 border-t border-dashed border-wood-200 dark:border-wood-700 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">Nivel de Detalle</label>
-                        <select 
-                            value={config.complexity}
-                            onChange={(e) => onChange({...config, complexity: e.target.value as any})}
-                            className="bg-transparent text-xs font-bold text-wood-900 dark:text-sand-100 border-none outline-none cursor-pointer hover:text-accent-gold transition-colors"
+                    {/* File upload */}
+                    {config.type !== 'Texto' && config.type !== 'Código QR' && (
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
+                          Subir archivo
+                        </label>
+                        <div
+                          onClick={() => fileInputRef.current?.click()}
+                          className="border-2 border-dashed border-wood-300 dark:border-wood-600 hover:border-accent-gold rounded-lg p-4 flex flex-col items-center text-center cursor-pointer transition-colors bg-white/50 dark:bg-wood-900/50"
                         >
-                            <option>Básico</option>
-                            <option>Intermedio</option>
-                            <option>Detallado</option>
-                        </select>
-                    </div>
-                    <span className="text-[10px] text-accent-gold italic hidden md:block">* Optimización incluida</span>
-                 </div>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".svg,.png,.jpg,.jpeg,.ai,.pdf"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                          />
+                          {config.file ? (
+                            <div className="flex items-center gap-2 text-accent-gold">
+                              <ImageIcon className="w-4 h-4" />
+                              <span className="text-xs font-bold truncate max-w-[150px]">
+                                {config.fileName || (config.file as File).name}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onChange({ ...config, file: null, fileName: undefined });
+                                }}
+                                className="p-1 hover:bg-red-100 hover:text-red-500 rounded-full text-wood-400"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <Upload className="w-5 h-5 text-wood-400 mb-1" />
+                              <span className="text-[10px] text-wood-500 font-medium">
+                                SVG, PNG, JPG, AI
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
+                {/* Complexity / Price */}
+                <div className="mt-5 pt-4 border-t border-dashed border-wood-200 dark:border-wood-700">
+                  <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest block mb-3">
+                    Nivel de detalle
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {COMPLEXITIES.map((c) => {
+                      const sel = config.complexity === c.value;
+                      const price = ENGRAVING_PRICES[c.value];
+                      return (
+                        <button
+                          key={c.value}
+                          onClick={() => onChange({ ...config, complexity: c.value })}
+                          className={`py-3 rounded-lg border-2 text-center transition-all ${
+                            sel
+                              ? 'border-accent-gold bg-accent-gold/10'
+                              : 'border-wood-100 dark:border-wood-800 bg-wood-50 dark:bg-wood-900 hover:border-wood-300'
+                          }`}
+                        >
+                          <span
+                            className={`block text-xs font-bold ${
+                              sel ? 'text-accent-gold' : 'text-wood-600 dark:text-wood-300'
+                            }`}
+                          >
+                            {c.label}
+                          </span>
+                          <span
+                            className={`block text-sm font-serif font-bold mt-0.5 ${
+                              sel ? 'text-wood-900 dark:text-sand-100' : 'text-wood-400'
+                            }`}
+                          >
+                            ${price}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
