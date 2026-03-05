@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Upload, X, Palette } from 'lucide-react';
 import { TextileConfig, TextileTechnique, TextileColor, TextileProductType } from './types';
+import { useQuoteConfig } from '@/hooks/useQuoteConfig';
 
 interface TextileConfiguratorProps {
   config: TextileConfig;
@@ -11,20 +12,14 @@ interface TextileConfiguratorProps {
   onChange: (config: TextileConfig) => void;
 }
 
-const TECHNIQUES: { value: TextileTechnique; label: string; desc: string }[] = [
-  { value: 'Sublimación', label: 'Sublimación', desc: 'Full color, fotos, patrones — ideal para poliéster' },
-  { value: 'Vinilo HTV', label: 'Vinilo HTV', desc: 'Textos y logos nítidos — ideal para algodón' },
-  { value: 'Transfer', label: 'Transfer', desc: 'Económico, buena resolución' },
-];
+// Technique descriptions (static, not admin-configurable)
+const TECHNIQUE_DESCRIPTIONS: Record<string, string> = {
+  'Sublimación': 'Full color, fotos, patrones — ideal para poliéster',
+  'Vinilo HTV': 'Textos y logos nítidos — ideal para algodón',
+  'Transfer': 'Económico, buena resolución',
+};
 
-const COLORS: { value: TextileColor; hex: string }[] = [
-  { value: 'Natural', hex: '#F5F0E8' },
-  { value: 'Negro', hex: '#1A1A1A' },
-  { value: 'Blanco', hex: '#FFFFFF' },
-  { value: 'Azul Marino', hex: '#1B2838' },
-  { value: 'Terracota', hex: '#C4573A' },
-  { value: 'Verde Olivo', hex: '#556B2F' },
-];
+// TECHNIQUES and COLORS now come from useQuoteConfig()
 
 const PRINT_ZONES: Record<TextileProductType, string[]> = {
   'Tote bag': ['Frente', 'Reverso', 'Bolsillo', 'Panel completo'],
@@ -41,6 +36,11 @@ export const TextileConfigurator: React.FC<TextileConfiguratorProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const zones = PRINT_ZONES[productType] || ['Frente', 'Panel completo'];
 
+  // Read textile config from centralized admin-configurable source
+  const { config: quoteConfig } = useQuoteConfig();
+  const techniques = quoteConfig.textileTechniques.filter(t => t.enabled);
+  const colors = quoteConfig.textileColors.filter(c => c.enabled);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       onChange({ ...config, file: e.target.files[0], fileName: e.target.files[0].name });
@@ -55,12 +55,13 @@ export const TextileConfigurator: React.FC<TextileConfiguratorProps> = ({
           Técnica de Estampado
         </label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {TECHNIQUES.map((t) => {
-            const sel = config.technique === t.value;
+          {techniques.map((t) => {
+            const sel = config.technique === (t.label as TextileTechnique);
+            const desc = TECHNIQUE_DESCRIPTIONS[t.label] || '';
             return (
               <button
-                key={t.value}
-                onClick={() => onChange({ ...config, technique: t.value })}
+                key={t.label}
+                onClick={() => onChange({ ...config, technique: t.label as TextileTechnique })}
                 className={`p-4 rounded-xl border-2 text-left transition-all ${
                   sel
                     ? 'bg-wood-900 dark:bg-sand-100 border-wood-900 dark:border-sand-100 text-sand-100 dark:text-wood-900 shadow-lg'
@@ -69,7 +70,7 @@ export const TextileConfigurator: React.FC<TextileConfiguratorProps> = ({
               >
                 <span className="block font-bold text-sm mb-1">{t.label}</span>
                 <span className={`block text-[11px] ${sel ? 'opacity-80' : 'text-wood-400'}`}>
-                  {t.desc}
+                  {desc}
                 </span>
               </button>
             );
@@ -85,14 +86,14 @@ export const TextileConfigurator: React.FC<TextileConfiguratorProps> = ({
             Color de tela
           </label>
           <div className="flex flex-wrap gap-3">
-            {COLORS.map((c) => {
-              const sel = config.color === c.value;
+            {colors.map((c) => {
+              const sel = config.color === (c.label as TextileColor);
               return (
                 <button
-                  key={c.value}
-                  onClick={() => onChange({ ...config, color: c.value })}
+                  key={c.label}
+                  onClick={() => onChange({ ...config, color: c.label as TextileColor })}
                   className="flex flex-col items-center gap-1.5 group"
-                  title={c.value}
+                  title={c.label}
                 >
                   <div
                     className={`w-10 h-10 rounded-full border-2 transition-all ${
@@ -103,7 +104,7 @@ export const TextileConfigurator: React.FC<TextileConfiguratorProps> = ({
                     style={{ backgroundColor: c.hex }}
                   />
                   <span className={`text-[9px] font-bold uppercase ${sel ? 'text-accent-gold' : 'text-wood-400'}`}>
-                    {c.value.split(' ')[0]}
+                    {c.label.split(' ')[0]}
                   </span>
                 </button>
               );

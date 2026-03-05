@@ -14,8 +14,9 @@ import { BoardDesignConfigurator } from './BoardDesignConfigurator';
 import { QuotePreviewSidebar } from './QuotePreviewSidebar';
 import { getProductIcon, PRODUCT_ICON_MAP, MATERIAL_ICON_MAP } from './QuoteIcons';
 import { calculateItemPrice, formatMXN } from './pricing';
+import { useQuoteConfig } from '@/hooks/useQuoteConfig';
 
-// ── Product catalog ─────────────────────────────────────────
+// ── Product catalog (now from config) ───────────────────────
 
 interface ProductOption {
   type: ProductType;
@@ -24,24 +25,8 @@ interface ProductOption {
   desc: string;
 }
 
-const WOOD_PRODUCTS: ProductOption[] = [
-  { type: 'Tabla de picar', category: 'madera', label: 'Tabla de Picar', desc: 'Funcional y elegante' },
-  { type: 'Tabla de charcutería', category: 'madera', label: 'Tabla Charcutería', desc: 'Ideal para presentación' },
-  { type: 'Tabla de decoración', category: 'madera', label: 'Tabla Decorativa', desc: 'Pieza de exhibición' },
-  { type: 'Plato decorativo', category: 'madera', label: 'Plato Decorativo', desc: 'Artesanía para tu mesa' },
-  { type: 'Caja personalizada', category: 'madera', label: 'Caja Personalizada', desc: 'Empaque o regalo premium' },
-];
-
-const TEXTILE_PRODUCTS: ProductOption[] = [
-  { type: 'Tote bag', category: 'textil', label: 'Tote Bag', desc: 'Bolsa de tela personalizada' },
-  { type: 'Mandil de cocina', category: 'textil', label: 'Mandil de Cocina', desc: 'Chef con tu marca' },
-  { type: 'Servilletas', category: 'textil', label: 'Servilletas', desc: 'Tela con diseño personalizado' },
-  { type: 'Funda de cojín', category: 'textil', label: 'Funda de Cojín', desc: 'Decoración sublimada' },
-];
-
-const SERVICE_PRODUCT: ProductOption = {
-  type: 'Servicio de Grabado', category: 'grabado', label: 'Solo Grabado', desc: 'Láser en tu material',
-};
+// Hardcoded constants removed — WOOD_PRODUCTS, TEXTILE_PRODUCTS,
+// SERVICE_PRODUCT, ENGRAVE_MATERIALS now come from useQuoteConfig()
 
 // ── Wizard step definitions ─────────────────────────────────
 
@@ -74,14 +59,7 @@ function getSteps(category: ProductCategory): WizardStep[] {
 
 // ── Engraving materials for service ─────────────────────────
 
-const ENGRAVE_MATERIALS = [
-  { label: 'Madera' },
-  { label: 'Cuero' },
-  { label: 'Metal / Termo' },
-  { label: 'Acrílico' },
-  { label: 'Vidrio' },
-  { label: 'Otro' },
-];
+// ENGRAVE_MATERIALS now comes from useQuoteConfig()
 
 // ── Component ───────────────────────────────────────────────
 
@@ -102,6 +80,22 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
   const [activeTab, setActiveTab] = useState<'madera' | 'textil' | 'grabado'>(
     initialItem.category || 'madera'
   );
+
+  // ── Read product catalog from centralized config ────────
+  const { config: quoteConfig } = useQuoteConfig();
+  const WOOD_PRODUCTS: ProductOption[] = quoteConfig.woodProducts
+    .filter(p => p.enabled)
+    .map(p => ({ type: p.type as ProductType, category: p.category, label: p.label, desc: p.desc }));
+  const TEXTILE_PRODUCTS: ProductOption[] = quoteConfig.textileProducts
+    .filter(p => p.enabled)
+    .map(p => ({ type: p.type as ProductType, category: p.category, label: p.label, desc: p.desc }));
+  const SERVICE_PRODUCT: ProductOption = {
+    type: quoteConfig.serviceProduct.type as ProductType,
+    category: quoteConfig.serviceProduct.category,
+    label: quoteConfig.serviceProduct.label,
+    desc: quoteConfig.serviceProduct.desc,
+  };
+  const ENGRAVE_MATERIALS = quoteConfig.engraveMaterials.filter(m => m.enabled);
 
   const steps = getSteps(item.category);
 

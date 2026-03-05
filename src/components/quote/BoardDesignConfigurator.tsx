@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BoardDesign, BoardShape } from './types';
+import { useQuoteConfig } from '@/hooks/useQuoteConfig';
 
 // ═══════════════════════════════════════════════════════════════
 // BoardDesignConfigurator — Personalización de diseño de tabla
@@ -125,7 +126,7 @@ const EXTRAS: { key: keyof Pick<BoardDesign, 'hasJuiceGroove' | 'hasHandleHoles'
   },
 ];
 
-const FINISH_OPTIONS: BoardDesign['finishType'][] = ['Aceite mineral', 'Cera de abeja', 'Sin acabado'];
+// FINISH_OPTIONS now comes from useQuoteConfig()
 
 // ── Component ───────────────────────────────────────────────
 
@@ -133,6 +134,11 @@ export const BoardDesignConfigurator: React.FC<BoardDesignConfiguratorProps> = (
   design,
   onChange,
 }) => {
+  // Read board design config from centralized admin-configurable source
+  const { config: qc } = useQuoteConfig();
+  const enabledShapes = qc.boardShapes.filter(s => s.enabled);
+  const enabledExtras = qc.boardExtras.filter(e => e.enabled);
+  const enabledFinishes = qc.boardFinishes.filter(f => f.enabled);
   return (
     <div className="space-y-8">
       {/* Shape selection */}
@@ -141,7 +147,8 @@ export const BoardDesignConfigurator: React.FC<BoardDesignConfiguratorProps> = (
           Forma de la pieza
         </label>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          {SHAPES.map((s) => {
+          {enabledShapes.map((shapeOpt) => {
+            const s = SHAPES.find(sh => sh.value === shapeOpt.value) || { value: shapeOpt.value, label: shapeOpt.label, preview: null };
             const sel = design.shape === s.value;
             return (
               <button
@@ -153,9 +160,11 @@ export const BoardDesignConfigurator: React.FC<BoardDesignConfiguratorProps> = (
                     : 'border-wood-100 dark:border-wood-800 bg-white dark:bg-wood-900 hover:border-wood-300'
                 }`}
               >
-                <div className={`w-12 h-8 mb-1.5 ${sel ? 'text-accent-gold' : 'text-wood-400'}`}>
-                  {s.preview}
-                </div>
+                {s.preview && (
+                  <div className={`w-12 h-8 mb-1.5 ${sel ? 'text-accent-gold' : 'text-wood-400'}`}>
+                    {s.preview}
+                  </div>
+                )}
                 <span className={`text-[10px] font-bold ${sel ? 'text-accent-gold' : 'text-wood-500'}`}>
                   {s.label}
                 </span>
@@ -180,12 +189,13 @@ export const BoardDesignConfigurator: React.FC<BoardDesignConfiguratorProps> = (
           Extras y acabados
         </label>
         <div className="grid grid-cols-2 gap-3">
-          {EXTRAS.map((extra) => {
-            const active = design[extra.key];
+          {enabledExtras.map((extraOpt) => {
+            const extra = EXTRAS.find(e => e.key === extraOpt.key) || { key: extraOpt.key, label: extraOpt.label, desc: extraOpt.desc, icon: null };
+            const active = design[extra.key as keyof Pick<BoardDesign, 'hasJuiceGroove' | 'hasHandleHoles' | 'hasRubberFeet' | 'hasLiveEdge'>];
             return (
               <button
                 key={extra.key}
-                onClick={() => onChange({ ...design, [extra.key]: !active })}
+                onClick={() => onChange({ ...design, [extra.key as string]: !active })}
                 className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all ${
                   active
                     ? 'border-accent-gold bg-accent-gold/5'
@@ -224,7 +234,8 @@ export const BoardDesignConfigurator: React.FC<BoardDesignConfiguratorProps> = (
           Tipo de acabado
         </label>
         <div className="flex gap-3">
-          {FINISH_OPTIONS.map((finish) => {
+          {enabledFinishes.map((finishOpt) => {
+            const finish = finishOpt.label as BoardDesign['finishType'];
             const sel = design.finishType === finish;
             return (
               <button

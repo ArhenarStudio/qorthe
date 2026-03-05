@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Upload, X, Type, Image as ImageIcon, Sparkles, LayoutTemplate } from 'lucide-react';
 import { EngravingConfig, EngravingType, EngravingComplexity, EngravingZone } from './types';
 import { GrabadoIcon, QRIcon } from './QuoteIcons';
-import { ENGRAVING_PRICES } from './pricing';
 import { DesignGallery, DesignTemplate } from './DesignGallery';
+import { useQuoteConfig } from '@/hooks/useQuoteConfig';
 
 interface EngravingConfiguratorProps {
   config: EngravingConfig;
@@ -29,12 +29,7 @@ const COMPLEXITIES: { value: EngravingComplexity; label: string }[] = [
   { value: 'Premium', label: 'Premium' },
 ];
 
-const ZONE_GROUPS = [
-  { label: 'Frontal', zones: ['Centro', 'Esquina', 'Borde superior', 'Frontal completo'] as EngravingZone[] },
-  { label: 'Laterales', zones: ['Lateral izquierdo', 'Lateral derecho'] as EngravingZone[] },
-  { label: 'Posterior', zones: ['Reverso'] as EngravingZone[] },
-  { label: 'Avanzado', zones: ['Multi-zona'] as EngravingZone[] },
-];
+// ZONE_GROUPS and ENGRAVING_PRICES now come from useQuoteConfig()
 
 export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
   config,
@@ -44,6 +39,12 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showGallery, setShowGallery] = React.useState(false);
   const isEnabled = forceEnabled || config.enabled;
+
+  // Read engraving config from centralized admin-configurable source
+  const { config: quoteConfig } = useQuoteConfig();
+  const zoneGroups = quoteConfig.zoneGroups;
+  const engravingPricesList = quoteConfig.engravingPrices;
+  const zoneExtraPrice = quoteConfig.engravingZoneExtra;
 
   const handleSelectTemplate = (template: DesignTemplate) => {
     onChange({
@@ -62,11 +63,12 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
     onChange({ ...config, enabled: !config.enabled });
   };
 
-  const handleZoneToggle = (zone: EngravingZone) => {
-    const zones = config.zones.includes(zone)
-      ? config.zones.filter((z) => z !== zone)
-      : [...config.zones, zone];
-    onChange({ ...config, zones: zones.length > 0 ? zones : [zone] });
+  const handleZoneToggle = (zone: string) => {
+    const z = zone as EngravingZone;
+    const zones = config.zones.includes(z)
+      ? config.zones.filter((existing) => existing !== z)
+      : [...config.zones, z];
+    onChange({ ...config, zones: zones.length > 0 ? zones : [z] });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,12 +168,13 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
                       Ubicación en la pieza
                     </label>
                     <div className="space-y-3">
-                      {ZONE_GROUPS.map((group) => (
+                      {zoneGroups.map((group) => (
                         <div key={group.label}>
                           <span className="text-[9px] font-bold text-wood-300 uppercase tracking-widest mb-1.5 block">{group.label}</span>
                           <div className="grid grid-cols-2 gap-1.5">
-                            {group.zones.map((zone) => {
-                              const sel = config.zones.includes(zone);
+                            {group.zones.map((zone: string) => {
+                              const z = zone as EngravingZone;
+                              const sel = config.zones.includes(z);
                               return (
                                 <button
                                   key={zone}
@@ -193,7 +196,7 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
                     </div>
                     {config.zones.length > 1 && (
                       <p className="text-[10px] text-accent-gold">
-                        +${50 * (config.zones.length - 1)} por zona adicional
+                        +${zoneExtraPrice * (config.zones.length - 1)} por zona adicional
                       </p>
                     )}
                   </div>
@@ -333,7 +336,8 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {COMPLEXITIES.map((c) => {
                       const sel = config.complexity === c.value;
-                      const price = ENGRAVING_PRICES[c.value];
+                      const priceEntry = engravingPricesList.find(ep => ep.complexity === c.value);
+                      const price = priceEntry?.price ?? 0;
                       return (
                         <button
                           key={c.value}

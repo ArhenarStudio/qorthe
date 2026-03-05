@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Check } from 'lucide-react';
 import type { WoodType } from './types';
+import { useQuoteConfig } from '@/hooks/useQuoteConfig';
 
 interface WoodSelectorProps {
   selectedWoods: WoodType[];
@@ -12,32 +13,29 @@ interface WoodSelectorProps {
   secondaryWood?: WoodType;
 }
 
-const WOOD_OPTIONS: { label: WoodType; color: string; gradient: string; description: string }[] = [
-  { label: 'Cedro', color: '#A05A2C', gradient: 'linear-gradient(135deg, #C17840 0%, #8B4513 100%)', description: 'Aromático y rojizo' },
-  { label: 'Nogal', color: '#4A3728', gradient: 'linear-gradient(135deg, #5C4033 0%, #3B2716 100%)', description: 'Oscuro y elegante' },
-  { label: 'Encino', color: '#D7C49E', gradient: 'linear-gradient(135deg, #E8D9B8 0%, #B8A67A 100%)', description: 'Claro y resistente' },
-  { label: 'Parota', color: '#594036', gradient: 'linear-gradient(135deg, #7A5C4F 0%, #3D2B22 100%)', description: 'Exótico y veteado' },
-  { label: 'Combinación', color: '#8B7355', gradient: 'linear-gradient(135deg, #A05A2C 0%, #4A3728 50%, #594036 100%)', description: 'Fusión personalizada' },
-];
-
 export const WoodSelector: React.FC<WoodSelectorProps> = ({
   selectedWoods,
   onChange,
   primaryWood,
   secondaryWood,
 }) => {
-  const handleToggle = (wood: WoodType) => {
-    if (wood === 'Combinación') {
+  // Read wood options from centralized config (admin-configurable)
+  const { config } = useQuoteConfig();
+  const woodOptions = config.woodOptions.filter(w => w.enabled);
+
+  const handleToggle = (wood: string) => {
+    const w = wood as WoodType;
+    if (w === 'Combinación') {
       onChange(['Combinación']);
       return;
     }
     if (selectedWoods.includes('Combinación')) {
-      onChange([wood]);
+      onChange([w]);
       return;
     }
-    const newSelection = selectedWoods.includes(wood)
-      ? selectedWoods.filter((w) => w !== wood)
-      : [...selectedWoods, wood];
+    const newSelection = selectedWoods.includes(w)
+      ? selectedWoods.filter((sw) => sw !== w)
+      : [...selectedWoods, w];
     onChange(newSelection.length ? newSelection : []);
   };
 
@@ -50,8 +48,8 @@ export const WoodSelector: React.FC<WoodSelectorProps> = ({
       </h3>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {WOOD_OPTIONS.map((option) => {
-          const isSelected = selectedWoods.includes(option.label);
+        {woodOptions.map((option) => {
+          const isSelected = selectedWoods.includes(option.label as WoodType);
           return (
             <motion.button
               key={option.label}
@@ -114,7 +112,7 @@ export const WoodSelector: React.FC<WoodSelectorProps> = ({
                     className="w-full appearance-none bg-sand-50 dark:bg-wood-900 border border-wood-200 dark:border-wood-600 rounded-lg p-3 text-sm focus:border-accent-gold outline-none font-medium"
                   >
                     <option value="">Seleccionar...</option>
-                    {WOOD_OPTIONS.filter(w => w.label !== 'Combinación').map(w => (
+                    {woodOptions.filter(w => w.label !== 'Combinación').map(w => (
                       <option key={w.label} value={w.label}>{w.label}</option>
                     ))}
                   </select>
