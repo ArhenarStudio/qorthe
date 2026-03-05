@@ -66,6 +66,10 @@ export const HelpDeskPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
+  const [agentFilter, setAgentFilter] = useState<string>('all');
+  const [agents, setAgents] = useState<any[]>([]);
+  const [routingRules, setRoutingRules] = useState<any[]>([]);
 
   // Detail view
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
@@ -82,14 +86,18 @@ export const HelpDeskPage: React.FC = () => {
   const fetchAll = useCallback(async (silent = false) => {
     try {
       if (!silent) setLoading(true);
-      const [tkRes, wrRes, polRes] = await Promise.all([
+      const [tkRes, wrRes, polRes, agRes, rtRes] = await Promise.all([
         fetch('/api/admin/tickets').then(r => r.ok ? r.json() : null),
         fetch('/api/admin/warranty').then(r => r.ok ? r.json() : null),
         fetch('/api/admin/warranty?type=policy').then(r => r.ok ? r.json() : null),
+        fetch('/api/admin/agents').then(r => r.ok ? r.json() : null),
+        fetch('/api/admin/agents?type=routing').then(r => r.ok ? r.json() : null),
       ]);
       if (tkRes) setTickets(tkRes.tickets || []);
       if (wrRes) setWarrantyClaims(wrRes.claims || []);
       if (polRes?.policy) setWarrantyPolicy(polRes.policy);
+      if (agRes) setAgents(agRes.agents || []);
+      if (rtRes) setRoutingRules(rtRes.rules || []);
       setIsLive(true);
     } catch { setIsLive(false); }
     finally { setLoading(false); }
@@ -161,12 +169,16 @@ export const HelpDeskPage: React.FC = () => {
     if (statusFilter !== 'all' && t.status !== statusFilter) return false;
     if (priorityFilter !== 'all' && t.priority !== priorityFilter) return false;
     if (categoryFilter !== 'all' && t.category !== categoryFilter) return false;
+    if (departmentFilter !== 'all' && t.department !== departmentFilter) return false;
+    if (agentFilter !== 'all' && t.assigned_agent_id !== agentFilter) return false;
     if (search) {
       const q = search.toLowerCase();
       return (t.subject || '').toLowerCase().includes(q) || (t.customer_email || '').toLowerCase().includes(q) || (t.customer_name || '').toLowerCase().includes(q) || (`T-${t.ticket_number}`).includes(q);
     }
     return true;
   });
+
+  const departments = [...new Set(tickets.map(t => t.department).filter(Boolean))].sort();
 
   const filteredClaims = warrantyClaims.filter(c => {
     if (statusFilter !== 'all' && c.status !== statusFilter) return false;
@@ -253,6 +265,14 @@ export const HelpDeskPage: React.FC = () => {
               <option value="all">Categoría: Todas</option>
               {Object.entries(categoryConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
+            <select value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)} className="text-xs border border-wood-200 rounded-lg px-2 py-1.5 bg-white">
+              <option value="all">Área: Todas</option>
+              {departments.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <select value={agentFilter} onChange={e => setAgentFilter(e.target.value)} className="text-xs border border-wood-200 rounded-lg px-2 py-1.5 bg-white">
+              <option value="all">Agente: Todos</option>
+              {agents.map(a => <option key={a.id} value={a.id}>{a.name} ({a.department})</option>)}
+            </select>
           </div>
 
           {/* Ticket list */}
@@ -271,6 +291,8 @@ export const HelpDeskPage: React.FC = () => {
                     <th className="px-4 py-2">Categoría</th>
                     <th className="px-4 py-2">Prioridad</th>
                     <th className="px-4 py-2">Estado</th>
+                    <th className="px-4 py-2">Área</th>
+                    <th className="px-4 py-2">Asignado</th>
                     <th className="px-4 py-2">Fecha</th>
                     <th className="px-4 py-2"></th>
                   </tr>
@@ -292,6 +314,8 @@ export const HelpDeskPage: React.FC = () => {
                         <td className="px-4 py-3"><span className="flex items-center gap-1 text-[10px] text-wood-500"><CatIcon size={10} /> {cc.label}</span></td>
                         <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${pc.color}`}>{pc.label}</span></td>
                         <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${sc.color}`}>{sc.label}</span></td>
+                        <td className="px-4 py-3 text-[10px] text-wood-500">{t.department || <span className="text-wood-300 italic">Sin asignar</span>}</td>
+                        <td className="px-4 py-3 text-[10px] text-wood-600">{t.assigned_to || <span className="text-wood-300 italic">—</span>}</td>
                         <td className="px-4 py-3 text-[10px] text-wood-400 whitespace-nowrap">{fmtDate(t.created_at)}</td>
                         <td className="px-4 py-3"><ChevronRight size={12} className="text-wood-300" /></td>
                       </tr>
@@ -392,6 +416,23 @@ export const HelpDeskPage: React.FC = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Assign to agent */}
+              <div className="bg-white rounded-xl border border-wood-100 p-4">
+                <h5 className="text-[10px] font-medium text-wood-400 uppercase tracking-wider mb-3">Asignar a</h5>
+                <select value={selectedTicket.assigned_agent_id || ''} onChange={e => {
+                  const agent = agents.find((a: any) => a.id === e.target.value);
+                  updateTicket(selectedTicket.id, { assigned_agent_id: e.target.value || null, assigned_to: agent?.name || null, department: agent?.department || selectedTicket.department });
+                }} className="w-full text-xs border border-wood-200 rounded-lg px-2 py-2 bg-white">
+                  <option value="">Sin asignar</option>
+                  {agents.map((a: any) => <option key={a.id} value={a.id}>{a.name} — {a.department} ({a.openTickets} abiertos)</option>)}
+                </select>
+                {selectedTicket.department && <p className="text-[10px] text-wood-400 mt-2">Área: <span className="font-medium text-wood-600">{selectedTicket.department}</span></p>}
+                {!selectedTicket.escalated && (
+                  <button onClick={() => updateTicket(selectedTicket.id, { escalated: true, priority: 'urgent' })} className="mt-3 w-full text-[10px] text-red-500 border border-red-200 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors">Escalar ticket</button>
+                )}
+                {selectedTicket.escalated && <p className="text-[10px] text-red-500 font-medium mt-2">Ticket escalado</p>}
               </div>
 
               {/* Info */}

@@ -49,6 +49,15 @@ export async function POST(req: NextRequest) {
       }).select().single();
       if (error) throw error;
 
+      // Auto-route ticket to correct department
+      try {
+        await fetch(new URL('/api/admin/agents', req.url).toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ _type: 'route_ticket', ticket_id: data.id, category: ticketData.category, subject: ticketData.subject, description: ticketData.description }),
+        });
+      } catch {}
+
       // Send email notification to admin
       const RESEND_API_KEY = process.env.RESEND_API_KEY;
       if (RESEND_API_KEY) {
