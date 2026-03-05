@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Settings, Store, CreditCard, Truck, Receipt, Users, Plug, Code,
@@ -765,20 +765,36 @@ function TaxesTab() {
 
 // ===== TAB 7: INTEGRATIONS =====
 function IntegrationsTab() {
+  const [healthStatus, setHealthStatus] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // Quick health check on Medusa backend
+    async function checkHealth() {
+      try {
+        const res = await fetch('/api/admin/dashboard?period=today');
+        setHealthStatus(prev => ({ ...prev, medusa: res.ok ? 'ok' : 'error' }));
+      } catch { setHealthStatus(prev => ({ ...prev, medusa: 'error' })); }
+    }
+    checkHealth();
+  }, []);
+
   const active = [
-    { name: 'Stripe', desc: 'Pagos con tarjeta', status: 'Conectado', mode: 'Test', detail: 'Ultima sync: Hace 5 min' },
-    { name: 'MercadoPago', desc: 'Pagos MX (debito, OXXO)', status: 'Conectado', mode: 'Test', detail: 'Ultima sync: Hace 10 min' },
-    { name: 'Supabase Auth', desc: 'Autenticacion de clientes', status: 'Conectado', mode: '', detail: 'Usuarios: 248 | Providers: Email + Google OAuth' },
-    { name: 'Envia.com', desc: 'Carriers: Estafeta, DHL, FedEx', status: 'Conectado', mode: 'Produccion', detail: 'Guias generadas este mes: 108' },
-    { name: 'Cloudflare', desc: 'DNS + CDN para davidsonsdesign.com', status: 'Conectado', mode: '', detail: 'SSL: Activo | Cache: Activo' },
-    { name: 'Neon PostgreSQL', desc: 'Base de datos Medusa', status: 'Conectado', mode: '', detail: 'Tamano: 245 MB / 512 MB | Conexiones: 12/50' },
+    { name: 'Medusa Backend', desc: 'Motor de e-commerce (DigitalOcean)', status: healthStatus.medusa === 'ok' ? 'Conectado' : healthStatus.medusa === 'error' ? 'Error' : 'Verificando...', mode: 'Produccion', detail: 'URL: urchin-app en DigitalOcean App Platform' },
+    { name: 'Stripe', desc: 'Pagos con tarjeta (Visa, MC, Amex)', status: 'Conectado', mode: 'Test', detail: 'Modo test — cambiar a produccion en Fase 15' },
+    { name: 'MercadoPago', desc: 'Pagos MX (debito, OXXO, transferencia)', status: 'Conectado', mode: 'Test', detail: 'Modo test — cambiar a produccion en Fase 15' },
+    { name: 'Supabase Auth', desc: 'Autenticacion, lealtad, reviews, wishlist', status: 'Conectado', mode: 'Produccion', detail: 'Providers: Email + Google OAuth' },
+    { name: 'Envia.com', desc: 'Cotizador de envíos (DHL, Estafeta, FedEx)', status: 'Conectado', mode: 'Sandbox', detail: 'Sandbox activo — quotes DHL funcionando' },
+    { name: 'Cloudflare', desc: 'DNS + CDN para davidsonsdesign.com', status: 'Conectado', mode: 'Produccion', detail: 'SSL activo | Dominio: davidsonsdesign.com' },
+    { name: 'Neon PostgreSQL', desc: 'Base de datos serverless', status: 'Conectado', mode: 'Produccion', detail: 'Free tier | Region: us-east-1' },
+    { name: 'Resend', desc: 'Emails transaccionales', status: 'Conectado', mode: 'Produccion', detail: 'Dominio: davidsonsdesign.com verificado' },
+    { name: 'Meta Pixel + CAPI', desc: 'Tracking de conversiones para Meta Ads', status: 'Conectado', mode: 'Produccion', detail: 'Pixel ID configurado | CAPI activo' },
   ];
 
   const available = [
-    { name: 'Resend / SendGrid', desc: 'Envio de emails transaccionales y marketing' },
-    { name: 'Redis', desc: 'Cache para mejorar velocidad del backend' },
-    { name: 'Facturapi', desc: 'Generacion automatica de CFDI (facturacion MX)' },
+    { name: 'Upstash Redis', desc: 'Cache para mejorar velocidad del backend' },
+    { name: 'Facturapi / CFDI', desc: 'Generacion automatica de facturas electronicas MX' },
     { name: 'Google Analytics 4', desc: 'Tracking de trafico y conversiones' },
+    { name: 'Google Merchant Center', desc: 'Mostrar productos en Google Shopping gratis' },
     { name: 'WhatsApp Business API', desc: 'Notificaciones al cliente por WhatsApp' },
   ];
 
@@ -798,8 +814,8 @@ function IntegrationsTab() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Badge text={s.status} variant="green" />
-                  {s.mode && <Badge text={'Modo: ' + s.mode} variant={s.mode === 'Test' ? 'amber' : 'green'} />}
+                  <Badge text={s.status} variant={s.status === 'Error' ? 'red' : s.status === 'Verificando...' ? 'amber' : 'green'} />
+                  {s.mode && <Badge text={'Modo: ' + s.mode} variant={s.mode === 'Test' || s.mode === 'Sandbox' ? 'amber' : 'green'} />}
                 </div>
               </div>
               <p className="text-[10px] text-wood-500 ml-12">{s.detail}</p>
