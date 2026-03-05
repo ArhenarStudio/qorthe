@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Bell, Mail, Layout, Clock, Settings2,
@@ -163,6 +163,34 @@ const mockNotifPrefs = [
 // ===== TAB 1: CENTER =====
 function CenterTab() {
   const [filter, setFilter] = useState<string>('all');
+
+  // ── Live notifications from API ──
+  const [liveNotifs, setLiveNotifs] = useState<Notification[] | null>(null);
+  const [notifsLoading, setNotifsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchNotifs() {
+      try {
+        const res = await fetch('/api/admin/notifications?type=notifications');
+        if (res.ok) {
+          const data = await res.json();
+          setLiveNotifs(data.notifications || []);
+        }
+      } catch { /* silent */ }
+      finally { setNotifsLoading(false); }
+    }
+    fetchNotifs();
+    const interval = setInterval(fetchNotifs, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const allNotifs = liveNotifs || [...todayNotifs, ...yesterdayNotifs, ...weekNotifs];
+  const isLive = liveNotifs !== null;
+
+  // Group by read/unread for display
+  const unreadNotifs = allNotifs.filter(n => !n.read);
+  const readNotifs = allNotifs.filter(n => n.read);
+
   const [notifications, setNotifications] = useState({
     today: todayNotifs,
     yesterday: yesterdayNotifs,
@@ -257,9 +285,21 @@ function CenterTab() {
       </div>
 
       <Card className="overflow-hidden">
-        <NotifGroup title="Hoy" items={notifications.today} />
-        <NotifGroup title="Ayer" items={notifications.yesterday} />
-        <NotifGroup title="Esta semana" items={notifications.week} />
+        {notifsLoading ? (
+          <div className="p-8 text-center text-wood-400 text-xs">Cargando notificaciones...</div>
+        ) : isLive ? (
+          <>
+            {unreadNotifs.length > 0 && <NotifGroup title={`Sin leer (${unreadNotifs.length})`} items={unreadNotifs} />}
+            {readNotifs.length > 0 && <NotifGroup title="Le\u00eddas" items={readNotifs} />}
+            {allNotifs.length === 0 && <div className="p-8 text-center text-wood-400 text-xs">Sin notificaciones pendientes</div>}
+          </>
+        ) : (
+          <>
+            <NotifGroup title="Hoy" items={notifications.today} />
+            <NotifGroup title="Ayer" items={notifications.yesterday} />
+            <NotifGroup title="Esta semana" items={notifications.week} />
+          </>
+        )}
       </Card>
 
       <div className="flex items-center gap-3 text-[10px] text-wood-400">
@@ -569,6 +609,28 @@ function HistoryTab() {
   const [filterType, setFilterType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
 
+  // ── Live email history from Resend ──
+  const [liveHistory, setLiveHistory] = useState<any[] | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const res = await fetch('/api/admin/notifications?type=emails');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.emailHistory?.length > 0) {
+            setLiveHistory(data.emailHistory);
+          }
+        }
+      } catch { /* silent */ }
+      finally { setHistoryLoading(false); }
+    }
+    fetchHistory();
+  }, []);
+
+  const historyData = liveHistory || mockHistory;
+
   const statusConfig: Record<string, { label: string; icon: React.ElementType; cls: string }> = {
     sent: { label: 'No abierto', icon: Mail, cls: 'text-wood-400' },
     opened: { label: 'Abierto', icon: MailOpen, cls: 'text-green-600' },
@@ -610,8 +672,10 @@ function HistoryTab() {
               </tr>
             </thead>
             <tbody className="divide-y divide-wood-50">
-              {mockHistory.map((h) => {
-                const sc = statusConfig[h.status];
+              {historyLoading ? (
+                <tr><td colSpan={5} className="p-8 text-center text-wood-400 text-xs">Cargando historial de emails...</td></tr>
+              ) : historyData.map((h) => {
+                const sc = statusConfig[h.status] || statusConfig['sent'];
                 return (
                   <tr key={h.id} className="hover:bg-sand-50/50 transition-colors cursor-pointer">
                     <td className="px-5 py-2.5 text-xs text-wood-500 whitespace-nowrap">{h.date}</td>
