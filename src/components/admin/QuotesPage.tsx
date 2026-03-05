@@ -118,7 +118,8 @@ export const QuotesPage: React.FC = () => {
 
   const filtered = useMemo(() => {
     const statuses = tabFilters[tab];
-    let list = statuses.length ? fullQuotes.filter(q => statuses.includes(q.status)) : fullQuotes;
+    const allQuotes = (liveQuotes?.quotes?.length > 0 ? liveQuotes.quotes : fullQuotes) as FullQuote[];
+    let list = statuses.length ? allQuotes.filter(q => statuses.includes(q.status)) : allQuotes;
     if (search) {
       const s = search.toLowerCase();
       list = list.filter(q => q.number.toLowerCase().includes(s) || q.customer.name.toLowerCase().includes(s) || q.pieces.some(p => p.type.toLowerCase().includes(s)));
@@ -128,20 +129,21 @@ export const QuotesPage: React.FC = () => {
 
   // KPIs
   const activeStatuses: QuoteStatus[] = ['nueva', 'en_revision', 'cotizacion_enviada', 'en_negociacion', 'aprobada', 'anticipo_recibido', 'en_produccion'];
-  const activeQuotes = fullQuotes.filter(q => activeStatuses.includes(q.status));
-  const newQuotes = fullQuotes.filter(q => q.status === 'nueva');
+  const allQ = (liveQuotes?.quotes?.length > 0 ? liveQuotes.quotes : fullQuotes) as FullQuote[];
+  const activeQuotes = allQ.filter(q => activeStatuses.includes(q.status));
+  const newQuotes = allQ.filter(q => q.status === 'nueva');
   const urgentNew = newQuotes.filter(q => hoursAgo(q.date) > 48);
   const pipelineValue = activeQuotes.reduce((s, q) => s + getQuoteTotal(q), 0);
-  const completedQuotes = fullQuotes.filter(q => q.status === 'completada');
-  const closedQuotes = fullQuotes.filter(q => ['completada', 'rechazada', 'vencida', 'cancelada'].includes(q.status));
+  const completedQuotes = allQ.filter(q => q.status === 'completada');
+  const closedQuotes = allQ.filter(q => ['completada', 'rechazada', 'vencida', 'cancelada'].includes(q.status));
   const conversionRate = closedQuotes.length ? Math.round((completedQuotes.length / closedQuotes.length) * 100) : 0;
   const avgTicket = activeQuotes.length ? activeQuotes.reduce((s, q) => s + getQuoteTotal(q), 0) / activeQuotes.length : 0;
 
   const tabCounts: Record<TabId, number> = {
     nuevas: newQuotes.length,
-    negociacion: fullQuotes.filter(q => ['en_revision', 'cotizacion_enviada', 'en_negociacion'].includes(q.status)).length,
-    aprobadas: fullQuotes.filter(q => ['aprobada', 'anticipo_recibido'].includes(q.status)).length,
-    produccion: fullQuotes.filter(q => q.status === 'en_produccion').length,
+    negociacion: allQ.filter(q => ['en_revision', 'cotizacion_enviada', 'en_negociacion'].includes(q.status)).length,
+    aprobadas: allQ.filter(q => ['aprobada', 'anticipo_recibido'].includes(q.status)).length,
+    produccion: allQ.filter(q => q.status === 'en_produccion').length,
     historial: closedQuotes.length,
     analisis: 0,
   };
@@ -179,7 +181,7 @@ export const QuotesPage: React.FC = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <KpiCard icon={<FileText size={16} className="text-accent-gold" />} value={String(activeQuotes.length)} label="Cotizaciones activas" sub={`${fullQuotes.filter(q => new Date(q.validUntil) < new Date(Date.now() + 7 * 86400000) && activeStatuses.includes(q.status)).length} vencen esta semana`} accent />
+        <KpiCard icon={<FileText size={16} className="text-accent-gold" />} value={String(activeQuotes.length)} label="Cotizaciones activas" sub={`${allQ.filter(q => new Date(q.validUntil) < new Date(Date.now() + 7 * 86400000) && activeStatuses.includes(q.status)).length} vencen esta semana`} accent />
         <KpiCard icon={<Clock size={16} className="text-amber-600" />} value={String(newQuotes.length)} label="Nuevas sin responder" sub={`${urgentNew.length} hace +48h ⚠️`} />
         <KpiCard icon={<DollarSign size={16} className="text-green-600" />} value={fmt(pipelineValue)} label="Valor en pipeline" sub="+15% vs prev" />
         <KpiCard icon={<BarChart3 size={16} className="text-blue-600" />} value={`${conversionRate}%`} label="Tasa de conversión" sub="Cot → Pedido" />
