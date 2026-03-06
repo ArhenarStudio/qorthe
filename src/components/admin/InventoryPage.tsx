@@ -541,50 +541,120 @@ const OverviewTab: React.FC<{
 };
 
 // ═══════ MOVEMENTS TAB ═══════
-const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) => (
-  <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
-    <div className="px-4 py-3 border-b border-wood-100 flex items-center justify-between">
-      <h4 className="text-sm font-bold text-wood-900">Historial de Movimientos</h4>
-      <span className="text-[10px] text-wood-400">{movements.length} registros</span>
-    </div>
-    <div className="overflow-x-auto">
-      <table className="w-full text-left min-w-[700px]">
-        <thead>
-          <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
-            <th className="px-4 py-3">Fecha</th>
-            <th className="px-4 py-3">Tipo</th>
-            <th className="px-4 py-3">Producto</th>
-            <th className="px-4 py-3">SKU</th>
-            <th className="px-4 py-3">Cantidad</th>
-            <th className="px-4 py-3">Stock</th>
-            <th className="px-4 py-3">Referencia</th>
-            <th className="px-4 py-3">Por</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-wood-50">
-          {movements.length === 0 ? (
-            <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-wood-400">Sin movimientos registrados</td></tr>
-          ) : movements.map((m, i) => {
-            const cfg = MOVEMENT_TYPE_CONFIG[m.type] || MOVEMENT_TYPE_CONFIG.adjustment;
-            const isPositive = m.quantity > 0;
-            return (
-              <tr key={m.id || i} className="hover:bg-sand-50/50 transition-colors">
-                <td className="px-4 py-3 text-[11px] text-wood-500">{fmtDateTime(m.created_at)}</td>
-                <td className="px-4 py-3"><span className={`text-[10px] font-bold flex items-center gap-1 ${cfg.color}`}>{getMovementIcon(m.type, 12, cfg.color)} {cfg.label}</span></td>
-                <td className="px-4 py-3 text-xs text-wood-900">{m.product_title}</td>
-                <td className="px-4 py-3 text-xs text-wood-500 font-mono">{m.sku}</td>
-                <td className="px-4 py-3"><span className={`text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}>{isPositive ? '+' : ''}{m.quantity}</span></td>
-                <td className="px-4 py-3 text-xs text-wood-500">{m.previous_stock} → <span className="font-bold text-wood-900">{m.new_stock}</span></td>
-                <td className="px-4 py-3 text-[11px] text-wood-500">{m.reference || "—"}</td>
-                <td className="px-4 py-3 text-[11px] text-wood-400">{m.created_by}</td>
+const MOVEMENTS_PER_PAGE = 25;
+
+const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) => {
+  const [page, setPage] = useState(0);
+  const [typeFilter, setTypeFilter] = useState<MovementType | 'all'>('all');
+  const [movSearch, setMovSearch] = useState('');
+
+  const filtered = useMemo(() => {
+    let list = movements;
+    if (typeFilter !== 'all') list = list.filter(m => m.type === typeFilter);
+    if (movSearch) {
+      const q = movSearch.toLowerCase();
+      list = list.filter(m => m.product_title.toLowerCase().includes(q) || m.sku.toLowerCase().includes(q) || (m.reference || '').toLowerCase().includes(q));
+    }
+    return list;
+  }, [movements, typeFilter, movSearch]);
+
+  const totalPages = Math.ceil(filtered.length / MOVEMENTS_PER_PAGE);
+  const paged = filtered.slice(page * MOVEMENTS_PER_PAGE, (page + 1) * MOVEMENTS_PER_PAGE);
+
+  // Reset page when filters change
+  React.useEffect(() => { setPage(0); }, [typeFilter, movSearch]);
+
+  return (
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[180px]">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-wood-400" />
+          <input value={movSearch} onChange={e => setMovSearch(e.target.value)} placeholder="Buscar producto, SKU, referencia..."
+            className="w-full pl-9 pr-4 py-2 bg-white border border-wood-200 rounded-lg text-xs outline-none focus:border-wood-400" />
+        </div>
+        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as MovementType | 'all')}
+          className="px-3 py-2 text-xs bg-white border border-wood-200 rounded-lg outline-none min-w-[150px]">
+          <option value="all">Todos los tipos</option>
+          {Object.entries(MOVEMENT_TYPE_CONFIG).map(([key, cfg]) => (
+            <option key={key} value={key}>{cfg.label}</option>
+          ))}
+        </select>
+        <span className="text-[10px] text-wood-400">{filtered.length} registros</span>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left min-w-[700px]">
+            <thead>
+              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
+                <th className="px-4 py-3">Fecha</th>
+                <th className="px-4 py-3">Tipo</th>
+                <th className="px-4 py-3">Producto</th>
+                <th className="px-4 py-3">SKU</th>
+                <th className="px-4 py-3">Cantidad</th>
+                <th className="px-4 py-3">Stock</th>
+                <th className="px-4 py-3">Referencia</th>
+                <th className="px-4 py-3">Por</th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody className="divide-y divide-wood-50">
+              {paged.length === 0 ? (
+                <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-wood-400">Sin movimientos registrados</td></tr>
+              ) : paged.map((m, i) => {
+                const cfg = MOVEMENT_TYPE_CONFIG[m.type] || MOVEMENT_TYPE_CONFIG.adjustment;
+                const isPositive = m.quantity > 0;
+                return (
+                  <tr key={m.id || i} className="hover:bg-sand-50/50 transition-colors">
+                    <td className="px-4 py-3 text-[11px] text-wood-500">{fmtDateTime(m.created_at)}</td>
+                    <td className="px-4 py-3"><span className={`text-[10px] font-bold flex items-center gap-1 ${cfg.color}`}>{getMovementIcon(m.type, 12, cfg.color)} {cfg.label}</span></td>
+                    <td className="px-4 py-3 text-xs text-wood-900">{m.product_title}</td>
+                    <td className="px-4 py-3 text-xs text-wood-500 font-mono">{m.sku}</td>
+                    <td className="px-4 py-3"><span className={`text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}>{isPositive ? '+' : ''}{m.quantity}</span></td>
+                    <td className="px-4 py-3 text-xs text-wood-500">{m.previous_stock} → <span className="font-bold text-wood-900">{m.new_stock}</span></td>
+                    <td className="px-4 py-3 text-[11px] text-wood-500">{m.reference || "—"}</td>
+                    <td className="px-4 py-3 text-[11px] text-wood-400">{m.created_by}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-wood-100 flex items-center justify-between">
+            <span className="text-[10px] text-wood-400">
+              Página {page + 1} de {totalPages} · Mostrando {page * MOVEMENTS_PER_PAGE + 1}–{Math.min((page + 1) * MOVEMENTS_PER_PAGE, filtered.length)} de {filtered.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setPage(0)} disabled={page === 0}
+                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">«</button>
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">‹</button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const start = Math.max(0, Math.min(page - 2, totalPages - 5));
+                const idx = start + i;
+                if (idx >= totalPages) return null;
+                return (
+                  <button key={idx} onClick={() => setPage(idx)}
+                    className={`px-2.5 py-1 text-[10px] rounded border transition-colors ${
+                      page === idx ? 'bg-wood-900 text-sand-100 border-wood-900' : 'text-wood-500 border-wood-200 hover:bg-sand-50'
+                    }`}>{idx + 1}</button>
+                );
+              })}
+              <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
+                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">›</button>
+              <button onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}
+                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">»</button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ═══════ ALERTS TAB ═══════
 const AlertsTab: React.FC<{ alerts: InventoryAlert[]; onResolve: (id: string) => void }> = ({ alerts, onResolve }) => (

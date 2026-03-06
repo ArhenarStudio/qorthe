@@ -5,7 +5,7 @@
 // Rotación, valor por categoría, movimientos por período
 // ═══════════════════════════════════════════════════════════════
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -18,6 +18,15 @@ import {
 
 const COLORS = ['#C5A065', '#2d2419', '#8B7355', '#E8C87A', '#5C4033', '#3B82F6'];
 
+type PeriodDays = 7 | 14 | 30 | 60 | 90;
+const PERIOD_OPTIONS: { value: PeriodDays; label: string }[] = [
+  { value: 7, label: '7 días' },
+  { value: 14, label: '14 días' },
+  { value: 30, label: '30 días' },
+  { value: 60, label: '60 días' },
+  { value: 90, label: '90 días' },
+];
+
 interface Props {
   items: InventoryItem[];
   movements: StockMovement[];
@@ -25,6 +34,7 @@ interface Props {
 }
 
 export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
+  const [period, setPeriod] = useState<PeriodDays>(30);
   // ── Value by category ──
   const valueByCategory = useMemo(() => {
     const map = new Map<string, { cost: number; retail: number; units: number }>();
@@ -55,11 +65,11 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
       }));
   }, [items]);
 
-  // ── Movements by period (last 30 days) ──
+  // ── Movements by period ──
   const movementsByDay = useMemo(() => {
     const days = new Map<string, { purchases: number; sales: number; adjustments: number; net: number }>();
     const now = Date.now();
-    for (let i = 29; i >= 0; i--) {
+    for (let i = period - 1; i >= 0; i--) {
       const d = new Date(now - i * 86400000);
       const key = d.toISOString().slice(0, 10);
       days.set(key, { purchases: 0, sales: 0, adjustments: 0, net: 0 });
@@ -81,7 +91,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
       date: new Date(date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }),
       ...vals,
     }));
-  }, [movements]);
+  }, [movements, period]);
 
   // ── Top movers (most active products) ──
   const topMovers = useMemo(() => {
@@ -132,12 +142,25 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
         <MetricCard label="Categorías" value={String(valueByCategory.length)} icon={<Layers size={16} />} color="text-purple-600" bgColor="bg-purple-50" />
       </div>
 
+      {/* Period selector */}
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] text-wood-400 uppercase tracking-wider font-bold">Período:</span>
+        {PERIOD_OPTIONS.map(opt => (
+          <button key={opt.value} onClick={() => setPeriod(opt.value)}
+            className={`px-3 py-1.5 text-[10px] font-bold rounded-lg transition-colors ${
+              period === opt.value ? 'bg-wood-900 text-sand-100' : 'bg-white text-wood-500 border border-wood-100 hover:border-wood-300'
+            }`}>
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       {/* Row 2: Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Movements over time */}
         <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
           <h4 className="text-sm font-bold text-wood-900 mb-4 flex items-center gap-2">
-            <BarChart3 size={16} className="text-accent-gold" /> Movimientos (últimos 30 días)
+            <BarChart3 size={16} className="text-accent-gold" /> Movimientos (últimos {period} días)
           </h4>
           <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={movementsByDay} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
