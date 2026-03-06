@@ -247,79 +247,77 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                 >
                   {/* ═══ STEP: TYPE ═══ */}
                   {step.id === 'type' && (
-                    <div className="space-y-8">
-                      {/* Category Tabs */}
-                      <div className="flex gap-2 p-1 bg-wood-100 dark:bg-wood-900 rounded-xl w-fit mx-auto">
-                        {(['madera', 'textil', 'grabado'] as const).map((tab) => (
-                          <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
-                              activeTab === tab
-                                ? 'bg-white dark:bg-wood-800 text-wood-900 dark:text-sand-100 shadow-sm'
-                                : 'text-wood-500 hover:text-wood-700'
-                            }`}
-                          >
-                            {tab === 'madera'
-                              ? 'Madera'
-                              : tab === 'textil'
-                              ? 'Textil'
-                              : 'Grabado'}
-                          </button>
-                        ))}
+                    <div className="space-y-6">
+                      {/* All products in a unified visual grid — no confusing category tabs */}
+                      <div className="space-y-2">
+                        <h4 className="text-[10px] font-bold text-wood-400 uppercase tracking-widest flex items-center gap-2">
+                          <span className="w-4 h-0.5 bg-accent-gold rounded" /> Madera
+                        </h4>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {WOOD_PRODUCTS.map((opt) => {
+                            const sel = item.type === opt.type;
+                            const Icon = getProductIcon(opt.type);
+                            return (
+                              <button key={opt.type} onClick={() => selectProduct(opt)}
+                                className={`group p-4 rounded-xl border-2 text-left transition-all duration-200 ${sel ? 'bg-wood-900 dark:bg-sand-100 border-wood-900 dark:border-sand-100 shadow-xl' : 'bg-white dark:bg-wood-900 border-transparent hover:border-wood-200 shadow-sm hover:shadow-md'}`}>
+                                <div className={`mb-2 w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${sel ? 'bg-accent-gold text-wood-900' : 'bg-wood-100 dark:bg-wood-800 text-wood-500'}`}>
+                                  <Icon size={20} />
+                                </div>
+                                <span className={`block font-serif text-sm leading-tight mb-0.5 ${sel ? 'text-sand-100 dark:text-wood-900' : 'text-wood-900 dark:text-sand-100'}`}>{opt.label}</span>
+                                <span className={`block text-[10px] ${sel ? 'text-sand-300' : 'text-wood-400'}`}>{opt.desc}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
 
-                      {/* Product Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {(activeTab === 'madera'
-                          ? WOOD_PRODUCTS
-                          : activeTab === 'textil'
-                          ? TEXTILE_PRODUCTS
-                          : [SERVICE_PRODUCT]
-                        ).map((opt) => {
-                          const sel = item.type === opt.type;
-                          const Icon = getProductIcon(opt.type);
-                          return (
-                            <button
-                              key={opt.type}
-                              onClick={() => selectProduct(opt)}
-                              className={`group p-5 rounded-2xl border-2 text-left transition-all duration-200 ${
-                                sel
-                                  ? 'bg-wood-900 dark:bg-sand-100 border-wood-900 dark:border-sand-100 shadow-xl'
-                                  : 'bg-white dark:bg-wood-900 border-transparent hover:border-wood-200 dark:hover:border-wood-700 shadow-sm hover:shadow-md'
-                              }`}
-                            >
-                              <div
-                                className={`mb-3 w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
-                                  sel
-                                    ? 'bg-accent-gold text-wood-900'
-                                    : 'bg-wood-100 dark:bg-wood-800 text-wood-500 group-hover:text-wood-700'
-                                }`}
-                              >
-                                <Icon size={22} />
-                              </div>
-                              <span
-                                className={`block font-serif text-base leading-tight mb-0.5 ${
-                                  sel
-                                    ? 'text-sand-100 dark:text-wood-900'
-                                    : 'text-wood-900 dark:text-sand-100'
-                                }`}
-                              >
-                                {opt.label}
-                              </span>
-                              <span
-                                className={`block text-[11px] ${
-                                  sel
-                                    ? 'text-sand-300 dark:text-wood-500'
-                                    : 'text-wood-400'
-                                }`}
-                              >
-                                {opt.desc}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {TEXTILE_PRODUCTS.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-[10px] font-bold text-wood-400 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-4 h-0.5 bg-accent-gold rounded" /> Textil
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {TEXTILE_PRODUCTS.map((opt) => {
+                              const sel = item.type === opt.type;
+                              const Icon = getProductIcon(opt.type);
+                              return (
+                                <button key={opt.type} onClick={() => selectProduct(opt)}
+                                  className={`group p-4 rounded-xl border-2 text-left transition-all duration-200 ${sel ? 'bg-wood-900 dark:bg-sand-100 border-wood-900 dark:border-sand-100 shadow-xl' : 'bg-white dark:bg-wood-900 border-transparent hover:border-wood-200 shadow-sm hover:shadow-md'}`}>
+                                  <div className={`mb-2 w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${sel ? 'bg-accent-gold text-wood-900' : 'bg-wood-100 dark:bg-wood-800 text-wood-500'}`}>
+                                    <Icon size={20} />
+                                  </div>
+                                  <span className={`block font-serif text-sm leading-tight mb-0.5 ${sel ? 'text-sand-100 dark:text-wood-900' : 'text-wood-900 dark:text-sand-100'}`}>{opt.label}</span>
+                                  <span className={`block text-[10px] ${sel ? 'text-sand-300' : 'text-wood-400'}`}>{opt.desc}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {quoteConfig.serviceProduct.enabled && (
+                        <div className="space-y-2">
+                          <h4 className="text-[10px] font-bold text-wood-400 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-4 h-0.5 bg-accent-gold rounded" /> Servicio
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {[SERVICE_PRODUCT].map((opt) => {
+                              const sel = item.type === opt.type;
+                              const Icon = getProductIcon(opt.type);
+                              return (
+                                <button key={opt.type} onClick={() => selectProduct(opt)}
+                                  className={`group p-4 rounded-xl border-2 text-left transition-all duration-200 ${sel ? 'bg-wood-900 dark:bg-sand-100 border-wood-900 dark:border-sand-100 shadow-xl' : 'bg-white dark:bg-wood-900 border-transparent hover:border-wood-200 shadow-sm hover:shadow-md'}`}>
+                                  <div className={`mb-2 w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${sel ? 'bg-accent-gold text-wood-900' : 'bg-wood-100 dark:bg-wood-800 text-wood-500'}`}>
+                                    <Icon size={20} />
+                                  </div>
+                                  <span className={`block font-serif text-sm leading-tight mb-0.5 ${sel ? 'text-sand-100 dark:text-wood-900' : 'text-wood-900 dark:text-sand-100'}`}>{opt.label}</span>
+                                  <span className={`block text-[10px] ${sel ? 'text-sand-300' : 'text-wood-400'}`}>{opt.desc}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -371,17 +369,19 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                         <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
                           Tamaños populares
                         </label>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                           {[
-                            { l: 30, w: 20, t: 2.5, label: 'Pequeña' },
-                            { l: 40, w: 25, t: 3, label: 'Mediana' },
-                            { l: 55, w: 30, t: 3, label: 'Grande' },
-                            { l: 70, w: 35, t: 3.5, label: 'XL' },
+                            { l: 30, w: 20, t: 2.5, label: 'Pequeña', emoji: '🍞', use: 'Tabla personal' },
+                            { l: 40, w: 25, t: 3, label: 'Mediana', emoji: '🧀', use: 'Uso diario cocina' },
+                            { l: 55, w: 30, t: 3, label: 'Grande', emoji: '🥩', use: 'Charcutería / regalo' },
+                            { l: 70, w: 35, t: 3.5, label: 'XL', emoji: '🎉', use: 'Presentación / evento' },
                           ].map((p) => {
                             const active =
                               item.dimensions.length === p.l &&
                               item.dimensions.width === p.w &&
                               item.dimensions.thickness === p.t;
+                            // Scale factor for SVG illustration
+                            const scale = p.l / 70;
                             return (
                               <button
                                 key={p.label}
@@ -391,13 +391,22 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                                     dimensions: { length: p.l, width: p.w, thickness: p.t },
                                   })
                                 }
-                                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all ${
+                                className={`p-4 rounded-xl border-2 text-center transition-all ${
                                   active
-                                    ? 'bg-accent-gold border-accent-gold text-wood-900'
-                                    : 'bg-white dark:bg-wood-900 border-wood-200 dark:border-wood-700 text-wood-600 hover:border-wood-400'
+                                    ? 'border-accent-gold bg-accent-gold/5 shadow-md'
+                                    : 'bg-white dark:bg-wood-900 border-wood-100 dark:border-wood-800 hover:border-wood-300'
                                 }`}
                               >
-                                {p.label} ({p.l}×{p.w})
+                                {/* Board illustration */}
+                                <div className="flex items-center justify-center mb-2 h-12">
+                                  <svg viewBox="0 0 80 50" style={{ width: `${Math.max(50, scale * 80)}px`, height: `${Math.max(25, scale * 40)}px` }}>
+                                    <rect x="5" y="5" width={70 * scale} height={40 * scale} rx="4" fill={active ? '#C5A065' : '#D7CCC8'} opacity={active ? 0.3 : 0.2} stroke={active ? '#C5A065' : '#8B7355'} strokeWidth="1" />
+                                    <text x={5 + 35 * scale} y={5 + 22 * scale} textAnchor="middle" fill={active ? '#8B6914' : '#8B7355'} fontSize="8">{p.l}×{p.w}</text>
+                                  </svg>
+                                </div>
+                                <span className="text-xs font-bold block">{p.emoji} {p.label}</span>
+                                <span className="text-[9px] text-wood-400 block">{p.l}×{p.w}×{p.t} cm</span>
+                                <span className="text-[9px] text-wood-500 block mt-0.5">{p.use}</span>
                               </button>
                             );
                           })}
@@ -448,10 +457,10 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                     />
                   )}
 
-                  {/* ═══ STEP: ENGRAVING ═══ */}
+                  {/* ═══ STEP: ENGRAVING (auto-enabled when user reaches this step) ═══ */}
                   {step.id === 'engraving' && (
                     <EngravingConfigurator
-                      config={item.engraving}
+                      config={item.category === 'grabado' ? { ...item.engraving, enabled: true } : item.engraving}
                       onChange={(cfg) => setItem({ ...item, engraving: cfg })}
                       forceEnabled={item.category === 'grabado'}
                     />
@@ -502,23 +511,30 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
                             +
                           </button>
                         </div>
-                        {/* Volume discount hint */}
-                        {item.quantity < 5 && (
-                          <p className="text-center text-xs text-wood-400 mt-3">
-                            A partir de 5 piezas obtén descuento por volumen
-                          </p>
-                        )}
-                        {item.quantity >= 5 && (
-                          <p className="text-center text-xs text-accent-gold font-bold mt-3">
-                            {item.quantity >= 50
-                              ? '🎉 20% de descuento por volumen'
-                              : item.quantity >= 20
-                              ? '🎉 15% de descuento por volumen'
-                              : item.quantity >= 10
-                              ? '✨ 10% de descuento por volumen'
-                              : '✨ 5% de descuento por volumen'}
-                          </p>
-                        )}
+                        {/* Volume discount — live calculation */}
+                        {(() => {
+                          const bp = calculateItemPrice(item);
+                          if (bp.volumeDiscountPercent > 0) {
+                            return (
+                              <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 text-center">
+                                <p className="text-xs text-green-700 dark:text-green-400 font-bold">
+                                  🎉 {Math.round(bp.volumeDiscountPercent * 100)}% de descuento por volumen
+                                </p>
+                                <p className="text-[10px] text-green-600 dark:text-green-500 mt-0.5">
+                                  Ahorras {formatMXN(bp.volumeDiscount)} por pieza — Total: {formatMXN(bp.lineTotal)}
+                                </p>
+                              </div>
+                            );
+                          }
+                          if (item.quantity < 5) {
+                            return (
+                              <p className="text-center text-xs text-wood-400 mt-3">
+                                💡 A partir de 5 piezas obtén descuento por volumen
+                              </p>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
 
                       {/* Notes */}
