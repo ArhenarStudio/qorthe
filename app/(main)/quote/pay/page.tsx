@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   FileText, CreditCard, ArrowLeft, CheckCircle, Loader2,
@@ -50,6 +50,14 @@ const formatDate = (d: string) =>
 const PAYABLE_STATUSES = ["aprobada", "anticipo_recibido"];
 
 export default function QuotePayPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-accent-gold" /></div>}>
+      <QuotePayContent />
+    </Suspense>
+  );
+}
+
+function QuotePayContent() {
   const params = useSearchParams();
   const quoteId = params.get("id");
   const { user } = useAuth();
