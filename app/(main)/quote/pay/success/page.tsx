@@ -1,10 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle, Loader2, ArrowRight } from "lucide-react";
 
 export default function QuotePaySuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-accent-gold" /></div>}>
+      <QuotePaySuccessContent />
+    </Suspense>
+  );
+}
+
+function QuotePaySuccessContent() {
   const params = useSearchParams();
   const sessionId = params.get("session_id");
   const quoteId = params.get("quote_id");
