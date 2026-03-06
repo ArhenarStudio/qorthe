@@ -7,7 +7,7 @@ import {
   Info, Package, Truck, Layers, Scissors, FolderTree, Search as SearchIcon,
   Settings, BarChart3, Image as ImageIcon, DollarSign, FileText
 } from 'lucide-react';
-import { type AdminProduct } from '@/data/adminMockData';
+import { type Product } from './products/types';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -120,19 +120,7 @@ const defaultFormData: ProductFormData = {
   internalNotes: '',
 };
 
-/* ---------- Mock stats data ---------- */
-const statsSalesData = [
-  { day: '1 Feb', ventas: 3 }, { day: '5 Feb', ventas: 5 }, { day: '10 Feb', ventas: 2 },
-  { day: '15 Feb', ventas: 7 }, { day: '20 Feb', ventas: 4 }, { day: '25 Feb', ventas: 6 },
-  { day: '28 Feb', ventas: 3 },
-];
 
-const mockStockHistory: StockHistoryEntry[] = [
-  { date: '28 Feb', stock: 15, change: 3, reason: 'Produccion completada' },
-  { date: '25 Feb', stock: 12, change: -1, reason: 'Venta Pedido #14' },
-  { date: '24 Feb', stock: 13, change: -2, reason: 'Venta Pedido #12' },
-  { date: '20 Feb', stock: 15, change: 15, reason: 'Inventario inicial' },
-];
 
 /* ---------- Sections config ---------- */
 const sections = [
@@ -152,7 +140,7 @@ const sections = [
 /* ---------- Component ---------- */
 
 interface ProductFormProps {
-  product?: AdminProduct | null;
+  product?: Product | null;
   onBack: () => void;
 }
 
@@ -163,21 +151,21 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
     if (!product) return defaultFormData;
     return {
       ...defaultFormData,
-      name: product.name,
+      name: product.title,
       shortDescription: `Pieza artesanal de ${product.material}. Ideal para presentacion gourmet.`,
       description: `Esta pieza de ${product.material} es elaborada a mano por artesanos mexicanos. Cada tabla es unica, con vetas y tonos naturales que la hacen irrepetible. Perfecta para presentar quesos, charcuteria y aperitivos con estilo.`,
       status: product.status === 'outOfStock' ? 'active' : product.status as 'active' | 'draft',
       price: product.price,
-      comparePrice: product.comparePrice || 0,
-      cost: product.cost,
+      comparePrice: product.compare_price || 0,
+      cost: product.unit_cost,
       sku: product.sku,
       stock: product.stock,
-      reorderPoint: product.reorderPoint,
-      images: [product.image],
-      slug: product.slug,
-      metaTitle: `${product.name} | DavidSon's Design`,
+      reorderPoint: product.reorder_point,
+      images: [product.thumbnail || "/placeholder.jpg"],
+      slug: product.handle,
+      metaTitle: `${product.title} | DavidSon's Design`,
       metaDescription: `Pieza artesanal de ${product.material}. Hecha a mano con maderas sustentables.`,
-      laserEngraving: product.laserAvailable,
+      laserEngraving: product.laser_available,
       woodType: product.material,
       productWeight: product.weight.toString(),
       mainCategory: product.category,
@@ -185,12 +173,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
       collections: ['Best Sellers'],
       warranty: '1 ano',
       careInstructions: 'Lavar a mano, no sumergir. Aplicar aceite mineral mensualmente.',
-      productionDays: product.productionDays,
+      productionDays: product.production_days,
       variants: product.dimensions.includes('×')
         ? [
-            { id: 'v1', name: 'Mediana', sku: `${product.sku}-MED`, price: product.price, cost: product.cost, stock: Math.floor(product.stock * 0.6), dimensions: product.dimensions, weight: product.weight },
-            { id: 'v2', name: 'Grande', sku: `${product.sku}-GDE`, price: Math.round(product.price * 1.3), cost: Math.round(product.cost * 1.3), stock: Math.floor(product.stock * 0.3), dimensions: '40×30×2.5cm', weight: product.weight * 1.4 },
-            { id: 'v3', name: 'XL', sku: `${product.sku}-XL`, price: Math.round(product.price * 1.7), cost: Math.round(product.cost * 1.7), stock: Math.floor(product.stock * 0.1), dimensions: '55×35×3cm', weight: product.weight * 2 },
+            { id: 'v1', name: 'Mediana', sku: `${product.sku}-MED`, price: product.price, cost: product.unit_cost, stock: Math.floor(product.stock * 0.6), dimensions: product.dimensions, weight: product.weight },
+            { id: 'v2', name: 'Grande', sku: `${product.sku}-GDE`, price: Math.round(product.price * 1.3), cost: Math.round(product.unit_cost * 1.3), stock: Math.floor(product.stock * 0.3), dimensions: '40×30×2.5cm', weight: product.weight * 1.4 },
+            { id: 'v3', name: 'XL', sku: `${product.sku}-XL`, price: Math.round(product.price * 1.7), cost: Math.round(product.unit_cost * 1.7), stock: Math.floor(product.stock * 0.1), dimensions: '55×35×3cm', weight: product.weight * 2 },
           ]
         : [],
     };
@@ -200,6 +188,52 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
   const [hasChanges, setHasChanges] = useState(false);
   const [newTag, setNewTag] = useState('');
   const [stockAdjust, setStockAdjust] = useState({ qty: 0, reason: 'Produccion completada', note: '' });
+
+  // Live data from API (replaces mock data)
+  const [stockHistory, setStockHistory] = useState<StockHistoryEntry[]>([]);
+  const [salesChartData, setSalesChartData] = useState<{ day: string; ventas: number }[]>([]);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    const sku = product.sku || '';
+    // Fetch stock history from inventory movements
+    fetch(`/api/admin/inventory?action=movements&limit=20&sku=${sku}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.movements) {
+          setStockHistory(data.movements.map((m: Record<string, unknown>) => ({
+            date: new Date(m.created_at as string).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }),
+            stock: m.new_stock as number,
+            change: m.quantity as number,
+            reason: (m.notes as string) || `${m.type} ${m.reference || ''}`.trim(),
+          })));
+        }
+      })
+      .catch(() => { /* silent */ });
+    // Fetch sales data for chart (last 30 days)
+    fetch(`/api/admin/inventory?action=movements&limit=200`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.movements) {
+          const sales = (data.movements as Record<string, unknown>[]).filter(m => m.type === 'sale');
+          const byDay = new Map<string, number>();
+          const now = Date.now();
+          for (let i = 29; i >= 0; i--) {
+            const d = new Date(now - i * 86400000);
+            byDay.set(d.toISOString().slice(0, 10), 0);
+          }
+          sales.forEach((s: Record<string, unknown>) => {
+            const key = (s.created_at as string).slice(0, 10);
+            if (byDay.has(key)) byDay.set(key, (byDay.get(key) || 0) + Math.abs(s.quantity as number));
+          });
+          setSalesChartData(Array.from(byDay.entries()).map(([date, ventas]) => ({
+            day: new Date(date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }),
+            ventas,
+          })));
+        }
+      })
+      .catch(() => { /* silent */ });
+  }, [product?.id, product?.sku]);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -562,7 +596,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     <button className="text-[10px] text-accent-gold hover:underline">Ver todo →</button>
                   </div>
                   <div className="space-y-2">
-                    {mockStockHistory.map((entry, i) => (
+                    {stockHistory.length === 0 ? (
+                      <p className="text-[10px] text-wood-400">Sin movimientos registrados</p>
+                    ) : stockHistory.map((entry, i) => (
                       <div key={i} className="flex items-center gap-3 text-[11px]">
                         <span className="text-wood-400 w-14">{entry.date}</span>
                         <span className="text-wood-600">Stock: {entry.stock}</span>
@@ -1108,7 +1144,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
             <Card id="stats" title="Estadisticas" icon={<BarChart3 size={16} className="text-accent-gold" />}>
               <div className="space-y-5">
                 <div className="flex items-center justify-between">
-                  <h5 className="text-xs text-wood-700">{product.name}</h5>
+                  <h5 className="text-xs text-wood-700">{product.title}</h5>
                   <select className="text-[10px] border border-wood-200 rounded-lg px-2 py-1 bg-white text-wood-600 outline-none">
                     <option>30 dias</option><option>90 dias</option><option>12 meses</option>
                   </select>
@@ -1117,8 +1153,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                 {/* KPIs */}
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { label: 'Unidades vendidas', value: product.soldUnits, change: '+12%' },
-                    { label: 'Ingresos totales', value: `$${product.revenue.toLocaleString()}`, change: '+8%' },
+                    { label: 'Unidades vendidas', value: product.sold_units_30d, change: '+12%' },
+                    { label: 'Ingresos totales', value: `$${product.revenue_30d.toLocaleString()}`, change: '+8%' },
                     { label: 'Visitas al producto', value: '1,240', change: '+22%' },
                   ].map(s => (
                     <div key={s.label} className="bg-sand-50 rounded-xl p-4 text-center">
@@ -1134,7 +1170,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                 {/* Sales chart */}
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={statsSalesData}>
+                    <LineChart data={salesChartData}>
                       <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="#BCAAA4" />
                       <YAxis tick={{ fontSize: 10 }} stroke="#BCAAA4" />
                       <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #EFEBE9' }} />
@@ -1146,8 +1182,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                 {/* Reviews */}
                 <div className="flex items-center gap-2 text-xs text-wood-600">
                   <span>Reviews:</span>
-                  <span className="text-accent-gold">★ {product.rating}</span>
-                  <span>({product.reviewCount} reviews) — 67% de 5 estrellas</span>
+                  <span className="text-accent-gold">★ {product.avg_rating}</span>
+                  <span>({product.review_count} reviews) — 67% de 5 estrellas</span>
                 </div>
 
                 {/* Best selling variants */}
@@ -1173,7 +1209,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                   </div>
                 )}
 
-                {product.laserAvailable && (
+                {product.laser_available && (
                   <p className="text-xs text-wood-600">Con grabado laser: <span className="text-wood-900">65%</span> de las ventas</p>
                 )}
 
