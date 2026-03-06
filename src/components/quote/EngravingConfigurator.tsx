@@ -162,38 +162,78 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
               {/* Content area */}
               <div className="bg-white dark:bg-wood-900/40 rounded-xl p-5 border border-wood-100 dark:border-wood-700/50">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Zones */}
+                  {/* Zones — Visual board with clickable areas */}
                   <div className="space-y-3">
                     <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
                       Ubicación en la pieza
                     </label>
-                    <div className="space-y-3">
-                      {zoneGroups.map((group) => (
-                        <div key={group.label}>
-                          <span className="text-[9px] font-bold text-wood-300 uppercase tracking-widest mb-1.5 block">{group.label}</span>
-                          <div className="grid grid-cols-2 gap-1.5">
-                            {group.zones.map((zone: string) => {
-                              const z = zone as EngravingZone;
-                              const sel = config.zones.includes(z);
-                              return (
-                                <button
-                                  key={zone}
-                                  onClick={() => handleZoneToggle(zone)}
-                                  className={`flex items-center gap-2 px-3 py-2 text-xs rounded-lg border transition-all ${
-                                    sel
-                                      ? 'bg-accent-gold/10 border-accent-gold text-wood-900 dark:text-accent-gold font-bold'
-                                      : 'bg-wood-50 dark:bg-wood-800 border-wood-200 dark:border-wood-700 text-wood-500'
-                                  }`}
-                                >
-                                  <div className={`w-1.5 h-1.5 rounded-full ${sel ? 'bg-accent-gold' : 'bg-wood-300'}`} />
-                                  {zone}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
+                    {/* Interactive SVG Board */}
+                    <div className="relative w-full max-w-[280px] mx-auto">
+                      <svg viewBox="0 0 200 140" className="w-full h-auto">
+                        {/* Board outline */}
+                        <rect x="10" y="10" width="180" height="120" rx="6" fill="#C5A065" opacity="0.15" stroke="#C5A065" strokeWidth="1" />
+                        <rect x="10" y="10" width="180" height="120" rx="6" fill="none" stroke="#8B7355" strokeWidth="0.5" />
+                        {/* Wood grain lines */}
+                        {[30, 50, 70, 90, 110].map(y => (
+                          <line key={y} x1="15" y1={y} x2="185" y2={y} stroke="#8B7355" strokeWidth="0.3" opacity="0.2" />
+                        ))}
+
+                        {/* Centro zone */}
+                        <rect x="60" y="35" width="80" height="55" rx="3" fill={config.zones.includes('Centro' as EngravingZone) ? '#C5A065' : 'transparent'} opacity={config.zones.includes('Centro' as EngravingZone) ? 0.3 : 0} stroke={config.zones.includes('Centro' as EngravingZone) ? '#C5A065' : '#8B7355'} strokeWidth={config.zones.includes('Centro' as EngravingZone) ? 1.5 : 0.5} strokeDasharray={config.zones.includes('Centro' as EngravingZone) ? 'none' : '3 2'} className="cursor-pointer hover:opacity-40 transition-opacity" onClick={() => handleZoneToggle('Centro')} />
+                        <text x="100" y="66" textAnchor="middle" fill={config.zones.includes('Centro' as EngravingZone) ? '#8B6914' : '#8B7355'} fontSize="7" fontWeight={config.zones.includes('Centro' as EngravingZone) ? 'bold' : 'normal'} className="pointer-events-none select-none">Centro</text>
+
+                        {/* Esquina zone */}
+                        <rect x="145" y="15" width="40" height="30" rx="3" fill={config.zones.includes('Esquina' as EngravingZone) ? '#C5A065' : 'transparent'} opacity={config.zones.includes('Esquina' as EngravingZone) ? 0.3 : 0} stroke={config.zones.includes('Esquina' as EngravingZone) ? '#C5A065' : '#8B7355'} strokeWidth={config.zones.includes('Esquina' as EngravingZone) ? 1.5 : 0.5} strokeDasharray={config.zones.includes('Esquina' as EngravingZone) ? 'none' : '3 2'} className="cursor-pointer hover:opacity-40 transition-opacity" onClick={() => handleZoneToggle('Esquina')} />
+                        <text x="165" y="33" textAnchor="middle" fill={config.zones.includes('Esquina' as EngravingZone) ? '#8B6914' : '#8B7355'} fontSize="6" className="pointer-events-none select-none">Esquina</text>
+
+                        {/* Borde superior zone */}
+                        <rect x="30" y="12" width="140" height="16" rx="2" fill={config.zones.includes('Borde superior' as EngravingZone) ? '#C5A065' : 'transparent'} opacity={config.zones.includes('Borde superior' as EngravingZone) ? 0.3 : 0} stroke={config.zones.includes('Borde superior' as EngravingZone) ? '#C5A065' : '#8B7355'} strokeWidth={config.zones.includes('Borde superior' as EngravingZone) ? 1.5 : 0.5} strokeDasharray={config.zones.includes('Borde superior' as EngravingZone) ? 'none' : '3 2'} className="cursor-pointer hover:opacity-40 transition-opacity" onClick={() => handleZoneToggle('Borde superior')} />
+                        <text x="100" y="23" textAnchor="middle" fill={config.zones.includes('Borde superior' as EngravingZone) ? '#8B6914' : '#8B7355'} fontSize="6" className="pointer-events-none select-none">Borde superior</text>
+
+                        {/* Lateral izquierdo */}
+                        <rect x="12" y="30" width="16" height="80" rx="2" fill={config.zones.includes('Lateral izquierdo' as EngravingZone) ? '#C5A065' : 'transparent'} opacity={config.zones.includes('Lateral izquierdo' as EngravingZone) ? 0.3 : 0} stroke={config.zones.includes('Lateral izquierdo' as EngravingZone) ? '#C5A065' : '#8B7355'} strokeWidth={config.zones.includes('Lateral izquierdo' as EngravingZone) ? 1.5 : 0.5} strokeDasharray={config.zones.includes('Lateral izquierdo' as EngravingZone) ? 'none' : '3 2'} className="cursor-pointer hover:opacity-40 transition-opacity" onClick={() => handleZoneToggle('Lateral izquierdo')} />
+                        <text x="20" y="74" textAnchor="middle" fill={config.zones.includes('Lateral izquierdo' as EngravingZone) ? '#8B6914' : '#8B7355'} fontSize="5" transform="rotate(-90 20 74)" className="pointer-events-none select-none">Izquierdo</text>
+
+                        {/* Lateral derecho */}
+                        <rect x="172" y="30" width="16" height="80" rx="2" fill={config.zones.includes('Lateral derecho' as EngravingZone) ? '#C5A065' : 'transparent'} opacity={config.zones.includes('Lateral derecho' as EngravingZone) ? 0.3 : 0} stroke={config.zones.includes('Lateral derecho' as EngravingZone) ? '#C5A065' : '#8B7355'} strokeWidth={config.zones.includes('Lateral derecho' as EngravingZone) ? 1.5 : 0.5} strokeDasharray={config.zones.includes('Lateral derecho' as EngravingZone) ? 'none' : '3 2'} className="cursor-pointer hover:opacity-40 transition-opacity" onClick={() => handleZoneToggle('Lateral derecho')} />
+                        <text x="180" y="74" textAnchor="middle" fill={config.zones.includes('Lateral derecho' as EngravingZone) ? '#8B6914' : '#8B7355'} fontSize="5" transform="rotate(90 180 74)" className="pointer-events-none select-none">Derecho</text>
+
+                        {/* Frontal completo (full board overlay) */}
+                        {config.zones.includes('Frontal completo' as EngravingZone) && (
+                          <rect x="10" y="10" width="180" height="120" rx="6" fill="#C5A065" opacity="0.15" stroke="#C5A065" strokeWidth="2" strokeDasharray="4 2" />
+                        )}
+                      </svg>
+
+                      {/* Frontal completo toggle below board */}
+                      <button
+                        onClick={() => handleZoneToggle('Frontal completo')}
+                        className={`mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 text-xs rounded-lg border transition-all ${
+                          config.zones.includes('Frontal completo' as EngravingZone)
+                            ? 'bg-accent-gold/10 border-accent-gold text-wood-900 font-bold'
+                            : 'bg-wood-50 border-wood-200 text-wood-500 hover:border-wood-400'
+                        }`}
+                      >
+                        <div className={`w-1.5 h-1.5 rounded-full ${config.zones.includes('Frontal completo' as EngravingZone) ? 'bg-accent-gold' : 'bg-wood-300'}`} />
+                        Frontal completo
+                      </button>
                     </div>
+
+                    {/* Quick-select buttons for non-visual zones */}
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {['Reverso', 'Multi-zona'].map(zone => {
+                        const sel = config.zones.includes(zone as EngravingZone);
+                        return (
+                          <button key={zone} onClick={() => handleZoneToggle(zone)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] rounded-lg border transition-all ${
+                              sel ? 'bg-accent-gold/10 border-accent-gold text-wood-900 font-bold' : 'bg-wood-50 border-wood-200 text-wood-500'
+                            }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${sel ? 'bg-accent-gold' : 'bg-wood-300'}`} />
+                            {zone}
+                          </button>
+                        );
+                      })}
+                    </div>
+
                     {config.zones.length > 1 && (
                       <p className="text-[10px] text-accent-gold">
                         +${zoneExtraPrice * (config.zones.length - 1)} por zona adicional
