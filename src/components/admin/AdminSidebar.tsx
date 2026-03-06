@@ -17,7 +17,7 @@ export type AdminPage =
   | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
   | 'integrations' | 'theme' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
-  | 'pos';
+  | 'pos' | 'users';
 
 interface NavItem {
   id: AdminPage;
@@ -102,6 +102,7 @@ const navGroups: NavGroup[] = [
       { id: 'integrations', label: 'Integraciones', icon: Plug },
       { id: 'importexport', label: 'Importar / Exportar', icon: ArrowUpDown },
       { id: 'notifications', label: 'Notificaciones', icon: Bell, badge: 3 },
+      { id: 'users', label: 'Equipo', icon: Users },
       { id: 'settings', label: 'Configuracion', icon: Settings },
     ],
   },

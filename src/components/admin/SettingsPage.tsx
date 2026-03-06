@@ -9,10 +9,10 @@ import {
   GripVertical, Globe, MapPin, Phone, Mail, Instagram
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { UsersRolesManager } from './UsersRolesManager';
+
 
 // ===== TYPES =====
-type STab = 'general' | 'store' | 'payments' | 'shipping' | 'taxes' | 'users' | 'integrations' | 'developer';
+type STab = 'general' | 'store' | 'payments' | 'shipping' | 'taxes' | 'integrations' | 'developer';
 
 const tabItems: Array<{ id: STab; label: string; icon: React.ElementType }> = [
   { id: 'general', label: 'General', icon: Settings },
@@ -20,7 +20,7 @@ const tabItems: Array<{ id: STab; label: string; icon: React.ElementType }> = [
   { id: 'payments', label: 'Pagos', icon: CreditCard },
   { id: 'shipping', label: 'Envios', icon: Truck },
   { id: 'taxes', label: 'Impuestos', icon: Receipt },
-  { id: 'users', label: 'Usuarios', icon: Users },
+
   { id: 'integrations', label: 'Integraciones', icon: Plug },
   { id: 'developer', label: 'Desarrollador', icon: Code },
 ];
@@ -1000,7 +1000,7 @@ export const SettingsPage: React.FC = () => {
     payments: <PaymentsTab />,
     shipping: <ShippingTab />,
     taxes: <TaxesTab />,
-    users: <UsersRolesManager />,
+
     integrations: <IntegrationsTab />,
     developer: <DeveloperTab />,
   };
