@@ -93,6 +93,24 @@ export interface QuoteZoneGroup {
   zones: string[];
 }
 
+export interface QuoteDesignTemplate {
+  id: string;
+  name: string;
+  category: string;
+  desc: string;
+  svgCode: string;
+  defaultText?: string;
+  tags: string[];
+  applicableTo: ('madera' | 'textil' | 'grabado')[];
+  enabled: boolean;
+}
+
+export interface QuoteDesignCategory {
+  id: string;
+  label: string;
+  enabled: boolean;
+}
+
 export interface FullQuoteConfig {
   // Products
   woodProducts: QuoteProductOption[];
@@ -127,6 +145,10 @@ export interface FullQuoteConfig {
 
   // Bundles
   bundles: QuoteBundleConfig[];
+
+  // Design Gallery
+  designCategories: QuoteDesignCategory[];
+  designTemplates: QuoteDesignTemplate[];
 }
 
 // ── Defaults ────────────────────────────────────────────────
@@ -272,5 +294,30 @@ export const DEFAULT_FULL_CONFIG: FullQuoteConfig = {
         { category: 'textil', type: 'Tote bag', quantity: 5 },
       ],
     },
+  ],
+
+  designCategories: [
+    { id: 'monograma', label: 'Monogramas', enabled: true },
+    { id: 'frase', label: 'Frases', enabled: true },
+    { id: 'patron', label: 'Patrones', enabled: true },
+    { id: 'logo-estilo', label: 'Logos', enabled: true },
+    { id: 'ocasion', label: 'Ocasiones', enabled: true },
+    { id: 'corporativo', label: 'Corporativo', enabled: true },
+  ],
+
+  designTemplates: [
+    { id: 'mono-circle', name: 'Monograma Círculo', category: 'monograma', desc: 'Iniciales en marco circular clásico', svgCode: '<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="40" cy="40" r="30" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.4"/><text x="40" y="48" text-anchor="middle" fill="currentColor" font-size="24" font-family="serif" font-weight="bold">AB</text></svg>', defaultText: 'AB', tags: ['iniciales', 'elegante'], applicableTo: ['madera', 'textil', 'grabado'], enabled: true },
+    { id: 'mono-diamond', name: 'Monograma Diamante', category: 'monograma', desc: 'Inicial en marco rombo', svgCode: '<svg viewBox="0 0 80 80"><rect x="16" y="16" width="48" height="48" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(45 40 40)"/><text x="40" y="47" text-anchor="middle" fill="currentColor" font-size="20" font-family="serif" font-style="italic">M</text></svg>', defaultText: 'M', tags: ['inicial', 'moderno'], applicableTo: ['madera', 'textil', 'grabado'], enabled: true },
+    { id: 'mono-laurel', name: 'Monograma Laurel', category: 'monograma', desc: 'Iniciales con hojas de laurel', svgCode: '<svg viewBox="0 0 80 80"><path d="M20 60 Q15 40 25 25 Q30 35 25 50" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/><path d="M60 60 Q65 40 55 25 Q50 35 55 50" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/><text x="40" y="48" text-anchor="middle" fill="currentColor" font-size="18" font-family="serif" font-weight="bold">JR</text><line x1="28" y1="55" x2="52" y2="55" stroke="currentColor" stroke-width="0.8" opacity="0.5"/></svg>', defaultText: 'JR', tags: ['iniciales', 'premium'], applicableTo: ['madera', 'grabado'], enabled: true },
+    { id: 'frase-appetit', name: 'Bon Appétit', category: 'frase', desc: 'Frase clásica de cocina', svgCode: '<svg viewBox="0 0 80 80"><text x="40" y="35" text-anchor="middle" fill="currentColor" font-size="10" font-family="serif" font-style="italic">Bon</text><text x="40" y="52" text-anchor="middle" fill="currentColor" font-size="13" font-family="serif" font-weight="bold">Appétit</text><line x1="15" y1="60" x2="65" y2="60" stroke="currentColor" stroke-width="0.5" opacity="0.4"/></svg>', defaultText: 'Bon Appétit', tags: ['cocina', 'elegante'], applicableTo: ['madera', 'textil'], enabled: true },
+    { id: 'frase-homemade', name: 'Hecho en Casa', category: 'frase', desc: 'Para cocinas con amor', svgCode: '<svg viewBox="0 0 80 80"><text x="40" y="30" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif" letter-spacing="3">HECHO EN</text><text x="40" y="48" text-anchor="middle" fill="currentColor" font-size="14" font-family="serif" font-weight="bold">Casa</text><text x="40" y="62" text-anchor="middle" fill="currentColor" font-size="7" font-family="sans-serif" letter-spacing="2">CON AMOR</text></svg>', defaultText: 'Hecho en Casa con Amor', tags: ['hogar', 'artesanal'], applicableTo: ['madera', 'textil'], enabled: true },
+    { id: 'frase-fecha', name: 'Fecha Conmemorativa', category: 'frase', desc: 'Año y nombre de familia', svgCode: '<svg viewBox="0 0 80 80"><text x="40" y="28" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif" letter-spacing="2">EST.</text><text x="40" y="48" text-anchor="middle" fill="currentColor" font-size="18" font-family="serif" font-weight="bold">2024</text><line x1="18" y1="55" x2="62" y2="55" stroke="currentColor" stroke-width="0.8"/><text x="40" y="66" text-anchor="middle" fill="currentColor" font-size="7" font-family="sans-serif" letter-spacing="1">FAMILIA</text></svg>', defaultText: '2024', tags: ['fecha', 'aniversario'], applicableTo: ['madera', 'grabado'], enabled: true },
+    { id: 'patron-geo', name: 'Geométrico', category: 'patron', desc: 'Patrón de cuadros rotados', svgCode: '<svg viewBox="0 0 80 80"><rect x="10" y="10" width="60" height="60" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.3"/><rect x="10" y="10" width="60" height="60" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.5" transform="rotate(15 40 40)"/><rect x="10" y="10" width="60" height="60" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.7" transform="rotate(30 40 40)"/><rect x="10" y="10" width="60" height="60" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.9" transform="rotate(45 40 40)"/></svg>', tags: ['abstracto', 'moderno'], applicableTo: ['madera', 'textil'], enabled: true },
+    { id: 'patron-ondas', name: 'Ondas', category: 'patron', desc: 'Patrón orgánico de ondas', svgCode: '<svg viewBox="0 0 80 80"><path d="M10 20 Q25 12 40 20 Q55 28 70 20" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M10 35 Q25 27 40 35 Q55 43 70 35" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M10 50 Q25 42 40 50 Q55 58 70 50" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M10 65 Q25 57 40 65 Q55 73 70 65" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>', tags: ['orgánico', 'fluido'], applicableTo: ['madera', 'textil'], enabled: true },
+    { id: 'logo-minimal', name: 'Logo Minimalista', category: 'logo-estilo', desc: 'Iniciales en rectángulo redondeado', svgCode: '<svg viewBox="0 0 80 80"><rect x="20" y="20" width="40" height="40" rx="8" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="40" y="46" text-anchor="middle" fill="currentColor" font-size="16" font-family="sans-serif" font-weight="bold">DS</text></svg>', defaultText: 'DS', tags: ['marca', 'moderno'], applicableTo: ['madera', 'textil', 'grabado'], enabled: true },
+    { id: 'logo-sello', name: 'Sello Artesanal', category: 'logo-estilo', desc: 'Estilo sello circular con texto', svgCode: '<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="40" cy="40" r="24" fill="none" stroke="currentColor" stroke-width="0.5"/><text x="40" y="36" text-anchor="middle" fill="currentColor" font-size="6" font-family="sans-serif" letter-spacing="3">ARTESANAL</text><line x1="20" y1="40" x2="60" y2="40" stroke="currentColor" stroke-width="0.5"/><text x="40" y="52" text-anchor="middle" fill="currentColor" font-size="10" font-family="serif" font-weight="bold">MARCA</text></svg>', defaultText: 'MARCA', tags: ['sello', 'vintage'], applicableTo: ['madera', 'textil', 'grabado'], enabled: true },
+    { id: 'ocasion-boda', name: 'Boda / Pareja', category: 'ocasion', desc: 'Nombres de pareja con fecha', svgCode: '<svg viewBox="0 0 80 80"><text x="40" y="25" text-anchor="middle" fill="currentColor" font-size="10" font-family="serif" font-style="italic">Ana</text><text x="40" y="42" text-anchor="middle" fill="currentColor" font-size="16" font-family="serif">&amp;</text><text x="40" y="58" text-anchor="middle" fill="currentColor" font-size="10" font-family="serif" font-style="italic">Carlos</text><text x="40" y="72" text-anchor="middle" fill="currentColor" font-size="6" font-family="sans-serif" letter-spacing="1">15.06.2024</text></svg>', defaultText: 'Ana & Carlos', tags: ['boda', 'pareja'], applicableTo: ['madera', 'textil'], enabled: true },
+    { id: 'ocasion-navidad', name: 'Navidad / Estrella', category: 'ocasion', desc: 'Estrella navideña', svgCode: '<svg viewBox="0 0 80 80"><polygon points="40,15 50,40 65,40 53,52 57,70 40,60 23,70 27,52 15,40 30,40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/><text x="40" y="78" text-anchor="middle" fill="currentColor" font-size="7" font-family="serif" letter-spacing="1">NAVIDAD</text></svg>', tags: ['navidad', 'estrella'], applicableTo: ['madera', 'textil'], enabled: true },
+    { id: 'corp-qr', name: 'Código QR Menú', category: 'corporativo', desc: 'QR para restaurantes', svgCode: '<svg viewBox="0 0 80 80"><rect x="22" y="15" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="42" y="15" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="22" y="35" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="42" y="35" width="8" height="8" fill="currentColor" opacity="0.3"/><rect x="52" y="45" width="8" height="8" fill="currentColor" opacity="0.3"/><text x="40" y="70" text-anchor="middle" fill="currentColor" font-size="7" font-family="sans-serif" letter-spacing="1">MENÚ QR</text></svg>', tags: ['qr', 'restaurante'], applicableTo: ['madera', 'grabado'], enabled: true },
   ],
 };

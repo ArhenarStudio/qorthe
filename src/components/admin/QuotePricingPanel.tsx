@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 // precios, bundles, extras, zonas, acabados
 // ═══════════════════════════════════════════════════════════════
 
-type Section = 'productos' | 'maderas' | 'textil' | 'grabado' | 'diseno' | 'descuentos' | 'bundles';
+type Section = 'productos' | 'maderas' | 'textil' | 'grabado' | 'diseno' | 'descuentos' | 'bundles' | 'galeria';
 
 const SECTIONS: { id: Section; label: string }[] = [
   { id: 'productos', label: 'Productos' },
@@ -21,6 +21,7 @@ const SECTIONS: { id: Section; label: string }[] = [
   { id: 'diseno', label: 'Diseño' },
   { id: 'descuentos', label: 'Descuentos' },
   { id: 'bundles', label: 'Paquetes' },
+  { id: 'galeria', label: 'Galería' },
 ];
 
 export const QuotePricingPanel: React.FC = () => {
@@ -131,6 +132,7 @@ export const QuotePricingPanel: React.FC = () => {
         {section === 'diseno' && <DisenoSection config={config} onChange={updateConfig} />}
         {section === 'descuentos' && <DescuentosSection config={config} onChange={updateConfig} />}
         {section === 'bundles' && <BundlesSection config={config} onChange={updateConfig} />}
+        {section === 'galeria' && <GaleriaSection config={config} onChange={updateConfig} />}
       </div>
 
       {/* Save bar */}
@@ -854,6 +856,209 @@ function BundlesSection({ config, onChange }: { config: FullQuoteConfig; onChang
         <button onClick={() => setShowAddForm(true)} className="flex items-center gap-2 text-xs font-bold text-accent-gold hover:underline">
           <Plus className="w-3.5 h-3.5" /> Crear nuevo paquete
         </button>
+      )}
+    </div>
+  );
+}
+
+
+// ── GALERÍA DE DISEÑOS ──────────────────────────────────────
+
+function GaleriaSection({ config, onChange }: { config: FullQuoteConfig; onChange: (p: Partial<FullQuoteConfig>) => void }) {
+  const [addingCat, setAddingCat] = useState(false);
+  const [newCatLabel, setNewCatLabel] = useState('');
+  const [addingTemplate, setAddingTemplate] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [newTpl, setNewTpl] = useState({
+    name: '', category: config.designCategories?.[0]?.id || 'monograma', desc: '',
+    svgCode: '', defaultText: '', tags: '', applicableTo: ['madera', 'textil', 'grabado'] as string[],
+  });
+
+  const categories = config.designCategories || [];
+  const templates = config.designTemplates || [];
+
+  const handleAddCategory = () => {
+    if (!newCatLabel.trim()) return;
+    const id = newCatLabel.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    onChange({ designCategories: [...categories, { id, label: newCatLabel, enabled: true }] });
+    setNewCatLabel('');
+    setAddingCat(false);
+  };
+
+  const handleAddTemplate = () => {
+    if (!newTpl.name.trim()) return;
+    const id = `tpl-${Date.now()}`;
+    onChange({
+      designTemplates: [...templates, {
+        id, name: newTpl.name, category: newTpl.category, desc: newTpl.desc,
+        svgCode: newTpl.svgCode, defaultText: newTpl.defaultText,
+        tags: newTpl.tags.split(',').map(t => t.trim()).filter(Boolean),
+        applicableTo: newTpl.applicableTo as ('madera' | 'textil' | 'grabado')[],
+        enabled: true,
+      }],
+    });
+    setNewTpl({ name: '', category: categories[0]?.id || '', desc: '', svgCode: '', defaultText: '', tags: '', applicableTo: ['madera', 'textil', 'grabado'] });
+    setAddingTemplate(false);
+  };
+
+  const updateTemplate = (idx: number, updates: Partial<FullQuoteConfig['designTemplates'][0]>) => {
+    const arr = [...templates]; arr[idx] = { ...arr[idx], ...updates };
+    onChange({ designTemplates: arr });
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Categories */}
+      <SectionTitle title="Categorías de Diseño" subtitle="Organiza los templates por categoría" />
+      <div className="space-y-2">
+        {categories.map((c, i) => (
+          <div key={c.id} className="flex items-center gap-3 px-4 py-2 bg-sand-50 dark:bg-wood-900/50 rounded-lg">
+            <MoveButtons index={i} total={categories.length} onMove={(from, to) => onChange({ designCategories: moveItem(categories, from, to) })} />
+            <EnableToggle enabled={c.enabled} onChange={(v) => {
+              const arr = [...categories]; arr[i] = { ...c, enabled: v }; onChange({ designCategories: arr });
+            }} />
+            <input value={c.label} onChange={(e) => {
+              const arr = [...categories]; arr[i] = { ...c, label: e.target.value }; onChange({ designCategories: arr });
+            }} className="flex-1 text-sm bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none" />
+            <button onClick={() => { if (confirm(`¿Eliminar "${c.label}"?`)) onChange({ designCategories: categories.filter((_, j) => j !== i) }); }}
+              className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+          </div>
+        ))}
+      </div>
+      {addingCat ? (
+        <div className="flex items-center gap-2 px-4 py-2 bg-accent-gold/5 border border-accent-gold/20 rounded-lg">
+          <input value={newCatLabel} onChange={e => setNewCatLabel(e.target.value)} placeholder="Nombre de categoría" className="flex-1 text-sm bg-transparent outline-none" autoFocus />
+          <button onClick={handleAddCategory} className="text-xs text-accent-gold font-bold hover:underline">Agregar</button>
+          <button onClick={() => setAddingCat(false)} className="text-xs text-wood-400">✕</button>
+        </div>
+      ) : (
+        <button onClick={() => setAddingCat(true)} className="flex items-center gap-1.5 text-xs font-bold text-accent-gold hover:underline"><Plus className="w-3.5 h-3.5" /> Agregar categoría</button>
+      )}
+
+      {/* Templates */}
+      <SectionTitle title="Templates de Diseño" subtitle={`${templates.length} diseños disponibles para el cotizador`} />
+      <div className="space-y-3">
+        {templates.map((t, i) => {
+          const isExpanded = expandedId === t.id;
+          const cat = categories.find(c => c.id === t.category);
+          return (
+            <div key={t.id} className="bg-sand-50 dark:bg-wood-900/50 rounded-xl border border-wood-100 dark:border-wood-800 overflow-hidden">
+              <div className="flex items-center gap-3 px-4 py-3">
+                <MoveButtons index={i} total={templates.length} onMove={(from, to) => onChange({ designTemplates: moveItem(templates, from, to) })} />
+                <EnableToggle enabled={t.enabled} onChange={(v) => updateTemplate(i, { enabled: v })} />
+                {/* SVG preview thumbnail */}
+                <div className="w-10 h-10 shrink-0 text-wood-500 rounded-lg bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 overflow-hidden p-1">
+                  {t.svgCode ? (
+                    <div dangerouslySetInnerHTML={{ __html: t.svgCode }} className="w-full h-full [&>svg]:w-full [&>svg]:h-full" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[8px] text-wood-300">SVG</div>
+                  )}
+                </div>
+                <button onClick={() => setExpandedId(isExpanded ? null : t.id)} className="flex-1 text-left min-w-0">
+                  <span className="font-medium text-sm text-wood-900 dark:text-sand-100 block truncate">{t.name}</span>
+                  <span className="text-[10px] text-wood-400">{cat?.label || t.category} · {t.applicableTo.join(', ')}</span>
+                </button>
+                {isExpanded ? <ChevronUp className="w-4 h-4 text-wood-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-wood-400 shrink-0" />}
+                <button onClick={() => { if (confirm(`¿Eliminar "${t.name}"?`)) onChange({ designTemplates: templates.filter((_, j) => j !== i) }); }}
+                  className="p-1 text-wood-300 hover:text-red-500 transition-colors shrink-0"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+              {isExpanded && (
+                <div className="px-4 pb-4 space-y-3 border-t border-wood-100 dark:border-wood-800 pt-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Nombre</label>
+                      <input value={t.name} onChange={e => updateTemplate(i, { name: e.target.value })}
+                        className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Categoría</label>
+                      <select value={t.category} onChange={e => updateTemplate(i, { category: e.target.value })}
+                        className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg outline-none">
+                        {categories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Descripción</label>
+                    <input value={t.desc} onChange={e => updateTemplate(i, { desc: e.target.value })}
+                      className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Código SVG</label>
+                    <textarea value={t.svgCode} onChange={e => updateTemplate(i, { svgCode: e.target.value })}
+                      rows={3} className="w-full px-3 py-2 text-xs font-mono bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none resize-none" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Texto default</label>
+                      <input value={t.defaultText || ''} onChange={e => updateTemplate(i, { defaultText: e.target.value })}
+                        className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Tags (coma separados)</label>
+                      <input value={t.tags.join(', ')} onChange={e => updateTemplate(i, { tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                        className="w-full px-3 py-2 text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Aplica a</label>
+                    <div className="flex gap-2">
+                      {(['madera', 'textil', 'grabado'] as const).map(cat => {
+                        const active = t.applicableTo.includes(cat);
+                        return (
+                          <button key={cat} onClick={() => {
+                            const newApplicable = active ? t.applicableTo.filter(a => a !== cat) : [...t.applicableTo, cat];
+                            if (newApplicable.length > 0) updateTemplate(i, { applicableTo: newApplicable as ('madera' | 'textil' | 'grabado')[] });
+                          }} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${active ? 'border-accent-gold bg-accent-gold/10 text-wood-900' : 'border-wood-200 text-wood-400'}`}>
+                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Add template */}
+      {addingTemplate ? (
+        <div className="bg-white dark:bg-wood-900 rounded-xl border border-accent-gold/30 p-4 space-y-3">
+          <h4 className="text-sm font-medium text-wood-900 dark:text-sand-100">Nuevo Template</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Nombre *</label>
+              <input value={newTpl.name} onChange={e => setNewTpl(p => ({ ...p, name: e.target.value }))} placeholder="Logo Empresa"
+                className="w-full px-3 py-2 text-sm bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Categoría</label>
+              <select value={newTpl.category} onChange={e => setNewTpl(p => ({ ...p, category: e.target.value }))}
+                className="w-full px-3 py-2 text-sm bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg outline-none">
+                {categories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Descripción</label>
+            <input value={newTpl.desc} onChange={e => setNewTpl(p => ({ ...p, desc: e.target.value }))} placeholder="Descripción breve"
+              className="w-full px-3 py-2 text-sm bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none" />
+          </div>
+          <div>
+            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Código SVG</label>
+            <textarea value={newTpl.svgCode} onChange={e => setNewTpl(p => ({ ...p, svgCode: e.target.value }))}
+              rows={3} placeholder='<svg viewBox="0 0 80 80">...</svg>'
+              className="w-full px-3 py-2 text-xs font-mono bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded-lg focus:border-accent-gold outline-none resize-none" />
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setAddingTemplate(false)} className="px-4 py-2 text-xs text-wood-500 hover:text-wood-700">Cancelar</button>
+            <button onClick={handleAddTemplate} disabled={!newTpl.name.trim()} className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50">Crear Template</button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setAddingTemplate(true)} className="flex items-center gap-1.5 text-xs font-bold text-accent-gold hover:underline"><Plus className="w-3.5 h-3.5" /> Agregar template de diseño</button>
       )}
     </div>
   );
