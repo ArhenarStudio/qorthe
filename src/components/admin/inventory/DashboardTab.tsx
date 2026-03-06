@@ -161,7 +161,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie data={statusDistribution} cx="50%" cy="50%" outerRadius={90} innerRadius={50}
-                paddingAngle={3} dataKey="value" nameKey="name" label={({ name, value }: any) => `${name}: ${value}`}
+                paddingAngle={3} dataKey="value" nameKey="name" label={({ name, value }: { name?: string; value?: number }) => `${name}: ${value}`}
                 labelLine={{ stroke: '#8B7355', strokeWidth: 0.5 }}>
                 {statusDistribution.map((entry, idx) => (
                   <Cell key={idx} fill={entry.fill} />
@@ -185,7 +185,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0ece8" />
               <XAxis dataKey="category" tick={{ fontSize: 9 }} tickLine={false} />
               <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${Math.round(v / 1000)}k`} />
-              <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v: any) => fmt(v as number)} />
+              <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v) => fmt(Number(v ?? 0))} />
               <Legend wrapperStyle={{ fontSize: 10 }} />
               <Bar dataKey="cost" name="Costo" fill="#C5A065" radius={[4, 4, 0, 0]} />
               <Bar dataKey="retail" name="Retail" fill="#2d2419" radius={[4, 4, 0, 0]} />

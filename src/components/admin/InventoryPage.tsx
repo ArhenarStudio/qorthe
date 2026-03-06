@@ -32,6 +32,7 @@ import {
   StockStatus, MovementType, STOCK_STATUS_CONFIG, MOVEMENT_TYPE_CONFIG,
   fmt, fmtDate, fmtDateTime, DEFAULT_INVENTORY_CONFIG,
 } from "./inventory/types";
+import { getMovementIcon } from "./inventory/InventoryIcons";
 import { DashboardTab } from "./inventory/DashboardTab";
 import { TransfersTab } from "./inventory/TransfersTab";
 import { CyclicCountTab } from "./inventory/CyclicCountTab";
@@ -274,7 +275,7 @@ export const InventoryPage: React.FC = () => {
               className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-bold text-wood-900 flex items-center gap-2">
-                  <span>{MOVEMENT_TYPE_CONFIG[quickAction.type].icon}</span>
+                  {getMovementIcon(quickAction.type, 16, MOVEMENT_TYPE_CONFIG[quickAction.type].color)}
                   {MOVEMENT_TYPE_CONFIG[quickAction.type].label}
                 </h4>
                 <button onClick={() => setQuickAction(null)} className="text-wood-400 hover:text-wood-700"><X size={18} /></button>
@@ -520,7 +521,7 @@ const OverviewTab: React.FC<{
                               return (
                                 <button key={type} onClick={() => onQuickAction(item, type)}
                                   className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-wood-200 rounded-lg text-[10px] font-bold text-wood-600 hover:border-wood-400 transition-colors">
-                                  <span>{cfg.icon}</span> {cfg.label}
+                                  {getMovementIcon(type, 12, cfg.color)} {cfg.label}
                                 </button>
                               );
                             })}
@@ -569,7 +570,7 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
             return (
               <tr key={m.id || i} className="hover:bg-sand-50/50 transition-colors">
                 <td className="px-4 py-3 text-[11px] text-wood-500">{fmtDateTime(m.created_at)}</td>
-                <td className="px-4 py-3"><span className={`text-[10px] font-bold ${cfg.color}`}>{cfg.icon} {cfg.label}</span></td>
+                <td className="px-4 py-3"><span className={`text-[10px] font-bold flex items-center gap-1 ${cfg.color}`}>{getMovementIcon(m.type, 12, cfg.color)} {cfg.label}</span></td>
                 <td className="px-4 py-3 text-xs text-wood-900">{m.product_title}</td>
                 <td className="px-4 py-3 text-xs text-wood-500 font-mono">{m.sku}</td>
                 <td className="px-4 py-3"><span className={`text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}>{isPositive ? '+' : ''}{m.quantity}</span></td>

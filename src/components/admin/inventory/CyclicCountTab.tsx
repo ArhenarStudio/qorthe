@@ -34,6 +34,7 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
   const [scheduledDate, setScheduledDate] = useState(new Date().toISOString().slice(0, 10));
   const [countNotes, setCountNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
 
   const fetchCounts = useCallback(async () => {
     setLoading(true);
@@ -127,14 +128,19 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
     });
   };
 
-  const completeCount = async () => {
+  const tryCompleteCount = () => {
     if (!activeCount) return;
     const uncounted = activeCount.items.filter(i => i.counted_stock === null).length;
     if (uncounted > 0) {
-      const proceed = confirm(`Hay ${uncounted} productos sin contar. ¿Completar de todos modos?`);
-      if (!proceed) return;
+      setShowCompleteConfirm(true);
+      return;
     }
+    completeCount();
+  };
 
+  const completeCount = async () => {
+    if (!activeCount) return;
+    setShowCompleteConfirm(false);
     setSubmitting(true);
     try {
       const res = await fetch("/api/admin/inventory", {
@@ -174,7 +180,7 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
             <button onClick={() => setActiveCount(null)} className="px-3 py-1.5 text-xs text-wood-500 border border-wood-200 rounded-lg">
               Volver
             </button>
-            <button onClick={completeCount} disabled={submitting}
+            <button onClick={tryCompleteCount} disabled={submitting}
               className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 disabled:opacity-50">
               <CheckCircle size={14} /> {submitting ? "Guardando..." : "Completar Conteo"}
             </button>
@@ -242,6 +248,29 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
             </tbody>
           </table>
         </div>
+
+        {showCompleteConfirm && (
+          <div className="bg-amber-50 rounded-xl border border-amber-200 p-4 flex items-start gap-3">
+            <AlertTriangle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-xs font-bold text-wood-900">Productos sin contar</p>
+              <p className="text-xs text-wood-600 mt-1">
+                Hay {activeCount.items.filter(i => i.counted_stock === null).length} productos sin contar.
+                ¿Completar el conteo de todos modos? Los productos sin contar no generarán ajustes.
+              </p>
+              <div className="flex gap-2 mt-3">
+                <button onClick={() => setShowCompleteConfirm(false)}
+                  className="px-3 py-1.5 text-xs text-wood-500 border border-wood-200 rounded-lg hover:bg-white">
+                  Cancelar
+                </button>
+                <button onClick={completeCount}
+                  className="px-3 py-1.5 text-xs bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-bold">
+                  Sí, completar conteo
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

@@ -134,7 +134,7 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0ece8" />
               <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} />
               <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
-              <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v: any) => fmt(v as number)} />
+              <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v) => fmt(Number(v ?? 0))} />
               <Line type="stepAfter" dataKey="cost" name="Costo actual" stroke="#C5A065" strokeWidth={2} dot={{ r: 3 }} />
               <Line type="stepAfter" dataKey="previous" name="Costo anterior" stroke="#d4c4a8" strokeWidth={1} strokeDasharray="4 2" dot={false} />
             </LineChart>
@@ -174,7 +174,7 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
             <CartesianGrid strokeDasharray="3 3" stroke="#f0ece8" />
             <XAxis dataKey="category" tick={{ fontSize: 9 }} tickLine={false} />
             <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${Math.round(v / 1000)}k`} />
-            <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v: any) => fmt(v as number)} />
+            <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v) => fmt(Number(v ?? 0))} />
             <Legend wrapperStyle={{ fontSize: 10 }} />
             <Bar dataKey="cost" name="Costo" fill="#C5A065" radius={[4, 4, 0, 0]} />
             <Bar dataKey="retail" name="Retail" fill="#2d2419" radius={[4, 4, 0, 0]} />

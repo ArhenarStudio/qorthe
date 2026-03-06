@@ -144,3 +144,57 @@ DROP TRIGGER IF EXISTS trg_reservations_updated ON inventory_reservations;
 CREATE TRIGGER trg_reservations_updated
   BEFORE UPDATE ON inventory_reservations
   FOR EACH ROW EXECUTE FUNCTION update_inventory_timestamp();
+
+-- ══════════════════════════════════════════════════════════════
+-- BASE TABLES (prerequisite — created if not exists)
+-- Execute BEFORE the expansion tables above
+-- ══════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS inventory_movements (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  inventory_item_id TEXT NOT NULL,
+  product_title TEXT NOT NULL DEFAULT '',
+  sku TEXT NOT NULL DEFAULT '',
+  type TEXT NOT NULL CHECK (type IN ('purchase','sale','adjustment','return','transfer','damage','production','count_adjustment','reservation')),
+  quantity INTEGER NOT NULL,
+  previous_stock INTEGER NOT NULL DEFAULT 0,
+  new_stock INTEGER NOT NULL DEFAULT 0,
+  unit_cost NUMERIC(12,2),
+  reference TEXT DEFAULT '',
+  notes TEXT DEFAULT '',
+  from_location TEXT,
+  to_location TEXT,
+  transfer_id TEXT,
+  created_by TEXT NOT NULL DEFAULT 'admin',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS inventory_alerts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  inventory_item_id TEXT NOT NULL,
+  product_title TEXT NOT NULL DEFAULT '',
+  sku TEXT NOT NULL DEFAULT '',
+  type TEXT NOT NULL CHECK (type IN ('low_stock','out_of_stock','overstock','expiring','slow_moving','count_discrepancy')),
+  severity TEXT NOT NULL DEFAULT 'warning' CHECK (severity IN ('critical','warning','info')),
+  message TEXT NOT NULL DEFAULT '',
+  is_resolved BOOLEAN NOT NULL DEFAULT false,
+  resolved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS inventory_config (
+  id INTEGER PRIMARY KEY DEFAULT 1,
+  config JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS inventory_enrichment (
+  variant_id TEXT PRIMARY KEY,
+  unit_cost NUMERIC(12,2),
+  reorder_point INTEGER DEFAULT 5,
+  reorder_qty INTEGER DEFAULT 10,
+  max_stock INTEGER DEFAULT 30,
+  location TEXT DEFAULT 'Taller Hermosillo',
+  last_movement_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);

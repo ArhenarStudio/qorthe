@@ -243,16 +243,16 @@ export const STOCK_STATUS_CONFIG: Record<StockStatus, { label: string; cls: stri
   overstock:    { label: 'Sobrestock',   cls: 'bg-blue-50 text-blue-600',    dot: 'bg-blue-500' },
 };
 
-export const MOVEMENT_TYPE_CONFIG: Record<MovementType, { label: string; icon: string; color: string }> = {
-  purchase:         { label: 'Compra',          icon: '📦', color: 'text-green-600' },
-  sale:             { label: 'Venta',           icon: '🛒', color: 'text-blue-600' },
-  adjustment:       { label: 'Ajuste',          icon: '⚙️', color: 'text-amber-600' },
-  return:           { label: 'Devolución',      icon: '↩️', color: 'text-purple-600' },
-  transfer:         { label: 'Transferencia',   icon: '🔄', color: 'text-indigo-600' },
-  damage:           { label: 'Daño/Merma',      icon: '⚠️', color: 'text-red-600' },
-  production:       { label: 'Producción',      icon: '🔨', color: 'text-wood-600' },
-  count_adjustment: { label: 'Ajuste conteo',   icon: '📋', color: 'text-teal-600' },
-  reservation:      { label: 'Reserva',         icon: '🔒', color: 'text-orange-600' },
+export const MOVEMENT_TYPE_CONFIG: Record<MovementType, { label: string; color: string }> = {
+  purchase:         { label: 'Compra',          color: 'text-green-600' },
+  sale:             { label: 'Venta',           color: 'text-blue-600' },
+  adjustment:       { label: 'Ajuste',          color: 'text-amber-600' },
+  return:           { label: 'Devolución',      color: 'text-purple-600' },
+  transfer:         { label: 'Transferencia',   color: 'text-indigo-600' },
+  damage:           { label: 'Daño/Merma',      color: 'text-red-600' },
+  production:       { label: 'Producción',      color: 'text-wood-600' },
+  count_adjustment: { label: 'Ajuste conteo',   color: 'text-teal-600' },
+  reservation:      { label: 'Reserva',         color: 'text-orange-600' },
 };
 
 export const TRANSFER_STATUS_CONFIG: Record<TransferStatus, { label: string; cls: string }> = {

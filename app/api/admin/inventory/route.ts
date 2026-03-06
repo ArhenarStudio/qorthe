@@ -450,19 +450,34 @@ export async function PATCH(req: NextRequest) {
 
       await supabase.from("inventory_transfers").update(updates).eq("id", transfer_id);
 
-      // If completed, record movements
+      // If completed, record movements and update Medusa stock
       if (status === "completed") {
         const { data: transfer } = await supabase.from("inventory_transfers").select("*").eq("id", transfer_id).single();
         if (transfer?.items) {
+          // Fetch all products once to get current stock
+          const prodResp = await medusaAdminFetch(`/admin/products?limit=100`);
+          const prodData = prodResp.ok ? await prodResp.json() : { products: [] };
+          const stockMap = new Map<string, number>();
+          for (const p of prodData.products || []) {
+            for (const v of (p.variants || []) as Record<string, unknown>[]) {
+              stockMap.set(v.id as string, (v.inventory_quantity as number) ?? 0);
+            }
+          }
+
           for (const item of transfer.items as Record<string, unknown>[]) {
+            const vid = item.variant_id as string;
+            const qty = item.quantity as number;
+            const currentStock = stockMap.get(vid) || 0;
+            // Transfer doesn't change total stock — it moves between locations
+            // Record movement for audit trail
             await supabase.from("inventory_movements").insert({
-              inventory_item_id: item.variant_id,
+              inventory_item_id: vid,
               product_title: item.product_title,
               sku: item.sku,
               type: "transfer",
-              quantity: item.quantity,
-              previous_stock: 0,
-              new_stock: 0,
+              quantity: qty,
+              previous_stock: currentStock,
+              new_stock: currentStock,
               reference: transfer.transfer_number,
               notes: `Transferencia de ${transfer.from_location} a ${transfer.to_location}`,
               created_by: "admin",
@@ -490,11 +505,26 @@ export async function PATCH(req: NextRequest) {
         for (const item of items as Record<string, unknown>[]) {
           const counted = item.counted_stock as number | null;
           const system = item.system_stock as number;
+          const vid = item.variant_id as string;
           if (counted !== null && counted !== system) {
             const diff = counted - system;
+
+            // Update Medusa stock to match counted value
+            const updateResp = await medusaAdminFetch(`/admin/products/variants/${vid}`, {
+              method: "POST",
+              body: JSON.stringify({ inventory_quantity: counted }),
+            });
+            if (!updateResp.ok) {
+              // Fallback: try inventory-items endpoint
+              await medusaAdminFetch(`/admin/inventory-items`, {
+                method: "POST",
+                body: JSON.stringify({ variant_id: vid, quantity: counted }),
+              });
+            }
+
             // Record adjustment movement
             await supabase.from("inventory_movements").insert({
-              inventory_item_id: item.variant_id,
+              inventory_item_id: vid,
               product_title: item.product_title,
               sku: item.sku,
               type: "count_adjustment",

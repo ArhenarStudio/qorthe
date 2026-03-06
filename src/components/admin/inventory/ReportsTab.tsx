@@ -9,7 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
-import { BarChart3, AlertTriangle, TrendingUp, Package } from "lucide-react";
+import { BarChart3, AlertTriangle, TrendingUp, Package, Download } from "lucide-react";
 import {
   InventoryItem, StockMovement, ABCCategory, ABCItem,
   ABC_CONFIG, fmt, fmtPct,
@@ -109,6 +109,18 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
       .sort((a, b) => a.doi - b.doi);
   }, [abcData]);
 
+  const exportCSV = () => {
+    const rows = abcData.items.map(i =>
+      `${i.sku},"${i.product_title}",${i.category},${i.total_sold_90d},${i.revenue_90d.toFixed(2)},${i.revenue_pct.toFixed(1)},${i.cumulative_pct.toFixed(1)},${i.days_of_inventory},${i.avg_daily_sales.toFixed(2)},${i.is_stagnant}`
+    );
+    const csv = ['SKU,Producto,Categoría ABC,Vendidos 90d,Ingreso 90d,% Ingreso,% Acumulado,Días Inv,Ventas/día,Estancado', ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `reporte-abc-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const viewButtons: { id: typeof reportView; label: string }[] = [
     { id: "abc", label: "Análisis ABC" },
     { id: "stagnant", label: `Estancados (${stagnantItems.length})` },
@@ -118,7 +130,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
   return (
     <div className="space-y-6">
       {/* View selector */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         {viewButtons.map(v => (
           <button key={v.id} onClick={() => setReportView(v.id)}
             className={`px-4 py-2 text-xs rounded-lg transition-colors ${
@@ -127,6 +139,10 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
             {v.label}
           </button>
         ))}
+        <button onClick={exportCSV}
+          className="px-4 py-2 text-xs rounded-lg bg-white text-wood-600 border border-wood-100 hover:border-wood-300 flex items-center gap-1.5 ml-auto">
+          <Download size={12} /> Exportar CSV
+        </button>
       </div>
 
       {/* ABC View */}
@@ -157,13 +173,13 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
                 <PieChart>
                   <Pie data={abcData.pieData} cx="50%" cy="50%" outerRadius={90} innerRadius={50}
                     paddingAngle={3} dataKey="value" nameKey="name"
-                    label={({ name, value }: any) => `${name}: ${fmt(value)}`}
+                    label={({ name, value }: { name?: string; value?: number }) => `${name}: ${fmt(value || 0)}`}
                     labelLine={{ strokeWidth: 0.5 }}>
                     {abcData.pieData.map((entry, idx) => (
                       <Cell key={idx} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v: any) => fmt(v as number)} />
+                  <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} formatter={(v) => fmt(Number(v ?? 0))} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -312,7 +328,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
                 <XAxis type="number" tick={{ fontSize: 10 }} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 9 }} tickLine={false} width={80} />
                 <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                  formatter={(v: any, name: any) => [name === 'doi' ? `${v} días` : v, name === 'doi' ? 'Días inventario' : 'Ventas/día']} />
+                  formatter={(v, name) => [name === 'doi' ? `${v} días` : String(v), name === 'doi' ? 'Días inventario' : 'Ventas/día']} />
                 <Bar dataKey="doi" name="Días de inventario" fill="#C5A065" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
