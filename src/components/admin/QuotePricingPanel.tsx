@@ -534,7 +534,7 @@ function DisenoSection({ config, onChange }: { config: FullQuoteConfig; onChange
             <EnableToggle enabled={s.enabled} onChange={(v) => {
               const arr = [...config.boardShapes]; arr[i] = { ...s, enabled: v }; onChange({ boardShapes: arr });
             }} />
-            <input value={s.label} onChange={(e) => { const arr = [...config.boardShapes]; arr[i] = { ...s, label: e.target.value, value: e.target.value as any }; onChange({ boardShapes: arr }); }}
+            <input value={s.label} onChange={(e) => { const arr = [...config.boardShapes]; arr[i] = { ...s, label: e.target.value, value: e.target.value }; onChange({ boardShapes: arr }); }}
               className="flex-1 text-sm bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none" />
             <button onClick={() => { if (confirm(`¿Eliminar "${s.label}"?`)) onChange({ boardShapes: config.boardShapes.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -544,7 +544,7 @@ function DisenoSection({ config, onChange }: { config: FullQuoteConfig; onChange
       {addingShape ? (
         <div className="flex items-center gap-2 px-4 py-2 bg-accent-gold/5 border border-accent-gold/20 rounded-lg">
           <input value={newShape} onChange={e => setNewShape(e.target.value)} placeholder="Nombre de la forma" className="flex-1 text-sm bg-transparent outline-none" autoFocus />
-          <button onClick={() => { if (!newShape.trim()) return; onChange({ boardShapes: [...config.boardShapes, { value: newShape as any, label: newShape, enabled: true }] }); setNewShape(''); setAddingShape(false); }} className="text-xs text-accent-gold font-bold hover:underline">Agregar</button>
+          <button onClick={() => { if (!newShape.trim()) return; onChange({ boardShapes: [...config.boardShapes, { value: newShape, label: newShape, enabled: true }] }); setNewShape(''); setAddingShape(false); }} className="text-xs text-accent-gold font-bold hover:underline">Agregar</button>
           <button onClick={() => setAddingShape(false)} className="text-xs text-wood-400">✕</button>
         </div>
       ) : (

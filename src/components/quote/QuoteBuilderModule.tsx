@@ -176,8 +176,8 @@ export const QuoteBuilderModule = () => {
       if (!res.ok) throw new Error(data.error || 'Error al enviar cotización');
 
       setSubmitted(data.quote.number);
-    } catch (err: any) {
-      setError(err.message || 'Error de conexión');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error de conexión');
     } finally {
       setSubmitting(false);
     }

@@ -47,7 +47,7 @@ export const WoodSelector: React.FC<WoodSelectorProps> = ({
         Selección de madera
       </h3>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4" role="radiogroup" aria-label="Selección de madera">
         {woodOptions.map((option) => {
           const isSelected = selectedWoods.includes(option.label as WoodType);
           return (

@@ -168,7 +168,7 @@ export const EngravingConfigurator: React.FC<EngravingConfiguratorProps> = ({
                       Ubicación en la pieza
                     </label>
                     {/* Interactive SVG Board */}
-                    <div className="relative w-full max-w-[280px] mx-auto">
+                    <div className="relative w-full max-w-[280px] mx-auto" role="group" aria-label="Seleccionar zona de grabado en la tabla">
                       <svg viewBox="0 0 200 140" className="w-full h-auto">
                         {/* Board outline */}
                         <rect x="10" y="10" width="180" height="120" rx="6" fill="#C5A065" opacity="0.15" stroke="#C5A065" strokeWidth="1" />

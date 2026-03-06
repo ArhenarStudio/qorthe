@@ -11,6 +11,7 @@ import { WoodSelector } from './WoodSelector';
 import { EngravingConfigurator } from './EngravingConfigurator';
 import { TextileConfigurator } from './TextileConfigurator';
 import { BoardDesignConfigurator } from './BoardDesignConfigurator';
+import { QuoteErrorBoundary } from './QuoteErrorBoundary';
 import { QuotePreviewSidebar } from './QuotePreviewSidebar';
 import { getProductIcon, PRODUCT_ICON_MAP, MATERIAL_ICON_MAP } from './QuoteIcons';
 import { calculateItemPrice, formatMXN } from './pricing';
@@ -74,7 +75,21 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
   onSave,
   onClose,
 }) => {
-  const [item, setItem] = useState<ProductItem>(initialItem);
+  const [item, setItemRaw] = useState<ProductItem>(initialItem);
+  const [itemHistory, setItemHistory] = useState<ProductItem[]>([]);
+  const setItem = React.useCallback((newItem: ProductItem | ((prev: ProductItem) => ProductItem)) => {
+    setItemRaw(prev => {
+      const next = typeof newItem === 'function' ? newItem(prev) : newItem;
+      setItemHistory(h => [...h.slice(-10), prev]); // Keep last 10 states
+      return next;
+    });
+  }, []);
+  const undoItem = React.useCallback(() => {
+    if (itemHistory.length === 0) return;
+    const prev = itemHistory[itemHistory.length - 1];
+    setItemHistory(h => h.slice(0, -1));
+    setItemRaw(prev);
+  }, [itemHistory]);
   const [stepIdx, setStepIdx] = useState(0);
   const [dir, setDir] = useState(0);
   const [activeTab, setActiveTab] = useState<'madera' | 'textil' | 'grabado'>(
@@ -107,16 +122,64 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
   const step = steps[stepIdx] || steps[0];
   const isLast = stepIdx === steps.length - 1;
 
+  // ── Step validation ──────────────────────────────────────
+  const canProceed = useCallback((): boolean => {
+    const s = steps[stepIdx];
+    if (!s) return false;
+    switch (s.id) {
+      case 'type': return !!item.type;
+      case 'material': return item.woods.length > 0;
+      case 'material-engrave': return !!item.materialToEngrave;
+      case 'dimensions': return item.dimensions.length >= 5 && item.dimensions.width >= 5 && item.dimensions.thickness >= 1;
+      case 'design': return !!item.boardDesign?.shape;
+      case 'engraving': return true; // optional step
+      case 'textile': return !!(item.textile?.technique && item.textile?.color);
+      case 'quantity': return item.quantity >= 1;
+      default: return true;
+    }
+  }, [stepIdx, steps, item]);
+
+  const [validationError, setValidationError] = useState<string | null>(null);
+
   const nav = useCallback(
     (d: number) => {
+      // Validate before moving forward
+      if (d > 0 && !canProceed()) {
+        const s = steps[stepIdx];
+        const msgs: Record<string, string> = {
+          'type': 'Selecciona un tipo de producto',
+          'material': 'Selecciona al menos una madera',
+          'material-engrave': 'Selecciona el material a grabar',
+          'dimensions': 'Las medidas mínimas son 5×5×1 cm',
+          'design': 'Selecciona una forma para tu pieza',
+          'textile': 'Selecciona técnica y color',
+          'quantity': 'Mínimo 1 pieza',
+        };
+        setValidationError(msgs[s?.id || ''] || 'Completa este paso');
+        setTimeout(() => setValidationError(null), 3000);
+        return;
+      }
+      setValidationError(null);
       const next = stepIdx + d;
       if (next >= 0 && next < steps.length) {
         setDir(d);
         setStepIdx(next);
       }
     },
-    [stepIdx, steps.length]
+    [stepIdx, steps, canProceed]
   );
+
+  // Keyboard navigation: ArrowLeft/Right for steps, Escape to close
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); nav(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); nav(-1); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [nav, onClose]);
 
   // Select a product type (resets category-specific fields)
   const selectProduct = (opt: ProductOption) => {
@@ -146,7 +209,7 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-6">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-6" role="dialog" aria-modal="true" aria-label="Cotizador de piezas personalizadas">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -165,12 +228,12 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
       >
         {/* ── Header: Steps ──────────────────────── */}
         <div className="flex-none px-5 py-4 border-b border-wood-100 dark:border-wood-800 flex items-center justify-between bg-white dark:bg-wood-950/50">
-          <div className="flex items-center gap-2 md:gap-3 overflow-x-auto flex-1 mr-4 scrollbar-hide">
+          <div className="flex items-center gap-2 md:gap-3 overflow-x-auto flex-1 mr-4 scrollbar-hide" role="navigation" aria-label="Pasos del cotizador">
             {steps.map((s, i) => {
               const active = i === stepIdx;
               const done = i < stepIdx;
               return (
-                <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
+                <div key={s.id} className="flex items-center gap-2 flex-shrink-0" role="listitem" aria-current={active ? 'step' : undefined}>
                   <button
                     onClick={() => {
                       if (i < stepIdx) {
@@ -201,8 +264,14 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
               );
             })}
           </div>
+          {itemHistory.length > 0 && (
+            <button onClick={undoItem} aria-label="Deshacer" className="p-2 rounded-full hover:bg-wood-100 dark:hover:bg-wood-800 text-wood-400 hover:text-wood-900 transition-colors flex-shrink-0" title="Deshacer (Ctrl+Z)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            </button>
+          )}
           <button
             onClick={onClose}
+            aria-label="Cerrar cotizador"
             className="p-2 rounded-full hover:bg-wood-100 dark:hover:bg-wood-800 text-wood-400 hover:text-wood-900 dark:hover:text-sand-100 transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
@@ -564,10 +633,18 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
         </div>
 
         {/* ── Footer ─────────────────────────────── */}
-        <div className="flex-none px-4 py-3 md:px-5 md:py-4 border-t border-wood-100 dark:border-wood-800 bg-white dark:bg-wood-950 flex justify-between items-center gap-2">
+        <div className="flex-none px-4 py-3 md:px-5 md:py-4 border-t border-wood-100 dark:border-wood-800 bg-white dark:bg-wood-950">
+          {/* Validation error */}
+          {validationError && (
+            <div role="alert" aria-live="assertive" className="mb-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 text-center">
+              {validationError}
+            </div>
+          )}
+          <div className="flex justify-between items-center gap-2">
           <button
             onClick={() => nav(-1)}
             disabled={stepIdx === 0}
+            aria-label="Paso anterior"
             className={`flex items-center gap-1.5 px-3 py-2.5 md:px-5 rounded-xl font-medium text-sm transition-all shrink-0 ${
               stepIdx === 0
                 ? 'opacity-0 pointer-events-none'
@@ -597,12 +674,15 @@ export const QuoteWizardModal: React.FC<QuoteWizardModalProps> = ({
           ) : (
             <button
               onClick={() => nav(1)}
-              className="flex items-center gap-1.5 px-4 py-2.5 md:px-8 md:py-3 bg-accent-gold text-wood-900 rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:shadow-lg transition-all shrink-0"
+              className={`flex items-center gap-1.5 px-4 py-2.5 md:px-8 md:py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all shrink-0 ${
+                canProceed() ? 'bg-accent-gold text-wood-900 hover:shadow-lg' : 'bg-wood-200 text-wood-400 cursor-not-allowed'
+              }`}
             >
               <span>Siguiente</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           )}
+          </div>
         </div>
       </motion.div>
     </div>

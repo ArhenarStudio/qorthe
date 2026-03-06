@@ -16,7 +16,7 @@ interface BoardDesignConfiguratorProps {
 
 // ── Shape options with SVG previews ─────────────────────────
 
-const SHAPES: { value: BoardShape; label: string; preview: React.ReactNode }[] = [
+const SHAPES: { value: string; label: string; preview: React.ReactNode }[] = [
   {
     value: 'Rectangular',
     label: 'Rectangular',
@@ -146,7 +146,7 @@ export const BoardDesignConfigurator: React.FC<BoardDesignConfiguratorProps> = (
         <label className="text-[10px] font-bold text-wood-400 uppercase tracking-widest">
           Forma de la pieza
         </label>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+        <div role="radiogroup" aria-label="Seleccionar forma de tabla" className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {enabledShapes.map((shapeOpt) => {
             const s = SHAPES.find(sh => sh.value === shapeOpt.value) || { value: shapeOpt.value, label: shapeOpt.label, preview: null };
             const sel = design.shape === s.value;

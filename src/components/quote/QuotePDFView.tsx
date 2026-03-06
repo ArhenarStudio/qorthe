@@ -3,7 +3,16 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
-// ── Types ───────────────────────────────────────────────
+// ── Brand Config (SaaS-ready: override per tenant) ──────
+
+const BRAND = {
+  name: process.env.NEXT_PUBLIC_STORE_NAME || "DavidSon's Design",
+  url: process.env.NEXT_PUBLIC_STORE_URL || "davidsonsdesign.com",
+  email: process.env.NEXT_PUBLIC_STORE_EMAIL || "hola@davidsonsdesign.com",
+  logo: process.env.NEXT_PUBLIC_STORE_LOGO || "/images/logo-dsd.png",
+  goldColor: "#C5A065",
+  darkColor: "#1a1208",
+};
 
 interface QuotePiece {
   type: string;
@@ -71,8 +80,8 @@ export const QuotePDFView = () => {
         if (!res.ok) throw new Error("No se pudo cargar la cotización");
         const data = await res.json();
         setQuote(data.quote);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Error desconocido');
       } finally {
         setLoading(false);
       }
@@ -142,10 +151,10 @@ export const QuotePDFView = () => {
         <div className="flex items-start justify-between border-b-2 border-[#c5a065] pb-6 mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
-              DavidSon&apos;s Design
+              {BRAND.name}
             </h1>
             <p className="text-sm text-[#7a6340] mt-1">Madera con Alma — Piezas artesanales únicas</p>
-            <p className="text-xs text-[#9e8562] mt-1">davidsonsdesign.com</p>
+            <p className="text-xs text-[#9e8562] mt-1">{BRAND.url}</p>
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold text-[#c5a065]" style={{ fontFamily: "Georgia, serif" }}>
@@ -260,10 +269,10 @@ export const QuotePDFView = () => {
         {/* Footer */}
         <div className="border-t-2 border-[#c5a065] pt-6 mt-8 text-center">
           <p className="text-sm text-[#7a6340]">
-            Gracias por tu interés en DavidSon&apos;s Design
+            Gracias por tu interés en {BRAND.name}
           </p>
           <p className="text-xs text-[#9e8562] mt-1">
-            davidsonsdesign.com · hola@davidsonsdesign.com
+            {BRAND.url} · {BRAND.email}
           </p>
         </div>
       </div>

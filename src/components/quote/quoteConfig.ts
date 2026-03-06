@@ -5,7 +5,7 @@
 // Fallback a defaults si no está disponible
 // ═══════════════════════════════════════════════════════════════
 
-import { ProductCategory, EngravingComplexity, BoardShape } from './types';
+import { ProductCategory, EngravingComplexity } from './types';
 
 // ── Full Quote Config Structure ─────────────────────────────
 
@@ -65,7 +65,7 @@ export interface QuoteBundleConfig {
 }
 
 export interface QuoteShapeOption {
-  value: BoardShape;
+  value: string;
   label: string;
   enabled: boolean;
 }

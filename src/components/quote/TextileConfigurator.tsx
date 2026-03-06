@@ -123,7 +123,7 @@ export const TextileConfigurator: React.FC<TextileConfiguratorProps> = ({
               return (
                 <button
                   key={z}
-                  onClick={() => onChange({ ...config, printZone: z as any })}
+                  onClick={() => onChange({ ...config, printZone: z })}
                   className={`px-3 py-2.5 rounded-lg text-xs font-bold border transition-all ${
                     sel
                       ? 'bg-accent-gold/10 border-accent-gold text-wood-900 dark:text-accent-gold'

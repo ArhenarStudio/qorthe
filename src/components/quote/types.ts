@@ -123,7 +123,7 @@ export interface EngravingConfig {
 export type BoardShape = 'Rectangular' | 'Redonda' | 'Ovalada' | 'Corazón' | 'Irregular' | 'Personalizada';
 
 export interface BoardDesign {
-  shape: BoardShape;
+  shape: string;
   customShapeNotes?: string;
   hasJuiceGroove: boolean;
   hasHandleHoles: boolean;
@@ -147,7 +147,7 @@ export const DEFAULT_BOARD_DESIGN: BoardDesign = {
 export interface TextileConfig {
   technique: TextileTechnique;
   color: TextileColor;
-  printZone: 'Frente' | 'Reverso' | 'Bolsillo' | 'Panel completo';
+  printZone: string;
   customText?: string;
   file?: File | null;
   fileName?: string;
