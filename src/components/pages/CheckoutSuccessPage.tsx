@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Check, Home, Package } from 'lucide-react';
+import { Check, Home, Package, Download, FileText, ExternalLink } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCartContext } from '@/contexts/CartContext';
@@ -112,6 +112,34 @@ export const CheckoutSuccessPage = () => {
           </div>
         </motion.div>
 
+        {/* Ticket virtual link */}
+        {orderDisplayId && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="bg-accent-gold/5 border border-accent-gold/20 rounded-lg p-5 mb-8 w-full max-w-md text-left"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-accent-gold/10 flex items-center justify-center shrink-0">
+                <FileText className="w-5 h-5 text-accent-gold" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-wood-900">Tu ticket de compra</p>
+                <p className="text-xs text-wood-500 mt-0.5">
+                  Descarga o imprime tu comprobante. También estará disponible en tu panel de cuenta.
+                </p>
+                <button
+                  onClick={() => window.open(`/orders/ticket?id=${orderDisplayId}`, '_blank')}
+                  className="flex items-center gap-1.5 mt-3 text-xs font-bold text-accent-gold hover:underline"
+                >
+                  <Download className="w-3.5 h-3.5" /> Ver y descargar ticket PDF
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -125,12 +153,13 @@ export const CheckoutSuccessPage = () => {
             <Home className="w-4 h-4" />
             Volver al Inicio
           </button>
-          
+
           <button 
-            onClick={() => window.print()}
+            onClick={() => router.push('/account')}
             className="flex items-center justify-center gap-2 bg-white border border-wood-200 text-wood-900 px-8 py-4 rounded-sm hover:bg-sand-50 transition-colors uppercase tracking-widest text-sm font-bold"
           >
-            Imprimir Recibo
+            <ExternalLink className="w-4 h-4" />
+            Ver Mis Pedidos
           </button>
         </motion.div>
 

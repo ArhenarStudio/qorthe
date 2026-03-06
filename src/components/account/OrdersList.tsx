@@ -365,9 +365,17 @@ export const OrdersList = () => {
                                 >
                                   <Receipt className="w-4 h-4 group-hover/btn:translate-y-0.5 transition-transform" /> Solicitar Factura
                                 </button>
-                                <button className="w-full py-3 text-wood-500 hover:text-wood-900 dark:text-wood-400 dark:hover:text-sand-200 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
-                                  <FileText className="w-3 h-3" /> Ver detalles completos
-                                </button>
+                                <div className="flex gap-2 w-full">
+                                  <button
+                                    onClick={() => window.open(`/orders/ticket?id=${order.displayId}`, '_blank')}
+                                    className="flex-1 py-3 text-accent-gold hover:text-wood-900 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                                  >
+                                    <Download className="w-3 h-3" /> Descargar Ticket
+                                  </button>
+                                  <button className="flex-1 py-3 text-wood-500 hover:text-wood-900 dark:text-wood-400 dark:hover:text-sand-200 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                                    <FileText className="w-3 h-3" /> Ver detalles
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
