@@ -7,7 +7,7 @@
 // Also accessible from /account panel and checkout success page
 // ═══════════════════════════════════════════════════════════════
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2, Printer, Download, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -59,7 +59,7 @@ const fmtDate = (d: string) =>
 const fmtTime = (d: string) =>
   new Date(d).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
 
-export default function OrderTicketPage() {
+function OrderTicketContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [ticket, setTicket] = useState<OrderTicket | null>(null);
@@ -255,5 +255,17 @@ export default function OrderTicketPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function OrderTicketPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-sand-100 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-accent-gold border-t-transparent rounded-full" />
+      </div>
+    }>
+      <OrderTicketContent />
+    </Suspense>
   );
 }
