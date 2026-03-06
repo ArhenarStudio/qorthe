@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  LayoutDashboard, ShoppingBag, Truck, Package, FolderTree,
+  LayoutDashboard, ShoppingBag, Truck, Package, FolderTree, Boxes,
   Users, Star, FileText, Megaphone, DollarSign,
   BarChart3, FileEdit, Bell, Settings,
   ExternalLink, LogOut, Zap, Plug, Palette,
@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 export type AdminPage =
-  | 'dashboard' | 'orders' | 'shipping' | 'products' | 'categories'
+  | 'dashboard' | 'orders' | 'shipping' | 'products' | 'categories' | 'inventory'
   | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
   | 'integrations' | 'theme' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
@@ -56,6 +56,7 @@ const navGroups: NavGroup[] = [
     label: 'Catalogo',
     items: [
       { id: 'products', label: 'Productos', icon: Package },
+      { id: 'inventory', label: 'Inventario', icon: Boxes },
       { id: 'categories', label: 'Categorias', icon: FolderTree },
     ],
   },
