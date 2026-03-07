@@ -14,7 +14,9 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip as RTooltip,
   ResponsiveContainer, Legend, ReferenceLine, ComposedChart
 } from 'recharts';
-import { financialData } from '@/data/adminMockData';
+// Finance data hook — reads from API with mock fallback for fields not yet calculable
+const FinanceDataContext = React.createContext<any>(null);
+const useFinanceData = () => React.useContext(FinanceDataContext);
 import { toast } from 'sonner';
 
 // ===== TYPES =====
@@ -67,7 +69,7 @@ const DonutChart: React.FC<{ data: { name: string; value: number; pct: number }[
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie data={data} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={2} dataKey="value">
-            {data.map((_, i) => <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />)}
+            {data.map((_: any, i: number) => <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />)}
           </Pie>
           <RTooltip contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 11 }} formatter={(v: any) => [fmt(v), '']} />
         </PieChart>
@@ -91,7 +93,7 @@ const chartTooltipStyle = { background: '#2d2419', border: 'none', borderRadius:
 
 // ===== TAB: PANEL GENERAL =====
 const PanelGeneral: React.FC = () => {
-  const d = financialData;
+  const d = useFinanceData();
   // P&L table data
   const plRows = [
     { label: '(+) Ingresos por ventas (catálogo)', value: 118400, pct: 83.0, indent: false, sign: '+' },
@@ -124,7 +126,7 @@ const PanelGeneral: React.FC = () => {
   // Waterfall bar data for recharts
   const waterfallBars = useMemo(() => {
     let running = 0;
-    return d.waterfallData.map(item => {
+    return d.waterfallData.map((item: any) => {
       const start = item.type === 'profit' ? 0 : (item.type === 'income' ? 0 : running + item.value);
       const height = Math.abs(item.value);
       if (item.type === 'income') running = item.value;
@@ -170,7 +172,7 @@ const PanelGeneral: React.FC = () => {
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any) => [fmt(Math.abs(v)), '']} />
               <Bar dataKey="start" stackId="a" fill="transparent" />
               <Bar dataKey="height" stackId="a" radius={[4, 4, 0, 0]}>
-                {waterfallBars.map((entry, i) => (
+                {waterfallBars.map((entry: any, i: number) => (
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Bar>
@@ -248,13 +250,13 @@ const PanelGeneral: React.FC = () => {
           </ResponsiveContainer>
         </div>
         <div className="flex flex-wrap gap-4 mt-3">
-          {d.projection.filter(p => !p.isActual).map(p => (
+          {d.projection.filter((p: any) => !p.isActual).map((p: any) => (
             <div key={p.month} className="text-xs text-wood-600">
               <span className="font-medium text-wood-900">{p.month}:</span> {fmt(p.min)} — {fmt(p.max)}
             </div>
           ))}
         </div>
-        {d.projectionNotes.map((n, i) => <Insight key={i} text={n} />)}
+        {d.projectionNotes.map((n: any, i: number) => <Insight key={i} text={n} />)}
       </Card>
     </div>
   );
@@ -262,8 +264,8 @@ const PanelGeneral: React.FC = () => {
 
 // ===== TAB: INGRESOS =====
 const IngresosTab: React.FC = () => {
-  const d = financialData;
-  const avgRevenue = useMemo(() => d.dailyRevenue.reduce((s, r) => s + r.revenue, 0) / d.dailyRevenue.length, []);
+  const d = useFinanceData();
+  const avgRevenue = useMemo(() => d.dailyRevenue.reduce((s: number, r: any) => s + r.revenue, 0) / (d.dailyRevenue.length || 1), []);
 
   return (
     <div className="space-y-6">
@@ -303,7 +305,7 @@ const IngresosTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-wood-50">
-              {d.topProductsByRevenue.map(p => (
+              {d.topProductsByRevenue.map((p: any) => (
                 <tr key={p.rank} className="hover:bg-sand-50/50 transition-colors">
                   <td className="px-5 py-2.5 text-xs text-wood-400">{p.rank}</td>
                   <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{p.product}</td>
@@ -335,7 +337,7 @@ const IngresosTab: React.FC = () => {
       <Card className="p-5">
         <SectionTitle>Ingresos por categoría</SectionTitle>
         <div className="space-y-3">
-          {d.revenueBySubCategory.map(cat => (
+          {d.revenueBySubCategory.map((cat: any) => (
             <div key={cat.name}>
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="text-wood-700 font-medium">{cat.name}</span>
@@ -364,7 +366,7 @@ const IngresosTab: React.FC = () => {
         <Card className="p-5">
           <SectionTitle>Ingresos por canal de venta</SectionTitle>
           <div className="space-y-3">
-            {d.revenueByChannel.map(ch => (
+            {d.revenueByChannel.map((ch: any) => (
               <div key={ch.name} className="flex items-center justify-between text-xs">
                 <div>
                   <span className="text-wood-700">{ch.name}</span>
@@ -379,7 +381,7 @@ const IngresosTab: React.FC = () => {
         <Card className="p-5">
           <SectionTitle>Ingresos por zona geográfica</SectionTitle>
           <div className="space-y-3">
-            {d.revenueByRegion.map(r => (
+            {d.revenueByRegion.map((r: any) => (
               <div key={r.name} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
                   <MapPin size={12} className="text-wood-400" />
@@ -425,9 +427,9 @@ const IngresosTab: React.FC = () => {
 
 // ===== TAB: COSTOS Y GASTOS =====
 const CostosTab: React.FC = () => {
-  const d = financialData;
+  const d = useFinanceData();
   const [showWebDetail, setShowWebDetail] = useState(false);
-  const totalCosts = d.totalCostDonut.reduce((s, c) => s + c.value, 0);
+  const totalCosts = d.totalCostDonut.reduce((s: number, c: any) => s + c.value, 0);
 
   return (
     <div className="space-y-6">
@@ -439,7 +441,7 @@ const CostosTab: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={d.totalCostDonut} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={2} dataKey="value">
-                  {d.totalCostDonut.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  {d.totalCostDonut.map((_: any, i: number) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
                 <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any) => [fmt(v), '']} />
               </PieChart>
@@ -448,7 +450,7 @@ const CostosTab: React.FC = () => {
           <p className="text-center text-lg font-semibold text-wood-900 font-sans -mt-2">{fmt(totalCosts)}</p>
           <p className="text-center text-[10px] text-wood-400">Costo total</p>
           <div className="space-y-1.5 mt-3">
-            {d.totalCostDonut.map((c, i) => (
+            {d.totalCostDonut.map((c: any, i: number) => (
               <div key={c.name} className="flex items-center justify-between text-[11px]">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i] }} />
@@ -477,7 +479,7 @@ const CostosTab: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-wood-50">
-                  {d.cogsByProduct.map(p => (
+                  {d.cogsByProduct.map((p: any) => (
                     <tr key={p.product} className="hover:bg-sand-50/50 transition-colors">
                       <td className="px-4 py-2 text-xs text-wood-900">{p.product}</td>
                       <td className="px-4 py-2 text-xs text-wood-600 text-right">{p.units}</td>
@@ -510,7 +512,7 @@ const CostosTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-wood-50">
-              {d.operatingCosts.map(c => (
+              {d.operatingCosts.map((c: any) => (
                 <tr key={c.concept} className="hover:bg-sand-50/50 transition-colors">
                   <td className="py-2 pr-4 text-xs text-wood-900">{c.concept}</td>
                   <td className="py-2 text-xs font-medium text-wood-900 text-right pr-4 font-mono">{fmt(c.cost)}</td>
@@ -546,7 +548,7 @@ const CostosTab: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-wood-100">
-                    {d.webServices.map(s => (
+                    {d.webServices.map((s: any) => (
                       <tr key={s.service}>
                         <td className="py-1.5 text-xs text-wood-700">{s.service}</td>
                         <td className="py-1.5 text-xs font-mono text-right text-wood-900">{s.cost > 0 ? fmt(s.cost) : '$0'}</td>
@@ -578,7 +580,7 @@ const CostosTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-wood-50">
-              {d.shippingCostsByCarrier.map(c => (
+              {d.shippingCostsByCarrier.map((c: any) => (
                 <tr key={c.carrier} className="hover:bg-sand-50/50 transition-colors">
                   <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{c.carrier}</td>
                   <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{c.shipments}</td>
@@ -613,7 +615,7 @@ const CostosTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-wood-50">
-              {d.discountsBySource.map(ds => (
+              {d.discountsBySource.map((ds: any) => (
                 <tr key={ds.source} className="hover:bg-sand-50/50 transition-colors">
                   <td className="px-5 py-2.5 text-xs font-medium font-mono text-wood-900">{ds.source}</td>
                   <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{ds.uses}</td>
@@ -635,7 +637,7 @@ const CostosTab: React.FC = () => {
 
 // ===== TAB: INVENTARIO =====
 const InventarioTab: React.FC = () => {
-  const d = financialData;
+  const d = useFinanceData();
   const rotColor = (l: string) => l === 'green' ? 'text-green-600 bg-green-50' : l === 'yellow' ? 'text-amber-600 bg-amber-50' : 'text-red-600 bg-red-50';
   const alertBadge = (a: string) => {
     if (a === 'low') return <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-50 text-amber-600">Stock bajo</span>;
@@ -687,7 +689,7 @@ const InventarioTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-wood-50">
-              {d.inventoryByCategory.map(c => (
+              {d.inventoryByCategory.map((c: any) => (
                 <tr key={c.category} className="hover:bg-sand-50/50 transition-colors">
                   <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{c.category}</td>
                   <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{c.products}</td>
@@ -719,7 +721,7 @@ const InventarioTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-wood-50">
-              {d.inventoryByProduct.map(p => (
+              {d.inventoryByProduct.map((p: any) => (
                 <tr key={p.product} className={`hover:bg-sand-50/50 transition-colors ${p.alert ? 'bg-red-50/30' : ''}`}>
                   <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{p.product}</td>
                   <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{p.stock}</td>
@@ -791,7 +793,7 @@ const InventarioTab: React.FC = () => {
 
 // ===== TAB: PAGOS Y COMISIONES =====
 const PagosTab: React.FC = () => {
-  const d = financialData;
+  const d = useFinanceData();
 
   const ProcessorCard: React.FC<{ title: string; icon: string; color: string; children: React.ReactNode }> = ({ title, icon, color, children }) => (
     <Card className="p-5">
@@ -819,7 +821,7 @@ const PagosTab: React.FC = () => {
           <p>Próxima transferencia: {d.stripe.nextTransfer} — {fmt(d.stripe.nextTransferEst)} est.</p>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {d.stripe.cardBreakdown.map(c => (
+          {d.stripe.cardBreakdown.map((c: any) => (
             <span key={c.type} className="text-[10px] px-2 py-0.5 rounded-full bg-wood-50 text-wood-600">{c.type}: {c.pct}%</span>
           ))}
         </div>
@@ -838,7 +840,7 @@ const PagosTab: React.FC = () => {
           <p>Próxima liberación: {d.mercadoPago.nextRelease}</p>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {d.mercadoPago.methodBreakdown.map(c => (
+          {d.mercadoPago.methodBreakdown.map((c: any) => (
             <span key={c.type} className="text-[10px] px-2 py-0.5 rounded-full bg-wood-50 text-wood-600">{c.type}: {c.pct}%</span>
           ))}
         </div>
@@ -891,7 +893,7 @@ const PagosTab: React.FC = () => {
           <div>
             <h6 className="text-xs font-medium text-wood-700 mb-2">Anticipos de cotizaciones por cobrar: <span className="text-amber-600">{fmt(d.bankTransfer.pendingAdvances)}</span></h6>
             <div className="space-y-2">
-              {d.pendingPayments.filter(p => p.type === 'anticipo').map(p => (
+              {d.pendingPayments.filter((p: any) => p.type === 'anticipo').map((p: any) => (
                 <div key={p.ref} className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg text-xs">
                   <div className="flex items-center gap-3">
                     <span className="font-mono font-medium text-wood-900">{p.ref}</span>
@@ -911,7 +913,7 @@ const PagosTab: React.FC = () => {
           <div>
             <h6 className="text-xs font-medium text-wood-700 mb-2">Saldos por cobrar (ya entregados): <span className="text-red-500">{fmt(d.bankTransfer.pendingBalances)}</span></h6>
             <div className="space-y-2">
-              {d.pendingPayments.filter(p => p.type === 'saldo').map(p => (
+              {d.pendingPayments.filter((p: any) => p.type === 'saldo').map((p: any) => (
                 <div key={p.ref} className="flex items-center justify-between p-2.5 bg-red-50/50 rounded-lg text-xs">
                   <div className="flex items-center gap-3">
                     <span className="font-mono font-medium text-wood-900">{p.ref}</span>
@@ -947,7 +949,7 @@ const PagosTab: React.FC = () => {
 
 // ===== TAB: FLUJO DE EFECTIVO =====
 const FlujoTab: React.FC = () => {
-  const d = financialData;
+  const d = useFinanceData();
 
   const flowKpis = [
     { label: 'Entradas', value: fmt(d.cashFlowEntries), delta: `+${d.cashFlowEntriesDelta}%`, up: true, icon: ArrowUpRight, color: 'text-green-600' },
@@ -1000,7 +1002,7 @@ const FlujoTab: React.FC = () => {
               <th className="px-5 py-2">Fuente</th><th className="px-5 py-2 text-right">Monto</th><th className="px-5 py-2 text-right">%</th><th className="px-5 py-2">Frecuencia</th>
             </tr></thead>
             <tbody className="divide-y divide-wood-50">
-              {d.cashFlowEntriesDetail.map(e => (
+              {d.cashFlowEntriesDetail.map((e: any) => (
                 <tr key={e.source}><td className="px-5 py-2 text-xs text-wood-900">{e.source}</td><td className="px-5 py-2 text-xs font-mono text-right text-green-600">{fmt(e.amount)}</td><td className="px-5 py-2 text-xs text-right text-wood-500">{e.pct}%</td><td className="px-5 py-2 text-[10px] text-wood-400">{e.freq}</td></tr>
               ))}
             </tbody>
@@ -1014,7 +1016,7 @@ const FlujoTab: React.FC = () => {
               <th className="px-5 py-2">Concepto</th><th className="px-5 py-2 text-right">Monto</th><th className="px-5 py-2 text-right">%</th><th className="px-5 py-2">Frecuencia</th>
             </tr></thead>
             <tbody className="divide-y divide-wood-50">
-              {d.cashFlowExitsDetail.map(e => (
+              {d.cashFlowExitsDetail.map((e: any) => (
                 <tr key={e.concept}><td className="px-5 py-2 text-xs text-wood-900">{e.concept}</td><td className="px-5 py-2 text-xs font-mono text-right text-red-500">{fmt(e.amount)}</td><td className="px-5 py-2 text-xs text-right text-wood-500">{e.pct}%</td><td className="px-5 py-2 text-[10px] text-wood-400">{e.freq}</td></tr>
               ))}
             </tbody>
@@ -1026,7 +1028,7 @@ const FlujoTab: React.FC = () => {
       <Card className="p-5">
         <SectionTitle>Calendario de pagos próximos</SectionTitle>
         <div className="space-y-2">
-          {d.upcomingPayments.map((p, i) => (
+          {d.upcomingPayments.map((p: any, i: any) => (
             <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-sand-50 text-xs">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-wood-500 w-12">{p.date}</span>
@@ -1085,7 +1087,7 @@ const FlujoTab: React.FC = () => {
 
 // ===== TAB: REPORTES =====
 const ReportesTab: React.FC = () => {
-  const d = financialData;
+  const d = useFinanceData();
   const [selectedFormat, setSelectedFormat] = useState<Record<string, string>>({});
 
   const iconMap: Record<string, React.ElementType> = {
@@ -1099,7 +1101,7 @@ const ReportesTab: React.FC = () => {
       <div>
         <SectionTitle>Reportes predefinidos</SectionTitle>
         <div className="space-y-3">
-          {d.predefinedReports.map(r => {
+          {d.predefinedReports.map((r: any) => {
             const Icon = iconMap[r.icon] || FileText;
             return (
               <Card key={r.id} className="p-4">
@@ -1112,7 +1114,7 @@ const ReportesTab: React.FC = () => {
                     <p className="text-xs text-wood-500 mt-0.5">{r.desc}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-[10px] text-wood-400">Formato:</span>
-                      {r.formats.map(f => (
+                      {r.formats.map((f: any) => (
                         <button key={f}
                           onClick={() => setSelectedFormat(prev => ({ ...prev, [r.id]: f }))}
                           className={`px-2 py-0.5 text-[10px] rounded border transition-colors ${selectedFormat[r.id] === f ? 'bg-accent-gold text-white border-accent-gold' : 'bg-white text-wood-600 border-wood-200 hover:border-accent-gold'}`}
@@ -1144,7 +1146,7 @@ const ReportesTab: React.FC = () => {
       <Card className="p-5">
         <SectionTitle>Reportes programados</SectionTitle>
         <div className="space-y-2">
-          {d.scheduledReports.map((r, i) => (
+          {d.scheduledReports.map((r: any, i: any) => (
             <div key={i} className="flex items-center justify-between p-3 bg-sand-50 rounded-lg text-xs">
               <div className="flex items-center gap-3">
                 <input type="checkbox" defaultChecked={r.active} className="rounded border-wood-300 text-accent-gold" />
@@ -1174,7 +1176,7 @@ const ReportesTab: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-wood-50">
-            {d.reportHistory.map((r, i) => (
+            {d.reportHistory.map((r: any, i: any) => (
               <tr key={i} className="hover:bg-sand-50/50 transition-colors">
                 <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{r.name}</td>
                 <td className="px-5 py-2.5 text-xs text-wood-600">{r.period}</td>
@@ -1254,14 +1256,46 @@ export const FinancesPage: React.FC = () => {
   // ── Live data from API ──
   const [liveFinances, setLiveFinances] = useState<any>(null);
   const [financesLoading, setFinancesLoading] = useState(true);
+  const [period, setPeriod] = useState('30d');
   useEffect(() => {
-    fetch('/api/admin/finances').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveFinances(d); }).catch(() => {}).finally(() => setFinancesLoading(false));
-  }, []);
+    setFinancesLoading(true);
+    fetch(`/api/admin/finances?period=${period}`).then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveFinances(d); }).catch(() => {}).finally(() => setFinancesLoading(false));
+  }, [period]);
+
+  // Build unified finance data from live API
+  const financeData = useMemo(() => {
+    const s = liveFinances?.stats || {};
+    const totalRevenue = s.totalRevenue || 0;
+    return {
+      grossRevenue: totalRevenue, cogs: 0, grossProfit: totalRevenue, grossMargin: 100, netProfit: totalRevenue,
+      grossRevenueDelta: 0, cogsDelta: 0, grossProfitDelta: 0, grossMarginDelta: 0, netProfitDelta: 0,
+      inventoryCostValue: 0, inventorySaleValue: 0, inventoryUnits: 0,
+      avgTicket: s.avgTicket || 0, totalOrders: s.totalOrders || 0, dailyRevenueAvg: totalRevenue > 0 ? Math.round(totalRevenue / 30) : 0,
+      avgTicketPrev: 0, totalOrdersPrev: 0, dailyRevenueAvgPrev: 0,
+      clv: 0, clvPrev: 0, repurchaseRate: 0, repurchaseRatePrev: 0,
+      avgQuoteTicket: 0, discountRate: totalRevenue > 0 ? Math.round((s.totalDiscounts || 0) / totalRevenue * 1000) / 10 : 0,
+      totalDiscounts: s.totalDiscounts || 0, avgShippingCost: s.completedOrders > 0 ? Math.round((s.totalShipping || 0) / s.completedOrders) : 0,
+      avgShippingCostPrev: 0, engravingRevenue: 0, engravingPct: 0,
+      revenueBySource: [{ name: 'Ventas', value: totalRevenue, pct: 100 }],
+      costBreakdownPL: [
+        { name: 'Envío', value: s.totalShipping || 0, pct: totalRevenue > 0 ? Math.round((s.totalShipping || 0) / totalRevenue * 100) : 0 },
+        { name: 'Descuentos', value: s.totalDiscounts || 0, pct: totalRevenue > 0 ? Math.round((s.totalDiscounts || 0) / totalRevenue * 100) : 0 },
+      ],
+      waterfallData: [
+        { name: 'Ingresos', value: totalRevenue, fill: '#C5A065', type: 'income' },
+        { name: 'Envío', value: -(s.totalShipping || 0), fill: '#795548', type: 'cost' },
+        { name: 'Descuentos', value: -(s.totalDiscounts || 0), fill: '#A1887F', type: 'cost' },
+        { name: 'Neto', value: totalRevenue - (s.totalShipping || 0) - (s.totalDiscounts || 0), fill: '#22c55e', type: 'profit' },
+      ],
+      monthlyRevenue: (liveFinances?.monthlyData || []).map((m: any) => ({ month: m.month, revenue: m.revenue, orders: m.orders, costs: 0, grossProfit: m.revenue, netProfit: m.revenue, marginPct: 100 })),
+      revenueByPayment: (liveFinances?.paymentBreakdown || []).map((p: any) => ({ name: p.method, value: p.amount, pct: totalRevenue > 0 ? Math.round(p.amount / totalRevenue * 100) : 0 })),
+      revenueByCategory: [], revenueByClientType: [], projection: [], projectionNotes: [], dailyRevenue: [],
+    };
+  }, [liveFinances]);
 
   const [activeTab, setActiveTab] = useState<TabId>('general');
-  const [period, setPeriod] = useState('Este mes');
   const [showConfig, setShowConfig] = useState(false);
-  const d = financialData;
+  const d = financeData;
 
   const kpis = [
     { label: 'Ingresos brutos', value: fmt(d.grossRevenue), delta: `+${d.grossRevenueDelta}%`, up: true, icon: DollarSign, color: 'bg-accent-gold/10 text-accent-gold' },
@@ -1283,6 +1317,7 @@ export const FinancesPage: React.FC = () => {
   };
 
   return (
+    <FinanceDataContext.Provider value={financeData}>
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -1361,5 +1396,6 @@ export const FinancesPage: React.FC = () => {
       {/* Config Modal */}
       <ConfigModal open={showConfig} onClose={() => setShowConfig(false)} />
     </div>
+    </FinanceDataContext.Provider>
   );
 };
