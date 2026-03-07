@@ -1,7 +1,7 @@
 "use client";
 
-import { ShippingPage } from "@/components/admin/ShippingPage";
+import AdminShippingPage from "@/components/admin/ShippingPageLive";
 
 export default function Page() {
-  return <ShippingPage />;
+  return <AdminShippingPage />;
 }

@@ -333,7 +333,7 @@ export const POSPage: React.FC = () => {
               {productsData ? (
                 <span className="text-green-600 flex items-center gap-1"><Wifi size={8} /> {products.length} productos</span>
               ) : (
-                <span className="text-wood-400 flex items-center gap-1"><WifiOff size={8} /> Cargando...</span>
+                <span className="text-wood-400 flex items-center gap-1"><Loader2 size={8} className="animate-spin" /> Conectando...</span>
               )}
             </p>
           </div>

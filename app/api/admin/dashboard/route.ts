@@ -114,6 +114,7 @@ export async function GET(req: NextRequest) {
         order_count: orderCount,
         pending_orders: pendingOrders,
         shipped_orders: shippedOrders,
+        canceled_count: orders.filter((o: any) => o.status === "canceled").length,
         product_count: productCount,
         customer_count: customerCount,
         avg_order_value:

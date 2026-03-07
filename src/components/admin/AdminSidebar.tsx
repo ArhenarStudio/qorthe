@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -45,10 +45,10 @@ const navGroups: NavGroup[] = [
     label: 'Ventas',
     items: [
       { id: 'pos', label: 'Punto de Venta', icon: Zap },
-      { id: 'orders', label: 'Pedidos', icon: ShoppingBag, badge: 3 },
+      { id: 'orders', label: 'Pedidos', icon: ShoppingBag },
       { id: 'shipping', label: 'Envios', icon: Truck },
-      { id: 'quotes', label: 'Cotizaciones', icon: FileText, badge: 5 },
-      { id: 'returns', label: 'Devoluciones', icon: RotateCcw, badge: 2 },
+      { id: 'quotes', label: 'Cotizaciones', icon: FileText },
+      { id: 'returns', label: 'Devoluciones', icon: RotateCcw },
     ],
   },
   {
@@ -65,9 +65,9 @@ const navGroups: NavGroup[] = [
     label: 'Clientes',
     items: [
       { id: 'customers', label: 'Clientes', icon: Users },
-      { id: 'reviews', label: 'Reviews', icon: Star, badge: 3 },
+      { id: 'reviews', label: 'Reviews', icon: Star },
       { id: 'chat', label: 'Chat en Vivo', icon: MessageSquare },
-      { id: 'helpdesk', label: 'Soporte', icon: Headphones, badge: 7 },
+      { id: 'helpdesk', label: 'Soporte', icon: Headphones },
     ],
   },
   {
@@ -101,7 +101,7 @@ const navGroups: NavGroup[] = [
       { id: 'automations', label: 'Automatizaciones', icon: Zap },
       { id: 'integrations', label: 'Integraciones', icon: Plug },
       { id: 'importexport', label: 'Importar / Exportar', icon: ArrowUpDown },
-      { id: 'notifications', label: 'Notificaciones', icon: Bell, badge: 3 },
+      { id: 'notifications', label: 'Notificaciones', icon: Bell },
       { id: 'users', label: 'Equipo', icon: Users },
       { id: 'settings', label: 'Configuracion', icon: Settings },
     ],
@@ -123,6 +123,48 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const { user, medusaCustomer } = useAuth();
   const [siteOnline] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [liveBadges, setLiveBadges] = useState<Record<string, number>>({});
+
+  // Fetch real badge counts from APIs
+  useEffect(() => {
+    const fetchBadges = async () => {
+      try {
+        const [dashRes, quotesRes, reviewsRes, ticketsRes] = await Promise.allSettled([
+          fetch('/api/admin/dashboard?period=30d').then(r => r.ok ? r.json() : null),
+          fetch('/api/admin/quotes').then(r => r.ok ? r.json() : null),
+          fetch('/api/admin/reviews?limit=1').then(r => r.ok ? r.json() : null),
+          fetch('/api/admin/tickets').then(r => r.ok ? r.json() : null),
+        ]);
+
+        const badges: Record<string, number> = {};
+        
+        // Pending orders from dashboard KPIs
+        const dash = dashRes.status === 'fulfilled' ? dashRes.value : null;
+        if (dash?.kpis?.pending_orders > 0) badges.orders = dash.kpis.pending_orders;
+        if (dash?.kpis?.canceled_count > 0) badges.returns = dash.kpis.canceled_count;
+
+        // New quotes (status = nueva)
+        const quotes = quotesRes.status === 'fulfilled' ? quotesRes.value : null;
+        const newQuotes = (quotes?.quotes || []).filter((q: any) => q.status === 'nueva').length;
+        if (newQuotes > 0) badges.quotes = newQuotes;
+
+        // Pending reviews
+        const reviews = reviewsRes.status === 'fulfilled' ? reviewsRes.value : null;
+        if (reviews?.counts?.pending > 0) badges.reviews = reviews.counts.pending;
+
+        // Open support tickets
+        const tickets = ticketsRes.status === 'fulfilled' ? ticketsRes.value : null;
+        const openTickets = (tickets?.stats?.open || 0) + (tickets?.stats?.inProgress || 0);
+        if (openTickets > 0) badges.helpdesk = openTickets;
+
+        setLiveBadges(badges);
+      } catch { /* silent — badges are non-critical */ }
+    };
+
+    fetchBadges();
+    const interval = setInterval(fetchBadges, 120_000);
+    return () => clearInterval(interval);
+  }, []);
 
   const adminName = medusaCustomer
     ? `${medusaCustomer.first_name} ${medusaCustomer.last_name}`.trim()
@@ -148,6 +190,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const renderNavItem = (item: NavItem) => {
     const isActive = currentPage === item.id;
     const ItemIcon = item.icon;
+    const badgeCount = liveBadges[item.id] || 0;
 
     return (
       <button
@@ -200,7 +243,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           )}
         </AnimatePresence>
 
-        {item.badge && (
+        {badgeCount > 0 && (
           <span className={`
             relative z-10
             ${collapsed ? 'absolute -top-1 -right-1' : 'ml-auto'}
@@ -211,7 +254,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               : 'bg-amber-50 text-amber-600 border border-amber-200/50'
             }
           `}>
-            {item.badge}
+            {badgeCount}
           </span>
         )}
 
@@ -223,9 +266,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             border border-stone-200/80 shadow-lg shadow-stone-200/50
           ">
             {item.label}
-            {item.badge && (
+            {badgeCount > 0 && (
               <span className="ml-1.5 bg-amber-50 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-amber-200/50">
-                {item.badge}
+                {badgeCount}
               </span>
             )}
           </span>
@@ -325,7 +368,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             {navGroups.map((group) => {
               const isGroupCollapsed = collapsedGroups.has(group.id);
               const groupHasActive = group.items.some(i => i.id === currentPage);
-              const groupBadgeCount = group.items.reduce((acc, item) => acc + (item.badge || 0), 0);
+              const groupBadgeCount = group.items.reduce((acc, item) => acc + (liveBadges[item.id] || 0), 0);
 
               return (
                 <div key={group.id}>
