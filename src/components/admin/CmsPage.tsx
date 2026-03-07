@@ -1512,6 +1512,184 @@ function SeoTab() {
 }
 
 // ===== MAIN COMPONENT =====
+// ===== LIVE MENUS TAB (Supabase cms_menus) =====
+function MenusTabLive() {
+  const [menus, setMenus] = useState<Record<string, any[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/admin/cms?type=menus')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.menus) setMenus(d.menus); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const groups = [
+    { key: 'header', label: 'Menú Principal (Header)' },
+    { key: 'footerShop', label: 'Footer — Tienda' },
+    { key: 'footerInfo', label: 'Footer — Información' },
+    { key: 'footerLegal', label: 'Footer — Legal' },
+  ];
+
+  const handleSave = async (group: string) => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/cms', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'menus', group, items: menus[group] || [] }),
+      });
+      if (res.ok) toast.success('Menú guardado');
+      else toast.error('Error al guardar');
+    } catch { toast.error('Error de conexión'); }
+    finally { setSaving(false); }
+  };
+
+  const addItem = (group: string) => {
+    setMenus(prev => ({
+      ...prev,
+      [group]: [...(prev[group] || []), { id: crypto.randomUUID(), label: 'Nuevo enlace', url: '/', is_visible: true }],
+    }));
+  };
+
+  const removeItem = (group: string, idx: number) => {
+    setMenus(prev => ({
+      ...prev,
+      [group]: (prev[group] || []).filter((_, i) => i !== idx),
+    }));
+  };
+
+  const updateItem = (group: string, idx: number, field: string, value: string | boolean) => {
+    setMenus(prev => ({
+      ...prev,
+      [group]: (prev[group] || []).map((item, i) => i === idx ? { ...item, [field]: value } : item),
+    }));
+  };
+
+  if (loading) return <Card className="p-12 text-center text-wood-400">Cargando menús...</Card>;
+
+  return (
+    <div className="space-y-6">
+      {groups.map(g => (
+        <Card key={g.key} className="p-5">
+          <STitle>{g.label}</STitle>
+          <div className="space-y-2">
+            {(menus[g.key] || []).map((item, idx) => (
+              <div key={item.id || idx} className="flex items-center gap-2 p-2.5 bg-sand-50 rounded-lg">
+                <GripVertical size={14} className="text-wood-300 shrink-0" />
+                <input
+                  value={item.label}
+                  onChange={e => updateItem(g.key, idx, 'label', e.target.value)}
+                  className="flex-1 text-xs font-medium text-wood-900 bg-transparent border-b border-transparent focus:border-wood-300 outline-none px-1"
+                />
+                <input
+                  value={item.url}
+                  onChange={e => updateItem(g.key, idx, 'url', e.target.value)}
+                  className="w-32 text-[10px] text-wood-400 font-mono bg-transparent border-b border-transparent focus:border-wood-300 outline-none px-1"
+                />
+                <button onClick={() => removeItem(g.key, idx)} className="p-1 rounded hover:bg-red-50 text-red-400"><X size={12} /></button>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 mt-3">
+            <button onClick={() => addItem(g.key)} className="text-xs text-accent-gold hover:underline flex items-center gap-1"><Plus size={12} /> Agregar</button>
+            <button onClick={() => handleSave(g.key)} disabled={saving} className="text-xs bg-wood-900 text-white px-3 py-1.5 rounded-lg hover:bg-wood-800 disabled:opacity-50 flex items-center gap-1"><Save size={12} /> Guardar</button>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ===== LIVE HOMEPAGE BUILDER TAB (Supabase cms_sections) =====
+function HomepageTabLive() {
+  const [sections, setSections] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/admin/cms?type=sections')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.sections) setSections(d.sections); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/cms', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'sections', items: sections }),
+      });
+      if (res.ok) toast.success('Secciones guardadas');
+      else toast.error('Error al guardar');
+    } catch { toast.error('Error de conexión'); }
+    finally { setSaving(false); }
+  };
+
+  const toggleVisibility = (idx: number) => {
+    setSections(prev => prev.map((s, i) => i === idx ? { ...s, is_visible: !s.is_visible } : s));
+  };
+
+  const moveSection = (idx: number, dir: -1 | 1) => {
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= sections.length) return;
+    const copy = [...sections];
+    [copy[idx], copy[newIdx]] = [copy[newIdx], copy[idx]];
+    setSections(copy);
+  };
+
+  const sectionIcons: Record<string, React.ElementType> = {
+    hero: Home, collections: FolderOpen, process: Settings2, testimonials: Star,
+    newsletter: Type, custom: Layout,
+  };
+
+  if (loading) return <Card className="p-12 text-center text-wood-400">Cargando secciones...</Card>;
+
+  return (
+    <div className="space-y-4">
+      {sections.length === 0 ? (
+        <Card className="p-12 text-center">
+          <Home size={32} className="mx-auto mb-3 text-wood-200" />
+          <p className="text-sm text-wood-500">No hay secciones configuradas.</p>
+          <p className="text-xs text-wood-400 mt-1">Ejecuta el SQL seed para crear las secciones iniciales del homepage.</p>
+        </Card>
+      ) : (
+        <>
+          {sections.map((s, idx) => {
+            const Icon = sectionIcons[s.section_type] || Layout;
+            return (
+              <Card key={s.id || idx} className={`p-5 flex items-center gap-4 ${!s.is_visible ? 'opacity-50' : ''}`}>
+                <div className="flex flex-col gap-1">
+                  <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronRight size={14} className="rotate-[-90deg]" /></button>
+                  <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronRight size={14} className="rotate-90" /></button>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-sand-100 flex items-center justify-center">
+                  <Icon size={18} className="text-wood-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-wood-900">{s.title || s.section_type}</p>
+                  <p className="text-[10px] text-wood-400 uppercase tracking-wider">{s.section_type}</p>
+                </div>
+                <button onClick={() => toggleVisibility(idx)} className={`text-xs px-2 py-1 rounded-full ${s.is_visible ? 'bg-green-50 text-green-600' : 'bg-wood-50 text-wood-400'}`}>
+                  {s.is_visible ? 'Visible' : 'Oculta'}
+                </button>
+              </Card>
+            );
+          })}
+          <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 disabled:opacity-50 flex items-center gap-1.5">
+            <Save size={12} /> Guardar orden y visibilidad
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 // Coming Soon placeholder for tabs not yet implemented
 function CmsComingSoon({ title, description }: { title: string; description: string }) {
   return (
@@ -1539,8 +1717,8 @@ export const CmsPage: React.FC = () => {
 
   const tabContent: Record<CmsTab, React.ReactNode> = {
     pages: <PagesTab />,
-    menus: <CmsComingSoon title="Menús" description="Administra los menús del header y footer. Configura enlaces, orden y submenús." />,
-    homepage: <CmsComingSoon title="Homepage Builder" description="Personaliza las secciones de tu página principal: hero, colecciones, testimonios, CTA." />,
+    menus: <MenusTabLive />,
+    homepage: <HomepageTabLive />,
     blog: <CmsComingSoon title="Blog" description="Crea y administra publicaciones del blog para SEO y engagement." />,
     popups: <CmsComingSoon title="Pop-ups y Banners" description="Configura pop-ups de bienvenida, descuentos y anuncios." />,
     media: <CmsComingSoon title="Biblioteca de Media" description="Administra imágenes, videos y archivos del sitio." />,
