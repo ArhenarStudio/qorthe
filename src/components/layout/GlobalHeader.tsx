@@ -8,6 +8,7 @@ import {
   Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useCms } from '@/contexts/CmsContext';
 import clsx from 'clsx';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { CartDrawer } from '@/components/cart/CartDrawer';
@@ -50,6 +51,7 @@ export const GlobalHeader = () => {
   const pathname = usePathname();
   const { user, loading: authLoading, signOut } = useAuth();
   const { itemCount, isDrawerOpen: isCartOpen, openDrawer: openCart, closeDrawer: closeCart } = useCartContext();
+  const { menus } = useCms();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -136,12 +138,16 @@ export const GlobalHeader = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
+  // CMS-driven nav links with hardcoded fallback
+  const DEFAULT_NAV = [
     { name: CONTENT.nav.collections, href: '#collections' },
     { name: CONTENT.nav.products, href: '#products' },
     { name: CONTENT.nav.restaurants, href: '#services' },
     { name: CONTENT.nav.about, href: '#about' },
   ];
+  const navLinks = menus.header?.length
+    ? menus.header.map(m => ({ name: m.label, href: m.url }))
+    : DEFAULT_NAV;
 
   return (
     <>

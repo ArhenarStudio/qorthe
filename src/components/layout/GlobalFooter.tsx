@@ -11,6 +11,7 @@ import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useFeatureToggle } from '@/contexts/FeatureToggleContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { NewsletterSuccessModal } from '@/components/newsletter/NewsletterSuccessModal';
+import { useCms, CmsMenuItem } from '@/contexts/CmsContext';
 
 const CONTENT = {
   newsletter: {
@@ -89,7 +90,23 @@ const SocialIcon = ({ Icon }: { Icon: React.ComponentType<{ size?: number }> }) 
 export const GlobalFooter = () => {
   const { isChatEnabled, toggleChat, isWhatsAppEnabled, toggleWhatsApp } = useFeatureToggle();
   const { theme, toggleTheme } = useTheme();
+  const { menus } = useCms();
   
+  // CMS-driven footer columns with hardcoded fallback
+  const cmsToColumn = (group: string, fallback: { title: string; items: { label: string; href: string }[] }) => {
+    const cmsItems = menus[group];
+    if (cmsItems?.length) {
+      return { ...fallback, items: cmsItems.map((m: CmsMenuItem) => ({ label: m.label, href: m.url })) };
+    }
+    return fallback;
+  };
+  const footerColumns = [
+    cmsToColumn('footerBrand', CONTENT.columns.brand),
+    cmsToColumn('footerService', CONTENT.columns.customerService),
+    cmsToColumn('footerLegal', CONTENT.columns.legal),
+    cmsToColumn('footerPrivacy', CONTENT.columns.privacy),
+  ];
+
   const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -171,26 +188,21 @@ export const GlobalFooter = () => {
         <div className="border-t border-wood-200 dark:border-wood-800/50 pt-8 md:pt-16 mb-16 md:mb-24">
           
           <div className="md:hidden space-y-2">
-            {[
-              { key: 'brand', ...CONTENT.columns.brand },
-              { key: 'customerService', ...CONTENT.columns.customerService },
-              { key: 'legal', ...CONTENT.columns.legal },
-              { key: 'privacy', ...CONTENT.columns.privacy }
-            ].map((section) => (
-              <div key={section.key} className="border-b border-wood-200 dark:border-wood-800/30">
+            {footerColumns.map((section, si) => (
+              <div key={section.title + si} className="border-b border-wood-200 dark:border-wood-800/30">
                 <button 
-                  onClick={() => toggleSection(section.key)}
+                  onClick={() => toggleSection(section.title)}
                   className="w-full py-4 flex items-center justify-between text-left group"
                 >
-                  <span className={`font-serif text-lg transition-colors ${openSection === section.key ? 'text-accent-gold' : 'text-wood-900 dark:text-sand-100'}`}>
+                  <span className={`font-serif text-lg transition-colors ${openSection === section.title ? 'text-accent-gold' : 'text-wood-900 dark:text-sand-100'}`}>
                     {section.title}
                   </span>
                   <ChevronDown 
-                    className={`w-5 h-5 text-wood-400 dark:text-wood-500 transition-transform duration-300 ${openSection === section.key ? 'rotate-180 text-accent-gold' : ''}`} 
+                    className={`w-5 h-5 text-wood-400 dark:text-wood-500 transition-transform duration-300 ${openSection === section.title ? 'rotate-180 text-accent-gold' : ''}`} 
                   />
                 </button>
                 <AnimatePresence>
-                  {openSection === section.key && (
+                  {openSection === section.title && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
@@ -231,10 +243,10 @@ export const GlobalFooter = () => {
             <div className="flex flex-col justify-between h-full space-y-8">
               <div className="space-y-6">
                 <h4 className="font-serif text-lg text-wood-900 dark:text-sand-100">
-                  {CONTENT.columns.brand.title}
+                  {footerColumns[0].title}
                 </h4>
                 <ul className="space-y-3">
-                  {CONTENT.columns.brand.items.map((item, idx) => (
+                  {footerColumns[0].items.map((item, idx) => (
                     <li key={idx}>
                       <Link href={item.href} className="text-wood-600 dark:text-sand-400 hover:text-wood-900 dark:hover:text-sand-100 transition-all duration-300 text-sm font-light hover:translate-x-1 inline-block">
                         {item.label}
@@ -254,7 +266,7 @@ export const GlobalFooter = () => {
               </div>
             </div>
 
-            {[CONTENT.columns.customerService, CONTENT.columns.legal, CONTENT.columns.privacy].map((col, idx) => (
+            {footerColumns.slice(1).map((col, idx) => (
               <div key={idx} className="space-y-6">
                 <h4 className="font-serif text-lg text-wood-900 dark:text-sand-100">
                   {col.title}
