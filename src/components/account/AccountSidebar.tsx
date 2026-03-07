@@ -36,7 +36,6 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({ activeSection, o
     // { id: 'business', label: 'Espacio B2B', icon: Briefcase },       // Fase 13
     // { id: 'billing', label: 'Facturación', icon: Receipt },           // Fase 11
     // { id: 'designs', label: 'Mis Diseños', icon: Palette },           // Post-lanzamiento
-    // { id: 'subscriptions', label: 'Suscripciones', icon: RefreshCw }, // Post-lanzamiento
   ];
 
   return (

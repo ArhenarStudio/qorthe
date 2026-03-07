@@ -20,12 +20,11 @@ import { AccountSecurity } from '@/components/account/AccountSecurity';
 import { QuotationsList } from '@/components/account/QuotationsList';
 
 // Lazy-loaded modules (not yet production-ready, hidden from sidebar)
-const SubscriptionsList = lazy(() => import('@/components/account/SubscriptionsList').then(m => ({ default: m.SubscriptionsList })));
 const SavedDesigns = lazy(() => import('@/components/account/SavedDesigns').then(m => ({ default: m.SavedDesigns })));
 const BusinessDashboard = lazy(() => import('@/components/account/BusinessDashboard').then(m => ({ default: m.BusinessDashboard })));
 const BillingDashboard = lazy(() => import('@/components/account/billing/BillingDashboard').then(m => ({ default: m.BillingDashboard })));
 
-export type AccountSection = 'overview' | 'loyalty' | 'orders' | 'quotations' | 'addresses' | 'wallet' | 'wishlist' | 'reviews' | 'settings' | 'security' | 'subscriptions' | 'designs' | 'business' | 'billing';
+export type AccountSection = 'overview' | 'loyalty' | 'orders' | 'quotations' | 'addresses' | 'wallet' | 'wishlist' | 'reviews' | 'settings' | 'security' | 'designs' | 'business' | 'billing';
 
 export const AccountPage = () => {
   const pathname = usePathname();
@@ -61,7 +60,6 @@ export const AccountPage = () => {
       case 'reviews': return <UserReviews />;
       case 'settings': return <AccountSettings />;
       case 'security': return <AccountSecurity />;
-      case 'subscriptions': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><SubscriptionsList /></Suspense>;
       case 'designs': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><SavedDesigns /></Suspense>;
       case 'business': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><BusinessDashboard /></Suspense>;
       case 'billing': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><BillingDashboard /></Suspense>;
