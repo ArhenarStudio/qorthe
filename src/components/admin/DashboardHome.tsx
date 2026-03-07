@@ -3,16 +3,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import {
-  DollarSign, ShoppingBag, TrendingUp, Eye,
+  DollarSign, ShoppingBag, TrendingUp,
   ArrowUpRight, ArrowDownRight, AlertTriangle,
   ShoppingCart, Star, FileText, Truck,
-  CheckCircle, UserPlus, Package, Wifi, WifiOff
+  CheckCircle, UserPlus, Package, Wifi, WifiOff, Loader2
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend
+  Tooltip, ResponsiveContainer
 } from 'recharts';
-import { salesChartData, activityFeed, orders, adminProducts } from '@/data/adminMockData';
 import { useAdminData } from '@/hooks/useAdminData';
 import type { Period } from './AdminHeader';
 import type { AdminPage } from './AdminSidebar';
@@ -39,7 +38,6 @@ interface Props {
   onNavigate: (page: AdminPage) => void;
 }
 
-// Period → query param map
 const periodQueryMap: Record<Period, string> = {
   today: 'today',
   '7days': '7days',
@@ -53,7 +51,6 @@ const fmtMXN = (n: number) =>
 export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
   const [chartView, setChartView] = React.useState<'revenue' | 'orders'>('revenue');
 
-  // ── Live data from Medusa ──
   const periodQ = periodQueryMap[period] || '7days';
   const { data: liveData, loading: liveLoading, error: liveError } = useAdminData<{
     kpis: {
@@ -61,52 +58,70 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
       order_count: number;
       pending_orders: number;
       shipped_orders: number;
+      canceled_count: number;
       product_count: number;
       customer_count: number;
       avg_order_value: number;
     };
     recent_orders: any[];
     low_stock: any[];
+    daily_chart: { day: string; revenue: number; orders: number }[];
+    activity_feed: { id: string; type: string; title: string; description: string; time: string; icon: string }[];
+    top_products: { title: string; thumbnail: string; revenue: number; sold: number }[];
   }>(`/api/admin/dashboard?period=${periodQ}`, { refreshInterval: 60_000 });
 
   const isLive = !!liveData && !liveError;
   const k = liveData?.kpis;
 
-  const kpis = k
-    ? [
-        { label: 'Ventas del periodo', value: fmtMXN(k.total_revenue), change: `${k.order_count} pedidos`, up: true, icon: DollarSign, color: 'bg-accent-gold/10 text-accent-gold' },
-        { label: 'Pedidos', value: String(k.order_count), change: `${k.pending_orders} pendientes`, up: true, icon: ShoppingBag, color: 'bg-blue-50 text-blue-600', highlight: k.pending_orders > 0 },
-        { label: 'Ticket promedio', value: fmtMXN(k.avg_order_value), change: `${k.product_count} productos`, up: true, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
-        { label: 'Clientes', value: String(k.customer_count), change: `${k.shipped_orders} enviados`, up: true, icon: UserPlus, color: 'bg-purple-50 text-purple-600' },
-      ]
-    : [
-        { label: 'Ventas del periodo', value: '$124,500', change: '+12.4%', up: true, icon: DollarSign, color: 'bg-accent-gold/10 text-accent-gold' },
-        { label: 'Pedidos', value: '45', change: '3 pendientes', up: true, icon: ShoppingBag, color: 'bg-blue-50 text-blue-600', highlight: true },
-        { label: 'Ticket promedio', value: '$2,766', change: '+8.2%', up: true, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
-        { label: 'Visitantes', value: '3,240', change: '-2.1%', up: false, icon: Eye, color: 'bg-purple-50 text-purple-600' },
-      ];
-
-  const pendingOrders = orders.filter(o => o.shippingStatus === 'pending' || o.shippingStatus === 'production');
-  const topProducts = [...adminProducts].sort((a, b) => b.revenue - a.revenue).slice(0, 5);
-
-  const pendingActions = [
-    { label: '3 reviews pendientes de aprobación', action: () => onNavigate('reviews') },
-    { label: '1 cotización sin responder', action: () => onNavigate('quotes') },
-    { label: '2 pedidos listos para enviar', action: () => onNavigate('shipping') },
+  // KPIs — real data with zero-value fallback (never mock)
+  const kpis = [
+    { label: 'Ventas del periodo', value: fmtMXN(k?.total_revenue || 0), change: `${k?.order_count || 0} pedidos`, up: (k?.total_revenue || 0) > 0, icon: DollarSign, color: 'bg-accent-gold/10 text-accent-gold' },
+    { label: 'Pedidos', value: String(k?.order_count || 0), change: `${k?.pending_orders || 0} pendientes`, up: true, icon: ShoppingBag, color: 'bg-blue-50 text-blue-600', highlight: (k?.pending_orders || 0) > 0 },
+    { label: 'Ticket promedio', value: fmtMXN(k?.avg_order_value || 0), change: `${k?.product_count || 0} productos`, up: true, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
+    { label: 'Clientes', value: String(k?.customer_count || 0), change: `${k?.shipped_orders || 0} enviados`, up: true, icon: UserPlus, color: 'bg-purple-50 text-purple-600' },
   ];
+
+  // Chart data — real daily aggregation
+  const chartData = liveData?.daily_chart || [];
+
+  // Activity feed — real events
+  const activityFeed = liveData?.activity_feed || [];
+
+  // Pending orders from recent_orders
+  const pendingOrders = (liveData?.recent_orders || []).filter(
+    (o: any) => o.fulfillment_status === 'not_fulfilled' || o.fulfillment_status === 'partially_fulfilled'
+  );
+
+  // Top products — real from order items
+  const topProducts = liveData?.top_products || [];
+
+  // Low stock alerts
+  const lowStock = liveData?.low_stock || [];
+
+  // Pending actions — built from real counts
+  const pendingActions = [
+    ...(k?.pending_orders ? [{ label: `${k.pending_orders} pedido(s) pendientes de envío`, action: () => onNavigate('shipping') }] : []),
+    ...(k?.canceled_count ? [{ label: `${k.canceled_count} pedido(s) cancelados requieren revisión`, action: () => onNavigate('returns') }] : []),
+    ...(lowStock.length > 0 ? [{ label: `${lowStock.length} producto(s) con stock bajo`, action: () => onNavigate('inventory') }] : []),
+  ];
+
+  if (liveLoading) {
+    return (
+      <div className="flex items-center justify-center py-32 text-wood-400">
+        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+        Cargando dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Live data indicator */}
-      {!liveLoading && (
-        <div className={`flex items-center gap-1.5 text-[10px] ${
-          isLive ? 'text-green-600' : 'text-wood-400'
-        }`}>
-          {isLive ? <Wifi size={10} /> : <WifiOff size={10} />}
-          {isLive ? 'Datos en vivo de Medusa' : 'Datos de demostración (mock)'}
-          {liveError && <span className="text-red-400 ml-2">· {liveError}</span>}
-        </div>
-      )}
+      <div className={`flex items-center gap-1.5 text-[10px] ${isLive ? 'text-green-600' : 'text-wood-400'}`}>
+        {isLive ? <Wifi size={10} /> : <WifiOff size={10} />}
+        {isLive ? 'Datos en vivo de Medusa' : 'Sin conexión a Medusa'}
+        {liveError && <span className="text-red-400 ml-2">· {liveError}</span>}
+      </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -137,7 +152,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
 
       {/* Charts + Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sales Chart */}
+        {/* Sales Chart — REAL daily data */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -162,34 +177,38 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
             </div>
           </div>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              {chartView === 'revenue' ? (
-                <LineChart data={salesChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v / 1000).toFixed(1)}k`} />
-                  <Tooltip
-                    contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 12 }}
-                    formatter={(value: any) => [`$${value.toLocaleString()} MXN`, '']}
-                  />
-                  <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="revenue" name="Este periodo" stroke="#C5A065" strokeWidth={2.5} dot={{ fill: '#C5A065', r: 4 }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="prevRevenue" name="Periodo anterior" stroke="#D7CCC8" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                </LineChart>
-              ) : (
-                <BarChart data={salesChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 12 }} />
-                  <Bar dataKey="orders" name="Pedidos" fill="#C5A065" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
+            {chartData.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-wood-300 text-sm">
+                Sin datos de ventas en este periodo
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                {chartView === 'revenue' ? (
+                  <LineChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v / 1000).toFixed(1)}k`} />
+                    <Tooltip
+                      contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 12 }}
+                      formatter={(value: any) => [`$${value.toLocaleString()} MXN`, 'Ingresos']}
+                    />
+                    <Line type="monotone" dataKey="revenue" name="Ingresos" stroke="#C5A065" strokeWidth={2.5} dot={{ fill: '#C5A065', r: 3 }} activeDot={{ r: 6 }} />
+                  </LineChart>
+                ) : (
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                    <Tooltip contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 12 }} />
+                    <Bar dataKey="orders" name="Pedidos" fill="#C5A065" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                )}
+              </ResponsiveContainer>
+            )}
           </div>
         </motion.div>
 
-        {/* Activity Feed */}
+        {/* Activity Feed — REAL events */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -200,30 +219,34 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
             <h3 className="font-medium text-wood-900 text-sm">Actividad reciente</h3>
           </div>
           <div className="divide-y divide-wood-50 max-h-[340px] overflow-y-auto">
-            {activityFeed.map(item => {
-              const IconComp = iconMap[item.icon] || Package;
-              return (
-                <div key={item.id} className="px-5 py-3 hover:bg-sand-50/50 transition-colors">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${typeColorMap[item.type] || 'bg-gray-50 text-gray-500'}`}>
-                      <IconComp size={14} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium text-wood-900 truncate">{item.title}</p>
-                      <p className="text-[11px] text-wood-500 truncate">{item.description}</p>
-                      <p className="text-[10px] text-wood-400 mt-0.5">{item.time}</p>
+            {activityFeed.length === 0 ? (
+              <div className="p-8 text-center text-wood-300 text-xs">Sin actividad reciente</div>
+            ) : (
+              activityFeed.map(item => {
+                const IconComp = iconMap[item.icon] || Package;
+                return (
+                  <div key={item.id} className="px-5 py-3 hover:bg-sand-50/50 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${typeColorMap[item.type] || 'bg-gray-50 text-gray-500'}`}>
+                        <IconComp size={14} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-wood-900 truncate">{item.title}</p>
+                        <p className="text-[11px] text-wood-500 truncate">{item.description}</p>
+                        <p className="text-[10px] text-wood-400 mt-0.5">{item.time}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </motion.div>
       </div>
 
       {/* Pending Orders + Top Products + Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Pending Orders */}
+        {/* Pending Orders — REAL from Medusa */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -239,7 +262,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
           {pendingOrders.length === 0 ? (
             <div className="p-10 text-center text-wood-400 text-sm">
               <CheckCircle className="w-8 h-8 mx-auto mb-2 opacity-20" />
-              <p>No hay pedidos pendientes</p>
+              <p>No hay pedidos pendientes de acción</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -249,25 +272,25 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
                     <th className="px-5 py-3">Pedido</th>
                     <th className="px-5 py-3">Cliente</th>
                     <th className="px-5 py-3">Total</th>
-                    <th className="px-5 py-3">Estado envío</th>
+                    <th className="px-5 py-3">Estado</th>
                     <th className="px-5 py-3">Acción</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-wood-50">
-                  {pendingOrders.map(order => (
+                  {pendingOrders.map((order: any) => (
                     <tr key={order.id} className="hover:bg-sand-50/50 transition-colors">
-                      <td className="px-5 py-3 text-xs font-medium text-wood-900">{order.number}</td>
-                      <td className="px-5 py-3 text-xs text-wood-600">{order.customer.name}</td>
-                      <td className="px-5 py-3 text-xs text-wood-900 font-medium">${order.total.toLocaleString()}</td>
+                      <td className="px-5 py-3 text-xs font-medium text-wood-900">#{order.display_id}</td>
+                      <td className="px-5 py-3 text-xs text-wood-600">{order.email?.split('@')[0] || 'Cliente'}</td>
+                      <td className="px-5 py-3 text-xs text-wood-900 font-medium">{fmtMXN(order.total)}</td>
                       <td className="px-5 py-3">
                         <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                          order.shippingStatus === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
+                          order.payment_status === 'captured' ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-500'
                         }`}>
-                          {order.shippingStatus === 'pending' ? 'Pendiente' : 'En producción'}
+                          {order.payment_status === 'captured' ? 'Listo para envío' : 'Pendiente pago'}
                         </span>
                       </td>
                       <td className="px-5 py-3">
-                        <button className="text-[10px] font-bold text-accent-gold uppercase tracking-wider hover:underline">
+                        <button onClick={() => onNavigate('orders')} className="text-[10px] font-bold text-accent-gold uppercase tracking-wider hover:underline">
                           Gestionar
                         </button>
                       </td>
@@ -281,7 +304,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
 
         {/* Right Column: Top Products + Pending Actions */}
         <div className="space-y-6">
-          {/* Top Products */}
+          {/* Top Products — REAL from order items */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -292,23 +315,30 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
               <h3 className="font-medium text-wood-900 text-sm">Top productos</h3>
             </div>
             <div className="divide-y divide-wood-50">
-              {topProducts.map((p, idx) => (
-                <div key={p.id} className="px-5 py-3 flex items-center gap-3 hover:bg-sand-50/50 transition-colors">
-                  <span className="text-[10px] text-wood-400 font-medium w-4">{idx + 1}</span>
-                  <img src={p.image} alt={p.name} className="w-8 h-8 rounded-lg object-cover" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-wood-900 truncate">{p.name}</p>
-                    <p className="text-[10px] text-wood-400">{p.soldUnits} uds — ${p.revenue.toLocaleString()}</p>
+              {topProducts.length === 0 ? (
+                <div className="p-6 text-center text-wood-300 text-xs">Sin ventas en este periodo</div>
+              ) : (
+                topProducts.map((p: any, idx: number) => (
+                  <div key={idx} className="px-5 py-3 flex items-center gap-3 hover:bg-sand-50/50 transition-colors">
+                    <span className="text-[10px] text-wood-400 font-medium w-4">{idx + 1}</span>
+                    {p.thumbnail ? (
+                      <img src={p.thumbnail} alt={p.title} className="w-8 h-8 rounded-lg object-cover" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-lg bg-wood-100 flex items-center justify-center">
+                        <Package size={14} className="text-wood-400" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-wood-900 truncate">{p.title}</p>
+                      <p className="text-[10px] text-wood-400">{p.sold} uds — {fmtMXN(p.revenue)}</p>
+                    </div>
                   </div>
-                  {p.stock <= p.reorderPoint && (
-                    <span className="bg-red-50 text-red-500 text-[9px] font-bold px-1.5 py-0.5 rounded-full">Stock bajo</span>
-                  )}
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </motion.div>
 
-          {/* Pending Actions */}
+          {/* Pending Actions — REAL from KPIs */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -319,17 +349,24 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
               <h3 className="font-medium text-wood-900 text-sm">Pendientes rápidos</h3>
             </div>
             <div className="divide-y divide-wood-50">
-              {pendingActions.map((item, idx) => (
-                <button
-                  key={idx}
-                  onClick={item.action}
-                  className="w-full px-5 py-3 flex items-center gap-3 text-left hover:bg-sand-50/50 transition-colors"
-                >
-                  <div className="w-2 h-2 rounded-full bg-accent-gold flex-shrink-0" />
-                  <p className="text-xs text-wood-700">{item.label}</p>
-                  <ArrowUpRight size={12} className="ml-auto text-wood-400" />
-                </button>
-              ))}
+              {pendingActions.length === 0 ? (
+                <div className="p-6 text-center text-wood-300 text-xs flex flex-col items-center gap-2">
+                  <CheckCircle size={16} className="opacity-30" />
+                  Todo al día
+                </div>
+              ) : (
+                pendingActions.map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={item.action}
+                    className="w-full px-5 py-3 flex items-center gap-3 text-left hover:bg-sand-50/50 transition-colors"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-accent-gold flex-shrink-0" />
+                    <p className="text-xs text-wood-700">{item.label}</p>
+                    <ArrowUpRight size={12} className="ml-auto text-wood-400" />
+                  </button>
+                ))
+              )}
             </div>
           </motion.div>
         </div>

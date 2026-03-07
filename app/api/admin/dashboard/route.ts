@@ -124,6 +124,67 @@ export async function GET(req: NextRequest) {
       },
       recent_orders: recentOrders,
       low_stock: lowStockProducts,
+
+      // ── Daily chart data (revenue + orders per day) ──
+      daily_chart: (() => {
+        const chart: Record<string, { revenue: number; orders: number }> = {};
+        for (let i = 0; i < days; i++) {
+          const d = new Date(now.getTime() - i * 86400000);
+          const key = d.toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
+          chart[key] = { revenue: 0, orders: 0 };
+        }
+        for (const o of orders) {
+          if (o.status === "canceled") continue;
+          const d = new Date(o.created_at);
+          const key = d.toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
+          if (chart[key]) {
+            chart[key].revenue += (o.total || 0) / 100;
+            chart[key].orders += 1;
+          }
+        }
+        return Object.entries(chart)
+          .map(([day, v]) => ({ day, revenue: Math.round(v.revenue), orders: v.orders }))
+          .reverse();
+      })(),
+
+      // ── Activity feed (last 10 real events: orders + low stock) ──
+      activity_feed: [
+        ...recentOrders.slice(0, 7).map((o: any) => ({
+          id: `order-${o.id}`,
+          type: "order" as const,
+          title: `Pedido #${o.display_id}`,
+          description: `${o.email?.split("@")[0] || "Cliente"} — $${o.total.toLocaleString()} MXN`,
+          time: new Date(o.created_at).toLocaleDateString("es-MX", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }),
+          icon: o.fulfillment_status === "fulfilled" ? "check-circle" : o.payment_status === "captured" ? "shopping-bag" : "file-text",
+        })),
+        ...lowStockProducts.slice(0, 3).map((p: any) => ({
+          id: `stock-${p.product_id}`,
+          type: "stock" as const,
+          title: `Stock bajo: ${p.product_title}`,
+          description: `${p.variant_title || "Variante"} — ${p.inventory_quantity} unidades`,
+          time: "Ahora",
+          icon: "alert-triangle",
+        })),
+      ].slice(0, 10),
+
+      // ── Top products by revenue (from order items) ──
+      top_products: (() => {
+        const productSales: Record<string, { title: string; thumbnail: string; revenue: number; sold: number }> = {};
+        for (const o of orders) {
+          if (o.status === "canceled") continue;
+          for (const item of (o.items || [])) {
+            const pid = item.product_id || item.title;
+            if (!productSales[pid]) {
+              productSales[pid] = { title: item.title || "Producto", thumbnail: item.thumbnail || "", revenue: 0, sold: 0 };
+            }
+            productSales[pid].revenue += ((item.unit_price || 0) * (item.quantity || 1)) / 100;
+            productSales[pid].sold += item.quantity || 1;
+          }
+        }
+        return Object.values(productSales)
+          .sort((a, b) => b.revenue - a.revenue)
+          .slice(0, 5);
+      })(),
     });
   } catch (error: any) {
     console.error("[Admin Dashboard]", error.message);
