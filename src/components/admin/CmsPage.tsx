@@ -1690,7 +1690,285 @@ function HomepageTabLive() {
   );
 }
 
-// Coming Soon placeholder for tabs not yet implemented
+// ── LIVE TABS: Blog, Popups, Media, Texts, SEO ──
+
+function BlogTabLive() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<any>(null);
+  const [form, setForm] = useState({ title: '', slug: '', excerpt: '', body: '', status: 'draft', category: '', tags: '' });
+
+  const fetchPosts = () => {
+    fetch('/api/admin/cms?type=posts').then(r => r.ok ? r.json() : null).then(d => { if (d) setPosts(d.posts || []); }).catch(() => {}).finally(() => setLoading(false));
+  };
+  useEffect(() => { fetchPosts(); }, []);
+
+  const handleSave = async () => {
+    const payload = { ...form, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean), type: 'post', ...(editing?.id && { id: editing.id }) };
+    const method = editing?.id ? 'PUT' : 'POST';
+    const res = await fetch('/api/admin/cms', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (res.ok) { toast.success(editing?.id ? 'Post actualizado' : 'Post creado'); setEditing(null); fetchPosts(); }
+    else toast.error('Error al guardar');
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`/api/admin/cms?type=post&id=${id}`, { method: 'DELETE' });
+    if (res.ok) { toast.success('Post eliminado'); fetchPosts(); }
+  };
+
+  if (editing !== null) {
+    return (
+      <Card className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h4 className="font-serif text-lg text-wood-900">{editing?.id ? 'Editar Post' : 'Nuevo Post'}</h4>
+          <button onClick={() => setEditing(null)} className="text-wood-400 hover:text-wood-900"><X size={18} /></button>
+        </div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Título</label><input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
+          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Slug</label><input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Categoría</label><input value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
+          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Tags (separados por coma)</label><input value={form.tags} onChange={e => setForm(f => ({ ...f, tags: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
+        </div>
+        <div className="mb-4"><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Extracto</label><input value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
+        <div className="mb-4"><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Contenido</label><textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={10} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm font-mono" /></div>
+        <div className="flex items-center gap-3">
+          <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="px-3 py-2 border border-wood-200 rounded-lg text-sm">
+            <option value="draft">Borrador</option><option value="published">Publicado</option><option value="archived">Archivado</option>
+          </select>
+          <button onClick={handleSave} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-sm font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Save size={14} /> Guardar</button>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-wood-500">{posts.length} publicaciones</p>
+        <button onClick={() => { setForm({ title: '', slug: '', excerpt: '', body: '', status: 'draft', category: '', tags: '' }); setEditing({}); }} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Post</button>
+      </div>
+      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : posts.length === 0 ? (
+        <Card className="p-12 text-center"><PenLine className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500 mb-2">Sin publicaciones aún</p><button onClick={() => { setForm({ title: '', slug: '', excerpt: '', body: '', status: 'draft', category: '', tags: '' }); setEditing({}); }} className="text-accent-gold text-sm font-medium hover:underline">Crear primera publicación</button></Card>
+      ) : (
+        <Card className="divide-y divide-wood-100">
+          {posts.map(p => (
+            <div key={p.id} className="p-4 flex items-center justify-between hover:bg-wood-50/50 transition-colors">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-wood-900 truncate">{p.title}</p>
+                <p className="text-[10px] text-wood-400 mt-0.5">{p.slug} · {p.category || 'Sin categoría'} · {new Date(p.created_at).toLocaleDateString('es-MX')}</p>
+              </div>
+              <div className="flex items-center gap-2 ml-4">
+                <Badge text={p.status === 'published' ? 'Publicado' : p.status === 'archived' ? 'Archivado' : 'Borrador'} variant={p.status === 'published' ? 'green' : p.status === 'archived' ? 'gray' : 'amber'} />
+                <button onClick={() => { setForm({ title: p.title, slug: p.slug, excerpt: p.excerpt || '', body: p.body || '', status: p.status, category: p.category || '', tags: (p.tags || []).join(', ') }); setEditing(p); }} className="p-1.5 text-wood-400 hover:text-wood-900 hover:bg-wood-100 rounded-lg"><Edit3 size={14} /></button>
+                <button onClick={() => handleDelete(p.id)} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+              </div>
+            </div>
+          ))}
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function PopupsTabLive() {
+  const [popups, setPopups] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPopups = () => { fetch('/api/admin/cms?type=popups').then(r => r.ok ? r.json() : null).then(d => { if (d) setPopups(d.popups || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { fetchPopups(); }, []);
+
+  const handleCreate = async () => {
+    const res = await fetch('/api/admin/cms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'popup', name: 'Nuevo pop-up', popup_type: 'modal' }) });
+    if (res.ok) { toast.success('Pop-up creado'); fetchPopups(); }
+  };
+
+  const handleToggle = async (popup: any) => {
+    const res = await fetch('/api/admin/cms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'popup', id: popup.id, is_active: !popup.is_active }) });
+    if (res.ok) { toast.success(popup.is_active ? 'Desactivado' : 'Activado'); fetchPopups(); }
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`/api/admin/cms?type=popup&id=${id}`, { method: 'DELETE' });
+    if (res.ok) { toast.success('Pop-up eliminado'); fetchPopups(); }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-wood-500">{popups.length} pop-ups configurados</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Pop-up</button>
+      </div>
+      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : popups.length === 0 ? (
+        <Card className="p-12 text-center"><MessageSquare className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin pop-ups configurados</p></Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {popups.map(p => (
+            <Card key={p.id} className="p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div><p className="text-sm font-medium text-wood-900">{p.name}</p><p className="text-[10px] text-wood-400 mt-0.5">{p.type} · trigger: {p.trigger_type} ({p.trigger_value})</p></div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleToggle(p)} className={`w-9 h-5 rounded-full transition-colors ${p.is_active ? 'bg-green-500' : 'bg-wood-200'}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform ${p.is_active ? 'translate-x-4' : 'translate-x-0.5'}`} /></button>
+                  <button onClick={() => handleDelete(p.id)} className="p-1 text-wood-400 hover:text-red-600"><Trash2 size={14} /></button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-wood-400">
+                <Badge text={p.is_active ? 'Activo' : 'Inactivo'} variant={p.is_active ? 'green' : 'gray'} />
+                <span>Mostrar en: {(p.show_on || ['/']).join(', ')}</span>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MediaTabLive() {
+  const [files, setFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { fetch('/api/admin/cms?type=media').then(r => r.ok ? r.json() : null).then(d => { if (d) setFiles(d.files || []); }).catch(() => {}).finally(() => setLoading(false)); }, []);
+
+  const isImage = (name: string) => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(name);
+  const fmtSize = (b: number) => b > 1_000_000 ? `${(b / 1_000_000).toFixed(1)} MB` : b > 1000 ? `${(b / 1000).toFixed(0)} KB` : `${b} B`;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-wood-500">{files.length} archivos</p>
+        <p className="text-[10px] text-wood-400">Subir archivos desde Supabase Storage Dashboard</p>
+      </div>
+      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : files.length === 0 ? (
+        <Card className="p-12 text-center"><ImageIcon className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500 mb-2">Sin archivos en media</p><p className="text-[10px] text-wood-400">Sube archivos desde el dashboard de Supabase Storage (bucket: media)</p></Card>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {files.map(f => (
+            <Card key={f.id} className="overflow-hidden group">
+              <div className="aspect-square bg-wood-50 flex items-center justify-center relative">
+                {isImage(f.name) ? <img src={f.url} alt={f.name} className="w-full h-full object-cover" /> : <FileText className="w-8 h-8 text-wood-300" />}
+                <a href={f.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/0 group-hover:bg-black/20 flex items-center justify-center transition-colors"><ExternalLink className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" /></a>
+              </div>
+              <div className="p-2"><p className="text-[10px] text-wood-700 truncate font-medium">{f.name}</p><p className="text-[9px] text-wood-400">{fmtSize(f.size)}</p></div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TextsTabLive() {
+  const [texts, setTexts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState({ value_es: '', value_en: '' });
+
+  const fetchTexts = () => { fetch('/api/admin/cms?type=texts').then(r => r.ok ? r.json() : null).then(d => { if (d) setTexts(d.texts || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { fetchTexts(); }, []);
+
+  const handleSave = async (id: string) => {
+    const res = await fetch('/api/admin/cms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'text', id, ...editValues }) });
+    if (res.ok) { toast.success('Texto actualizado'); setEditId(null); fetchTexts(); }
+  };
+
+  const handleCreate = async () => {
+    const key = prompt('Clave del texto (ej: hero.title):');
+    if (!key) return;
+    const res = await fetch('/api/admin/cms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'text', key, section: key.split('.')[0] || 'General' }) });
+    if (res.ok) { toast.success('Texto creado'); fetchTexts(); }
+  };
+
+  const sections = [...new Set(texts.map(t => t.section))];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-wood-500">{texts.length} textos en {sections.length} secciones</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Texto</button>
+      </div>
+      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : texts.length === 0 ? (
+        <Card className="p-12 text-center"><Type className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin textos configurados</p></Card>
+      ) : sections.map(section => (
+        <Card key={section} className="overflow-hidden">
+          <div className="bg-wood-50 px-4 py-2 border-b border-wood-100"><STitle>{section}</STitle></div>
+          <div className="divide-y divide-wood-50">
+            {texts.filter(t => t.section === section).map(t => (
+              <div key={t.id} className="p-3 flex items-center gap-4 hover:bg-wood-50/30 transition-colors">
+                <code className="text-[10px] text-wood-400 font-mono w-40 truncate shrink-0">{t.key}</code>
+                {editId === t.id ? (
+                  <div className="flex-1 flex items-center gap-2">
+                    <input value={editValues.value_es} onChange={e => setEditValues(v => ({ ...v, value_es: e.target.value }))} className="flex-1 px-2 py-1 border border-wood-200 rounded text-sm" placeholder="Español" />
+                    <input value={editValues.value_en} onChange={e => setEditValues(v => ({ ...v, value_en: e.target.value }))} className="flex-1 px-2 py-1 border border-wood-200 rounded text-sm" placeholder="English" />
+                    <button onClick={() => handleSave(t.id)} className="p-1 text-green-600 hover:bg-green-50 rounded"><Check size={16} /></button>
+                    <button onClick={() => setEditId(null)} className="p-1 text-wood-400 hover:bg-wood-100 rounded"><X size={16} /></button>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex items-center gap-4 min-w-0">
+                    <span className="text-sm text-wood-700 truncate flex-1">{t.value_es || '—'}</span>
+                    <span className="text-sm text-wood-400 truncate flex-1">{t.value_en || '—'}</span>
+                    <button onClick={() => { setEditId(t.id); setEditValues({ value_es: t.value_es || '', value_en: t.value_en || '' }); }} className="p-1 text-wood-400 hover:text-wood-900"><Edit3 size={14} /></button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function SeoTabLive() {
+  const [seo, setSeo] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { fetch('/api/admin/cms?type=seo').then(r => r.ok ? r.json() : null).then(d => { if (d) setSeo(d.seo); }).catch(() => {}).finally(() => setLoading(false)); }, []);
+
+  if (loading) return <Card className="p-8 text-center text-wood-400">Cargando...</Card>;
+
+  const items = seo ? [
+    { label: 'Dominio', value: seo.domain, icon: Globe },
+    { label: 'Páginas indexadas', value: `${seo.indexedPages} páginas en sitemap`, icon: Search },
+    { label: 'Meta descripción', value: seo.metaDescription, icon: FileText },
+    { label: 'OG Image', value: seo.ogImage ? 'Configurada' : 'No configurada', icon: ImageIcon },
+    { label: 'JSON-LD', value: seo.jsonLd ? 'Activo (Organization + Product)' : 'Inactivo', icon: Tag },
+    { label: 'Favicon', value: seo.favicon ? '4 tamaños (32/180/192/512)' : 'No configurado', icon: Star },
+  ] : [];
+
+  return (
+    <div className="space-y-4">
+      <Card className="p-6">
+        <h4 className="font-serif text-lg text-wood-900 mb-4 flex items-center gap-2"><Search size={18} className="text-accent-gold" /> SEO Global</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {items.map(item => (
+            <div key={item.label} className="flex items-start gap-3 p-3 bg-wood-50 rounded-lg">
+              <item.icon size={16} className="text-wood-400 mt-0.5 shrink-0" />
+              <div><p className="text-[10px] font-bold uppercase text-wood-500">{item.label}</p><p className="text-sm text-wood-900">{item.value}</p></div>
+            </div>
+          ))}
+        </div>
+      </Card>
+      <Card className="p-6">
+        <h4 className="text-sm font-medium text-wood-900 mb-3">Archivos SEO</h4>
+        <div className="space-y-2">
+          {seo && [
+            { label: 'Sitemap', url: seo.sitemap },
+            { label: 'Robots.txt', url: seo.robots },
+          ].map(f => (
+            <a key={f.label} href={f.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 bg-wood-50 rounded-lg hover:bg-wood-100 transition-colors group">
+              <span className="text-sm text-wood-700">{f.label}</span>
+              <ExternalLink size={14} className="text-wood-400 group-hover:text-accent-gold" />
+            </a>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// Coming Soon placeholder (kept for any future tabs)
 function CmsComingSoon({ title, description }: { title: string; description: string }) {
   return (
     <Card className="p-12 text-center">
@@ -1719,11 +1997,11 @@ export const CmsPage: React.FC = () => {
     pages: <PagesTab />,
     menus: <MenusTabLive />,
     homepage: <HomepageTabLive />,
-    blog: <CmsComingSoon title="Blog" description="Crea y administra publicaciones del blog para SEO y engagement." />,
-    popups: <CmsComingSoon title="Pop-ups y Banners" description="Configura pop-ups de bienvenida, descuentos y anuncios." />,
-    media: <CmsComingSoon title="Biblioteca de Media" description="Administra imágenes, videos y archivos del sitio." />,
-    texts: <CmsComingSoon title="Textos y Traducciones" description="Edita textos del sitio y administra traducciones ES/EN." />,
-    seo: <CmsComingSoon title="SEO Global" description="Configura meta tags, sitemap, robots.txt y structured data." />,
+    blog: <BlogTabLive />,
+    popups: <PopupsTabLive />,
+    media: <MediaTabLive />,
+    texts: <TextsTabLive />,
+    seo: <SeoTabLive />,
   };
 
   return (
