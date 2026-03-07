@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -19,10 +19,11 @@ import { UserReviews } from '@/components/account/UserReviews';
 import { AccountSecurity } from '@/components/account/AccountSecurity';
 import { QuotationsList } from '@/components/account/QuotationsList';
 
-import { SubscriptionsList } from '@/components/account/SubscriptionsList';
-import { SavedDesigns } from '@/components/account/SavedDesigns';
-import { BusinessDashboard } from '@/components/account/BusinessDashboard';
-import { BillingDashboard } from '@/components/account/billing/BillingDashboard';
+// Lazy-loaded modules (not yet production-ready, hidden from sidebar)
+const SubscriptionsList = lazy(() => import('@/components/account/SubscriptionsList').then(m => ({ default: m.SubscriptionsList })));
+const SavedDesigns = lazy(() => import('@/components/account/SavedDesigns').then(m => ({ default: m.SavedDesigns })));
+const BusinessDashboard = lazy(() => import('@/components/account/BusinessDashboard').then(m => ({ default: m.BusinessDashboard })));
+const BillingDashboard = lazy(() => import('@/components/account/billing/BillingDashboard').then(m => ({ default: m.BillingDashboard })));
 
 export type AccountSection = 'overview' | 'loyalty' | 'orders' | 'quotations' | 'addresses' | 'wallet' | 'wishlist' | 'reviews' | 'settings' | 'security' | 'subscriptions' | 'designs' | 'business' | 'billing';
 
@@ -60,10 +61,10 @@ export const AccountPage = () => {
       case 'reviews': return <UserReviews />;
       case 'settings': return <AccountSettings />;
       case 'security': return <AccountSecurity />;
-      case 'subscriptions': return <SubscriptionsList />;
-      case 'designs': return <SavedDesigns />;
-      case 'business': return <BusinessDashboard />;
-      case 'billing': return <BillingDashboard />;
+      case 'subscriptions': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><SubscriptionsList /></Suspense>;
+      case 'designs': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><SavedDesigns /></Suspense>;
+      case 'business': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><BusinessDashboard /></Suspense>;
+      case 'billing': return <Suspense fallback={<div className="py-20 text-center text-wood-400">Cargando...</div>}><BillingDashboard /></Suspense>;
       default: return <AccountOverview onChangeSection={setActiveSection} />;
     }
   };

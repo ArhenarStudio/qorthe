@@ -278,7 +278,16 @@ export const OrdersList = () => {
                                               <p className="font-serif text-lg text-wood-900 dark:text-sand-100 transition-colors">{item.name}</p>
                                               <p className="text-sm text-wood-500 dark:text-wood-400 mt-1 transition-colors">Cant: {item.quantity} × <span className="font-medium text-wood-900 dark:text-sand-200">{item.price}</span></p>
                                             </div>
-                                            <button className="text-xs font-bold uppercase tracking-widest text-wood-400 hover:text-wood-900 dark:text-wood-500 dark:hover:text-sand-100 hover:underline transition-colors">
+                                            <button 
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (item.product_id) {
+                                                  window.location.href = `/shop/${item.product_id}#reviews`;
+                                                } else {
+                                                  window.location.href = '/shop';
+                                                }
+                                              }}
+                                              className="text-xs font-bold uppercase tracking-widest text-wood-400 hover:text-wood-900 dark:text-wood-500 dark:hover:text-sand-100 hover:underline transition-colors">
                                               Reseñar
                                             </button>
                                           </div>
@@ -346,14 +355,18 @@ export const OrdersList = () => {
                                     </div>
                                     <Truck className="w-5 h-5 text-wood-300 dark:text-wood-600 transition-colors" />
                                   </div>
-                                  <button className="w-full py-2.5 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest bg-wood-50 hover:bg-wood-100 dark:bg-wood-700 dark:hover:bg-wood-600 text-wood-900 dark:text-sand-100 rounded-lg transition-colors">
+                                  <button 
+                                    onClick={() => window.open(`/tracking/${order.displayId || order.id}`, '_blank')}
+                                    className="w-full py-2.5 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest bg-wood-50 hover:bg-wood-100 dark:bg-wood-700 dark:hover:bg-wood-600 text-wood-900 dark:text-sand-100 rounded-lg transition-colors">
                                     Rastrear Envío <ExternalLink className="w-3 h-3" />
                                   </button>
                                 </div>
                               )}
 
                               <div className="flex flex-col gap-3">
-                                <button className="w-full py-3 bg-wood-900 dark:bg-sand-100 text-sand-50 dark:text-wood-900 rounded-xl hover:bg-wood-800 dark:hover:bg-sand-200 transition-colors text-sm font-bold tracking-wide shadow-lg shadow-wood-900/10 dark:shadow-none flex items-center justify-center gap-2">
+                                <button 
+                                  onClick={() => window.location.href = '/shop'}
+                                  className="w-full py-3 bg-wood-900 dark:bg-sand-100 text-sand-50 dark:text-wood-900 rounded-xl hover:bg-wood-800 dark:hover:bg-sand-200 transition-colors text-sm font-bold tracking-wide shadow-lg shadow-wood-900/10 dark:shadow-none flex items-center justify-center gap-2">
                                   Volver a Comprar <ArrowRight className="w-4 h-4" />
                                 </button>
                                 <button 
@@ -372,8 +385,10 @@ export const OrdersList = () => {
                                   >
                                     <Download className="w-3 h-3" /> Descargar Ticket
                                   </button>
-                                  <button className="flex-1 py-3 text-wood-500 hover:text-wood-900 dark:text-wood-400 dark:hover:text-sand-200 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
-                                    <FileText className="w-3 h-3" /> Ver detalles
+                                  <button
+                                    onClick={() => setSelectedOrder(selectedOrder === order.id ? null : order.id)}
+                                    className="flex-1 py-3 text-wood-500 hover:text-wood-900 dark:text-wood-400 dark:hover:text-sand-200 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                                    <FileText className="w-3 h-3" /> {selectedOrder === order.id ? 'Cerrar' : 'Ver detalles'}
                                   </button>
                                 </div>
                               </div>

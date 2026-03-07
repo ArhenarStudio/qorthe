@@ -88,6 +88,11 @@ export const AddressBook = () => {
       toast.error('Sesión no disponible');
       return;
     }
+    // Validation
+    if (!addressForm.name.trim()) { toast.error('El nombre es obligatorio'); return; }
+    if (!addressForm.street.trim()) { toast.error('La dirección es obligatoria'); return; }
+    if (!addressForm.city.trim()) { toast.error('La ciudad es obligatoria'); return; }
+    if (!addressForm.zip.trim()) { toast.error('El código postal es obligatorio'); return; }
 
     setSaving(true);
     const [firstName, ...lastParts] = addressForm.name.split(' ');
@@ -101,6 +106,7 @@ export const AddressBook = () => {
       city: city || '',
       province: province || '',
       postal_code: addressForm.zip,
+      country_code: 'mx',
       phone: addressForm.phone,
       metadata: { label: addressForm.label, type: addressForm.type },
       ...(editingAddress?.id && { address_id: editingAddress.id }),
@@ -224,7 +230,7 @@ export const AddressBook = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Nombre Completo</label>
+        <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Nombre Completo *</label>
         <input 
           type="text" 
           name="name"
@@ -236,7 +242,7 @@ export const AddressBook = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Dirección y Número</label>
+        <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Dirección y Número *</label>
         <div className="relative group">
           <input 
             type="text" 
@@ -252,7 +258,7 @@ export const AddressBook = () => {
 
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Ciudad</label>
+          <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Ciudad, Estado *</label>
           <input 
             type="text" 
             name="city"
@@ -263,7 +269,7 @@ export const AddressBook = () => {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Código Postal</label>
+          <label className="text-xs font-extrabold uppercase tracking-widest text-wood-900 dark:text-sand-100">Código Postal *</label>
           <input 
             type="text" 
             name="zip"

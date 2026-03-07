@@ -255,7 +255,7 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                           <ChevronRight className="w-4 h-4 text-wood-400 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shrink-0" />
                        </button>
 
-                       <a href="/programa-lealtad" className="group flex items-center p-4 rounded-2xl bg-wood-50 dark:bg-wood-800/40 border border-wood-100 dark:border-wood-700 hover:bg-white dark:hover:bg-wood-800 hover:shadow-md transition-all text-left">
+                       <a href="/loyalty" className="group flex items-center p-4 rounded-2xl bg-wood-50 dark:bg-wood-800/40 border border-wood-100 dark:border-wood-700 hover:bg-white dark:hover:bg-wood-800 hover:shadow-md transition-all text-left">
                           <div className="w-10 h-10 rounded-full bg-wood-200/50 dark:bg-wood-700/50 flex items-center justify-center text-wood-700 dark:text-sand-200 group-hover:bg-accent-gold group-hover:text-wood-900 transition-colors shrink-0">
                             <Award className="w-5 h-5" />
                           </div>

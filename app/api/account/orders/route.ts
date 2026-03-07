@@ -124,6 +124,8 @@ export async function GET(req: NextRequest) {
           quantity: i.quantity || 1,
           price: `$${((i.unit_price || 0) / 100).toLocaleString("es-MX")}`,
           image: i.thumbnail || null,
+          product_id: i.product_id || null,
+          variant_id: i.variant_id || null,
           customization: i.metadata?.custom_design
             ? {
                 engraving: "Grabado láser",
