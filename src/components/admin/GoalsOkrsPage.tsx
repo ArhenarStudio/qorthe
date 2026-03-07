@@ -294,16 +294,39 @@ export const GoalsOkrsPage: React.FC = () => {
 
   const tabs: Array<{ id: GoalsTab; label: string; icon: React.ElementType }> = [
     { id: 'active', label: 'Metas activas', icon: Target },
-    { id: 'create', label: 'Crear meta', icon: Plus },
     { id: 'history', label: 'Historial', icon: Clock },
-    { id: 'ranking', label: 'Ranking equipo', icon: BarChart3 },
   ];
 
+  // Map API goals to Goal interface for cards
+  const apiGoals: Goal[] = (liveGoals?.goals || []).map((g: any) => {
+    const iconMap: Record<string, React.ElementType> = { 'rev-month': DollarSign, 'orders-month': ShoppingBag, 'avg-ticket': BarChart3, 'customers': Users, 'reviews': Star };
+    const pct = g.progress || 0;
+    const status: GoalStatus = pct >= 100 ? 'completed' : pct >= 70 ? 'on_track' : pct >= 40 ? 'at_risk' : 'behind';
+    return {
+      id: g.id,
+      title: g.name,
+      type: g.category,
+      icon: iconMap[g.id] || Target,
+      target: g.target,
+      current: Math.round(g.actual * 100) / 100,
+      unit: g.unit === 'MXN' ? '' : ` ${g.unit}`,
+      prefix: g.unit === 'MXN' ? '$' : '',
+      period: 'monthly' as GoalPeriod,
+      periodLabel: new Date().toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }),
+      deadline: `${new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()} ${new Date().toLocaleDateString('es-MX', { month: 'short' })}`,
+      status,
+      assignee: null,
+      trend: 0,
+    };
+  });
+
+  const goals = apiGoals.length > 0 ? apiGoals : mockGoals;
+
   // Summary stats
-  const total = mockGoals.length;
-  const onTrack = mockGoals.filter(g => g.status === 'on_track').length;
-  const atRisk = mockGoals.filter(g => g.status === 'at_risk').length;
-  const behind = mockGoals.filter(g => g.status === 'behind').length;
+  const total = goals.length;
+  const onTrack = goals.filter(g => g.status === 'on_track' || g.status === 'completed').length;
+  const atRisk = goals.filter(g => g.status === 'at_risk').length;
+  const behind = goals.filter(g => g.status === 'behind').length;
 
   return (
     <div className="space-y-4">
@@ -363,7 +386,7 @@ export const GoalsOkrsPage: React.FC = () => {
 
       {tab === 'active' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockGoals.map(g => <GoalCard key={g.id} goal={g} />)}
+          {goals.map(g => <GoalCard key={g.id} goal={g} />)}
         </div>
       )}
 
