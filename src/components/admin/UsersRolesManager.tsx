@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Users, Shield, ScrollText, Plus, Search, ChevronDown, ChevronRight,
@@ -353,21 +353,9 @@ const defaultRoles: Role[] = [
   },
 ];
 
-const mockUsers: AdminUser[] = [
+// Initial seed data — used as fallback only when API fails
+const seedUsers: AdminUser[] = [
   { id: 'u1', name: 'David Perez', email: 'rocksagecapital@gmail.com', role: 'Super Admin', roleColor: '#C5A065', status: 'active', lastAccess: 'Ahora', createdAt: '15 Ene 2025', scope: 'Todos' },
-  { id: 'u2', name: 'StudioRockStage', email: 'studio@rockstage.com', role: 'Desarrollador', roleColor: '#EF4444', status: 'active', lastAccess: '27 Feb 2026', createdAt: '20 Ene 2025', scope: 'Todos' },
-  { id: 'u3', name: 'Ana Martinez', email: 'ana@davidsonsdesign.com', role: 'Operaciones', roleColor: '#10B981', status: 'invited', lastAccess: 'Nunca', createdAt: '28 Feb 2026', scope: 'Todos' },
-];
-
-const mockAudit: AuditEntry[] = [
-  { id: 'a1', timestamp: '01 Mar 2026 10:35', user: 'David Perez', role: 'Super Admin', action: 'Aprobo review', module: 'Reviews', detail: 'Review #42 de Roberto S.', ip: '187.xxx.xxx.12' },
-  { id: 'a2', timestamp: '01 Mar 2026 10:30', user: 'David Perez', role: 'Super Admin', action: 'Cambio estado pedido', module: 'Pedidos', detail: '#165 → En produccion', ip: '187.xxx.xxx.12' },
-  { id: 'a3', timestamp: '28 Feb 2026 18:00', user: 'David Perez', role: 'Super Admin', action: 'Envio cotizacion PDF', module: 'Cotizaciones', detail: 'COT-142 a cliente', ip: '187.xxx.xxx.12' },
-  { id: 'a4', timestamp: '28 Feb 2026 14:00', user: 'StudioRockStage', role: 'Desarrollador', action: 'Deploy frontend', module: 'Configuracion', detail: 'v2.4.1 Vercel', ip: '201.xxx.xxx.45' },
-  { id: 'a5', timestamp: '27 Feb 2026 16:20', user: 'David Perez', role: 'Super Admin', action: 'Creo cupon', module: 'Marketing', detail: 'PAROTA20 -20%', ip: '187.xxx.xxx.12' },
-  { id: 'a6', timestamp: '27 Feb 2026 11:00', user: 'David Perez', role: 'Super Admin', action: 'Edito producto', module: 'Productos', detail: 'Tabla Parota Rustica — precio $2,450', ip: '187.xxx.xxx.12' },
-  { id: 'a7', timestamp: '26 Feb 2026 09:30', user: 'StudioRockStage', role: 'Desarrollador', action: 'Regenero API Key', module: 'Configuracion', detail: 'Medusa Admin Key', ip: '201.xxx.xxx.45' },
-  { id: 'a8', timestamp: '25 Feb 2026 15:45', user: 'David Perez', role: 'Super Admin', action: 'Invito usuario', module: 'Usuarios', detail: 'ana@davidsonsdesign.com — Operaciones', ip: '187.xxx.xxx.12' },
 ];
 
 // ===== SHARED COMPONENTS =====
@@ -400,8 +388,31 @@ function StatusDot({ status }: { status: 'active' | 'inactive' | 'invited' }) {
 // ===== SUB-TAB 1: USERS =====
 function UsersPanel() {
   const [showInvite, setShowInvite] = useState(false);
-  const [users] = useState(mockUsers);
+  const [users, setUsers] = useState<AdminUser[]>(seedUsers);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/admin/users')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.users?.length > 0) {
+          setUsers(d.users.map((u: any) => ({
+            id: u.id,
+            name: u.full_name || u.email?.split('@')[0] || 'Usuario',
+            email: u.email || '',
+            role: u.role_name || 'Sin rol',
+            roleColor: u.role_color || '#94a3b8',
+            status: u.status || 'active',
+            lastAccess: u.last_access ? new Date(u.last_access).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Nunca',
+            createdAt: u.created_at ? new Date(u.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '',
+            scope: u.scope || 'Todos',
+          })));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const filtered = users.filter(u =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -840,15 +851,38 @@ function RoleDetail({ role, onBack, expandedModule, setExpandedModule }: {
 function AuditPanel() {
   const [moduleFilter, setModuleFilter] = useState('all');
   const [userFilter, setUserFilter] = useState('all');
+  const [auditData, setAuditData] = useState<AuditEntry[]>([]);
+  const [auditLoading, setAuditLoading] = useState(true);
 
-  const filtered = mockAudit.filter(a => {
+  useEffect(() => {
+    fetch('/api/admin/users?type=audit')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.audit?.length > 0) {
+          setAuditData(d.audit.map((a: any) => ({
+            id: a.id,
+            timestamp: a.created_at ? new Date(a.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '',
+            user: a.user_name || a.user_email || 'Sistema',
+            role: a.user_role || '',
+            action: a.action || '',
+            module: a.module || '',
+            detail: a.detail || '',
+            ip: a.ip_address || '',
+          })));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setAuditLoading(false));
+  }, []);
+
+  const filtered = auditData.filter(a => {
     if (moduleFilter !== 'all' && a.module !== moduleFilter) return false;
     if (userFilter !== 'all' && a.user !== userFilter) return false;
     return true;
   });
 
-  const modules = [...new Set(mockAudit.map(a => a.module))];
-  const users = [...new Set(mockAudit.map(a => a.user))];
+  const modules = [...new Set(auditData.map(a => a.module))];
+  const users = [...new Set(auditData.map(a => a.user))];
 
   return (
     <div className="space-y-4">
@@ -928,10 +962,10 @@ function AuditPanel() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total registros', value: mockAudit.length.toString() },
-          { label: 'Hoy', value: mockAudit.filter(a => a.timestamp.includes('01 Mar')).length.toString() },
-          { label: 'Usuarios activos', value: new Set(mockAudit.map(a => a.user)).size.toString() },
-          { label: 'Modulos con actividad', value: new Set(mockAudit.map(a => a.module)).size.toString() },
+          { label: 'Total registros', value: auditData.length.toString() },
+          { label: 'Hoy', value: auditData.filter(a => { const d = new Date(); return a.timestamp.includes(d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })); }).length.toString() },
+          { label: 'Usuarios activos', value: new Set(auditData.map(a => a.user)).size.toString() },
+          { label: 'Modulos con actividad', value: new Set(auditData.map(a => a.module)).size.toString() },
         ].map(s => (
           <Card key={s.label} className="p-3 text-center">
             <p className="text-lg font-serif text-wood-900">{s.value}</p>
@@ -948,7 +982,7 @@ export const UsersRolesManager: React.FC = () => {
   const [subTab, setSubTab] = useState<SubTab>('users');
 
   const subTabs: Array<{ id: SubTab; label: string; icon: React.ElementType; count?: number }> = [
-    { id: 'users', label: 'Usuarios', icon: Users, count: mockUsers.length },
+    { id: 'users', label: 'Usuarios', icon: Users, count: seedUsers.length },
     { id: 'roles', label: 'Roles y Permisos', icon: Shield, count: defaultRoles.length },
     { id: 'audit', label: 'Registro de Actividad', icon: ScrollText },
   ];

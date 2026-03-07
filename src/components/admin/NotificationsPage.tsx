@@ -43,7 +43,7 @@ function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 
   return <span className={'text-[10px] font-medium px-2 py-0.5 rounded-full ' + cls[variant]}>{text}</span>;
 }
 
-// ===== MOCK DATA =====
+// ===== EMAIL TEMPLATE CATALOG + PREFERENCES =====
 type NotifCategory = 'order' | 'shipping' | 'stock' | 'review' | 'quote' | 'customer' | 'finance' | 'marketing' | 'system';
 
 interface Notification {
@@ -91,7 +91,8 @@ const weekNotifs: Notification[] = [
   { id: 'n13', time: '25 Feb', category: 'customer', title: '8 clientes Plata a menos de $1,000 de subir a Oro', detail: 'Oportunidad de campana con incentivo', action: 'Crear campana', read: true },
 ];
 
-const mockEmails = {
+// Email template catalog — static reference of all implemented + planned templates
+const emailTemplates = {
   orders: [
     { id: 'e1', name: 'Confirmacion de pedido', trigger: 'Al pagar', enabled: true },
     { id: 'e2', name: 'Pedido en produccion', trigger: 'Admin cambia', enabled: true },
@@ -131,7 +132,8 @@ const mockEmails = {
   ],
 };
 
-const mockHistory = [
+// Removed mock history — uses liveHistory from API
+const _deprecatedMockHistory = [
   { id: 'h1', date: '28 Feb 10:31', type: 'Confirmacion pedido', recipient: 'David Perez', subject: 'Tu pedido #165...', status: 'opened' as const },
   { id: 'h2', date: '28 Feb 10:15', type: 'Solicitar review', recipient: 'Maria Lopez', subject: 'Que te parecio...', status: 'clicked' as const },
   { id: 'h3', date: '27 Feb 18:00', type: 'Pedido enviado', recipient: 'Ana Garcia', subject: 'Tu pedido #163 va...', status: 'opened' as const },
@@ -141,7 +143,7 @@ const mockHistory = [
   { id: 'h7', date: '26 Feb 09:00', type: 'Cotizacion lista', recipient: 'Pedro Sanchez', subject: 'Tu cotizacion COT...', status: 'opened' as const },
 ];
 
-const mockNotifPrefs = [
+const defaultNotifPrefs = [
   { name: 'Nuevo pedido', inApp: true, email: true, push: true, priority: 'Alta' },
   { name: 'Pedido con grabado (archivo)', inApp: true, email: false, push: false, priority: 'Normal' },
   { name: 'Problema de envio', inApp: true, email: true, push: true, priority: 'Alta' },
@@ -316,7 +318,7 @@ function EmailsTab() {
   const [editingEmail, setEditingEmail] = useState<string | null>(null);
 
   if (editingEmail) {
-    const allEmails = Object.values(mockEmails).flat();
+    const allEmails = Object.values(emailTemplates).flat();
     const email = allEmails.find((e) => e.id === editingEmail);
     if (!email) return null;
 
@@ -455,12 +457,12 @@ function EmailsTab() {
         <div className="px-5 py-3 border-b border-wood-100">
           <h4 className="text-sm font-medium text-wood-900">Emails Automaticos al Cliente</h4>
         </div>
-        <EmailSection title="Pedidos" emails={mockEmails.orders} />
-        <EmailSection title="Cuenta" emails={mockEmails.account} />
-        <EmailSection title="Lealtad" emails={mockEmails.loyalty} />
-        <EmailSection title="Reviews" emails={mockEmails.reviews} />
-        <EmailSection title="Cotizaciones" emails={mockEmails.quotes} />
-        <EmailSection title="Marketing / Recuperacion" emails={mockEmails.marketing} />
+        <EmailSection title="Pedidos" emails={emailTemplates.orders} />
+        <EmailSection title="Cuenta" emails={emailTemplates.account} />
+        <EmailSection title="Lealtad" emails={emailTemplates.loyalty} />
+        <EmailSection title="Reviews" emails={emailTemplates.reviews} />
+        <EmailSection title="Cotizaciones" emails={emailTemplates.quotes} />
+        <EmailSection title="Marketing / Recuperacion" emails={emailTemplates.marketing} />
       </Card>
     </div>
   );
@@ -629,7 +631,7 @@ function HistoryTab() {
     fetchHistory();
   }, []);
 
-  const historyData = liveHistory || mockHistory;
+  const historyData = liveHistory || [];
 
   const statusConfig: Record<string, { label: string; icon: React.ElementType; cls: string }> = {
     sent: { label: 'No abierto', icon: Mail, cls: 'text-wood-400' },
@@ -721,7 +723,7 @@ function HistoryTab() {
 
 // ===== TAB 5: CONFIG =====
 function ConfigTab() {
-  const [prefs, setPrefs] = useState(mockNotifPrefs);
+  const [prefs, setPrefs] = useState(defaultNotifPrefs);
 
   function togglePref(idx: number, channel: 'inApp' | 'email' | 'push') {
     setPrefs(prefs.map((p, i) => i === idx ? { ...p, [channel]: !p[channel] } : p));

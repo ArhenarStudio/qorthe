@@ -46,7 +46,7 @@ function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 
   return <span className={'text-[10px] font-medium px-2 py-0.5 rounded-full ' + cls[variant]}>{text}</span>;
 }
 
-// ===== MOCK DATA =====
+// ===== LEGACY DATA (unused — tabs replaced with ComingSoonTab, cleanup pending) =====
 const mockPages = [
   { id: 'p1', title: 'Sobre Nosotros', url: '/about', lastEdit: '15 Feb 2026', status: 'published' as const, template: 'Completa' },
   { id: 'p2', title: 'Preguntas Frecuentes', url: '/faq', lastEdit: '10 Feb 2026', status: 'published' as const, template: 'Con sidebar' },
@@ -1512,6 +1512,20 @@ function SeoTab() {
 }
 
 // ===== MAIN COMPONENT =====
+// Coming Soon placeholder for tabs not yet implemented
+function CmsComingSoon({ title, description }: { title: string; description: string }) {
+  return (
+    <Card className="p-12 text-center">
+      <div className="w-16 h-16 mx-auto mb-4 bg-wood-50 rounded-2xl flex items-center justify-center">
+        <Settings2 className="w-8 h-8 text-wood-300" />
+      </div>
+      <h4 className="text-lg font-serif text-wood-900 mb-2">{title}</h4>
+      <p className="text-sm text-wood-500 max-w-md mx-auto mb-4">{description}</p>
+      <Badge text="Próximamente" variant="amber" />
+    </Card>
+  );
+}
+
 export const CmsPage: React.FC = () => {
 
   // ── Live data from API ──
@@ -1525,13 +1539,13 @@ export const CmsPage: React.FC = () => {
 
   const tabContent: Record<CmsTab, React.ReactNode> = {
     pages: <PagesTab />,
-    menus: <MenusTab />,
-    homepage: <HomepageTab />,
-    blog: <BlogTab />,
-    popups: <PopupsTab />,
-    media: <MediaTab />,
-    texts: <TextsTab />,
-    seo: <SeoTab />,
+    menus: <CmsComingSoon title="Menús" description="Administra los menús del header y footer. Configura enlaces, orden y submenús." />,
+    homepage: <CmsComingSoon title="Homepage Builder" description="Personaliza las secciones de tu página principal: hero, colecciones, testimonios, CTA." />,
+    blog: <CmsComingSoon title="Blog" description="Crea y administra publicaciones del blog para SEO y engagement." />,
+    popups: <CmsComingSoon title="Pop-ups y Banners" description="Configura pop-ups de bienvenida, descuentos y anuncios." />,
+    media: <CmsComingSoon title="Biblioteca de Media" description="Administra imágenes, videos y archivos del sitio." />,
+    texts: <CmsComingSoon title="Textos y Traducciones" description="Edita textos del sitio y administra traducciones ES/EN." />,
+    seo: <CmsComingSoon title="SEO Global" description="Configura meta tags, sitemap, robots.txt y structured data." />,
   };
 
   return (

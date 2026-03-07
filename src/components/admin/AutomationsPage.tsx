@@ -123,7 +123,8 @@ const actionOptions = [
   { id: 'a_delay', label: 'Esperar X horas/dias', icon: Timer },
 ];
 
-const mockAutomations: Automation[] = [
+// Example automation templates — visual reference for future workflow engine
+const exampleAutomations: Automation[] = [
   {
     id: 'auto1', name: 'Bienvenida VIP', description: 'Cuando un cliente sube a Oro, envia email de felicitacion + 500 puntos bonus',
     status: 'active',
@@ -822,7 +823,7 @@ export const AutomationsPage: React.FC = () => {
   }, []);
 
   const [view, setView] = useState<ViewMode>('list');
-  const [automations, setAutomations] = useState(mockAutomations);
+  const [automations, setAutomations] = useState(exampleAutomations);
   const [editingAuto, setEditingAuto] = useState<Automation | null>(null);
 
   const handleToggle = useCallback((id: string) => {

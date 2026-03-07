@@ -9,7 +9,7 @@ import {
   ExternalLink, Camera, X as XIcon, AlertCircle, Zap, Send,
   User, Trophy, ShoppingBag, Eye, BarChart3
 } from 'lucide-react';
-import { orders as mockOrders, type Order, type OrderItem, type EngravingDesign } from '@/data/adminMockData';
+import { type Order, type OrderItem, type EngravingDesign } from '@/data/adminMockData';
 import { useAdminData } from '@/hooks/useAdminData';
 import { toast } from 'sonner';
 
@@ -156,7 +156,7 @@ export const OrdersPage: React.FC = () => {
   const isLive = !!liveData?.orders;
   const orders: Order[] = isLive
     ? liveData!.orders.map(mapLiveOrder)
-    : mockOrders;
+    : [];
 
   const filteredOrders = orders.filter(o => {
     if (isLive) return true; // API already filtered

@@ -52,7 +52,7 @@ interface IntegrationApp {
   logs?: Array<{ time: string; type: 'success' | 'error' | 'info'; message: string }>;
 }
 
-// ===== MOCK DATA =====
+// ===== INTEGRATION CATALOG =====
 const categories: Array<{ id: AppCategory; label: string; icon: React.ElementType }> = [
   { id: 'all', label: 'Todas', icon: Grid3X3 },
   { id: 'pagos', label: 'Pagos', icon: CreditCard },
