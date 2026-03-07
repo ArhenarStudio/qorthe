@@ -215,7 +215,9 @@ const mockCollections: Collection[] = [
   },
 ];
 
-const mockSalesChart = Array.from({ length: 30 }, (_, i) => ({
+// Legacy detail data — CategoryDetail and CollectionDetail use these as demo content
+// Sales chart shows placeholder trend (real per-category sales are in the main list via API)
+const legacySalesChart = Array.from({ length: 30 }, (_, i) => ({
   day: i + 1,
   ventas: Math.round(800 + Math.random() * 1200 + (i > 20 ? 400 : 0)),
 }));
@@ -251,6 +253,7 @@ export const CategoriesPage: React.FC = () => {
 
   // ── Live categories from Medusa ──
   const [liveCategories, setLiveCategories] = useState<Category[]>([]);
+  const [liveCollections, setLiveCollections] = useState<any[]>([]);
   const [catLoading, setCatLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
 
@@ -263,6 +266,7 @@ export const CategoriesPage: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         setLiveCategories(data.categories || []);
+        setLiveCollections(data.collections || []);
         setIsLive(true);
         // Auto-expand root categories
         if (expanded.size === 0) {
@@ -274,7 +278,6 @@ export const CategoriesPage: React.FC = () => {
       console.error('[CategoriesPage] fetch error:', err);
       if (!silent) {
         setIsLive(false);
-        setLiveCategories(mockCategories); // fallback to mock
       }
     } finally {
       setCatLoading(false);
@@ -285,7 +288,7 @@ export const CategoriesPage: React.FC = () => {
     fetchCategories();
   }, [fetchCategories]);
 
-  const allCategories = isLive ? liveCategories : mockCategories;
+  const allCategories = liveCategories;
 
   const rootCats = useMemo(() => allCategories.filter(c => c.parentId === null).sort((a, b) => a.order - b.order), [allCategories]);
   const getChildren = useCallback((parentId: string) => allCategories.filter(c => c.parentId === parentId).sort((a, b) => a.order - b.order), [allCategories]);
@@ -302,8 +305,8 @@ export const CategoriesPage: React.FC = () => {
     const empty = allCategories.filter(c => c.products === 0);
     const totalProducts = allCategories.reduce((s, c) => s + c.products, 0);
     const uncategorized = 0;
-    const activeCols = mockCollections.filter(c => c.status === 'active').length;
-    const expiredCols = mockCollections.filter(c => c.status === 'expired').length;
+    const activeCols = liveCollections.length;
+    const expiredCols = 0;
     return { totalCats: cats.length, subCats: withSub.length, totalProducts, uncategorized, empty: empty.length, activeCols, expiredCols };
   }, [allCategories]);
 
@@ -644,48 +647,23 @@ export const CategoriesPage: React.FC = () => {
       {tab === 'collections' && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-wood-100 shadow-sm divide-y divide-wood-50">
-            {mockCollections.map(col => (
+            {liveCollections.length === 0 ? (
+              <div className="p-12 text-center">
+                <Tag size={32} className="mx-auto mb-3 text-wood-200" />
+                <p className="text-sm text-wood-500 mb-1">No hay colecciones creadas</p>
+                <p className="text-xs text-wood-400">Las colecciones agrupan productos manualmente para promociones o temporadas.</p>
+              </div>
+            ) : liveCollections.map(col => (
               <div key={col.id} className="p-5 flex items-start gap-4 hover:bg-sand-50/30 transition-colors group">
-                {/* Image placeholder */}
                 <div className="w-16 h-16 rounded-xl bg-sand-100 flex-shrink-0 flex items-center justify-center">
-                  {col.hasImage ? (
-                    <Tag size={20} className="text-accent-gold" />
-                  ) : (
-                    <ImageIcon size={20} className="text-wood-300" />
-                  )}
+                  <Tag size={20} className="text-accent-gold" />
                 </div>
-
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <button onClick={() => setEditingCollection(col)} className="text-sm text-wood-900 hover:text-accent-gold transition-colors truncate">
-                      {col.name}
-                    </button>
-                    {statusBadge(col.status)}
+                    <span className="text-sm text-wood-900 truncate">{col.title}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-50 text-green-600">Activa</span>
                   </div>
-                  <p className="text-[11px] text-wood-500 mb-1.5">
-                    {col.products} productos | Ventas: ${col.salesMonth > 0 ? `${col.salesMonth.toLocaleString()}/mes` : `${col.salesMonth.toLocaleString()} total`}
-                  </p>
-                  <div className="flex items-center gap-3 text-[10px] text-wood-400">
-                    <span>Tipo: {col.type === 'automatic' ? 'Automatica' : 'Manual (curada)'}</span>
-                    {col.endDate ? (
-                      <span className={col.status === 'expired' ? 'text-red-400' : ''}>
-                        {col.status === 'expired' ? `Expiro: ${col.endDate}` : `Activa hasta: ${col.endDate}`}
-                      </span>
-                    ) : (
-                      <span>Sin fecha de expiracion</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => setEditingCollection(col)} className="p-1.5 text-wood-400 hover:text-accent-gold rounded text-xs">
-                    <Pencil size={13} />
-                  </button>
-                  <button className="p-1.5 text-wood-400 hover:text-wood-600 rounded">
-                    <MoreVertical size={13} />
-                  </button>
+                  <p className="text-[11px] text-wood-500">{col.productCount} productos | Handle: {col.handle}</p>
                 </div>
               </div>
             ))}
@@ -745,7 +723,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
 
   const iconOptions = ['🪵', '🧀', '🍽️', '🎁', '✂️', '🔧', '📦', '⭐', '🏷️', '🎨', '🎀', '👨‍🍳'];
 
-  const mockProducts = [
+  const legacyDetailProducts = [
     { name: 'Tabla Parota Charcuteria Med', price: 850, stock: 15 },
     { name: 'Tabla Parota Charcuteria Gde', price: 1100, stock: 8 },
     { name: 'Tabla Rosa Morada Gourmet', price: 1650, stock: 2 },
@@ -1089,7 +1067,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               <>
                 <p className="text-[11px] text-wood-500">{category.products} productos en "{category.name}"</p>
                 <div className="space-y-1">
-                  {mockProducts.map((p, i) => (
+                  {legacyDetailProducts.map((p, i) => (
                     <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-sand-50 rounded-lg hover:bg-sand-100 transition-colors">
                       <GripVertical size={12} className="text-wood-300 cursor-grab" />
                       <div className="w-8 h-8 rounded-lg bg-wood-100 flex items-center justify-center flex-shrink-0">
@@ -1156,7 +1134,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
 
               <div className="h-32">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={mockSalesChart}>
+                  <AreaChart data={legacySalesChart}>
                     <defs>
                       <linearGradient id="catAreaGold" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#C5A065" stopOpacity={0.3} />
@@ -1278,7 +1256,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
     Ventas: ['mas de N en ultimo mes'],
   };
 
-  const mockCollectionProducts = [
+  const legacyCollectionProducts = [
     { name: 'Tabla Parota Charcuteria', price: 850 },
     { name: 'Tabla Rosa Morada Gourmet', price: 1650 },
     { name: 'Set 3 Tablas Artesanales', price: 2990 },
@@ -1354,7 +1332,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
                 <input placeholder="Buscar producto para agregar..." className="flex-1 px-3 py-2 text-xs bg-transparent outline-none text-wood-900 placeholder:text-wood-400" />
               </div>
               <div className="space-y-1">
-                {mockCollectionProducts.map((p, i) => (
+                {legacyCollectionProducts.map((p, i) => (
                   <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-sand-50 rounded-lg">
                     <GripVertical size={12} className="text-wood-300 cursor-grab" />
                     <div className="w-8 h-8 rounded-lg bg-wood-100 flex items-center justify-center flex-shrink-0">

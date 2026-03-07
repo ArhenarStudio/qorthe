@@ -52,10 +52,9 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search");
     const includeProducts = searchParams.get("products") === "true";
 
-    // Fetch categories from Medusa
-    const fields = includeProducts ? "&fields=*products" : "";
+    // Always include products for sales mapping
     const res = await medusaAdminFetch(
-      `/admin/product-categories?limit=200&offset=0&include_descendants_tree=true${fields}`
+      `/admin/product-categories?limit=200&offset=0&include_descendants_tree=true&fields=*products`
     );
 
     if (!res.ok) {
@@ -83,8 +82,60 @@ export async function GET(req: NextRequest) {
     const hiddenCount = categories.filter((c: any) => c.status === "hidden").length;
     const withSeo = categories.filter((c: any) => c.hasSeo).length;
 
+    // Collections from Medusa
+    let collections: any[] = [];
+    try {
+      const colRes = await medusaAdminFetch("/admin/collections?limit=100&offset=0");
+      if (colRes.ok) {
+        const colData = await colRes.json();
+        collections = (colData.collections || []).map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          handle: c.handle,
+          productCount: c.products?.length || 0,
+          createdAt: c.created_at,
+          updatedAt: c.updated_at,
+        }));
+      }
+    } catch { /* collections optional */ }
+
+    // Category sales from recent orders (aggregate order_items → product → category)
+    let categorySales: Record<string, { revenue: number; orders: number }> = {};
+    try {
+      const ordRes = await medusaAdminFetch("/admin/orders?limit=200&fields=id,items.product_id,items.unit_price,items.quantity,status,payment_status&order=-created_at");
+      if (ordRes.ok) {
+        const ordData = await ordRes.json();
+        const completedOrders = (ordData.orders || []).filter((o: any) => o.payment_status === "captured" && o.status !== "canceled");
+        // Map product_id → category_id from the categories we already have
+        const productCategoryMap: Record<string, string> = {};
+        for (const cat of allRaw) {
+          for (const p of (cat.products || [])) {
+            productCategoryMap[p.id] = cat.id;
+          }
+        }
+        for (const order of completedOrders) {
+          for (const item of (order.items || [])) {
+            const catId = productCategoryMap[item.product_id];
+            if (catId) {
+              if (!categorySales[catId]) categorySales[catId] = { revenue: 0, orders: 0 };
+              categorySales[catId].revenue += ((item.unit_price || 0) * (item.quantity || 1)) / 100;
+              categorySales[catId].orders += 1;
+            }
+          }
+        }
+      }
+    } catch { /* sales aggregation optional */ }
+
+    // Enrich categories with sales data
+    categories = categories.map((c: any) => ({
+      ...c,
+      salesMonth: categorySales[c.id]?.revenue || 0,
+      orderCount: categorySales[c.id]?.orders || 0,
+    }));
+
     return NextResponse.json({
       categories,
+      collections,
       total: categories.length,
       stats: {
         total: categories.length,
