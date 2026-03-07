@@ -35,7 +35,15 @@ interface AdminNotification {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const type = searchParams.get("type") || "all"; // notifications, emails, all
+    const type = searchParams.get("type") || "all"; // notifications, emails, templates, all
+
+    // ── Email Templates CRUD ──
+    if (type === "templates") {
+      const supabase = getSupabaseAdmin();
+      const { data, error } = await supabase.from("email_templates").select("*").order("category", { ascending: true });
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ templates: data || [], total: (data || []).length });
+    }
 
     const notifications: AdminNotification[] = [];
     let emailHistory: any[] = [];
@@ -220,5 +228,24 @@ export async function GET(req: NextRequest) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     console.error("[Notifications GET]", msg);
     return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const supabase = getSupabaseAdmin();
+    const body = await req.json();
+    const { id, is_active, subject_override } = body;
+    if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+    const updates: Record<string, any> = { updated_at: new Date().toISOString() };
+    if (typeof is_active === "boolean") updates.is_active = is_active;
+    if (subject_override !== undefined) updates.subject_override = subject_override;
+
+    const { data, error } = await supabase.from("email_templates").update(updates).eq("id", id).select().single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true, template: data });
+  } catch (err: unknown) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Unknown" }, { status: 500 });
   }
 }

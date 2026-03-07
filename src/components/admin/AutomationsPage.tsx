@@ -818,9 +818,27 @@ export const AutomationsPage: React.FC = () => {
   // ── Live data from API ──
   const [liveAuto, setLiveAuto] = useState<any>(null);
   const [automationsLoading, setAutomationsLoading] = useState(true);
-  useEffect(() => {
-    fetch('/api/admin/automations').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveAuto(d); }).catch(() => {}).finally(() => setAutomationsLoading(false));
-  }, []);
+  const fetchAutomations = () => {
+    fetch('/api/admin/automations').then(r => r.ok ? r.json() : null).then(d => {
+      if (d) {
+        setLiveAuto(d);
+        // Map rules from API to component format
+        if (d.rules?.length > 0) {
+          const mapped = d.rules.map((r: any) => ({
+            ...exampleAutomations.find(ea => ea.name.toLowerCase().includes(r.name?.toLowerCase().split(' ')[0] || '')) || exampleAutomations[0],
+            id: r.id,
+            name: r.name,
+            description: r.description,
+            status: r.is_enabled ? 'active' as const : 'paused' as const,
+            _dbId: r.id,
+            _isRule: true,
+          }));
+          setAutomations(mapped);
+        }
+      }
+    }).catch(() => {}).finally(() => setAutomationsLoading(false));
+  };
+  useEffect(() => { fetchAutomations(); }, []);
 
   const [view, setView] = useState<ViewMode>('list');
   const [automations, setAutomations] = useState(exampleAutomations);
@@ -830,7 +848,15 @@ export const AutomationsPage: React.FC = () => {
     setAutomations(prev => prev.map(a => {
       if (a.id !== id) return a;
       const newStatus: AutoStatus = a.status === 'active' ? 'paused' : 'active';
-      toast.success(`Automatizacion ${newStatus === 'active' ? 'activada' : 'pausada'}: ${a.name}`);
+      // Persist to Supabase if it's a DB rule
+      if ((a as any)._dbId) {
+        fetch('/api/admin/automations', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: (a as any)._dbId, is_enabled: newStatus === 'active' }),
+        }).catch(() => {});
+      }
+      toast.success(`Automatización ${newStatus === 'active' ? 'activada' : 'pausada'}: ${a.name}`);
       return { ...a, status: newStatus };
     }));
   }, []);

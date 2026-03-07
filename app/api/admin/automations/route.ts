@@ -1,5 +1,5 @@
-// /api/admin/automations — List active automations (Medusa subscribers + chat auto-replies)
-import { NextResponse } from "next/server";
+// /api/admin/automations — Automations from Medusa subscribers + Supabase rules + chat auto-replies
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 function getSupabase() {
@@ -8,41 +8,77 @@ function getSupabase() {
 
 export async function GET() {
   try {
-    // These are the actual Medusa subscribers deployed in backend
-    const workflows = [
-      { id: "order-placed", name: "Confirmación de pedido", trigger: "order.placed", actions: ["Email al cliente (OrderConfirmation)", "Email al admin (AdminNewOrder)"], enabled: true, category: "Pedidos" },
-      { id: "order-canceled", name: "Cancelación de pedido", trigger: "order.canceled", actions: ["Email al cliente (OrderCancelled)", "Email al admin (AdminOrderCancelled)"], enabled: true, category: "Pedidos" },
-      { id: "order-refund", name: "Reembolso procesado", trigger: "order.refund_created", actions: ["Email al cliente (OrderRefunded)"], enabled: true, category: "Pedidos" },
-      { id: "fulfillment-created", name: "Pedido enviado", trigger: "fulfillment.created", actions: ["Email al cliente (OrderShipped) con tracking"], enabled: true, category: "Envíos" },
-      { id: "payment-failed", name: "Pago fallido", trigger: "payment.failed", actions: ["Email al cliente (PaymentFailed)", "Alerta al tech admin"], enabled: true, category: "Pagos" },
-      { id: "customer-created", name: "Bienvenida nuevo cliente", trigger: "customer.created", actions: ["Email de bienvenida (WelcomeEmail)"], enabled: true, category: "Clientes" },
-      { id: "password-reset", name: "Reset de contraseña", trigger: "auth.password_reset", actions: ["Email con link (PasswordReset)"], enabled: true, category: "Auth" },
-      { id: "meta-capi", name: "Meta CAPI — Purchase", trigger: "order.placed", actions: ["Enviar evento Purchase a Meta Conversions API"], enabled: true, category: "Marketing" },
-      { id: "loyalty-points", name: "Puntos de lealtad", trigger: "order.placed (post-payment)", actions: ["Calcular y acreditar puntos según tier"], enabled: true, category: "Lealtad" },
+    const supabase = getSupabase();
+
+    // 1. Read automation_rules from Supabase (configurable)
+    let rules: any[] = [];
+    try {
+      const { data } = await supabase.from("automation_rules").select("*").order("category", { ascending: true });
+      rules = data || [];
+    } catch {}
+
+    // 2. Static list of Medusa subscribers (these always run, can't be disabled from UI)
+    const subscribers = [
+      { id: "sub-order-placed", name: "Confirmación de pedido", trigger: "order.placed", actions: ["Email OrderConfirmation + AdminNewOrder"], category: "Pedidos", type: "subscriber" },
+      { id: "sub-order-canceled", name: "Cancelación de pedido", trigger: "order.canceled", actions: ["Email OrderCancelled + AdminOrderCancelled"], category: "Pedidos", type: "subscriber" },
+      { id: "sub-order-refund", name: "Reembolso procesado", trigger: "order.refund_created", actions: ["Email OrderRefunded"], category: "Pedidos", type: "subscriber" },
+      { id: "sub-fulfillment", name: "Pedido enviado", trigger: "fulfillment.created", actions: ["Email OrderShipped + ReviewRequest"], category: "Envíos", type: "subscriber" },
+      { id: "sub-payment-failed", name: "Pago fallido", trigger: "payment.failed", actions: ["Email PaymentFailed + tech alert"], category: "Pagos", type: "subscriber" },
+      { id: "sub-customer-created", name: "Bienvenida", trigger: "customer.created", actions: ["Email WelcomeEmail"], category: "Clientes", type: "subscriber" },
+      { id: "sub-password-reset", name: "Reset contraseña", trigger: "auth.password_reset", actions: ["Email PasswordReset"], category: "Auth", type: "subscriber" },
+      { id: "sub-meta-capi", name: "Meta CAPI Purchase", trigger: "order.placed", actions: ["Send Purchase event to Meta"], category: "Marketing", type: "subscriber" },
+      { id: "sub-loyalty", name: "Puntos de lealtad", trigger: "order.placed", actions: ["Award points based on tier"], category: "Lealtad", type: "subscriber" },
     ];
 
-    // Chat auto-replies from config
-    const supabase = getSupabase();
+    // 3. Chat auto-replies
     try {
-      const { data: config } = await supabase.from("chat_config").select("auto_replies, faqs").eq("id", "default").single();
+      const { data: config } = await supabase.from("chat_config").select("auto_replies").eq("id", "default").single();
       if (config?.auto_replies?.length) {
         config.auto_replies.forEach((ar: any, i: number) => {
           if (ar.keyword && ar.response) {
-            workflows.push({ id: `chat-auto-${i}`, name: `Chat: "${ar.keyword}"`, trigger: `Mensaje contiene "${ar.keyword}"`, actions: [`Respuesta automática: "${ar.response.slice(0, 60)}..."`], enabled: true, category: "Chat" });
+            subscribers.push({ id: `chat-auto-${i}`, name: `Chat: "${ar.keyword}"`, trigger: `Keyword match`, actions: [`Auto-reply: "${ar.response.slice(0, 50)}"`], category: "Chat", type: "chat_auto" });
           }
         });
       }
     } catch {}
 
-    const stats = {
-      total: workflows.length,
-      enabled: workflows.filter(w => w.enabled).length,
-      categories: [...new Set(workflows.map(w => w.category))],
-    };
+    // Merge: rules (configurable) + subscribers (static)
+    const all = [
+      ...rules.map(r => ({ ...r, type: "rule", enabled: r.is_enabled })),
+      ...subscribers.map(s => ({ ...s, enabled: true, is_system: true })),
+    ];
 
-    return NextResponse.json({ automations: workflows, stats });
+    return NextResponse.json({
+      automations: all,
+      rules,
+      subscribers,
+      stats: {
+        total: all.length,
+        rules: rules.length,
+        rulesEnabled: rules.filter(r => r.is_enabled).length,
+        subscribers: subscribers.length,
+      },
+    });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Unknown";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Unknown" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const supabase = getSupabase();
+    const body = await req.json();
+    const { id, is_enabled, config: ruleConfig } = body;
+    if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+    const updates: Record<string, any> = { updated_at: new Date().toISOString() };
+    if (typeof is_enabled === "boolean") updates.is_enabled = is_enabled;
+    if (ruleConfig) updates.config = ruleConfig;
+
+    const { data, error } = await supabase.from("automation_rules").update(updates).eq("id", id).select().single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true, rule: data });
+  } catch (err: unknown) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Unknown" }, { status: 500 });
   }
 }

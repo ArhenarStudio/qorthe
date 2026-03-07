@@ -313,156 +313,123 @@ function CenterTab() {
   );
 }
 
-// ===== TAB 2: CLIENT EMAILS =====
+// ===== TAB 2: CLIENT EMAILS (connected to Supabase email_templates) =====
 function EmailsTab() {
-  const [editingEmail, setEditingEmail] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingEmail, setEditingEmail] = useState<any>(null);
+  const [subjectOverride, setSubjectOverride] = useState('');
+
+  const fetchTemplates = () => {
+    fetch('/api/admin/notifications?type=templates')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.templates) setTemplates(d.templates); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+  useEffect(() => { fetchTemplates(); }, []);
+
+  const handleToggle = async (tpl: any) => {
+    const res = await fetch('/api/admin/notifications', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: tpl.id, is_active: !tpl.is_active }),
+    });
+    if (res.ok) {
+      toast.success(tpl.is_active ? 'Email desactivado' : 'Email activado');
+      fetchTemplates();
+    }
+  };
+
+  const handleSaveSubject = async () => {
+    if (!editingEmail) return;
+    const res = await fetch('/api/admin/notifications', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: editingEmail.id, subject_override: subjectOverride }),
+    });
+    if (res.ok) {
+      toast.success('Asunto actualizado');
+      setEditingEmail(null);
+      fetchTemplates();
+    }
+  };
 
   if (editingEmail) {
-    const allEmails = Object.values(emailTemplates).flat();
-    const email = allEmails.find((e) => e.id === editingEmail);
-    if (!email) return null;
-
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <button onClick={() => setEditingEmail(null)} className="text-xs text-wood-500 hover:text-wood-700 transition-colors">Emails al Cliente</button>
           <ChevronRight size={12} className="text-wood-300" />
-          <span className="text-xs font-medium text-wood-900">{email.name}</span>
+          <span className="text-xs font-medium text-wood-900">{editingEmail.name}</span>
         </div>
-
         <Card className="p-5 space-y-4">
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Asunto</label>
-            <input defaultValue={'Tu pedido #{order_id} ha sido confirmado'} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
+            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Template Key</label>
+            <p className="text-xs font-mono text-wood-600 bg-wood-50 px-3 py-2 rounded-lg">{editingEmail.template_key}</p>
           </div>
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Preview text</label>
-            <input defaultValue="Gracias por tu compra, {customer_name}" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
+            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Override del Asunto (dejar vacío para usar el default)</label>
+            <input
+              value={subjectOverride}
+              onChange={(e) => setSubjectOverride(e.target.value)}
+              placeholder="Ej: Tu pedido #{order_id} está confirmado"
+              className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white"
+            />
           </div>
-
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-2">Variables disponibles</label>
-            <div className="flex flex-wrap gap-1">
-              {['{customer_name}', '{customer_email}', '{customer_tier}', '{customer_points}', '{order_id}', '{order_total}', '{order_items}', '{order_date}', '{shipping_address}', '{shipping_carrier}', '{shipping_tracking}', '{product_name}', '{product_image}', '{product_price}', '{coupon_code}', '{discount_amount}', '{store_name}', '{store_url}', '{store_phone}'].map((v) => (
-                <button
-                  key={v}
-                  onClick={() => { navigator.clipboard.writeText(v); toast.success('Variable copiada: ' + v); }}
-                  className="text-[9px] font-mono bg-sand-50 text-wood-600 px-1.5 py-0.5 rounded border border-wood-100 hover:bg-sand-100 transition-colors"
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
+            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Trigger</label>
+            <p className="text-xs text-wood-600">{editingEmail.trigger_description}</p>
           </div>
-
-          {/* Editor placeholder */}
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-2">Contenido del email</label>
-            <div className="flex flex-wrap gap-1.5 mb-3 p-2 bg-sand-50 rounded-lg border border-wood-100">
-              {['Texto', 'Imagen', 'Boton', 'Producto', 'Separador', '2 columnas', 'Detalles pedido', 'Tracking info', 'Barra de puntos'].map((b) => (
-                <button key={b} className="px-2 py-1 text-[10px] bg-white border border-wood-200 rounded text-wood-600 hover:border-wood-300 transition-colors">
-                  <Plus size={8} className="inline mr-0.5" />{b}
-                </button>
-              ))}
-            </div>
-            <div className="border border-wood-200 rounded-lg overflow-hidden">
-              {/* Mock email preview */}
-              <div className="bg-[#2d2419] p-6 text-center">
-                <div className="text-accent-gold text-sm font-serif">DavidSon's Design</div>
-              </div>
-              <div className="bg-[#F5F3F0] p-6 space-y-4">
-                <div className="bg-white rounded-lg p-5 max-w-md mx-auto space-y-3">
-                  <h3 className="text-sm font-serif text-[#2d2419] text-center">Pedido Confirmado</h3>
-                  <p className="text-xs text-[#2d2419]/70">
-                    Hola <span className="text-accent-gold">{'{customer_name}'}</span>, gracias por tu compra.
-                    Tu pedido <span className="font-medium">{'{order_id}'}</span> ha sido confirmado y esta siendo preparado.
-                  </p>
-                  <div className="bg-sand-50 rounded p-3">
-                    <p className="text-[10px] text-wood-400 uppercase tracking-wider mb-2">Resumen del pedido</p>
-                    <div className="flex justify-between text-xs text-wood-700 border-b border-wood-100 pb-1.5 mb-1.5">
-                      <span>{'{product_name}'}</span>
-                      <span>{'{product_price}'}</span>
-                    </div>
-                    <div className="flex justify-between text-xs font-medium text-wood-900">
-                      <span>Total</span>
-                      <span>{'{order_total}'}</span>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <button className="bg-[#2d2419] text-[#F5F3F0] px-6 py-2 rounded-lg text-xs">
-                      Ver mi pedido
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-[#2d2419] p-4 text-center space-y-1">
-                <p className="text-[9px] text-[#F5F3F0]/50">DavidSon's Design | Hermosillo, Sonora, Mexico</p>
-                <p className="text-[9px] text-accent-gold/50">Gestionar preferencias | Darse de baja</p>
-              </div>
-            </div>
+            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Destinatario</label>
+            <p className="text-xs text-wood-600 capitalize">{editingEmail.recipient_type}</p>
+          </div>
+          <div className="flex items-center gap-2 pt-2">
+            <button onClick={handleSaveSubject} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1">
+              <Save size={12} /> Guardar
+            </button>
+            <button onClick={() => setEditingEmail(null)} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors">
+              Cancelar
+            </button>
           </div>
         </Card>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button onClick={() => { toast.success('Plantilla guardada'); setEditingEmail(null); }} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1">
-            <Save size={12} /> Guardar
-          </button>
-          <button onClick={() => toast.success('Email de prueba enviado')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
-            <Send size={12} /> Enviar prueba a mi email
-          </button>
-          <button onClick={() => toast.success('Preview abierto')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
-            <Eye size={12} /> Preview
-          </button>
-          <button onClick={() => toast.success('Restaurado a default')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
-            <RotateCcw size={12} /> Restaurar default
-          </button>
-        </div>
       </div>
     );
   }
 
-  function EmailSection({ title, emails }: { title: string; emails: Array<{ id: string; name: string; trigger: string; enabled: boolean }> }) {
-    const [localEmails, setLocalEmails] = useState(emails);
-    return (
-      <div className="mb-1">
-        <p className="text-[10px] text-wood-400 uppercase tracking-wider font-medium px-5 py-2 bg-sand-50/80 border-b border-wood-50">{title}</p>
-        {localEmails.map((e) => (
-          <div key={e.id} className="flex items-center gap-3 px-5 py-3 border-b border-wood-50 hover:bg-sand-50/30 transition-colors">
-            <button
-              onClick={() => {
-                setLocalEmails(localEmails.map((le) => le.id === e.id ? { ...le, enabled: !le.enabled } : le));
-                toast.success(e.enabled ? 'Email desactivado' : 'Email activado');
-              }}
-              className={'w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ' + (e.enabled ? 'bg-green-500' : 'bg-wood-200')}
-            >
-              <div className={'w-4 h-4 rounded-full bg-white shadow transition-transform ' + (e.enabled ? 'translate-x-3' : 'translate-x-0')} />
-            </button>
-            <span className="text-xs text-wood-900 flex-1">{e.name}</span>
-            <span className="text-[10px] text-wood-400 hidden sm:block">Trigger: {e.trigger}</span>
-            <button onClick={() => setEditingEmail(e.id)} className="p-1.5 rounded hover:bg-wood-50 text-wood-400 transition-colors" title="Editar">
-              <Layout size={12} />
-            </button>
-            <button onClick={() => toast.success('Preview: ' + e.name)} className="p-1.5 rounded hover:bg-wood-50 text-wood-400 transition-colors" title="Preview">
-              <Eye size={12} />
-            </button>
-          </div>
-        ))}
-      </div>
-    );
-  }
+  const categories = [...new Set(templates.map(t => t.category))];
 
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100">
-          <h4 className="text-sm font-medium text-wood-900">Emails Automaticos al Cliente</h4>
+        <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
+          <h4 className="text-sm font-medium text-wood-900">Emails Automáticos</h4>
+          <span className="text-[10px] text-wood-400">{templates.length} templates · {templates.filter(t => t.is_active).length} activos</span>
         </div>
-        <EmailSection title="Pedidos" emails={emailTemplates.orders} />
-        <EmailSection title="Cuenta" emails={emailTemplates.account} />
-        <EmailSection title="Lealtad" emails={emailTemplates.loyalty} />
-        <EmailSection title="Reviews" emails={emailTemplates.reviews} />
-        <EmailSection title="Cotizaciones" emails={emailTemplates.quotes} />
-        <EmailSection title="Marketing / Recuperacion" emails={emailTemplates.marketing} />
+        {loading ? (
+          <div className="p-8 text-center text-wood-400 text-sm">Cargando templates...</div>
+        ) : categories.map(cat => (
+          <div key={cat} className="mb-1">
+            <p className="text-[10px] text-wood-400 uppercase tracking-wider font-medium px-5 py-2 bg-sand-50/80 border-b border-wood-50 capitalize">{cat}</p>
+            {templates.filter(t => t.category === cat).map(tpl => (
+              <div key={tpl.id} className="flex items-center gap-3 px-5 py-3 border-b border-wood-50 hover:bg-sand-50/30 transition-colors">
+                <button
+                  onClick={() => handleToggle(tpl)}
+                  className={'w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ' + (tpl.is_active ? 'bg-green-500' : 'bg-wood-200')}
+                >
+                  <div className={'w-4 h-4 rounded-full bg-white shadow transition-transform ' + (tpl.is_active ? 'translate-x-3' : 'translate-x-0')} />
+                </button>
+                <span className="text-xs text-wood-900 flex-1">{tpl.name}</span>
+                <span className="text-[10px] text-wood-400 hidden sm:block">{tpl.trigger_description}</span>
+                <span className="text-[9px] text-wood-300 hidden md:block capitalize">{tpl.recipient_type}</span>
+                <button onClick={() => { setEditingEmail(tpl); setSubjectOverride(tpl.subject_override || ''); }} className="p-1.5 rounded hover:bg-wood-50 text-wood-400 transition-colors" title="Editar">
+                  <Layout size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ))}
       </Card>
     </div>
   );
