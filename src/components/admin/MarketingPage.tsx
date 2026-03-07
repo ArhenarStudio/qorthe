@@ -488,6 +488,18 @@ const CampaignFormModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 };
 
 // ===== TAB: CUPONES =====
+// ── Coming Soon Placeholder for mock tabs ──
+const ComingSoonTab: React.FC<{ title: string; desc: string }> = ({ title, desc }) => (
+  <div className="flex flex-col items-center justify-center py-20 text-center">
+    <div className="w-16 h-16 rounded-2xl bg-wood-100 dark:bg-wood-800 flex items-center justify-center mb-4">
+      <Megaphone className="w-7 h-7 text-wood-400" />
+    </div>
+    <h3 className="text-lg font-serif text-wood-900 dark:text-sand-100 mb-2">{title}</h3>
+    <p className="text-sm text-wood-500 dark:text-sand-400 max-w-md mb-4">{desc}</p>
+    <span className="px-3 py-1 bg-accent-gold/10 text-accent-gold text-xs font-bold uppercase tracking-widest rounded-full">Próximamente</span>
+  </div>
+);
+
 const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
   const [statusFilter, setStatusFilter] = useState<'all' | CouponStatus>('all');
   const [typeFilter, setTypeFilter] = useState<'all' | CouponType>('all');
@@ -1305,13 +1317,9 @@ export const MarketingPage: React.FC = () => {
     fetchStats();
   }, []);
 
-  // KPIs (real for coupons, mock for campaigns/flash until those phases are built)
+  // KPIs (real for coupons, 0 for unimplemented features)
   const activeCoupons = promoStats.active;
-  const expiringCoupons = 0; // TODO: calculate from promotions with endDate < 7 days
-  const activeCampaigns = mockEmailCampaigns.filter(c => c.status === 'sent').length;
-  const scheduledCampaigns = mockEmailCampaigns.filter(c => c.status === 'scheduled').length;
-  const activeFlash = mockFlashSales.filter(f => f.status === 'active').length;
-  const activeFlashEnd = mockFlashSales.find(f => f.status === 'active');
+  const expiringCoupons = 0;
 
   return (
     <div className="space-y-6">
@@ -1329,10 +1337,10 @@ export const MarketingPage: React.FC = () => {
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <KpiCard icon={<Tag size={16} className="text-accent-gold" />} value={String(activeCoupons)} label="Cupones activos" sub={expiringCoupons > 0 ? `${expiringCoupons} por vencer` : 'Ninguno por vencer'} accent />
-        <KpiCard icon={<DollarSign size={16} className="text-wood-400" />} value="$12,400" label="Ingresos atribuidos a marketing" sub="este mes · 18% del total" />
-        <KpiCard icon={<Mail size={16} className="text-wood-400" />} value={String(activeCampaigns)} label="Campañas activas" sub={scheduledCampaigns > 0 ? `+${scheduledCampaigns} programada` : ''} />
-        <KpiCard icon={<Zap size={16} className="text-wood-400" />} value={String(activeFlash)} label="Venta flash activa" sub={activeFlashEnd ? `Termina en ${getTimeRemaining(activeFlashEnd.endDate)}` : ''} />
-        <KpiCard icon={<TrendingUp size={16} className="text-accent-gold" />} value="3.2x" label="ROI prom. de marketing" sub="Por cada $1 invertido" accent />
+        <KpiCard icon={<DollarSign size={16} className="text-wood-400" />} value={`${promoStats.total}`} label="Cupones creados" sub={`${promoStats.expired} expirados`} />
+        <KpiCard icon={<Mail size={16} className="text-wood-400" />} value="0" label="Campañas email" sub="Próximamente" />
+        <KpiCard icon={<Zap size={16} className="text-wood-400" />} value="0" label="Ventas flash" sub="Próximamente" />
+        <KpiCard icon={<TrendingUp size={16} className="text-accent-gold" />} value={`${promoStats.active + promoStats.expired}`} label="Promociones totales" sub={`${promoStats.active} activas`} accent />
       </div>
 
       {/* Tabs */}
@@ -1380,10 +1388,10 @@ export const MarketingPage: React.FC = () => {
           transition={{ duration: 0.15 }}
         >
           {tab === 'cupones' && <CuponesTab search={search} />}
-          {tab === 'campanas' && <CampanasTab search={search} />}
-          {tab === 'banners' && <BannersTab search={search} />}
-          {tab === 'flash' && <FlashTab />}
-          {tab === 'referidos' && <ReferidosTab />}
+          {tab === 'campanas' && <ComingSoonTab title="Campañas de Email" desc="Envía newsletters, secuencias automatizadas y campañas segmentadas a tus clientes." />}
+          {tab === 'banners' && <ComingSoonTab title="Banners Promocionales" desc="Administra banners hero, barras de anuncio y banners de categoría." />}
+          {tab === 'flash' && <ComingSoonTab title="Ventas Flash" desc="Crea ventas relámpago con descuentos temporales y temporizador de urgencia." />}
+          {tab === 'referidos' && <ComingSoonTab title="Programa de Referidos" desc="Genera códigos de referido y rastrea conversiones de recomendaciones." />}
           {tab === 'analisis' && <AnalisisTab />}
         </motion.div>
       </AnimatePresence>
