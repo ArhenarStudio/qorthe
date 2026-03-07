@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   FileText, Menu, Home, PenLine, MessageSquare, Image, Type, Search,
-  Plus, Save, Eye, Trash2, Copy, ExternalLink, GripVertical, ChevronRight,
+  Plus, Save, Eye, EyeOff, Trash2, Copy, ExternalLink, GripVertical, ChevronRight,
   ChevronDown, Edit3, MoreHorizontal, Upload, Download, FolderOpen,
   Globe, Settings2, Clock, Tag, X, Check, AlertTriangle,
   Bold, Italic, Underline, Heading1, Heading2, Heading3, Link2,
@@ -156,1454 +156,389 @@ const mockRedirects = [
 ];
 
 // ===== TAB 1: PAGES =====
-function PagesTab() {
-  const [editingPage, setEditingPage] = useState<string | null>(null);
-  const [editorMode, setEditorMode] = useState<'visual' | 'html'>('visual');
+function PagesTabLive() {
+  const [pages, setPages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingPage, setEditingPage] = useState<any>(null);
+  const [editingSection, setEditingSection] = useState<number | null>(null);
+  const [sectionForm, setSectionForm] = useState({ id: '', label: '', content: '' });
+  const [showDeleteModal, setShowDeleteModal] = useState<{ page: any; sectionIdx: number } | null>(null);
 
-  const editPage = mockPages.find((p) => p.id === editingPage);
+  const TEMPLATES = [
+    { id: 'legal_sidebar', label: 'Legal (sidebar navegación)', description: 'Sidebar con tabla de contenido + secciones scrollables' },
+    { id: 'simple', label: 'Simple', description: 'Título + contenido, sin sidebar' },
+    { id: 'homepage', label: 'Homepage', description: 'Página de inicio (se edita en tab Homepage)' },
+    { id: 'catalog', label: 'Catálogo', description: 'Página de productos (automática)' },
+    { id: 'system', label: 'Sistema', description: 'Página del sistema (no editable desde CMS)' },
+  ];
 
-  if (editPage) {
+  const fetchPages = () => {
+    fetch('/api/admin/cms?type=pages').then(r => r.ok ? r.json() : null).then(d => { if (d?.pages) setPages(d.pages); }).catch(() => {}).finally(() => setLoading(false));
+  };
+  useEffect(() => { fetchPages(); }, []);
+
+  const handleSavePage = async (page: any) => {
+    const res = await fetch('/api/admin/cms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'page', id: page.id, ...page }) });
+    if (res.ok) { toast.success('Página guardada'); fetchPages(); setEditingPage(null); }
+    else toast.error('Error al guardar');
+  };
+
+  const handleSaveSection = () => {
+    if (!editingPage) return;
+    const sections = [...(editingPage.sections || [])];
+    if (editingSection !== null && editingSection < sections.length) {
+      sections[editingSection] = { id: sectionForm.id, label: sectionForm.label, content: sectionForm.content };
+    } else {
+      sections.push({ id: sectionForm.id || sectionForm.label.toLowerCase().replace(/[^a-z0-9]+/g, '-'), label: sectionForm.label, content: sectionForm.content });
+    }
+    setEditingPage({ ...editingPage, sections });
+    setEditingSection(null);
+    setSectionForm({ id: '', label: '', content: '' });
+  };
+
+  const handleDeleteSection = () => {
+    if (!showDeleteModal || !editingPage) return;
+    const sections = [...(editingPage.sections || [])].filter((_, i) => i !== showDeleteModal.sectionIdx);
+    setEditingPage({ ...editingPage, sections });
+    setShowDeleteModal(null);
+  };
+
+  const moveSection = (idx: number, dir: -1 | 1) => {
+    if (!editingPage) return;
+    const s = [...(editingPage.sections || [])];
+    const target = idx + dir;
+    if (target < 0 || target >= s.length) return;
+    [s[idx], s[target]] = [s[target], s[idx]];
+    setEditingPage({ ...editingPage, sections: s });
+  };
+
+  // ── Delete Section Confirmation Modal ──
+  const DeleteSectionModal = () => {
+    if (!showDeleteModal) return null;
+    const sec = editingPage?.sections?.[showDeleteModal.sectionIdx];
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setShowDeleteModal(null)} />
+        <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-white rounded-2xl shadow-2xl z-[201] p-6">
+          <h4 className="font-serif text-lg text-wood-900 mb-3">Eliminar sección</h4>
+          <p className="text-sm text-wood-600 mb-1">¿Eliminar <strong>"{sec?.label}"</strong>?</p>
+          <p className="text-xs text-wood-400 mb-6">Esta acción se aplica al guardar la página.</p>
+          <div className="flex gap-2">
+            <button onClick={() => setShowDeleteModal(null)} className="flex-1 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
+            <button onClick={handleDeleteSection} className="flex-1 py-2 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700">Eliminar</button>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  // ── Section Editor Modal ──
+  const SectionEditorModal = () => {
+    if (editingSection === null) return null;
+    const isNew = editingSection >= (editingPage?.sections || []).length;
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setEditingSection(null)} />
+        <div className="fixed inset-0 m-auto w-full max-w-2xl h-fit max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-2xl z-[201]">
+          <div className="sticky top-0 bg-white border-b border-wood-100 px-6 py-4 flex items-center justify-between z-10">
+            <h4 className="font-serif text-lg text-wood-900">{isNew ? 'Nueva Sección' : 'Editar Sección'}</h4>
+            <button onClick={() => setEditingSection(null)} className="p-1.5 hover:bg-wood-100 rounded-lg"><X size={16} /></button>
+          </div>
+          <div className="p-6 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Label (sidebar)</label>
+                <input value={sectionForm.label} onChange={e => setSectionForm(f => ({ ...f, label: e.target.value, ...(isNew ? { id: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') } : {}) }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" placeholder="Ej: 1. Objeto" /></div>
+              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">ID (anchor)</label>
+                <input value={sectionForm.id} onChange={e => setSectionForm(f => ({ ...f, id: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm font-mono" placeholder="Ej: objeto" /></div>
+            </div>
+            <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Contenido</label>
+              <textarea value={sectionForm.content} onChange={e => setSectionForm(f => ({ ...f, content: e.target.value }))} rows={12} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm font-mono leading-relaxed" placeholder="Texto de la sección. Usa líneas vacías para separar párrafos. Usa - para listas." /></div>
+            <p className="text-[10px] text-wood-400">Formato: párrafos separados por línea vacía. Listas con - al inicio. El formato se aplica automáticamente al renderizar.</p>
+          </div>
+          <div className="sticky bottom-0 bg-white border-t border-wood-100 px-6 py-4 flex justify-end gap-2">
+            <button onClick={() => setEditingSection(null)} className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
+            <button onClick={handleSaveSection} disabled={!sectionForm.label} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 disabled:opacity-50 flex items-center gap-1"><Save size={12} /> {isNew ? 'Agregar' : 'Guardar'}</button>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  // ── Page Editor (template-aware) ──
+  if (editingPage) {
+    const isLegal = editingPage.template === 'legal_sidebar';
+    const sections = editingPage.sections || [];
+
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button onClick={() => setEditingPage(null)} className="text-xs text-wood-500 hover:text-wood-700 transition-colors">
-              Paginas
-            </button>
-            <ChevronRight size={12} className="text-wood-300" />
-            <span className="text-xs font-medium text-wood-900">{editPage.title}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => toast.success('Borrador guardado')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors">
-              Guardar borrador
-            </button>
-            <button onClick={() => toast.success('Pagina publicada')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors">
-              Publicar
-            </button>
-          </div>
-        </div>
+        <DeleteSectionModal />
+        <SectionEditorModal />
 
-        {/* Info */}
-        <Card className="p-5">
-          <STitle>Informacion</STitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Titulo</label>
-              <input defaultValue={editPage.title} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-            </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">URL</label>
-              <div className="flex items-center">
-                <span className="text-[10px] text-wood-400 mr-1">davidsonsdesign.com</span>
-                <input defaultValue={editPage.url} className="flex-1 border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-              </div>
-            </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Template</label>
-              <select defaultValue={editPage.template} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                <option>Completa</option>
-                <option>Con sidebar</option>
-                <option>Landing</option>
-                <option>Vacia</option>
-              </select>
-            </div>
-          </div>
-        </Card>
-
-        {/* Editor */}
-        <Card className="p-5">
-          <STitle>Editor de Contenido</STitle>
-          {/* Toolbar */}
-          <div className="flex flex-wrap items-center gap-1 p-2 bg-sand-50 rounded-lg border border-wood-100 mb-3">
-            {[
-              { icon: Bold, label: 'Bold' },
-              { icon: Italic, label: 'Italic' },
-              { icon: Underline, label: 'Underline' },
-            ].map((t) => (
-              <button key={t.label} className="p-1.5 rounded hover:bg-wood-100 transition-colors text-wood-600" title={t.label}>
-                <t.icon size={14} />
-              </button>
-            ))}
-            <div className="w-px h-5 bg-wood-200 mx-1" />
-            {[
-              { icon: Heading1, label: 'H1' },
-              { icon: Heading2, label: 'H2' },
-              { icon: Heading3, label: 'H3' },
-            ].map((t) => (
-              <button key={t.label} className="p-1.5 rounded hover:bg-wood-100 transition-colors text-wood-600" title={t.label}>
-                <t.icon size={14} />
-              </button>
-            ))}
-            <div className="w-px h-5 bg-wood-200 mx-1" />
-            {[
-              { icon: Link2, label: 'Link' },
-              { icon: ImageIcon, label: 'Imagen' },
-              { icon: Video, label: 'Video' },
-              { icon: Quote, label: 'Cita' },
-              { icon: List, label: 'Lista' },
-              { icon: Table, label: 'Tabla' },
-              { icon: Minus, label: 'Separador' },
-              { icon: MousePointer, label: 'Boton CTA' },
-            ].map((t) => (
-              <button key={t.label} className="p-1.5 rounded hover:bg-wood-100 transition-colors text-wood-600" title={t.label}>
-                <t.icon size={14} />
-              </button>
-            ))}
-            <div className="ml-auto flex items-center gap-1">
-              <button
-                onClick={() => setEditorMode('visual')}
-                className={'px-2 py-1 text-[10px] rounded ' + (editorMode === 'visual' ? 'bg-accent-gold text-white' : 'text-wood-500 hover:bg-wood-50')}
-              >
-                Visual
-              </button>
-              <button
-                onClick={() => setEditorMode('html')}
-                className={'px-2 py-1 text-[10px] rounded ' + (editorMode === 'html' ? 'bg-accent-gold text-white' : 'text-wood-500 hover:bg-wood-50')}
-              >
-                HTML
-              </button>
-            </div>
-          </div>
-          {/* Content area */}
-          <div className="border border-wood-200 rounded-lg p-6 min-h-[300px] bg-white">
-            {editorMode === 'visual' ? (
-              <div className="prose prose-sm max-w-none">
-                <div className="bg-sand-50 rounded-lg p-4 mb-4 text-center text-xs text-wood-400 border-2 border-dashed border-wood-200">
-                  [IMAGEN HERO: Taller artesanal con maderas]
-                </div>
-                <h1 className="text-lg text-wood-900 font-serif">Sobre DavidSon's Design</h1>
-                <p className="text-xs text-wood-600">
-                  Somos un taller artesanal en Hermosillo, Sonora, dedicado a crear piezas unicas en madera mexicana...
-                </p>
-                <h2 className="text-sm text-wood-900 font-serif mt-4">Nuestra Historia</h2>
-                <p className="text-xs text-wood-600">
-                  Desde 2020, David y su equipo han transformado las maderas mas nobles de Mexico en piezas funcionales y bellas para la cocina moderna...
-                </p>
-                <h2 className="text-sm text-wood-900 font-serif mt-4">Nuestras Maderas</h2>
-                <div className="grid grid-cols-4 gap-2 my-3">
-                  {['Parota', 'Rosa Morada', 'Nogal', 'Cedro Rojo'].map((m) => (
-                    <div key={m} className="bg-sand-50 rounded p-3 text-center text-[10px] text-wood-500 border border-wood-100">
-                      [Foto {m}]
-                    </div>
-                  ))}
-                </div>
-                <div className="bg-accent-gold/10 border border-accent-gold/30 rounded-lg p-3 text-center">
-                  <span className="text-xs text-accent-gold font-medium">Conoce Nuestros Productos &rarr;</span>
-                </div>
-              </div>
-            ) : (
-              <textarea
-                className="w-full h-64 text-xs font-mono text-wood-700 resize-none outline-none"
-                defaultValue={'<h1>Sobre DavidSon\'s Design</h1>\n<p>Somos un taller artesanal...</p>'}
-              />
-            )}
-          </div>
-        </Card>
-
-        {/* SEO */}
-        <Card className="p-5">
-          <STitle>SEO</STitle>
-          <div className="space-y-3">
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Meta titulo</label>
-              <input defaultValue={editPage.title + ' - DavidSon\'s Design'} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-            </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Meta descripcion</label>
-              <textarea className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white h-16 resize-none" defaultValue="Taller artesanal en Hermosillo, Sonora. Creamos piezas unicas en madera mexicana..." />
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="text-[10px] text-wood-500 border border-wood-200 rounded-lg px-3 py-1.5 hover:bg-wood-50 transition-colors flex items-center gap-1">
-                <Upload size={10} /> Imagen OG
-              </button>
-              <button onClick={() => toast.success('SEO generado con IA')} className="text-[10px] text-accent-gold border border-accent-gold/30 rounded-lg px-3 py-1.5 hover:bg-accent-gold/5 transition-colors flex items-center gap-1">
-                <Star size={10} /> Generar SEO con IA
-              </button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Config */}
-        <Card className="p-5">
-          <STitle>Configuracion</STitle>
-          <div className="space-y-2">
-            {[
-              { label: 'Mostrar en mapa del sitio (sitemap.xml)', checked: true },
-              { label: 'Indexar en Google (noindex si desactivado)', checked: false },
-              { label: 'Mostrar breadcrumbs', checked: true },
-              { label: 'Proteger con contrasena', checked: false },
-            ].map((opt) => (
-              <label key={opt.label} className="flex items-center gap-2 text-xs text-wood-700">
-                <input type="checkbox" defaultChecked={opt.checked} className="rounded border-wood-300 text-accent-gold" />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-        </Card>
-
-        {/* Version history */}
-        <Card className="p-5">
-          <STitle>Historial de versiones</STitle>
-          <div className="space-y-2">
-            {[
-              { version: 'v3', date: '15 Feb 2026, 10:30', author: 'David', current: true },
-              { version: 'v2', date: '10 Ene 2026, 14:00', author: 'David', current: false },
-              { version: 'v1', date: '01 Dic 2025, 09:00', author: 'David', current: false },
-            ].map((v) => (
-              <div key={v.version} className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-wood-900">{v.version}</span>
-                  <span className="text-wood-500">{v.date} ({v.author})</span>
-                  {v.current && <Badge text="actual" variant="green" />}
-                </div>
-                {!v.current && (
-                  <button onClick={() => toast.success('Version restaurada')} className="text-[10px] text-accent-gold hover:underline">
-                    Restaurar
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Footer actions */}
-        <div className="flex items-center gap-3">
-          <button onClick={() => toast.success('Preview abierto')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1.5">
-            <Eye size={12} /> Preview
-          </button>
-          <button onClick={() => toast.success('Pagina duplicada')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1.5">
-            <Copy size={12} /> Duplicar pagina
-          </button>
-          <button onClick={() => toast.error('Pagina eliminada')} className="px-3 py-1.5 text-xs border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-1.5">
-            <Trash2 size={12} /> Eliminar
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
-          <h4 className="text-sm font-medium text-wood-900">Paginas del Sitio</h4>
-          <button onClick={() => toast.success('Creando nueva pagina...')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
-            <Plus size={12} /> Nueva Pagina
-          </button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
-                <th className="px-5 py-2">Pagina</th>
-                <th className="px-5 py-2">URL</th>
-                <th className="px-5 py-2">Template</th>
-                <th className="px-5 py-2">Ultima edicion</th>
-                <th className="px-5 py-2">Estado</th>
-                <th className="px-5 py-2 text-right">Acc.</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-wood-50">
-              {mockPages.map((p) => (
-                <tr key={p.id} className="hover:bg-sand-50/50 transition-colors">
-                  <td className="px-5 py-2.5">
-                    <button onClick={() => setEditingPage(p.id)} className="text-xs font-medium text-wood-900 hover:text-accent-gold transition-colors">
-                      {p.title}
-                    </button>
-                  </td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500 font-mono">{p.url}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500">{p.template}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500">{p.lastEdit || '-'}</td>
-                  <td className="px-5 py-2.5">
-                    <Badge text={p.status === 'published' ? 'Publicada' : 'Borrador'} variant={p.status === 'published' ? 'green' : 'gray'} />
-                  </td>
-                  <td className="px-5 py-2.5 text-right">
-                    <button className="p-1 rounded hover:bg-wood-50 text-wood-400">
-                      <MoreHorizontal size={14} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-    </div>
-  );
-}
-
-// ===== TAB 2: MENUS =====
-function MenusTab() {
-  const [addingTo, setAddingTo] = useState<string | null>(null);
-
-  function renderMenuItem(item: { id: string; label: string; url: string; children?: any[] }, depth: number = 0) {
-    return (
-      <div key={item.id}>
-        <div className={'flex items-center gap-2 p-2.5 bg-sand-50 rounded-lg mb-1.5 ' + (depth > 0 ? 'ml-8' : '')}>
-          <GripVertical size={14} className="text-wood-300 shrink-0 cursor-grab" />
-          <span className="text-xs font-medium text-wood-900 flex-1">{item.label}</span>
-          <span className="text-[10px] text-wood-400 font-mono">{item.url}</span>
-          <button className="p-1 rounded hover:bg-wood-100 text-wood-400"><Edit3 size={12} /></button>
-          <button className="p-1 rounded hover:bg-red-50 text-red-400"><X size={12} /></button>
-        </div>
-        {item.children && item.children.map((child: any) => renderMenuItem(child, depth + 1))}
-      </div>
-    );
-  }
-
-  function MenuSection({ title, menuKey, items }: { title: string; menuKey: string; items: any[] }) {
-    return (
-      <Card className="p-5">
-        <STitle>{title}</STitle>
-        <div className="space-y-0">
-          {items.map((item) => renderMenuItem(item))}
-        </div>
-        <button
-          onClick={() => setAddingTo(addingTo === menuKey ? null : menuKey)}
-          className="mt-3 text-xs text-accent-gold hover:underline flex items-center gap-1"
-        >
-          <Plus size={12} /> Agregar item
-        </button>
-        <AnimatePresence>
-          {addingTo === menuKey && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-3 p-4 bg-sand-50 rounded-lg border border-wood-100 space-y-3">
-                <div>
-                  <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Texto</label>
-                  <input className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" placeholder="Nombre del item" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Link</label>
-                  <div className="space-y-1.5">
-                    {[
-                      { label: 'Pagina interna', value: 'page' },
-                      { label: 'Categoria', value: 'category' },
-                      { label: 'Coleccion', value: 'collection' },
-                      { label: 'URL externa', value: 'external' },
-                    ].map((opt) => (
-                      <label key={opt.value} className="flex items-center gap-2 text-xs text-wood-600">
-                        <input type="radio" name={'link-type-' + menuKey} className="text-accent-gold" />
-                        {opt.label}
-                      </label>
-                    ))}
-                  </div>
-                  <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white mt-2">
-                    <option>Seleccionar pagina...</option>
-                    {mockPages.map((p) => <option key={p.id} value={p.url}>{p.title}</option>)}
-                  </select>
-                </div>
-                <label className="flex items-center gap-2 text-xs text-wood-600">
-                  <input type="checkbox" className="rounded border-wood-300 text-accent-gold" />
-                  Destacar (negrita en el menu)
-                </label>
-                <button
-                  onClick={() => { toast.success('Item agregado'); setAddingTo(null); }}
-                  className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors"
-                >
-                  Agregar
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <MenuSection title='Menu Principal (Header)' menuKey="header" items={mockMenus.header} />
-      <MenuSection title='Menu Footer - Columna 1: "Tienda"' menuKey="footerShop" items={mockMenus.footerShop} />
-      <MenuSection title='Menu Footer - Columna 2: "Informacion"' menuKey="footerInfo" items={mockMenus.footerInfo} />
-      <MenuSection title='Menu Footer - Columna 3: "Legal"' menuKey="footerLegal" items={mockMenus.footerLegal} />
-      <button
-        onClick={() => toast.success('Todos los menus guardados')}
-        className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5"
-      >
-        <Save size={12} /> Guardar todos los menus
-      </button>
-    </div>
-  );
-}
-
-// ===== TAB 3: HOMEPAGE =====
-function HomepageTab() {
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-wood-900">Secciones del Homepage</h4>
-        <button onClick={() => toast.success('Preview abierto')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1.5">
-          <Eye size={12} /> Preview
-        </button>
-      </div>
-
-      <div className="space-y-2">
-        {mockHomeSections.map((section, idx) => (
-          <Card key={section.id} className="overflow-hidden">
-            <div className="flex items-center gap-3 p-4">
-              <GripVertical size={16} className="text-wood-300 shrink-0 cursor-grab" />
-              <span className="text-[10px] text-wood-400 w-5 font-mono">{idx + 1}.</span>
-              <span className="text-xs font-medium text-wood-900 flex-1">{section.name}</span>
-              <Badge text={section.active ? 'Activa' : 'Inactiva'} variant={section.active ? 'green' : 'gray'} />
-              <button
-                onClick={() => setExpandedSection(expandedSection === section.id ? null : section.id)}
-                className="p-1.5 rounded hover:bg-wood-50 text-wood-400 transition-colors"
-              >
-                <Settings2 size={14} />
-              </button>
-            </div>
-            <AnimatePresence>
-              {expandedSection === section.id && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-4 pb-4 pt-0 border-t border-wood-50 space-y-3">
-                    {section.note && (
-                      <p className="text-[10px] text-wood-400 italic mt-3">{section.note}</p>
-                    )}
-                    {section.config && (
-                      <div className="mt-3 space-y-3">
-                        {section.config.title && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Titulo seccion</label>
-                            <input defaultValue={section.config.title} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-                          </div>
-                        )}
-                        {section.config.subtitle && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Subtitulo</label>
-                            <input defaultValue={section.config.subtitle} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-                          </div>
-                        )}
-                        {section.config.type && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Tipo</label>
-                            <input defaultValue={section.config.type} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" readOnly />
-                          </div>
-                        )}
-                        {section.config.source && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Fuente</label>
-                            <select defaultValue={section.config.source} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                              <option>Best Sellers</option>
-                              <option>Novedades</option>
-                              <option>Reviews destacadas</option>
-                              <option>Seleccion manual</option>
-                            </select>
-                          </div>
-                        )}
-                        {section.config.count !== undefined && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Mostrar</label>
-                            <input type="number" defaultValue={section.config.count} className="w-24 border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-                          </div>
-                        )}
-                        {section.config.view && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Ver como</label>
-                            <select defaultValue={section.config.view} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                              <option>Carrusel</option>
-                              <option>Grid</option>
-                              <option>Lista</option>
-                            </select>
-                          </div>
-                        )}
-                        {section.config.layout && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Layout</label>
-                            <select defaultValue={section.config.layout} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                              <option>Carrusel</option>
-                              <option>Grid</option>
-                            </select>
-                          </div>
-                        )}
-                        {section.config.cta && (
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">CTA</label>
-                              <input defaultValue={section.config.cta} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-                            </div>
-                            <div>
-                              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Link</label>
-                              <input defaultValue={section.config.link} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-                            </div>
-                          </div>
-                        )}
-                        {section.config.categories && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Categorias</label>
-                            <div className="flex flex-wrap gap-1.5">
-                              {section.config.categories.map((c: string) => (
-                                <span key={c} className="text-[10px] bg-accent-gold/10 text-accent-gold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                  {c} <X size={8} className="cursor-pointer" />
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {section.config.steps && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Pasos</label>
-                            <div className="space-y-1.5">
-                              {section.config.steps.map((step: string, i: number) => (
-                                <div key={i} className="flex items-center gap-2 p-2 bg-sand-50 rounded-lg">
-                                  <GripVertical size={10} className="text-wood-300" />
-                                  <span className="text-[10px] text-wood-400 w-5">P{i + 1}</span>
-                                  <input defaultValue={step} className="flex-1 border border-wood-200 rounded px-2 py-1 text-xs bg-white" />
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {section.config.incentive && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Incentivo</label>
-                            <input defaultValue={section.config.incentive} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-                          </div>
-                        )}
-                        {section.config.text && (
-                          <div>
-                            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Texto</label>
-                            <input defaultValue={section.config.text} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Card>
-        ))}
-      </div>
-
-      {/* Add section */}
-      <Card className="p-5">
-        <STitle>Agregar seccion</STitle>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {[
-            'Grid de productos', 'Banner imagen + texto', 'Video embed', 'Texto libre',
-            'Contador estadisticas', 'Grid de logos', 'Mapa ubicacion', 'Coleccion destacada',
-          ].map((s) => (
-            <button
-              key={s}
-              onClick={() => toast.success('Seccion "' + s + '" agregada')}
-              className="p-3 bg-sand-50 rounded-lg text-xs text-wood-600 hover:bg-sand-100 hover:text-wood-900 transition-colors text-left"
-            >
-              <Plus size={10} className="inline mr-1 text-wood-400" />{s}
-            </button>
-          ))}
-        </div>
-      </Card>
-
-      <div className="flex items-center gap-2">
-        <button onClick={() => toast.success('Homepage guardada')} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
-          <Save size={12} /> Guardar
-        </button>
-        <button onClick={() => toast.success('Preview abierto')} className="px-4 py-2 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1.5">
-          <Eye size={12} /> Preview en nueva pestana
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ===== TAB 4: BLOG =====
-function BlogTab() {
-  const [editingPost, setEditingPost] = useState<string | null>(null);
-  const editPost = mockBlogPosts.find((p) => p.id === editingPost);
-
-  if (editPost) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button onClick={() => setEditingPost(null)} className="text-xs text-wood-500 hover:text-wood-700 transition-colors">Blog</button>
-            <ChevronRight size={12} className="text-wood-300" />
-            <span className="text-xs font-medium text-wood-900">{editPost.title}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => toast.success('Borrador guardado')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors">Guardar borrador</button>
-            <button onClick={() => toast.success('Preview abierto')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1"><Eye size={12} /> Preview</button>
-            <button onClick={() => toast.success('Articulo publicado')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors">Publicar</button>
-            <button onClick={() => toast.success('Publicacion programada')} className="px-3 py-1.5 text-xs border border-accent-gold text-accent-gold rounded-lg hover:bg-accent-gold/5 transition-colors flex items-center gap-1">
-              <Clock size={12} /> Programar
-            </button>
-          </div>
-        </div>
-
-        <Card className="p-5 space-y-4">
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Titulo</label>
-            <input defaultValue={editPost.title} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-sm bg-white" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Slug</label>
-              <div className="flex items-center text-xs text-wood-400">
-                /blog/
-                <input defaultValue={editPost.title.toLowerCase().replace(/\s+/g, '-')} className="flex-1 border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white ml-1" />
-              </div>
-            </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Categoria</label>
-              <select defaultValue={editPost.category} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                {blogCategories.map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Autor</label>
-              <select defaultValue={editPost.author} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                <option>David</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Imagen de portada</label>
-            <div className="border-2 border-dashed border-wood-200 rounded-lg p-6 text-center">
-              <Upload size={20} className="mx-auto text-wood-300 mb-2" />
-              <p className="text-xs text-wood-400">1200x630px recomendado</p>
-              <button className="mt-2 px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors">
-                Subir imagen
-              </button>
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Extracto</label>
-            <textarea className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white h-16 resize-none" defaultValue="Guia completa para elegir la tabla perfecta segun tu uso..." />
-          </div>
-        </Card>
-
-        {/* Editor placeholder */}
-        <Card className="p-5">
-          <STitle>Contenido</STitle>
-          <div className="flex flex-wrap items-center gap-1 p-2 bg-sand-50 rounded-lg border border-wood-100 mb-3">
-            {[Bold, Italic, Underline, Heading1, Heading2, Link2, ImageIcon, Video, Quote, List].map((Icon, i) => (
-              <button key={i} className="p-1.5 rounded hover:bg-wood-100 transition-colors text-wood-600">
-                <Icon size={14} />
-              </button>
-            ))}
-            <div className="w-px h-5 bg-wood-200 mx-1" />
-            <button className="px-2 py-1 text-[10px] text-wood-500 hover:bg-wood-100 rounded">Producto relacionado</button>
-            <button className="px-2 py-1 text-[10px] text-wood-500 hover:bg-wood-100 rounded">CTA cotizacion</button>
-            <button className="px-2 py-1 text-[10px] text-wood-500 hover:bg-wood-100 rounded">Tabla comparativa</button>
-          </div>
-          <div className="border border-wood-200 rounded-lg p-6 min-h-[200px] text-xs text-wood-600">
-            <p>Contenido del articulo aqui...</p>
-          </div>
-        </Card>
-
-        {/* Tags */}
-        <Card className="p-5">
-          <STitle>Tags</STitle>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {editPost.tags.map((tag) => (
-              <span key={tag} className="text-[10px] bg-wood-50 text-wood-600 px-2 py-0.5 rounded-full flex items-center gap-1">
-                {tag} <X size={8} className="cursor-pointer text-wood-400" />
-              </span>
-            ))}
-            <input className="text-xs border-none outline-none bg-transparent w-24" placeholder="+ agregar tag" />
-          </div>
-        </Card>
-
-        {/* SEO */}
-        <Card className="p-5">
-          <STitle>SEO</STitle>
-          <div className="space-y-3">
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Meta titulo</label>
-              <input defaultValue={editPost.title + ' - DavidSon\'s Design Blog'} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-            </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Meta descripcion</label>
-              <textarea className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white h-12 resize-none" />
-            </div>
-            <button onClick={() => toast.success('SEO generado con IA')} className="text-[10px] text-accent-gold border border-accent-gold/30 rounded-lg px-3 py-1.5 hover:bg-accent-gold/5 transition-colors flex items-center gap-1">
-              <Star size={10} /> Generar SEO con IA
-            </button>
-          </div>
-        </Card>
-
-        {/* Related products */}
-        <Card className="p-5">
-          <STitle>Productos relacionados</STitle>
-          <div className="flex flex-wrap items-center gap-1.5 mb-3">
-            <span className="text-[10px] bg-accent-gold/10 text-accent-gold px-2 py-0.5 rounded-full flex items-center gap-1">
-              Tabla Parota Med <X size={8} className="cursor-pointer" />
-            </span>
-            <span className="text-[10px] bg-accent-gold/10 text-accent-gold px-2 py-0.5 rounded-full flex items-center gap-1">
-              Set 3 Tablas <X size={8} className="cursor-pointer" />
-            </span>
-          </div>
-          <input className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" placeholder="Buscar y seleccionar productos..." />
-        </Card>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
-          <h4 className="text-sm font-medium text-wood-900">Blog / Articulos</h4>
-          <button onClick={() => toast.success('Creando nuevo articulo...')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
-            <Plus size={12} /> Nuevo Articulo
-          </button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
-                <th className="px-5 py-2">Articulo</th>
-                <th className="px-5 py-2">Categoria</th>
-                <th className="px-5 py-2">Autor</th>
-                <th className="px-5 py-2">Fecha</th>
-                <th className="px-5 py-2">Estado</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-wood-50">
-              {mockBlogPosts.map((p) => (
-                <tr key={p.id} className="hover:bg-sand-50/50 transition-colors">
-                  <td className="px-5 py-2.5">
-                    <button onClick={() => setEditingPost(p.id)} className="text-xs font-medium text-wood-900 hover:text-accent-gold transition-colors">
-                      {p.title}
-                    </button>
-                  </td>
-                  <td className="px-5 py-2.5"><Badge text={p.category} variant="blue" /></td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500">{p.author}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500">{p.date || '-'}</td>
-                  <td className="px-5 py-2.5">
-                    <Badge text={p.status === 'published' ? 'Publicado' : 'Borrador'} variant={p.status === 'published' ? 'green' : 'gray'} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      {/* Blog categories */}
-      <Card className="p-5">
-        <STitle>Categorias del blog</STitle>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {blogCategories.map((c) => (
-            <span key={c} className="text-[10px] bg-sand-50 text-wood-600 px-2.5 py-1 rounded-full border border-wood-100">
-              {c}
-            </span>
-          ))}
-          <button className="text-[10px] text-accent-gold hover:underline flex items-center gap-0.5">
-            <Plus size={10} /> Nueva categoria
-          </button>
-        </div>
-      </Card>
-    </div>
-  );
-}
-
-// ===== TAB 5: POPUPS =====
-function PopupsTab() {
-  const [editingPopup, setEditingPopup] = useState<string | null>(null);
-
-  if (editingPopup) {
-    return (
-      <div className="space-y-6">
+        {/* Breadcrumb */}
         <div className="flex items-center gap-2">
-          <button onClick={() => setEditingPopup(null)} className="text-xs text-wood-500 hover:text-wood-700 transition-colors">Pop-ups</button>
+          <button onClick={() => setEditingPage(null)} className="text-xs text-wood-500 hover:text-wood-700">Páginas</button>
           <ChevronRight size={12} className="text-wood-300" />
-          <span className="text-xs font-medium text-wood-900">Editar pop-up</span>
+          <span className="text-xs font-medium text-wood-900">{editingPage.title}</span>
         </div>
 
-        <Card className="p-5 space-y-4">
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Nombre</label>
-            <input defaultValue="Bienvenida + 10% descuento" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-2">Tipo</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {['Modal centrado', 'Banner inferior', 'Slide-in lateral', 'Barra top'].map((t, i) => (
-                <label key={t} className={'flex items-center gap-2 p-3 rounded-lg border text-xs cursor-pointer transition-colors ' + (i === 0 ? 'border-accent-gold bg-accent-gold/5 text-accent-gold' : 'border-wood-100 text-wood-600 hover:border-wood-200')}>
-                  <input type="radio" name="popup-type" defaultChecked={i === 0} className="text-accent-gold" />
-                  {t}
-                </label>
-              ))}
+        {/* Page Info */}
+        <Card className="p-5">
+          <STitle>Información de la Página</STitle>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Título</label>
+              <input value={editingPage.title} onChange={e => setEditingPage((p: any) => ({ ...p, title: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" /></div>
+            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">URL</label>
+              <div className="flex items-center"><span className="text-[10px] text-wood-400 mr-1">davidsonsdesign.com</span>
+                <input value={editingPage.slug} onChange={e => setEditingPage((p: any) => ({ ...p, slug: e.target.value }))} className="flex-1 border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white font-mono" /></div></div>
+            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Plantilla</label>
+              <select value={editingPage.template} onChange={e => setEditingPage((p: any) => ({ ...p, template: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+                {TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+              </select>
+              <p className="text-[9px] text-wood-400 mt-1">{TEMPLATES.find(t => t.id === editingPage.template)?.description}</p>
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Última actualización</label>
+              <input value={editingPage.last_updated || ''} onChange={e => setEditingPage((p: any) => ({ ...p, last_updated: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" placeholder="12 de Febrero, 2026" /></div>
+            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Estado</label>
+              <select value={editingPage.status} onChange={e => setEditingPage((p: any) => ({ ...p, status: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+                <option value="published">Publicada</option><option value="draft">Borrador</option>
+              </select></div>
+          </div>
+        </Card>
 
-          <STitle>Contenido</STitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Titulo</label>
-              <input defaultValue="Bienvenido a DavidSon's Design!" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
+        {/* Template-specific editor */}
+        {isLegal && (
+          <Card className="p-5">
+            <div className="flex items-center justify-between mb-4">
+              <STitle>Secciones ({sections.length})</STitle>
+              <button onClick={() => { setSectionForm({ id: '', label: '', content: '' }); setEditingSection(sections.length); }} className="text-xs text-accent-gold hover:underline flex items-center gap-1"><Plus size={12} /> Agregar Sección</button>
             </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Texto</label>
-              <input defaultValue="Obten 10% de descuento en tu primera compra" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Codigo cupon</label>
-              <input defaultValue="BIENVENIDO10" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white font-mono" />
-            </div>
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Boton CTA</label>
-              <input defaultValue="Obtener descuento" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            {['Incluir campo de email', 'Mostrar codigo', 'Boton copiar', 'Mostrar "No gracias"'].map((opt) => (
-              <label key={opt} className="flex items-center gap-2 text-xs text-wood-600">
-                <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
-                {opt}
-              </label>
-            ))}
-          </div>
-        </Card>
+            {sections.length === 0 ? (
+              <div className="text-center py-8"><FileText className="w-8 h-8 text-wood-200 mx-auto mb-2" /><p className="text-sm text-wood-400">Sin secciones. Agrega la primera.</p></div>
+            ) : (
+              <div className="space-y-2">
+                {sections.map((sec: any, idx: number) => (
+                  <div key={sec.id || idx} className="flex items-center gap-2 p-3 bg-sand-50 rounded-lg group hover:bg-sand-100 transition-colors">
+                    <div className="flex flex-col gap-0.5">
+                      <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronDown size={10} className="rotate-180" /></button>
+                      <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronDown size={10} /></button>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-wood-900">{sec.label}</p>
+                      <p className="text-[10px] text-wood-400 truncate">{(sec.content || '').substring(0, 80)}...</p>
+                    </div>
+                    <code className="text-[9px] text-wood-300 font-mono hidden sm:block">#{sec.id}</code>
+                    <button onClick={() => { setSectionForm({ id: sec.id, label: sec.label, content: sec.content || '' }); setEditingSection(idx); }} className="p-1.5 text-wood-400 hover:text-accent-gold hover:bg-white rounded-lg opacity-0 group-hover:opacity-100 transition-all" title="Editar"><Edit3 size={14} /></button>
+                    <button onClick={() => setShowDeleteModal({ page: editingPage, sectionIdx: idx })} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all" title="Eliminar"><Trash2 size={14} /></button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        )}
 
-        <Card className="p-5 space-y-4">
-          <STitle>Trigger (cuando aparece)</STitle>
-          <div className="space-y-1.5">
-            {[
-              'Primera visita al sitio',
-              'Despues de X segundos',
-              'Al hacer scroll 50%',
-              'Intento de salir (exit intent)',
-              'Al agregar al carrito',
-              'Cuando el carrito supera $X',
-            ].map((t, i) => (
-              <label key={t} className="flex items-center gap-2 text-xs text-wood-600">
-                <input type="radio" name="popup-trigger" defaultChecked={i === 0} className="text-accent-gold" />
-                {t}
-              </label>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="p-5 space-y-4">
-          <STitle>Frecuencia</STitle>
-          <div className="space-y-1.5">
-            {['1 vez por visitante', 'Cada X dias', 'Siempre'].map((f, i) => (
-              <label key={f} className="flex items-center gap-2 text-xs text-wood-600">
-                <input type="radio" name="popup-freq" defaultChecked={i === 0} className="text-accent-gold" />
-                {f}
-              </label>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="p-5 space-y-4">
-          <STitle>Mostrar en</STitle>
-          <div className="space-y-1.5">
-            {['Todas las paginas', 'Solo homepage', 'Solo producto', 'Solo checkout', 'Paginas especificas'].map((p, i) => (
-              <label key={p} className="flex items-center gap-2 text-xs text-wood-600">
-                <input type="radio" name="popup-pages" defaultChecked={i === 0} className="text-accent-gold" />
-                {p}
-              </label>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="p-5 space-y-4">
-          <STitle>Segmentacion</STitle>
-          <div className="space-y-1.5">
-            {['Todos los visitantes', 'Solo visitantes nuevos (sin cuenta)', 'Solo clientes registrados', 'Solo tier especifico'].map((s, i) => (
-              <label key={s} className="flex items-center gap-2 text-xs text-wood-600">
-                <input type="radio" name="popup-segment" defaultChecked={i === 0} className="text-accent-gold" />
-                {s}
-              </label>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="p-5 space-y-4">
-          <STitle>Programacion</STitle>
-          <div className="space-y-1.5">
-            <label className="flex items-center gap-2 text-xs text-wood-600">
-              <input type="radio" name="popup-schedule" defaultChecked className="text-accent-gold" />
-              Activo inmediatamente
-            </label>
-            <label className="flex items-center gap-2 text-xs text-wood-600">
-              <input type="radio" name="popup-schedule" className="text-accent-gold" />
-              Desde / hasta fecha
-            </label>
-          </div>
-        </Card>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 text-[10px] text-wood-400">
-            Preview:
-            <button className="p-1 rounded hover:bg-wood-50"><Monitor size={14} /></button>
-            <button className="p-1 rounded hover:bg-wood-50"><Smartphone size={14} /></button>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <button onClick={() => { toast.success('Pop-up guardado'); setEditingPopup(null); }} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors">
-              Guardar
-            </button>
-            <button onClick={() => { toast.success('Pop-up activado'); setEditingPopup(null); }} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors">
-              Activar
-            </button>
-          </div>
+        {/* Save bar */}
+        <div className="flex items-center gap-3 sticky bottom-4 bg-white border border-wood-200 rounded-xl p-3 shadow-lg z-50">
+          <button onClick={() => setEditingPage(null)} className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
+          <div className="flex-1" />
+          <a href={editingPage.slug} target="_blank" rel="noopener noreferrer" className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50 flex items-center gap-1"><Eye size={12} /> Ver página</a>
+          <button onClick={() => handleSavePage(editingPage)} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Save size={12} /> Guardar</button>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
-          <h4 className="text-sm font-medium text-wood-900">Pop-ups y Avisos</h4>
-          <button onClick={() => toast.success('Creando nuevo pop-up...')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
-            <Plus size={12} /> Nuevo Pop-up
-          </button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
-                <th className="px-5 py-2">Pop-up</th>
-                <th className="px-5 py-2">Trigger</th>
-                <th className="px-5 py-2 text-right">Vistas</th>
-                <th className="px-5 py-2 text-right">Conv.</th>
-                <th className="px-5 py-2">Estado</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-wood-50">
-              {mockPopups.map((p) => (
-                <tr key={p.id} className="hover:bg-sand-50/50 transition-colors">
-                  <td className="px-5 py-2.5">
-                    <button onClick={() => setEditingPopup(p.id)} className="text-xs font-medium text-wood-900 hover:text-accent-gold transition-colors">
-                      {p.name}
-                    </button>
-                  </td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500">{p.trigger}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-600 font-mono text-right">{p.views > 0 ? p.views.toLocaleString() : '-'}</td>
-                  <td className="px-5 py-2.5 text-xs text-right">
-                    {p.conv > 0 ? (
-                      <span className={'px-1.5 py-0.5 rounded-full ' + (p.conv >= 8 ? 'bg-green-50 text-green-600' : p.conv >= 4 ? 'bg-amber-50 text-amber-600' : 'bg-wood-50 text-wood-500')}>
-                        {p.conv}%
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td className="px-5 py-2.5">
-                    <Badge
-                      text={p.status === 'active' ? 'Activo' : p.status === 'paused' ? 'Pausado' : 'Programado'}
-                      variant={p.status === 'active' ? 'green' : p.status === 'paused' ? 'gray' : 'amber'}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-    </div>
-  );
-}
-
-// ===== TAB 6: MEDIA =====
-function MediaTab() {
-  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [filterType, setFilterType] = useState('all');
-  const selected = mockMedia.find((m) => m.id === selectedMedia);
-
-  const folders = ['Productos', 'Blog', 'Banners', 'Paginas', 'Branding', 'Documentos'];
-  const filteredMedia = filterType === 'all' ? mockMedia : mockMedia.filter((m) => m.type === filterType);
+  // ── Pages List ──
+  const editablePages = pages.filter(p => p.is_editable);
+  const systemPages = pages.filter(p => !p.is_editable);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
-            <option value="all">Todos</option>
-            <option value="image">Imagenes</option>
-            <option value="video">Videos</option>
-            <option value="document">Documentos</option>
-          </select>
-          <div className="flex items-center border border-wood-200 rounded-lg overflow-hidden">
-            <button onClick={() => setViewMode('grid')} className={'px-2 py-1.5 text-xs ' + (viewMode === 'grid' ? 'bg-accent-gold text-white' : 'text-wood-500 hover:bg-wood-50')}>Grid</button>
-            <button onClick={() => setViewMode('list')} className={'px-2 py-1.5 text-xs ' + (viewMode === 'list' ? 'bg-accent-gold text-white' : 'text-wood-500 hover:bg-wood-50')}>Lista</button>
+      {loading ? <Card className="p-12 text-center text-wood-400">Cargando páginas...</Card> : (
+        <>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-wood-500">{pages.length} páginas ({editablePages.length} editables)</p>
           </div>
-        </div>
-        <button onClick={() => toast.success('Subiendo archivos...')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
-          <Upload size={12} /> Subir archivos
-        </button>
-      </div>
 
-      {/* Folders */}
-      <div className="flex flex-wrap gap-2">
-        {folders.map((f) => (
-          <button key={f} className="flex items-center gap-1.5 px-3 py-1.5 bg-sand-50 rounded-lg text-xs text-wood-600 hover:bg-sand-100 transition-colors border border-wood-100">
-            <FolderOpen size={12} className="text-accent-gold" /> {f}
-          </button>
-        ))}
-        <button className="flex items-center gap-1 px-3 py-1.5 text-xs text-accent-gold hover:underline">
-          <Plus size={12} /> Carpeta
-        </button>
-      </div>
-
-      <div className="flex gap-6">
-        {/* Grid/List */}
-        <div className="flex-1">
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {filteredMedia.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => setSelectedMedia(m.id)}
-                  className={'p-3 rounded-xl border text-left transition-colors ' + (selectedMedia === m.id ? 'border-accent-gold bg-accent-gold/5' : 'border-wood-100 bg-white hover:border-wood-200')}
-                >
-                  <div className="aspect-square bg-sand-50 rounded-lg mb-2 flex items-center justify-center">
-                    {m.type === 'image' ? (
-                      <ImageIcon size={24} className="text-wood-300" />
-                    ) : m.type === 'video' ? (
-                      <Video size={24} className="text-wood-300" />
-                    ) : (
-                      <FileText size={24} className="text-wood-300" />
-                    )}
-                  </div>
-                  <p className="text-[10px] font-medium text-wood-900 truncate">{m.name}</p>
-                  <p className="text-[10px] text-wood-400">{m.size}</p>
-                  <p className="text-[10px] text-wood-300">{m.dims}</p>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <Card className="overflow-hidden">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
-                    <th className="px-4 py-2">Archivo</th>
-                    <th className="px-4 py-2">Carpeta</th>
-                    <th className="px-4 py-2 text-right">Tamano</th>
-                    <th className="px-4 py-2">Dims</th>
-                    <th className="px-4 py-2">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-wood-50">
-                  {filteredMedia.map((m) => (
-                    <tr key={m.id} onClick={() => setSelectedMedia(m.id)} className={'hover:bg-sand-50/50 transition-colors cursor-pointer ' + (selectedMedia === m.id ? 'bg-accent-gold/5' : '')}>
-                      <td className="px-4 py-2.5 text-xs font-medium text-wood-900">{m.name}</td>
-                      <td className="px-4 py-2.5 text-xs text-wood-500">{m.folder}</td>
-                      <td className="px-4 py-2.5 text-xs text-wood-500 text-right">{m.size}</td>
-                      <td className="px-4 py-2.5 text-xs text-wood-500">{m.dims}</td>
-                      <td className="px-4 py-2.5 text-xs text-wood-500">{m.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </Card>
-          )}
-        </div>
-
-        {/* Detail panel */}
-        {selected && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="w-72 shrink-0 hidden lg:block"
-          >
-            <Card className="p-4 space-y-3 sticky top-4">
-              <div className="aspect-square bg-sand-50 rounded-lg flex items-center justify-center">
-                {selected.type === 'image' ? <ImageIcon size={40} className="text-wood-300" /> : selected.type === 'video' ? <Video size={40} className="text-wood-300" /> : <FileText size={40} className="text-wood-300" />}
+          {/* Editable pages */}
+          <Card className="overflow-hidden">
+            <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas Editables</p></div>
+            {editablePages.map(p => (
+              <div key={p.id} className="flex items-center gap-3 px-5 py-3 border-b border-wood-50 hover:bg-sand-50/30 transition-colors cursor-pointer" onClick={() => setEditingPage({ ...p })}>
+                <FileText size={14} className="text-wood-300 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-wood-900">{p.title}</p>
+                  <p className="text-[10px] text-wood-400 font-mono">{p.slug}</p>
+                </div>
+                <Badge text={TEMPLATES.find(t => t.id === p.template)?.label || p.template} variant="blue" />
+                <Badge text={p.status === 'published' ? 'Publicada' : 'Borrador'} variant={p.status === 'published' ? 'green' : 'amber'} />
+                <span className="text-[10px] text-wood-400 hidden sm:block">{p.last_updated}</span>
+                <ChevronRight size={14} className="text-wood-300" />
               </div>
-              <div>
-                <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-0.5">Nombre</label>
-                <input defaultValue={selected.name} className="w-full border border-wood-200 rounded px-2 py-1 text-xs bg-white" />
-              </div>
-              <div>
-                <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-0.5">Alt text</label>
-                <input className="w-full border border-wood-200 rounded px-2 py-1 text-xs bg-white" placeholder="Descripcion para accesibilidad" />
-              </div>
-              <div className="text-[10px] text-wood-500 space-y-0.5">
-                <p>Dimensiones: {selected.dims}</p>
-                <p>Tamano: {selected.size}</p>
-                <p>Subido: {selected.date}</p>
-                <p>Carpeta: {selected.folder}</p>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                <button onClick={() => toast.success('URL copiada')} className="px-2 py-1 text-[10px] border border-wood-200 rounded hover:bg-wood-50 transition-colors flex items-center gap-1">
-                  <Copy size={10} /> Copiar URL
-                </button>
-                <button className="px-2 py-1 text-[10px] border border-wood-200 rounded hover:bg-wood-50 transition-colors flex items-center gap-1">
-                  <Download size={10} /> Descargar
-                </button>
-                <button className="px-2 py-1 text-[10px] border border-red-200 text-red-500 rounded hover:bg-red-50 transition-colors flex items-center gap-1">
-                  <Trash2 size={10} /> Eliminar
-                </button>
-              </div>
-            </Card>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Storage bar */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between text-xs text-wood-600 mb-2">
-          <span>Almacenamiento</span>
-          <span>142 MB / 1 GB usado</span>
-        </div>
-        <div className="w-full bg-wood-50 rounded-full h-2.5">
-          <div className="bg-accent-gold h-2.5 rounded-full" style={{ width: '14.2%' }} />
-        </div>
-        <p className="text-[10px] text-wood-400 mt-1">14.2% utilizado</p>
-      </Card>
-    </div>
-  );
-}
-
-// ===== TAB 7: TEXTS =====
-function TextsTab() {
-  const [searchText, setSearchText] = useState('');
-  const filtered = mockTexts.filter((t) =>
-    t.key.toLowerCase().includes(searchText.toLowerCase()) ||
-    t.value.toLowerCase().includes(searchText.toLowerCase()) ||
-    t.section.toLowerCase().includes(searchText.toLowerCase())
-  );
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-wood-600">Idioma:</label>
-          <select className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
-            <option>Espanol (MX)</option>
-            <option>English (US)</option>
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => toast.success('Exportando JSON...')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
-            <Download size={12} /> Exportar JSON
-          </button>
-          <button onClick={() => toast.success('Importar JSON...')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
-            <Upload size={12} /> Importar JSON
-          </button>
-        </div>
-      </div>
-
-      <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-wood-400" />
-        <input
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          className="w-full border border-wood-200 rounded-lg pl-9 pr-3 py-2 text-xs bg-white"
-          placeholder="Buscar texto..."
-        />
-      </div>
-
-      <Card className="overflow-hidden">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
-              <th className="px-5 py-2 w-24">Seccion</th>
-              <th className="px-5 py-2 w-56">Clave</th>
-              <th className="px-5 py-2">Texto actual</th>
-              <th className="px-5 py-2 w-16 text-right">Acc.</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-wood-50">
-            {filtered.map((t) => (
-              <tr key={t.key} className="hover:bg-sand-50/50 transition-colors group">
-                <td className="px-5 py-2.5"><Badge text={t.section} variant="blue" /></td>
-                <td className="px-5 py-2.5 text-xs text-wood-500 font-mono">{t.key}</td>
-                <td className="px-5 py-2.5">
-                  <input
-                    defaultValue={t.value}
-                    className="w-full bg-transparent text-xs text-wood-900 border border-transparent hover:border-wood-200 focus:border-accent-gold rounded px-2 py-1 transition-colors outline-none"
-                  />
-                </td>
-                <td className="px-5 py-2.5 text-right">
-                  <button className="p-1 rounded hover:bg-wood-50 text-wood-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Edit3 size={12} />
-                  </button>
-                </td>
-              </tr>
             ))}
-          </tbody>
-        </table>
-      </Card>
+          </Card>
 
-      <div className="flex items-center gap-2">
-        <button onClick={() => toast.success('Texto nuevo agregado')} className="px-3 py-1.5 text-xs text-accent-gold border border-accent-gold/30 rounded-lg hover:bg-accent-gold/5 transition-colors flex items-center gap-1">
-          <Plus size={12} /> Agregar texto nuevo
-        </button>
-        <p className="text-[10px] text-wood-400 ml-2">Cada tenant podra personalizar estos textos para su marca.</p>
-      </div>
+          {/* System pages (read-only) */}
+          <Card className="overflow-hidden">
+            <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas del Sistema (no editables desde CMS)</p></div>
+            {systemPages.map(p => (
+              <div key={p.id} className="flex items-center gap-3 px-5 py-3 border-b border-wood-50">
+                <Settings2 size={14} className="text-wood-300 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-wood-600">{p.title}</p>
+                  <p className="text-[10px] text-wood-300 font-mono">{p.slug}</p>
+                </div>
+                <Badge text={p.template} variant="gray" />
+              </div>
+            ))}
+          </Card>
+        </>
+      )}
     </div>
   );
 }
-
-// ===== TAB 8: SEO GLOBAL =====
-function SeoTab() {
-  return (
-    <div className="space-y-6">
-      {/* Meta defaults */}
-      <Card className="p-5">
-        <STitle>Meta por defecto</STitle>
-        <div className="space-y-3">
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Titulo del sitio</label>
-            <input defaultValue="DavidSon's Design - Muebles Artesanales de Madera" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Separador de titulo</label>
-              <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                <option>|</option>
-                <option>-</option>
-                <option>&mdash;</option>
-                <option>&bull;</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Meta descripcion por defecto</label>
-            <textarea className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white h-16 resize-none" defaultValue="Taller artesanal en Hermosillo, Sonora. Creamos tablas de cortar, tablas para charcuteria y piezas decorativas en maderas mexicanas premium." />
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Imagen OG por defecto</label>
-            <button className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
-              <Upload size={12} /> Subir imagen
-            </button>
-          </div>
-        </div>
-      </Card>
-
-      {/* Social */}
-      <Card className="p-5">
-        <STitle>Redes sociales</STitle>
-        <div className="space-y-3">
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Facebook URL</label>
-            <input defaultValue="https://facebook.com/davidsonsdesign" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Instagram URL</label>
-            <input defaultValue="https://instagram.com/davidsonsdesign" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Twitter/X handle</label>
-            <input defaultValue="@davidsonsdesign" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-        </div>
-      </Card>
-
-      {/* Verification */}
-      <Card className="p-5">
-        <STitle>Verificacion</STitle>
-        <div className="space-y-3">
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Google Search Console</label>
-            <input placeholder="Meta tag o archivo de verificacion" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Bing Webmaster</label>
-            <input placeholder="Codigo de verificacion" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-        </div>
-      </Card>
-
-      {/* Schema */}
-      <Card className="p-5">
-        <STitle>Schema / Datos Estructurados</STitle>
-        <div className="space-y-2 mb-4">
-          {[
-            'Generar Schema de Organizacion (LocalBusiness)',
-            'Generar Schema de Producto en paginas de producto',
-            'Generar Schema de Review (aggregate rating)',
-            'Generar Schema de Breadcrumbs',
-            'Generar Schema de FAQ en pagina FAQ',
-          ].map((opt) => (
-            <label key={opt} className="flex items-center gap-2 text-xs text-wood-700">
-              <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
-              {opt}
-            </label>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Nombre negocio</label>
-            <input defaultValue="DavidSon's Design" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Direccion</label>
-            <input defaultValue="Hermosillo, Sonora, Mexico" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Telefono</label>
-            <input defaultValue="662-361-0742" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Email</label>
-            <input defaultValue="contacto@davidsonsdesign.com" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" />
-          </div>
-        </div>
-      </Card>
-
-      {/* Sitemap & Robots */}
-      <Card className="p-5">
-        <STitle>Sitemap y Robots</STitle>
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
-            Generar sitemap.xml automaticamente
-          </label>
-          <div>
-            <p className="text-[10px] text-wood-400 uppercase tracking-wider mb-1">Sitemap incluye:</p>
-            <div className="flex flex-wrap gap-3">
-              {['Paginas', 'Productos', 'Categorias', 'Blog', 'Media'].map((s, i) => (
-                <label key={s} className="flex items-center gap-1.5 text-xs text-wood-600">
-                  <input type="checkbox" defaultChecked={i < 4} className="rounded border-wood-300 text-accent-gold" />
-                  {s}
-                </label>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">robots.txt personalizado</label>
-            <textarea
-              className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white h-20 font-mono resize-none"
-              defaultValue={'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /checkout\nSitemap: https://davidsonsdesign.com/sitemap.xml'}
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* Redirects */}
-      <Card className="p-5">
-        <STitle>Redirecciones</STitle>
-        <div className="space-y-2 mb-3">
-          {mockRedirects.map((r, i) => (
-            <div key={i} className="flex items-center gap-3 p-2.5 bg-sand-50 rounded-lg text-xs">
-              <span className="font-mono text-wood-600 flex-1">{r.from}</span>
-              <ChevronRight size={12} className="text-wood-300" />
-              <span className="font-mono text-wood-900 flex-1">{r.to}</span>
-              <Badge text={r.type} variant="blue" />
-              <button className="p-1 rounded hover:bg-red-50 text-red-400"><X size={12} /></button>
-            </div>
-          ))}
-        </div>
-        <button onClick={() => toast.success('Redireccion agregada')} className="text-xs text-accent-gold hover:underline flex items-center gap-1">
-          <Plus size={12} /> Agregar redireccion
-        </button>
-      </Card>
-
-      <button
-        onClick={() => toast.success('Configuracion SEO guardada')}
-        className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5"
-      >
-        <Save size={12} /> Guardar configuracion SEO
-      </button>
-    </div>
-  );
-}
-
-// ===== MAIN COMPONENT =====
-// ===== LIVE MENUS TAB (Supabase cms_menus) =====
 function MenusTabLive() {
   const [menus, setMenus] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editModal, setEditModal] = useState<{ group: string; idx: number; item: any } | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{ group: string; idx: number; item: any } | null>(null);
 
   useEffect(() => {
-    fetch('/api/admin/cms?type=menus')
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.menus) setMenus(d.menus); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    fetch('/api/admin/cms?type=menus').then(r => r.ok ? r.json() : null).then(d => { if (d?.menus) setMenus(d.menus); }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const groups = [
     { key: 'header', label: 'Menú Principal (Header)' },
-    { key: 'footerShop', label: 'Footer — Tienda' },
-    { key: 'footerInfo', label: 'Footer — Información' },
+    { key: 'footerBrand', label: 'Footer — Marca' },
+    { key: 'footerService', label: 'Footer — Servicio al Cliente' },
     { key: 'footerLegal', label: 'Footer — Legal' },
+    { key: 'footerPrivacy', label: 'Footer — Privacidad' },
   ];
 
   const handleSave = async (group: string) => {
     setSaving(true);
     try {
-      const res = await fetch('/api/admin/cms', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'menus', group, items: menus[group] || [] }),
-      });
-      if (res.ok) toast.success('Menú guardado');
-      else toast.error('Error al guardar');
+      const res = await fetch('/api/admin/cms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'menus', group, items: menus[group] || [] }) });
+      if (res.ok) toast.success('Menú guardado'); else toast.error('Error al guardar');
     } catch { toast.error('Error de conexión'); }
     finally { setSaving(false); }
   };
 
   const addItem = (group: string) => {
-    setMenus(prev => ({
-      ...prev,
-      [group]: [...(prev[group] || []), { id: crypto.randomUUID(), label: 'Nuevo enlace', url: '/', is_visible: true }],
-    }));
+    const newItem = { id: crypto.randomUUID(), label: 'Nuevo enlace', url: '/', is_visible: true, open_new_tab: false };
+    setMenus(prev => ({ ...prev, [group]: [...(prev[group] || []), newItem] }));
+    setEditModal({ group, idx: (menus[group] || []).length, item: newItem });
   };
 
-  const removeItem = (group: string, idx: number) => {
-    setMenus(prev => ({
-      ...prev,
-      [group]: (prev[group] || []).filter((_, i) => i !== idx),
-    }));
+  const removeItem = () => {
+    if (!deleteModal) return;
+    setMenus(prev => ({ ...prev, [deleteModal.group]: (prev[deleteModal.group] || []).filter((_, i) => i !== deleteModal.idx) }));
+    setDeleteModal(null);
   };
 
-  const updateItem = (group: string, idx: number, field: string, value: string | boolean) => {
-    setMenus(prev => ({
-      ...prev,
-      [group]: (prev[group] || []).map((item, i) => i === idx ? { ...item, [field]: value } : item),
-    }));
+  const updateItem = (group: string, idx: number, updates: Record<string, any>) => {
+    setMenus(prev => ({ ...prev, [group]: (prev[group] || []).map((item, i) => i === idx ? { ...item, ...updates } : item) }));
+  };
+
+  const toggleVisibility = (group: string, idx: number) => {
+    setMenus(prev => ({ ...prev, [group]: (prev[group] || []).map((item, i) => i === idx ? { ...item, is_visible: !item.is_visible } : item) }));
+  };
+
+  const saveEditModal = () => {
+    if (!editModal) return;
+    updateItem(editModal.group, editModal.idx, editModal.item);
+    setEditModal(null);
   };
 
   if (loading) return <Card className="p-12 text-center text-wood-400">Cargando menús...</Card>;
 
   return (
     <div className="space-y-6">
+      {/* Edit Modal */}
+      {editModal && (
+        <>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setEditModal(null)} />
+          <div className="fixed inset-0 m-auto w-full max-w-md h-fit bg-white rounded-2xl shadow-2xl z-[201] overflow-hidden">
+            <div className="px-6 py-4 border-b border-wood-100 flex items-center justify-between">
+              <h4 className="font-serif text-lg text-wood-900">Editar Enlace</h4>
+              <button onClick={() => setEditModal(null)} className="p-1.5 hover:bg-wood-100 rounded-lg"><X size={16} /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Texto del enlace</label>
+                <input value={editModal.item.label} onChange={e => setEditModal(m => m ? { ...m, item: { ...m.item, label: e.target.value } } : null)} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm" placeholder="Ej: Sobre Nosotros" /></div>
+              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">URL destino</label>
+                <input value={editModal.item.url} onChange={e => setEditModal(m => m ? { ...m, item: { ...m.item, url: e.target.value } } : null)} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm font-mono" placeholder="/about" /></div>
+              <div className="flex items-center justify-between p-3 bg-sand-50 rounded-lg">
+                <div><p className="text-xs font-medium text-wood-900">Visible</p><p className="text-[10px] text-wood-400">Mostrar en el menú</p></div>
+                <button onClick={() => setEditModal(m => m ? { ...m, item: { ...m.item, is_visible: !m.item.is_visible } } : null)} className={"w-9 h-5 rounded-full transition-colors" + (editModal.item.is_visible ? "bg-green-500" : "bg-wood-200")}>
+                  <div className={"w-4 h-4 bg-white rounded-full shadow transition-transform" + (editModal.item.is_visible ? "translate-x-4" : "translate-x-0.5")} /></button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-sand-50 rounded-lg">
+                <div><p className="text-xs font-medium text-wood-900">Abrir en nueva pestaña</p></div>
+                <button onClick={() => setEditModal(m => m ? { ...m, item: { ...m.item, open_new_tab: !m.item.open_new_tab } } : null)} className={"w-9 h-5 rounded-full transition-colors" + (editModal.item.open_new_tab ? "bg-green-500" : "bg-wood-200")}>
+                  <div className={"w-4 h-4 bg-white rounded-full shadow transition-transform" + (editModal.item.open_new_tab ? "translate-x-4" : "translate-x-0.5")} /></button>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-wood-100 flex justify-end gap-2">
+              <button onClick={() => setEditModal(null)} className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
+              <button onClick={saveEditModal} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Save size={12} /> Guardar</button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Delete Modal */}
+      {deleteModal && (
+        <>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setDeleteModal(null)} />
+          <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-white rounded-2xl shadow-2xl z-[201] p-6">
+            <h4 className="font-serif text-lg text-wood-900 mb-3">Eliminar Enlace</h4>
+            <p className="text-sm text-wood-600 mb-1">¿Eliminar <strong>"{deleteModal.item.label}"</strong> del menú?</p>
+            <p className="text-xs text-wood-400 mb-6">Recuerda guardar el menú para aplicar el cambio.</p>
+            <div className="flex gap-2">
+              <button onClick={() => setDeleteModal(null)} className="flex-1 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
+              <button onClick={removeItem} className="flex-1 py-2 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700">Eliminar</button>
+            </div>
+          </div>
+        </>
+      )}
+
       {groups.map(g => (
         <Card key={g.key} className="p-5">
           <STitle>{g.label}</STitle>
           <div className="space-y-2">
             {(menus[g.key] || []).map((item, idx) => (
-              <div key={item.id || idx} className="flex items-center gap-2 p-2.5 bg-sand-50 rounded-lg">
-                <GripVertical size={14} className="text-wood-300 shrink-0" />
-                <input
-                  value={item.label}
-                  onChange={e => updateItem(g.key, idx, 'label', e.target.value)}
-                  className="flex-1 text-xs font-medium text-wood-900 bg-transparent border-b border-transparent focus:border-wood-300 outline-none px-1"
-                />
-                <input
-                  value={item.url}
-                  onChange={e => updateItem(g.key, idx, 'url', e.target.value)}
-                  className="w-32 text-[10px] text-wood-400 font-mono bg-transparent border-b border-transparent focus:border-wood-300 outline-none px-1"
-                />
-                <button onClick={() => removeItem(g.key, idx)} className="p-1 rounded hover:bg-red-50 text-red-400"><X size={12} /></button>
+              <div key={item.id || idx} className={"flex items-center gap-2 p-2.5 rounded-lg transition-colors group" + (item.is_visible ? "bg-sand-50 hover:bg-sand-100" : "bg-wood-50 opacity-60")}>
+                <GripVertical size={14} className="text-wood-300 shrink-0 cursor-grab" />
+                <div className="flex-1 min-w-0">
+                  <p className={"text-xs font-medium" + (item.is_visible ? "text-wood-900" : "text-wood-400 line-through")}>{item.label}</p>
+                  <p className="text-[10px] text-wood-400 font-mono">{item.url}</p>
+                </div>
+                {!item.is_visible && <Badge text="Oculto" variant="gray" />}
+                <button onClick={() => toggleVisibility(g.key, idx)} className="p-1.5 rounded-lg hover:bg-wood-100 text-wood-400 transition-colors" title={item.is_visible ? 'Ocultar' : 'Mostrar'}>
+                  {item.is_visible ? <Eye size={13} /> : <EyeOff size={13} />}
+                </button>
+                <button onClick={() => setEditModal({ group: g.key, idx, item: { ...item } })} className="p-1.5 rounded-lg hover:bg-wood-100 text-wood-400 hover:text-accent-gold transition-colors" title="Editar">
+                  <Edit3 size={13} />
+                </button>
+                <button onClick={() => setDeleteModal({ group: g.key, idx, item })} className="p-1.5 rounded-lg hover:bg-red-50 text-wood-400 hover:text-red-600 transition-colors" title="Eliminar">
+                  <Trash2 size={13} />
+                </button>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-3 mt-3">
-            <button onClick={() => addItem(g.key)} className="text-xs text-accent-gold hover:underline flex items-center gap-1"><Plus size={12} /> Agregar</button>
-            <button onClick={() => handleSave(g.key)} disabled={saving} className="text-xs bg-wood-900 text-white px-3 py-1.5 rounded-lg hover:bg-wood-800 disabled:opacity-50 flex items-center gap-1"><Save size={12} /> Guardar</button>
+            <button onClick={() => addItem(g.key)} className="text-xs text-accent-gold hover:underline flex items-center gap-1"><Plus size={12} /> Agregar enlace</button>
+            <div className="flex-1" />
+            <button onClick={() => handleSave(g.key)} disabled={saving} className="text-xs bg-wood-900 text-white px-3 py-1.5 rounded-lg hover:bg-wood-800 disabled:opacity-50 flex items-center gap-1"><Save size={12} /> Guardar menú</button>
           </div>
         </Card>
       ))}
     </div>
   );
 }
-
-// ===== LIVE HOMEPAGE BUILDER TAB (Supabase cms_sections) =====
 function HomepageTabLive() {
   const [sections, setSections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1994,7 +929,7 @@ export const CmsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<CmsTab>('pages');
 
   const tabContent: Record<CmsTab, React.ReactNode> = {
-    pages: <PagesTab />,
+    pages: <PagesTabLive />,
     menus: <MenusTabLive />,
     homepage: <HomepageTabLive />,
     blog: <BlogTabLive />,

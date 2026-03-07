@@ -35,6 +35,13 @@ export async function GET(req: NextRequest) {
     }
 
     // ── Blog posts ──
+    // ── Pages (with templates) ──
+    if (type === "pages") {
+      const { data, error } = await supabase.from("cms_pages").select("*").order("slug", { ascending: true });
+      if (error) throw error;
+      return jsonOk({ pages: data || [], total: (data || []).length });
+    }
+
     if (type === "posts") {
       const { data, error } = await supabase.from("cms_posts").select("*").order("created_at", { ascending: false });
       if (error) throw error;
@@ -191,6 +198,16 @@ export async function PUT(req: NextRequest) {
       const { error } = await supabase.from("cms_sections").insert(toInsert);
       if (error) throw error;
       return jsonOk({ success: true, count: toInsert.length });
+    }
+
+    if (type === "page" && id) {
+      const updates: Record<string, any> = { updated_at: new Date().toISOString() };
+      for (const key of ["title", "slug", "template", "last_updated", "status", "sections", "seo_title", "seo_description", "is_editable", "page_type"]) {
+        if (body[key] !== undefined) updates[key] = body[key];
+      }
+      const { data, error } = await supabase.from("cms_pages").update(updates).eq("id", id).select().single();
+      if (error) throw error;
+      return jsonOk({ success: true, page: data });
     }
 
     if (type === "post" && id) {
