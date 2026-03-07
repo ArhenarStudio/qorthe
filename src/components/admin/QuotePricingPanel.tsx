@@ -24,6 +24,21 @@ const SECTIONS: { id: Section; label: string }[] = [
   { id: 'galeria', label: 'Galería' },
 ];
 
+
+// Inline delete confirmation (replaces browser confirm() dialogs)
+const InlineConfirm: React.FC<{ label: string; onConfirm: () => void; children: React.ReactNode }> = ({ label, onConfirm, children }) => {
+  const [confirming, setConfirming] = useState(false);
+  if (confirming) {
+    return (
+      <span className="inline-flex items-center gap-1">
+        <button onClick={() => { onConfirm(); setConfirming(false); }} className="px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded hover:bg-red-700 transition-colors">Sí, eliminar</button>
+        <button onClick={() => setConfirming(false)} className="px-2 py-0.5 bg-wood-200 text-wood-700 text-[10px] font-bold rounded hover:bg-wood-300 transition-colors">Cancelar</button>
+      </span>
+    );
+  }
+  return <span onClick={() => setConfirming(true)}>{children}</span>;
+};
+
 export const QuotePricingPanel: React.FC = () => {
   const { session } = useAuth();
   const [config, setConfig] = useState<FullQuoteConfig>(DEFAULT_FULL_CONFIG);
@@ -220,8 +235,7 @@ function ProductosSection({ config, onChange }: { config: FullQuoteConfig; onCha
   };
 
   const removeProduct = (cat: 'wood' | 'textile', idx: number) => {
-    if (!confirm('¿Eliminar este producto?')) return;
-    if (cat === 'wood') onChange({ woodProducts: config.woodProducts.filter((_, i) => i !== idx) });
+        if (cat === 'wood') onChange({ woodProducts: config.woodProducts.filter((_, i) => i !== idx) });
     else onChange({ textileProducts: config.textileProducts.filter((_, i) => i !== idx) });
   };
 
@@ -328,7 +342,7 @@ function MaderasSection({ config, onChange }: { config: FullQuoteConfig; onChang
                 const arr = [...config.woodOptions]; arr[i] = { ...w, priceM2: Number(e.target.value) }; onChange({ woodOptions: arr });
               }} className="w-20 px-2 py-1 text-right text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded focus:border-accent-gold outline-none" />
             </div>
-            <button onClick={() => { if (confirm(`¿Eliminar "${w.label}"?`)) onChange({ woodOptions: config.woodOptions.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ woodOptions: config.woodOptions.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors shrink-0"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -383,7 +397,7 @@ function TextilSection({ config, onChange }: { config: FullQuoteConfig; onChange
               className="w-6 h-6 rounded-full border-0 cursor-pointer shrink-0" />
             <input value={c.label} onChange={(e) => { const arr = [...config.textileColors]; arr[i] = { ...c, label: e.target.value }; onChange({ textileColors: arr }); }}
               className="flex-1 font-medium text-sm bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar "${c.label}"?`)) onChange({ textileColors: config.textileColors.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ textileColors: config.textileColors.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -412,7 +426,7 @@ function TextilSection({ config, onChange }: { config: FullQuoteConfig; onChange
             <input type="number" value={t.price} onChange={(e) => {
               const arr = [...config.textileTechniques]; arr[i] = { ...t, price: Number(e.target.value) }; onChange({ textileTechniques: arr });
             }} className="w-20 px-2 py-1 text-right text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar "${t.label}"?`)) onChange({ textileTechniques: config.textileTechniques.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ textileTechniques: config.textileTechniques.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -457,7 +471,7 @@ function GrabadoSection({ config, onChange }: { config: FullQuoteConfig; onChang
             <input type="number" value={e.price} onChange={(ev) => {
               const arr = [...config.engravingPrices]; arr[i] = { ...e, price: Number(ev.target.value) }; onChange({ engravingPrices: arr });
             }} className="w-20 px-2 py-1 text-right text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar nivel "${e.complexity}"?`)) onChange({ engravingPrices: config.engravingPrices.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ engravingPrices: config.engravingPrices.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -496,7 +510,7 @@ function GrabadoSection({ config, onChange }: { config: FullQuoteConfig; onChang
             }} />
             <input value={m.label} onChange={(e) => { const arr = [...config.engraveMaterials]; arr[i] = { ...m, label: e.target.value }; onChange({ engraveMaterials: arr }); }}
               className="flex-1 text-sm bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar "${m.label}"?`)) onChange({ engraveMaterials: config.engraveMaterials.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ engraveMaterials: config.engraveMaterials.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -536,7 +550,7 @@ function DisenoSection({ config, onChange }: { config: FullQuoteConfig; onChange
             }} />
             <input value={s.label} onChange={(e) => { const arr = [...config.boardShapes]; arr[i] = { ...s, label: e.target.value, value: e.target.value }; onChange({ boardShapes: arr }); }}
               className="flex-1 text-sm bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar "${s.label}"?`)) onChange({ boardShapes: config.boardShapes.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ boardShapes: config.boardShapes.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -568,7 +582,7 @@ function DisenoSection({ config, onChange }: { config: FullQuoteConfig; onChange
             <input type="number" value={ex.priceExtra} placeholder="0" onChange={(e) => {
               const arr = [...config.boardExtras]; arr[i] = { ...ex, priceExtra: Number(e.target.value) }; onChange({ boardExtras: arr });
             }} className="w-20 px-2 py-1 text-right text-sm bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 rounded focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar "${ex.label}"?`)) onChange({ boardExtras: config.boardExtras.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ boardExtras: config.boardExtras.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -595,7 +609,7 @@ function DisenoSection({ config, onChange }: { config: FullQuoteConfig; onChange
             }} />
             <input value={f.label} onChange={(e) => { const arr = [...config.boardFinishes]; arr[i] = { ...f, label: e.target.value }; onChange({ boardFinishes: arr }); }}
               className="flex-1 text-sm bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar "${f.label}"?`)) onChange({ boardFinishes: config.boardFinishes.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ boardFinishes: config.boardFinishes.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -686,8 +700,7 @@ function BundlesSection({ config, onChange }: { config: FullQuoteConfig; onChang
   };
 
   const handleDelete = (idx: number) => {
-    if (!confirm(`¿Eliminar paquete "${config.bundles[idx].name}"?`)) return;
-    onChange({ bundles: config.bundles.filter((_, i) => i !== idx) });
+        onChange({ bundles: config.bundles.filter((_, i) => i !== idx) });
   };
 
   const updateBundle = (idx: number, updates: Partial<FullQuoteConfig['bundles'][0]>) => {
@@ -920,7 +933,7 @@ function GaleriaSection({ config, onChange }: { config: FullQuoteConfig; onChang
             <input value={c.label} onChange={(e) => {
               const arr = [...categories]; arr[i] = { ...c, label: e.target.value }; onChange({ designCategories: arr });
             }} className="flex-1 text-sm bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none" />
-            <button onClick={() => { if (confirm(`¿Eliminar "${c.label}"?`)) onChange({ designCategories: categories.filter((_, j) => j !== i) }); }}
+            <button onClick={() => { onChange({ designCategories: categories.filter((_, j) => j !== i) }); }}
               className="p-1 text-wood-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         ))}
@@ -959,7 +972,7 @@ function GaleriaSection({ config, onChange }: { config: FullQuoteConfig; onChang
                   <span className="text-[10px] text-wood-400">{cat?.label || t.category} · {t.applicableTo.join(', ')}</span>
                 </button>
                 {isExpanded ? <ChevronUp className="w-4 h-4 text-wood-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-wood-400 shrink-0" />}
-                <button onClick={() => { if (confirm(`¿Eliminar "${t.name}"?`)) onChange({ designTemplates: templates.filter((_, j) => j !== i) }); }}
+                <button onClick={() => { onChange({ designTemplates: templates.filter((_, j) => j !== i) }); }}
                   className="p-1 text-wood-300 hover:text-red-500 transition-colors shrink-0"><Trash2 className="w-3.5 h-3.5" /></button>
               </div>
               {isExpanded && (
