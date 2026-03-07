@@ -133,6 +133,7 @@ function mapLiveOrder(o: any): Order {
     notes: [],
     communications: [],
     margin: { productCost: 0, shippingCost: 0, stripeCommission: 0, estimatedProfit: 0, marginPercent: 0 },
+    _raw: { medusa_id: o.id, display_id: o.display_id },
   };
 }
 
@@ -391,7 +392,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                   {moreMenuItems.map((item) => (
                     <button
                       key={item}
-                      onClick={() => { toast.info(item); setMoreMenuOpen(false); }}
+                      onClick={() => { toast.success(item + " — acción pendiente"); setMoreMenuOpen(false); }}
                       className={`w-full text-left px-4 py-2.5 text-xs hover:bg-sand-50 transition-colors ${item.includes('Cancelar') || item.includes('Reembolsar') ? 'text-red-500' : 'text-wood-600'}`}
                     >
                       {item}
@@ -805,13 +806,13 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
             {/* Refund buttons */}
             <div className="mt-4 pt-3 border-t border-wood-100 flex gap-2">
               <button
-                onClick={() => toast.info('Reembolso completo')}
+                onClick={() => { if (order._raw?.medusa_id) window.open(`https://urchin-app-u62qc.ondigitalocean.app/app/orders/${order._raw.medusa_id}`, '_blank'); else toast.error('ID de orden no disponible'); }}
                 className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-[10px] font-medium hover:bg-red-100 transition-colors"
               >
                 Reembolsar
               </button>
               <button
-                onClick={() => toast.info('Reembolso parcial')}
+                onClick={() => { if (order._raw?.medusa_id) window.open(`https://urchin-app-u62qc.ondigitalocean.app/app/orders/${order._raw.medusa_id}`, '_blank'); else toast.error('ID de orden no disponible'); }}
                 className="flex-1 px-3 py-2 bg-white border border-wood-200 text-wood-600 rounded-lg text-[10px] font-medium hover:bg-sand-50 transition-colors"
               >
                 Reembolso parcial
@@ -851,7 +852,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                     <Printer size={12} /> Imprimir Guía
                   </button>
                   <button
-                    onClick={() => toast.info('Abriendo rastreo...')}
+                    onClick={() => window.open(`/tracking/${order.number?.replace('#','').replace('DSD-','')}`, '_blank')}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-wood-200 rounded-lg text-[10px] text-wood-600 hover:bg-sand-50 transition-colors"
                   >
                     <ExternalLink size={12} /> Ver rastreo
@@ -864,7 +865,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                   {['DHL', 'Estafeta', 'FedEx'].map(c => (
                     <button
                       key={c}
-                      onClick={() => toast.info(`${c} seleccionado`)}
+                      onClick={() => { toast.success(`${c} seleccionado`); }}
                       className={`px-3 py-2 rounded-lg text-xs border transition-colors ${
                         order.carrier === c
                           ? 'border-accent-gold bg-amber-50 text-accent-gold font-medium'
@@ -905,9 +906,9 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
             <div className="space-y-1.5">
               {[
                 { icon: Mail, label: 'Notificar al cliente', action: () => setMessageModalOpen(true) },
-                { icon: Truck, label: 'Generar guía de envío', action: () => toast.info('Generar guía') },
+                { icon: Truck, label: 'Generar guía de envío', action: () => window.location.href = '/admin/shipping' },
                 { icon: Printer, label: 'Imprimir orden de producción', action: () => toast.success('Imprimiendo...') },
-                { icon: Camera, label: 'Adjuntar foto del producto', action: () => toast.info('Adjuntar foto') },
+                { icon: Camera, label: 'Adjuntar foto del producto', action: () => toast.info('Función disponible próximamente') },
                 { icon: Zap, label: 'Cambiar estado del pedido', action: () => setStatusDropdownOpen(true) },
                 { icon: MessageSquare, label: 'Agregar nota interna', action: () => document.querySelector<HTMLTextAreaElement>('textarea')?.focus() },
               ].map(item => (
@@ -922,7 +923,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               ))}
               <div className="pt-1.5 border-t border-wood-100 mt-1.5">
                 <button
-                  onClick={() => toast.info('Cancelar pedido')}
+                  onClick={() => { if (order._raw?.medusa_id) window.open(`https://urchin-app-u62qc.ondigitalocean.app/app/orders/${order._raw.medusa_id}`, '_blank'); else toast.error('Gestiona cancelaciones desde Medusa Admin'); }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors text-left"
                 >
                   <XIcon size={14} className="flex-shrink-0" /> Cancelar pedido

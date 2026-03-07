@@ -127,6 +127,7 @@ export interface Order {
   communications: OrderCommunication[];
   margin: OrderMargin;
   hasEngraving: boolean;
+  _raw?: { medusa_id: string; display_id: number };
 }
 
 export const orders: Order[] = [
