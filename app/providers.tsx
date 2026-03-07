@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import MetaPixel from "@/components/tracking/MetaPixel";
 import { CmsProvider } from "@/contexts/CmsContext";
+import { PopupRenderer } from "@/components/cms/PopupRenderer";
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -21,6 +22,7 @@ export default function ClientProviders({ children }: { children: React.ReactNod
               <MetaPixel />
             </Suspense>
             {children}
+            <PopupRenderer />
           </FeatureToggleProvider>
         </ThemeProvider>
         </WishlistProvider>

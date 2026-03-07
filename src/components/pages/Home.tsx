@@ -9,6 +9,7 @@ import { CuratedSelection } from '@/components/features/CuratedSelection';
 import { BrandValues } from '@/components/features/BrandValues';
 import { TestimonialsSection } from '@/components/features/TestimonialsSection';
 import { NewsletterAndCTA } from '@/components/features/NewsletterAndCTA';
+import { useCms, getCmsText } from '@/contexts/CmsContext';
 
 // --- DICTIONARY STUB ---
 const CONTENT = {
@@ -64,6 +65,17 @@ const fadeInUp = {
 
 export const Home = () => {
   const router = useRouter();
+  const { sections, texts } = useCms();
+
+  // CMS text helper with fallback to hardcoded CONTENT
+  const t = (key: string, fallback: string) => getCmsText(texts, key) || fallback;
+
+  // CMS section visibility — if sections loaded from DB, respect visibility; otherwise show all
+  const isSectionVisible = (type: string) => {
+    if (sections.length === 0) return true; // No CMS data = show all (fallback)
+    const sec = sections.find(s => s.type === type);
+    return sec ? true : false; // Only show sections that exist in cms_sections
+  };
 
   return (
     <div className="bg-sand-100 dark:bg-wood-950 text-wood-900 dark:text-sand-100 font-sans overflow-x-hidden transition-colors duration-300">
@@ -91,7 +103,7 @@ export const Home = () => {
             transition={{ delay: 0.5, duration: 1 }}
             className="text-6xl md:text-8xl lg:text-9xl font-serif text-sand-100 mb-6 font-['Playfair_Display'] tracking-tight"
           >
-            {CONTENT.hero.title_start} <span className="italic text-accent-gold">{CONTENT.hero.title_end}</span>
+            {t("hero.title_start", CONTENT.hero.title_start)} <span className="italic text-accent-gold">{t("hero.title_end", CONTENT.hero.title_end)}</span>
           </motion.h1>
           
           <motion.p 
@@ -100,7 +112,7 @@ export const Home = () => {
             transition={{ delay: 0.8, duration: 1 }}
             className="text-sand-100/80 text-xl md:text-2xl font-light max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            {CONTENT.hero.subtitle}
+            {t("hero.subtitle", CONTENT.hero.subtitle)}
           </motion.p>
           
           <motion.button 
@@ -110,7 +122,7 @@ export const Home = () => {
             transition={{ delay: 1 }}
             className="group relative inline-flex items-center gap-3 px-8 py-4 bg-transparent border border-sand-100 text-sand-100 text-sm tracking-[0.2em] uppercase hover:bg-sand-100 hover:text-wood-900 transition-all duration-500"
           >
-            {CONTENT.hero.cta}
+            {t("hero.cta", CONTENT.hero.cta)}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </motion.button>
         </div>
@@ -121,15 +133,16 @@ export const Home = () => {
           transition={{ delay: 2, duration: 1 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 text-sand-100/40 flex flex-col items-center gap-2"
         >
-          <span className="text-[10px] uppercase tracking-widest">{CONTENT.hero.scroll}</span>
+          <span className="text-[10px] uppercase tracking-widest">{t("hero.scroll", CONTENT.hero.scroll)}</span>
           <div className="w-px h-12 bg-gradient-to-b from-sand-100/40 to-transparent" />
         </motion.div>
       </section>
 
       {/* NEW: Curated Selection */}
-      <CuratedSelection />
+      {isSectionVisible('curated_selection') && <CuratedSelection />}
 
       {/* MATERIALS SECTION - Horizontal Scroll Cards */}
+      {isSectionVisible('materials') && (
       <section className="py-32 bg-sand-100 dark:bg-wood-950 relative transition-colors duration-300">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 mb-16">
           <motion.div 
@@ -140,10 +153,10 @@ export const Home = () => {
           >
             <div>
               <span className="text-wood-900/50 dark:text-sand-100/50 text-xs tracking-[0.2em] uppercase block mb-3">Colección Natural</span>
-              <h2 className="text-4xl md:text-5xl font-serif text-wood-900 dark:text-sand-100">{CONTENT.materials.title}</h2>
+              <h2 className="text-4xl md:text-5xl font-serif text-wood-900 dark:text-sand-100">{t("materials.title", CONTENT.materials.title)}</h2>
             </div>
             <p className="hidden md:block text-wood-900/60 dark:text-sand-100/60 max-w-xs text-right font-light">
-              {CONTENT.materials.desc}
+              {t("materials.desc", CONTENT.materials.desc)}
             </p>
           </motion.div>
 
@@ -176,8 +189,10 @@ export const Home = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* CUSTOMIZATION FEATURE - Dark Section (Kept Dark for Contrast) */}
+      {isSectionVisible('customization') && (
       <section className="py-32 bg-wood-900 dark:bg-black text-sand-100 relative overflow-hidden transition-colors duration-300">
         {/* Background Texture Pattern */}
         <div className="absolute inset-0 opacity-5" 
@@ -191,14 +206,14 @@ export const Home = () => {
               <span className="text-xs font-bold tracking-[0.2em] uppercase">Tecnología & Artesanía</span>
             </div>
             <h2 className="text-4xl md:text-6xl font-serif mb-8 leading-tight">
-              {CONTENT.customization.title} <br/>
-              <span className="text-sand-100/30 text-3xl md:text-4xl italic">{CONTENT.customization.subtitle}</span>
+              {t("customization.title", CONTENT.customization.title)} <br/>
+              <span className="text-sand-100/30 text-3xl md:text-4xl italic">{t("customization.subtitle", CONTENT.customization.subtitle)}</span>
             </h2>
             <p className="text-sand-100/70 text-lg leading-relaxed mb-10 font-light border-l border-accent-gold pl-6">
-              {CONTENT.customization.desc}
+              {t("customization.desc", CONTENT.customization.desc)}
             </p>
             <button onClick={() => router.push('/quote')} className="bg-accent-gold text-wood-900 px-8 py-4 font-bold tracking-widest uppercase hover:bg-white transition-colors duration-300 shadow-[0_0_20px_rgba(197,160,101,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-              {CONTENT.customization.cta}
+              {t("customization.cta", CONTENT.customization.cta)}
             </button>
           </motion.div>
 
@@ -232,15 +247,16 @@ export const Home = () => {
 
         </div>
       </section>
+      )}
 
       {/* NEW: Brand Values */}
-      <BrandValues />
+      {isSectionVisible('brand_values') && <BrandValues />}
 
       {/* NEW: Testimonials */}
-      <TestimonialsSection />
+      {isSectionVisible('testimonials') && <TestimonialsSection />}
 
       {/* NEW: Newsletter + CTA */}
-      <NewsletterAndCTA />
+      {isSectionVisible('newsletter_cta') && <NewsletterAndCTA />}
 
     </div>
   );
