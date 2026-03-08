@@ -22,6 +22,15 @@ import {
 } from 'recharts';
 import { toast } from 'sonner';
 
+// Shared UI components for live tabs
+const Card: React.FC<{ className?: string; children: React.ReactNode }> = ({ className = '', children }) => (
+  <div className={`bg-white rounded-xl border border-wood-100 shadow-sm ${className}`}>{children}</div>
+);
+const Badge: React.FC<{ text: string; variant?: string }> = ({ text, variant = 'gray' }) => {
+  const colors: Record<string, string> = { green: 'bg-green-50 text-green-700', amber: 'bg-amber-50 text-amber-700', blue: 'bg-blue-50 text-blue-700', gray: 'bg-wood-100 text-wood-500', red: 'bg-red-50 text-red-700' };
+  return <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${colors[variant] || colors.gray}`}>{text}</span>;
+};
+
 // ===== TYPES =====
 type TabId = 'cupones' | 'campanas' | 'banners' | 'flash' | 'referidos' | 'analisis';
 
@@ -489,6 +498,134 @@ const CampaignFormModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
 // ===== TAB: CUPONES =====
 // ── Coming Soon Placeholder for mock tabs ──
+
+// ═══ LIVE TABS: Campaigns, Banners, Flash Sales, Referrals ═══
+
+const CampaignsTabLive: React.FC = () => {
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const fetchData = () => { fetch('/api/admin/marketing/campaigns').then(r => r.ok ? r.json() : null).then(d => { if (d) setCampaigns(d.campaigns || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { fetchData(); }, []);
+  const handleCreate = async () => { const res = await fetch('/api/admin/marketing/campaigns', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Nueva campaña', subject: '' }) }); if (res.ok) { toast.success('Campaña creada'); fetchData(); } };
+  const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/campaigns?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Campaña eliminada'); fetchData(); } };
+  const handleToggle = async (c: any, status: string) => { await fetch('/api/admin/marketing/campaigns', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, status }) }); toast.success('Estado actualizado'); fetchData(); };
+  if (loading) return <Card className="p-8 text-center text-wood-400">Cargando campañas...</Card>;
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center"><p className="text-sm text-wood-500">{campaigns.length} campañas</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Plus size={12} /> Nueva Campaña</button></div>
+      {campaigns.length === 0 ? <Card className="p-12 text-center"><Mail className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin campañas creadas</p></Card> : (
+        <Card className="divide-y divide-wood-100">{campaigns.map(c => (
+          <div key={c.id} className="p-4 flex items-center justify-between hover:bg-wood-50/50 transition-colors">
+            <div className="min-w-0 flex-1"><p className="text-sm font-medium text-wood-900">{c.name}</p><p className="text-[10px] text-wood-400">{c.subject || 'Sin asunto'} · {c.segment} · {new Date(c.created_at).toLocaleDateString('es-MX')}</p></div>
+            <div className="flex items-center gap-2 ml-4">
+              <Badge text={c.status === 'sent' ? 'Enviada' : c.status === 'scheduled' ? 'Programada' : 'Borrador'} variant={c.status === 'sent' ? 'green' : c.status === 'scheduled' ? 'blue' : 'amber'} />
+              {c.status === 'draft' && <button onClick={() => handleToggle(c, 'scheduled')} className="text-[10px] text-accent-gold hover:underline">Programar</button>}
+              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+            </div>
+          </div>))}</Card>
+      )}
+    </div>
+  );
+};
+
+const BannersTabLive: React.FC = () => {
+  const [banners, setBanners] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const fetchData = () => { fetch('/api/admin/marketing/banners').then(r => r.ok ? r.json() : null).then(d => { if (d) setBanners(d.banners || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { fetchData(); }, []);
+  const handleCreate = async () => { const res = await fetch('/api/admin/marketing/banners', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Nuevo banner' }) }); if (res.ok) { toast.success('Banner creado'); fetchData(); } };
+  const handleToggle = async (b: any) => { await fetch('/api/admin/marketing/banners', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, is_active: !b.is_active }) }); toast.success(b.is_active ? 'Desactivado' : 'Activado'); fetchData(); };
+  const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/banners?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Banner eliminado'); fetchData(); } };
+  const LOCATIONS: Record<string, string> = { hero: 'Hero', announcement_bar: 'Barra de anuncio', category: 'Categoría', popup: 'Pop-up', footer: 'Footer' };
+  if (loading) return <Card className="p-8 text-center text-wood-400">Cargando banners...</Card>;
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center"><p className="text-sm text-wood-500">{banners.length} banners</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Plus size={12} /> Nuevo Banner</button></div>
+      {banners.length === 0 ? <Card className="p-12 text-center"><Image className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin banners creados</p></Card> : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{banners.map(b => (
+          <Card key={b.id} className="p-4">
+            <div className="flex items-start justify-between mb-3">
+              <div><p className="text-sm font-medium text-wood-900">{b.name}</p><p className="text-[10px] text-wood-400">{LOCATIONS[b.location] || b.location}</p></div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => handleToggle(b)} className={"w-9 h-5 rounded-full transition-colors " + (b.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-white rounded-full shadow transition-transform " + (b.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+                <button onClick={() => handleDelete(b.id)} className="p-1 text-wood-400 hover:text-red-600"><Trash2 size={14} /></button>
+              </div>
+            </div>
+            {b.image_url ? <div className="aspect-[3/1] bg-wood-50 rounded-lg overflow-hidden mb-2"><img src={b.image_url} alt={b.alt_text} className="w-full h-full object-cover" /></div> : <div className="aspect-[3/1] bg-wood-50 rounded-lg flex items-center justify-center mb-2"><Image className="w-8 h-8 text-wood-200" /></div>}
+            <Badge text={b.is_active ? 'Activo' : 'Inactivo'} variant={b.is_active ? 'green' : 'gray'} />
+          </Card>))}</div>
+      )}
+    </div>
+  );
+};
+
+const FlashSalesTabLive: React.FC = () => {
+  const [sales, setSales] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const fetchData = () => { fetch('/api/admin/marketing/flash-sales').then(r => r.ok ? r.json() : null).then(d => { if (d) setSales(d.flashSales || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { fetchData(); }, []);
+  const handleCreate = async () => { const res = await fetch('/api/admin/marketing/flash-sales', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Nueva venta flash' }) }); if (res.ok) { toast.success('Venta flash creada'); fetchData(); } };
+  const handleToggle = async (s: any) => { await fetch('/api/admin/marketing/flash-sales', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, is_active: !s.is_active }) }); toast.success(s.is_active ? 'Desactivada' : 'Activada'); fetchData(); };
+  const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/flash-sales?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Venta eliminada'); fetchData(); } };
+  const isActive = (s: any) => s.is_active && new Date(s.ends_at) > new Date();
+  if (loading) return <Card className="p-8 text-center text-wood-400">Cargando ventas flash...</Card>;
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center"><p className="text-sm text-wood-500">{sales.length} ventas flash</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Plus size={12} /> Nueva Venta Flash</button></div>
+      {sales.length === 0 ? <Card className="p-12 text-center"><Zap className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin ventas flash</p></Card> : (
+        <Card className="divide-y divide-wood-100">{sales.map(s => (
+          <div key={s.id} className="p-4 flex items-center justify-between hover:bg-wood-50/50 transition-colors">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-wood-900">{s.name}</p>
+              <p className="text-[10px] text-wood-400">{s.discount_value}{s.discount_type === 'percentage' ? '%' : ' MXN'} OFF · {new Date(s.starts_at).toLocaleDateString('es-MX')} → {new Date(s.ends_at).toLocaleDateString('es-MX')}</p>
+            </div>
+            <div className="flex items-center gap-2 ml-4">
+              <Badge text={isActive(s) ? 'Activa' : s.is_active ? 'Expirada' : 'Inactiva'} variant={isActive(s) ? 'green' : 'gray'} />
+              <button onClick={() => handleToggle(s)} className={"w-9 h-5 rounded-full transition-colors " + (s.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-white rounded-full shadow transition-transform " + (s.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+              <button onClick={() => handleDelete(s.id)} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+            </div>
+          </div>))}</Card>
+      )}
+    </div>
+  );
+};
+
+const ReferralsTabLive: React.FC = () => {
+  const [codes, setCodes] = useState<any[]>([]);
+  const [redemptions, setRedemptions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const fetchData = () => { fetch('/api/admin/marketing/referrals').then(r => r.ok ? r.json() : null).then(d => { if (d) { setCodes(d.codes || []); setRedemptions(d.redemptions || []); } }).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { fetchData(); }, []);
+  const handleCreate = async () => { const res = await fetch('/api/admin/marketing/referrals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) }); if (res.ok) { toast.success('Código de referido creado'); fetchData(); } };
+  const handleToggle = async (c: any) => { await fetch('/api/admin/marketing/referrals', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, is_active: !c.is_active }) }); toast.success(c.is_active ? 'Desactivado' : 'Activado'); fetchData(); };
+  const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/referrals?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Código eliminado'); fetchData(); } };
+  if (loading) return <Card className="p-8 text-center text-wood-400">Cargando referidos...</Card>;
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center"><p className="text-sm text-wood-500">{codes.length} códigos · {redemptions.length} canjes</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Plus size={12} /> Nuevo Código</button></div>
+      {codes.length === 0 ? <Card className="p-12 text-center"><Gift className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin códigos de referido</p></Card> : (
+        <Card className="divide-y divide-wood-100">{codes.map(c => (
+          <div key={c.id} className="p-4 flex items-center justify-between hover:bg-wood-50/50 transition-colors">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2"><code className="text-sm font-mono font-bold text-accent-gold bg-accent-gold/10 px-2 py-0.5 rounded">{c.code}</code><Badge text={c.is_active ? 'Activo' : 'Inactivo'} variant={c.is_active ? 'green' : 'gray'} /></div>
+              <p className="text-[10px] text-wood-400 mt-1">{c.owner_name || c.owner_email || 'Sin asignar'} · {c.discount_value}% descuento · {c.reward_value}% recompensa · {c.uses} usos</p>
+            </div>
+            <div className="flex items-center gap-2 ml-4">
+              <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); }} className="p-1.5 text-wood-400 hover:text-wood-900 rounded-lg"><Copy size={14} /></button>
+              <button onClick={() => handleToggle(c)} className={"w-9 h-5 rounded-full transition-colors " + (c.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-white rounded-full shadow transition-transform " + (c.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+            </div>
+          </div>))}</Card>
+      )}
+    </div>
+  );
+};
+
+
 const ComingSoonTab: React.FC<{ title: string; desc: string }> = ({ title, desc }) => (
   <div className="flex flex-col items-center justify-center py-20 text-center">
     <div className="w-16 h-16 rounded-2xl bg-wood-100 dark:bg-wood-800 flex items-center justify-center mb-4">
@@ -1388,10 +1525,10 @@ export const MarketingPage: React.FC = () => {
           transition={{ duration: 0.15 }}
         >
           {tab === 'cupones' && <CuponesTab search={search} />}
-          {tab === 'campanas' && <ComingSoonTab title="Campañas de Email" desc="Envía newsletters, secuencias automatizadas y campañas segmentadas a tus clientes." />}
-          {tab === 'banners' && <ComingSoonTab title="Banners Promocionales" desc="Administra banners hero, barras de anuncio y banners de categoría." />}
-          {tab === 'flash' && <ComingSoonTab title="Ventas Flash" desc="Crea ventas relámpago con descuentos temporales y temporizador de urgencia." />}
-          {tab === 'referidos' && <ComingSoonTab title="Programa de Referidos" desc="Genera códigos de referido y rastrea conversiones de recomendaciones." />}
+          {tab === 'campanas' && <CampaignsTabLive />}
+          {tab === 'banners' && <BannersTabLive />}
+          {tab === 'flash' && <FlashSalesTabLive />}
+          {tab === 'referidos' && <ReferralsTabLive />}
           {tab === 'analisis' && <AnalisisTab />}
         </motion.div>
       </AnimatePresence>
