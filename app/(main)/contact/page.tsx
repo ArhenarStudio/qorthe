@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { ContactPage } from "@/components/pages/ContactPage";
+import { CmsPageRenderer } from "@/components/cms/CmsPageRenderer";
 
 export const metadata: Metadata = {
   title: "Contacto",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ContactPage />;
+  return <CmsPageRenderer fallback={<ContactPage />} />;
 }

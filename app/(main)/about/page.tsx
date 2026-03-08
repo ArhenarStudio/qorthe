@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { AboutPage } from "@/components/pages/AboutPage";
+import { CmsPageRenderer } from "@/components/cms/CmsPageRenderer";
 
 export const metadata: Metadata = {
   title: "Sobre Nosotros",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <AboutPage />;
+  return <CmsPageRenderer fallback={<AboutPage />} />;
 }

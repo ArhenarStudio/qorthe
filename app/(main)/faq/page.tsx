@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { FaqPage } from "@/components/pages/FaqPage";
+import { CmsPageRenderer } from "@/components/cms/CmsPageRenderer";
 
 export const metadata: Metadata = {
   title: "Preguntas Frecuentes",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <FaqPage />;
+  return <CmsPageRenderer fallback={<FaqPage />} />;
 }
