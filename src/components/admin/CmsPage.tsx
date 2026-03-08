@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   FileText, Menu, Home, PenLine, MessageSquare, Image, Type, Search,
-  Plus, Save, Eye, EyeOff, Trash2, Copy, ExternalLink, GripVertical, ChevronRight,
+  Plus, Save, Eye, EyeOff, Trash2, Copy, ExternalLink, GripVertical, ChevronRight, ArrowLeft,
   ChevronDown, Edit3, MoreHorizontal, Upload, Download, FolderOpen,
   Globe, Settings2, Clock, Tag, X, Check, AlertTriangle,
   Bold, Italic, Underline, Heading1, Heading2, Heading3, Link2,
@@ -160,16 +160,17 @@ function PagesTabLive() {
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingPage, setEditingPage] = useState<any>(null);
-  const [editingSection, setEditingSection] = useState<number | null>(null);
+  const [sectionModal, setSectionModal] = useState<{ idx: number; isNew: boolean } | null>(null);
   const [sectionForm, setSectionForm] = useState({ id: '', label: '', content: '' });
-  const [showDeleteModal, setShowDeleteModal] = useState<{ page: any; sectionIdx: number } | null>(null);
+  const [deleteModal, setDeleteModal] = useState<number | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
 
   const TEMPLATES = [
-    { id: 'legal_sidebar', label: 'Legal (sidebar navegación)', description: 'Sidebar con tabla de contenido + secciones scrollables' },
-    { id: 'simple', label: 'Simple', description: 'Título + contenido, sin sidebar' },
-    { id: 'homepage', label: 'Homepage', description: 'Página de inicio (se edita en tab Homepage)' },
-    { id: 'catalog', label: 'Catálogo', description: 'Página de productos (automática)' },
-    { id: 'system', label: 'Sistema', description: 'Página del sistema (no editable desde CMS)' },
+    { id: 'legal_sidebar', label: 'Legal (sidebar)', icon: '§' },
+    { id: 'simple', label: 'Simple', icon: '¶' },
+    { id: 'homepage', label: 'Homepage', icon: '⌂' },
+    { id: 'catalog', label: 'Catálogo', icon: '▦' },
+    { id: 'system', label: 'Sistema', icon: '⚙' },
   ];
 
   const fetchPages = () => {
@@ -177,30 +178,38 @@ function PagesTabLive() {
   };
   useEffect(() => { fetchPages(); }, []);
 
-  const handleSavePage = async (page: any) => {
-    const res = await fetch('/api/admin/cms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'page', id: page.id, ...page }) });
+  const handleSavePage = async () => {
+    if (!editingPage) return;
+    const res = await fetch('/api/admin/cms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'page', id: editingPage.id, title: editingPage.title, slug: editingPage.slug, template: editingPage.template, last_updated: editingPage.last_updated, status: editingPage.status, sections: editingPage.sections, seo_title: editingPage.seo_title, seo_description: editingPage.seo_description }) });
     if (res.ok) { toast.success('Página guardada'); fetchPages(); setEditingPage(null); }
     else toast.error('Error al guardar');
   };
 
-  const handleSaveSection = () => {
-    if (!editingPage) return;
-    const sections = [...(editingPage.sections || [])];
-    if (editingSection !== null && editingSection < sections.length) {
-      sections[editingSection] = { id: sectionForm.id, label: sectionForm.label, content: sectionForm.content };
+  const openSectionEditor = (idx: number, isNew: boolean) => {
+    if (isNew) {
+      setSectionForm({ id: '', label: '', content: '' });
     } else {
-      sections.push({ id: sectionForm.id || sectionForm.label.toLowerCase().replace(/[^a-z0-9]+/g, '-'), label: sectionForm.label, content: sectionForm.content });
+      const sec = editingPage?.sections?.[idx];
+      if (sec) setSectionForm({ id: sec.id || '', label: sec.label || '', content: sec.content || '' });
     }
-    setEditingPage({ ...editingPage, sections });
-    setEditingSection(null);
-    setSectionForm({ id: '', label: '', content: '' });
+    setSectionModal({ idx, isNew });
   };
 
-  const handleDeleteSection = () => {
-    if (!showDeleteModal || !editingPage) return;
-    const sections = [...(editingPage.sections || [])].filter((_, i) => i !== showDeleteModal.sectionIdx);
+  const saveSectionModal = () => {
+    if (!editingPage || !sectionModal) return;
+    const sections = [...(editingPage.sections || [])];
+    const entry = { id: sectionForm.id || sectionForm.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''), label: sectionForm.label, content: sectionForm.content };
+    if (sectionModal.isNew) sections.push(entry);
+    else sections[sectionModal.idx] = entry;
     setEditingPage({ ...editingPage, sections });
-    setShowDeleteModal(null);
+    setSectionModal(null);
+  };
+
+  const confirmDeleteSection = () => {
+    if (deleteModal === null || !editingPage) return;
+    const sections = [...(editingPage.sections || [])].filter((_, i) => i !== deleteModal);
+    setEditingPage({ ...editingPage, sections });
+    setDeleteModal(null);
   };
 
   const moveSection = (idx: number, dir: -1 | 1) => {
@@ -212,192 +221,262 @@ function PagesTabLive() {
     setEditingPage({ ...editingPage, sections: s });
   };
 
-  // ── Delete Section Confirmation Modal ──
-  const DeleteSectionModal = () => {
-    if (!showDeleteModal) return null;
-    const sec = editingPage?.sections?.[showDeleteModal.sectionIdx];
-    return (
-      <>
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setShowDeleteModal(null)} />
-        <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-white rounded-2xl shadow-2xl z-[201] p-6">
-          <h4 className="font-serif text-lg text-wood-900 mb-3">Eliminar sección</h4>
-          <p className="text-sm text-wood-600 mb-1">¿Eliminar <strong>"{sec?.label}"</strong>?</p>
-          <p className="text-xs text-wood-400 mb-6">Esta acción se aplica al guardar la página.</p>
-          <div className="flex gap-2">
-            <button onClick={() => setShowDeleteModal(null)} className="flex-1 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
-            <button onClick={handleDeleteSection} className="flex-1 py-2 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700">Eliminar</button>
-          </div>
-        </div>
-      </>
-    );
+  // Helper: render content with basic formatting (paragraphs, lists)
+  const renderContent = (text: string) => {
+    if (!text) return null;
+    return text.split('\n\n').map((block, bi) => {
+      const trimmed = block.trim();
+      if (!trimmed) return null;
+      // Check if block is a list
+      const listLines = trimmed.split('\n').filter(l => l.trim().startsWith('- '));
+      if (listLines.length > 0 && listLines.length === trimmed.split('\n').filter(l => l.trim()).length) {
+        return <ul key={bi} className="list-disc pl-5 space-y-1 mb-4">{listLines.map((l, li) => <li key={li} className="text-wood-700 dark:text-sand-100/80 font-light">{l.trim().substring(2)}</li>)}</ul>;
+      }
+      return <p key={bi} className="text-wood-700 dark:text-sand-100/80 font-light leading-relaxed mb-4">{trimmed}</p>;
+    });
   };
 
-  // ── Section Editor Modal ──
-  const SectionEditorModal = () => {
-    if (editingSection === null) return null;
-    const isNew = editingSection >= (editingPage?.sections || []).length;
+  // ═══ PREVIEW MODE (real page visualization) ═══
+  if (editingPage && previewMode) {
+    const isLegal = editingPage.template === 'legal_sidebar';
+    const sections = editingPage.sections || [];
     return (
-      <>
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setEditingSection(null)} />
-        <div className="fixed inset-0 m-auto w-full max-w-2xl h-fit max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-2xl z-[201]">
-          <div className="sticky top-0 bg-white border-b border-wood-100 px-6 py-4 flex items-center justify-between z-10">
-            <h4 className="font-serif text-lg text-wood-900">{isNew ? 'Nueva Sección' : 'Editar Sección'}</h4>
-            <button onClick={() => setEditingSection(null)} className="p-1.5 hover:bg-wood-100 rounded-lg"><X size={16} /></button>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between bg-wood-900 text-white p-3 rounded-xl">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setPreviewMode(false)} className="px-3 py-1.5 bg-white/10 rounded-lg text-xs hover:bg-white/20 flex items-center gap-1"><ArrowLeft size={12} /> Volver al editor</button>
+            <span className="text-xs opacity-60">Vista previa: {editingPage.title}</span>
           </div>
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Label (sidebar)</label>
-                <input value={sectionForm.label} onChange={e => setSectionForm(f => ({ ...f, label: e.target.value, ...(isNew ? { id: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') } : {}) }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" placeholder="Ej: 1. Objeto" /></div>
-              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">ID (anchor)</label>
-                <input value={sectionForm.id} onChange={e => setSectionForm(f => ({ ...f, id: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm font-mono" placeholder="Ej: objeto" /></div>
+          <div className="flex items-center gap-2">
+            <a href={editingPage.slug} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 bg-white/10 rounded-lg text-xs hover:bg-white/20 flex items-center gap-1"><ExternalLink size={12} /> Abrir en sitio</a>
+          </div>
+        </div>
+        {/* Real page preview */}
+        <div className="border border-wood-200 rounded-2xl overflow-hidden bg-sand-50">
+          {isLegal ? (
+            <div className="p-8">
+              <div className="grid grid-cols-12 gap-8 max-w-5xl mx-auto">
+                {/* Sidebar preview */}
+                <div className="col-span-4">
+                  <h2 className="font-serif text-2xl text-wood-900 mb-3">{editingPage.title}</h2>
+                  <div className="h-0.5 w-16 bg-wood-900/10 mb-3" />
+                  <p className="text-[10px] text-wood-400 font-mono uppercase mb-6">Última actualización: {editingPage.last_updated}</p>
+                  <nav className="space-y-1 border-l border-wood-200 pl-4">
+                    <span className="text-[9px] uppercase tracking-widest text-wood-400 mb-2 block">Contenido</span>
+                    {sections.map((sec: any, i: number) => (
+                      <a key={i} className="block py-1 text-xs text-wood-500 hover:text-wood-900 border-l-2 border-transparent -ml-[17px] pl-4 transition-colors">{sec.label}</a>
+                    ))}
+                  </nav>
+                </div>
+                {/* Content preview */}
+                <div className="col-span-8">
+                  <div className="space-y-12">
+                    {sections.map((sec: any, i: number) => (
+                      <section key={i}>
+                        <h3 className="font-serif text-xl text-wood-900 mb-4">{sec.label}</h3>
+                        {renderContent(sec.content)}
+                      </section>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Contenido</label>
-              <textarea value={sectionForm.content} onChange={e => setSectionForm(f => ({ ...f, content: e.target.value }))} rows={12} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm font-mono leading-relaxed" placeholder="Texto de la sección. Usa líneas vacías para separar párrafos. Usa - para listas." /></div>
-            <p className="text-[10px] text-wood-400">Formato: párrafos separados por línea vacía. Listas con - al inicio. El formato se aplica automáticamente al renderizar.</p>
-          </div>
-          <div className="sticky bottom-0 bg-white border-t border-wood-100 px-6 py-4 flex justify-end gap-2">
-            <button onClick={() => setEditingSection(null)} className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
-            <button onClick={handleSaveSection} disabled={!sectionForm.label} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 disabled:opacity-50 flex items-center gap-1"><Save size={12} /> {isNew ? 'Agregar' : 'Guardar'}</button>
-          </div>
+          ) : (
+            <div className="p-12 text-center">
+              <h2 className="font-serif text-3xl text-wood-900 mb-4">{editingPage.title}</h2>
+              <p className="text-wood-400 text-sm">Vista previa no disponible para esta plantilla</p>
+            </div>
+          )}
         </div>
-      </>
+      </div>
     );
-  };
+  }
 
-  // ── Page Editor (template-aware) ──
+  // ═══ EDIT MODE (modal-based editor) ═══
   if (editingPage) {
     const isLegal = editingPage.template === 'legal_sidebar';
     const sections = editingPage.sections || [];
 
     return (
-      <div className="space-y-6">
-        <DeleteSectionModal />
-        <SectionEditorModal />
+      <div className="space-y-5">
+        {/* Section Editor Modal */}
+        {sectionModal && (
+          <>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setSectionModal(null)} />
+            <div className="fixed inset-0 m-auto w-full max-w-2xl h-fit max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-2xl z-[201]">
+              <div className="sticky top-0 bg-white border-b border-wood-100 px-6 py-4 flex items-center justify-between z-10 rounded-t-2xl">
+                <div>
+                  <h4 className="font-serif text-lg text-wood-900">{sectionModal.isNew ? 'Nueva Sección' : 'Editar Sección'}</h4>
+                  <p className="text-[10px] text-wood-400 mt-0.5">Paso 1 de 1 — Editar contenido de la sección</p>
+                </div>
+                <button onClick={() => setSectionModal(null)} className="p-1.5 hover:bg-wood-100 rounded-lg"><X size={16} /></button>
+              </div>
+              <div className="p-6 space-y-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">Título en sidebar</label>
+                    <input value={sectionForm.label} onChange={e => setSectionForm(f => ({ ...f, label: e.target.value, ...(sectionModal.isNew ? { id: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') } : {}) }))} className="w-full px-3 py-2.5 border border-wood-200 rounded-xl text-sm focus:ring-2 focus:ring-accent-gold/30 focus:border-accent-gold outline-none" placeholder="Ej: 1. Objeto" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">ID (anchor link)</label>
+                    <input value={sectionForm.id} onChange={e => setSectionForm(f => ({ ...f, id: e.target.value }))} className="w-full px-3 py-2.5 border border-wood-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-accent-gold/30 focus:border-accent-gold outline-none" placeholder="objeto" />
+                    <p className="text-[9px] text-wood-400 mt-1">Se usa para navegar: #objeto</p>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">Contenido</label>
+                  <textarea value={sectionForm.content} onChange={e => setSectionForm(f => ({ ...f, content: e.target.value }))} rows={12} className="w-full px-4 py-3 border border-wood-200 rounded-xl text-sm leading-relaxed focus:ring-2 focus:ring-accent-gold/30 focus:border-accent-gold outline-none resize-y" placeholder="Escribe el contenido de esta sección.&#10;&#10;Usa una línea vacía para separar párrafos.&#10;&#10;- Usa guiones para crear listas&#10;- Cada línea con guión es un item" />
+                  <p className="text-[9px] text-wood-400 mt-1.5">Párrafos: línea vacía entre ellos. Listas: empezar línea con -</p>
+                </div>
+                {/* Mini preview */}
+                {sectionForm.content && (
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">Vista previa</label>
+                    <div className="p-4 bg-sand-50 rounded-xl border border-wood-100 max-h-48 overflow-y-auto">
+                      <h4 className="font-serif text-lg text-wood-900 mb-3">{sectionForm.label || 'Sin título'}</h4>
+                      {renderContent(sectionForm.content)}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="sticky bottom-0 bg-white border-t border-wood-100 px-6 py-4 flex justify-end gap-2 rounded-b-2xl">
+                <button onClick={() => setSectionModal(null)} className="px-4 py-2.5 border border-wood-200 rounded-xl text-xs font-medium hover:bg-wood-50">Cancelar</button>
+                <button onClick={saveSectionModal} disabled={!sectionForm.label} className="px-5 py-2.5 bg-accent-gold text-white rounded-xl text-xs font-medium hover:bg-accent-gold/90 disabled:opacity-40 flex items-center gap-1.5"><Save size={12} /> {sectionModal.isNew ? 'Agregar sección' : 'Guardar cambios'}</button>
+              </div>
+            </div>
+          </>
+        )}
 
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2">
-          <button onClick={() => setEditingPage(null)} className="text-xs text-wood-500 hover:text-wood-700">Páginas</button>
-          <ChevronRight size={12} className="text-wood-300" />
-          <span className="text-xs font-medium text-wood-900">{editingPage.title}</span>
+        {/* Delete Confirmation Modal */}
+        {deleteModal !== null && (
+          <>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setDeleteModal(null)} />
+            <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-white rounded-2xl shadow-2xl z-[201] p-6">
+              <h4 className="font-serif text-lg text-wood-900 mb-2">Eliminar sección</h4>
+              <p className="text-sm text-wood-600 mb-1">¿Eliminar <strong>&ldquo;{editingPage?.sections?.[deleteModal]?.label}&rdquo;</strong>?</p>
+              <p className="text-xs text-wood-400 mb-6">Se aplica al guardar la página.</p>
+              <div className="flex gap-2">
+                <button onClick={() => setDeleteModal(null)} className="flex-1 py-2.5 border border-wood-200 rounded-xl text-xs font-medium hover:bg-wood-50">Cancelar</button>
+                <button onClick={confirmDeleteSection} className="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-xs font-medium hover:bg-red-700">Eliminar</button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Header bar */}
+        <div className="flex items-center gap-3 bg-white border border-wood-100 rounded-xl p-3">
+          <button onClick={() => setEditingPage(null)} className="p-1.5 hover:bg-wood-100 rounded-lg"><ArrowLeft size={16} className="text-wood-500" /></button>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-wood-900 truncate">{editingPage.title}</p>
+            <p className="text-[10px] text-wood-400 font-mono">{editingPage.slug} · {TEMPLATES.find(t => t.id === editingPage.template)?.label}</p>
+          </div>
+          <button onClick={() => setPreviewMode(true)} className="px-3 py-1.5 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50 flex items-center gap-1"><Eye size={12} /> Vista previa</button>
+          <button onClick={handleSavePage} className="px-4 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Save size={12} /> Guardar</button>
         </div>
 
-        {/* Page Info */}
+        {/* Page settings */}
         <Card className="p-5">
-          <STitle>Información de la Página</STitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Título</label>
-              <input value={editingPage.title} onChange={e => setEditingPage((p: any) => ({ ...p, title: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" /></div>
+              <input value={editingPage.title} onChange={e => setEditingPage((p: any) => ({ ...p, title: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-sm" /></div>
             <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">URL</label>
-              <div className="flex items-center"><span className="text-[10px] text-wood-400 mr-1">davidsonsdesign.com</span>
-                <input value={editingPage.slug} onChange={e => setEditingPage((p: any) => ({ ...p, slug: e.target.value }))} className="flex-1 border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white font-mono" /></div></div>
+              <input value={editingPage.slug} onChange={e => setEditingPage((p: any) => ({ ...p, slug: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-sm font-mono" /></div>
             <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Plantilla</label>
-              <select value={editingPage.template} onChange={e => setEditingPage((p: any) => ({ ...p, template: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                {TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
-              </select>
-              <p className="text-[9px] text-wood-400 mt-1">{TEMPLATES.find(t => t.id === editingPage.template)?.description}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Última actualización</label>
-              <input value={editingPage.last_updated || ''} onChange={e => setEditingPage((p: any) => ({ ...p, last_updated: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white" placeholder="12 de Febrero, 2026" /></div>
-            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Estado</label>
-              <select value={editingPage.status} onChange={e => setEditingPage((p: any) => ({ ...p, status: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
-                <option value="published">Publicada</option><option value="draft">Borrador</option>
+              <select value={editingPage.template} onChange={e => setEditingPage((p: any) => ({ ...p, template: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-sm">
+                {TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.icon} {t.label}</option>)}
               </select></div>
+            <div><label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Última actualización</label>
+              <input value={editingPage.last_updated || ''} onChange={e => setEditingPage((p: any) => ({ ...p, last_updated: e.target.value }))} className="w-full border border-wood-200 rounded-lg px-3 py-2 text-sm" /></div>
           </div>
         </Card>
 
-        {/* Template-specific editor */}
+        {/* Sections editor (for legal_sidebar template) */}
         {isLegal && (
           <Card className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <STitle>Secciones ({sections.length})</STitle>
-              <button onClick={() => { setSectionForm({ id: '', label: '', content: '' }); setEditingSection(sections.length); }} className="text-xs text-accent-gold hover:underline flex items-center gap-1"><Plus size={12} /> Agregar Sección</button>
+              <div>
+                <h4 className="text-sm font-medium text-wood-900">Secciones del documento</h4>
+                <p className="text-[10px] text-wood-400">{sections.length} secciones · Cada sección aparece en el sidebar de navegación</p>
+              </div>
+              <button onClick={() => openSectionEditor(sections.length, true)} className="px-3 py-1.5 bg-accent-gold/10 text-accent-gold rounded-lg text-xs font-medium hover:bg-accent-gold/20 flex items-center gap-1"><Plus size={12} /> Agregar</button>
             </div>
             {sections.length === 0 ? (
-              <div className="text-center py-8"><FileText className="w-8 h-8 text-wood-200 mx-auto mb-2" /><p className="text-sm text-wood-400">Sin secciones. Agrega la primera.</p></div>
+              <div className="text-center py-10 border-2 border-dashed border-wood-200 rounded-xl">
+                <FileText className="w-10 h-10 text-wood-200 mx-auto mb-3" />
+                <p className="text-sm text-wood-400 mb-3">Esta página no tiene secciones</p>
+                <button onClick={() => openSectionEditor(0, true)} className="text-xs text-accent-gold font-medium hover:underline">Crear primera sección</button>
+              </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {sections.map((sec: any, idx: number) => (
-                  <div key={sec.id || idx} className="flex items-center gap-2 p-3 bg-sand-50 rounded-lg group hover:bg-sand-100 transition-colors">
-                    <div className="flex flex-col gap-0.5">
-                      <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronDown size={10} className="rotate-180" /></button>
-                      <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronDown size={10} /></button>
+                  <div key={sec.id || idx} className="flex items-start gap-3 p-3 bg-sand-50 rounded-xl group hover:bg-sand-100 transition-colors cursor-pointer" onClick={() => openSectionEditor(idx, false)}>
+                    <div className="flex flex-col gap-0.5 pt-1 shrink-0">
+                      <button onClick={e => { e.stopPropagation(); moveSection(idx, -1); }} disabled={idx === 0} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-20"><ChevronDown size={10} className="rotate-180" /></button>
+                      <button onClick={e => { e.stopPropagation(); moveSection(idx, 1); }} disabled={idx === sections.length - 1} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-20"><ChevronDown size={10} /></button>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-wood-900">{sec.label}</p>
-                      <p className="text-[10px] text-wood-400 truncate">{(sec.content || '').substring(0, 80)}...</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium text-wood-900">{sec.label}</span>
+                        <code className="text-[9px] text-wood-300 font-mono">#{sec.id}</code>
+                      </div>
+                      <p className="text-[11px] text-wood-500 line-clamp-2 leading-relaxed">{(sec.content || '').substring(0, 150)}{(sec.content || '').length > 150 ? '...' : ''}</p>
                     </div>
-                    <code className="text-[9px] text-wood-300 font-mono hidden sm:block">#{sec.id}</code>
-                    <button onClick={() => { setSectionForm({ id: sec.id, label: sec.label, content: sec.content || '' }); setEditingSection(idx); }} className="p-1.5 text-wood-400 hover:text-accent-gold hover:bg-white rounded-lg opacity-0 group-hover:opacity-100 transition-all" title="Editar"><Edit3 size={14} /></button>
-                    <button onClick={() => setShowDeleteModal({ page: editingPage, sectionIdx: idx })} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all" title="Eliminar"><Trash2 size={14} /></button>
+                    <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={e => { e.stopPropagation(); openSectionEditor(idx, false); }} className="p-1.5 text-wood-400 hover:text-accent-gold hover:bg-white rounded-lg" title="Editar"><Edit3 size={13} /></button>
+                      <button onClick={e => { e.stopPropagation(); setDeleteModal(idx); }} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg" title="Eliminar"><Trash2 size={13} /></button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </Card>
         )}
-
-        {/* Save bar */}
-        <div className="flex items-center gap-3 sticky bottom-4 bg-white border border-wood-200 rounded-xl p-3 shadow-lg z-50">
-          <button onClick={() => setEditingPage(null)} className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
-          <div className="flex-1" />
-          <a href={editingPage.slug} target="_blank" rel="noopener noreferrer" className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50 flex items-center gap-1"><Eye size={12} /> Ver página</a>
-          <button onClick={() => handleSavePage(editingPage)} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Save size={12} /> Guardar</button>
-        </div>
       </div>
     );
   }
 
-  // ── Pages List ──
+  // ═══ PAGE LIST ═══
   const editablePages = pages.filter(p => p.is_editable);
   const systemPages = pages.filter(p => !p.is_editable);
 
+  if (loading) return <Card className="p-12 text-center text-wood-400">Cargando páginas...</Card>;
+
   return (
     <div className="space-y-6">
-      {loading ? <Card className="p-12 text-center text-wood-400">Cargando páginas...</Card> : (
-        <>
-          <div className="flex justify-between items-center">
-            <p className="text-sm text-wood-500">{pages.length} páginas ({editablePages.length} editables)</p>
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-wood-500">{pages.length} páginas ({editablePages.length} editables)</p>
+      </div>
+
+      <Card className="overflow-hidden">
+        <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas Editables</p></div>
+        {editablePages.map(p => (
+          <div key={p.id} className="flex items-center gap-3 px-5 py-3.5 border-b border-wood-50 hover:bg-sand-50/30 transition-colors cursor-pointer group" onClick={() => setEditingPage({ ...p })}>
+            <div className="w-8 h-8 bg-wood-100 rounded-lg flex items-center justify-center text-xs text-wood-500 shrink-0">{TEMPLATES.find(t => t.id === p.template)?.icon || '?'}</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-wood-900 group-hover:text-accent-gold transition-colors">{p.title}</p>
+              <p className="text-[10px] text-wood-400 font-mono">{p.slug} · {(p.sections || []).length} secciones</p>
+            </div>
+            <Badge text={TEMPLATES.find(t => t.id === p.template)?.label || p.template} variant="blue" />
+            <Badge text={p.status === 'published' ? 'Publicada' : 'Borrador'} variant={p.status === 'published' ? 'green' : 'amber'} />
+            <ChevronRight size={14} className="text-wood-300 group-hover:text-accent-gold transition-colors" />
           </div>
+        ))}
+      </Card>
 
-          {/* Editable pages */}
-          <Card className="overflow-hidden">
-            <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas Editables</p></div>
-            {editablePages.map(p => (
-              <div key={p.id} className="flex items-center gap-3 px-5 py-3 border-b border-wood-50 hover:bg-sand-50/30 transition-colors cursor-pointer" onClick={() => setEditingPage({ ...p })}>
-                <FileText size={14} className="text-wood-300 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-wood-900">{p.title}</p>
-                  <p className="text-[10px] text-wood-400 font-mono">{p.slug}</p>
-                </div>
-                <Badge text={TEMPLATES.find(t => t.id === p.template)?.label || p.template} variant="blue" />
-                <Badge text={p.status === 'published' ? 'Publicada' : 'Borrador'} variant={p.status === 'published' ? 'green' : 'amber'} />
-                <span className="text-[10px] text-wood-400 hidden sm:block">{p.last_updated}</span>
-                <ChevronRight size={14} className="text-wood-300" />
-              </div>
-            ))}
-          </Card>
-
-          {/* System pages (read-only) */}
-          <Card className="overflow-hidden">
-            <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas del Sistema (no editables desde CMS)</p></div>
-            {systemPages.map(p => (
-              <div key={p.id} className="flex items-center gap-3 px-5 py-3 border-b border-wood-50">
-                <Settings2 size={14} className="text-wood-300 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-wood-600">{p.title}</p>
-                  <p className="text-[10px] text-wood-300 font-mono">{p.slug}</p>
-                </div>
-                <Badge text={p.template} variant="gray" />
-              </div>
-            ))}
-          </Card>
-        </>
-      )}
+      <Card className="overflow-hidden">
+        <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas del Sistema</p></div>
+        {systemPages.map(p => (
+          <div key={p.id} className="flex items-center gap-3 px-5 py-2.5 border-b border-wood-50 opacity-60">
+            <Settings2 size={14} className="text-wood-300 shrink-0" />
+            <p className="text-xs text-wood-500 flex-1">{p.title}</p>
+            <p className="text-[10px] text-wood-300 font-mono">{p.slug}</p>
+          </div>
+        ))}
+      </Card>
     </div>
   );
 }
+
 function MenusTabLive() {
   const [menus, setMenus] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(true);

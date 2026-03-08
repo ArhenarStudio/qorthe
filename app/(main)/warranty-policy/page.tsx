@@ -1,5 +1,6 @@
 import { WarrantyPolicyPage } from "@/components/pages/WarrantyPolicyPage";
+import { CmsPageRenderer } from "@/components/cms/CmsPageRenderer";
 
 export default function Page() {
-  return <WarrantyPolicyPage />;
+  return <CmsPageRenderer fallback={<WarrantyPolicyPage />} />;
 }

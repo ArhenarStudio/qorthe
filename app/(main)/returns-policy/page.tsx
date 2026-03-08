@@ -1,5 +1,6 @@
 import { ReturnsPolicyPage } from "@/components/pages/ReturnsPolicyPage";
+import { CmsPageRenderer } from "@/components/cms/CmsPageRenderer";
 
 export default function Page() {
-  return <ReturnsPolicyPage />;
+  return <CmsPageRenderer fallback={<ReturnsPolicyPage />} />;
 }

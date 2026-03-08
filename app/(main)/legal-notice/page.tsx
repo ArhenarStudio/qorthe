@@ -1,5 +1,6 @@
 import { LegalNoticePage } from "@/components/pages/LegalNoticePage";
+import { CmsPageRenderer } from "@/components/cms/CmsPageRenderer";
 
 export default function Page() {
-  return <LegalNoticePage />;
+  return <CmsPageRenderer fallback={<LegalNoticePage />} />;
 }
