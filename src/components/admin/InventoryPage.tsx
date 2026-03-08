@@ -199,14 +199,14 @@ export const InventoryPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-wood-900 flex items-center gap-2">
-          <Warehouse size={20} className="text-accent-gold" /> Control de Inventario
+        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
+          <Warehouse size={20} className="text-[var(--admin-accent)]" /> Control de Inventario
         </h3>
         <div className="flex items-center gap-2">
-          <button onClick={fetchAll} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-600 text-xs rounded-lg hover:bg-sand-50 transition-colors">
+          <button onClick={fetchAll} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] text-xs rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Actualizar
           </button>
-          <button onClick={exportCSV} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-600 text-xs rounded-lg hover:bg-sand-50 transition-colors">
+          <button onClick={exportCSV} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] text-xs rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">
             <Download size={14} /> Exportar
           </button>
         </div>
@@ -215,7 +215,7 @@ export const InventoryPage: React.FC = () => {
       {/* KPIs */}
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
-          <KpiCard icon={<Boxes size={16} className="text-accent-gold" />} value={String(stats.total_items)} label="Productos" sub={`${stats.total_units} unidades`} accent />
+          <KpiCard icon={<Boxes size={16} className="text-[var(--admin-accent)]" />} value={String(stats.total_items)} label="Productos" sub={`${stats.total_units} unidades`} accent />
           <KpiCard icon={<DollarSign size={16} className="text-green-600" />} value={fmt(stats.total_cost_value)} label="Valor costo" sub={`Retail: ${fmt(stats.total_retail_value)}`} />
           <KpiCard icon={<AlertTriangle size={16} className="text-amber-500" />} value={String(stats.low_stock_count)} label="Stock bajo" sub={`${stats.out_of_stock_count} agotados`} />
           <KpiCard icon={<Bell size={16} className="text-red-500" />} value={String(stats.unresolved_alerts)} label="Alertas" sub="Sin resolver" />
@@ -232,7 +232,7 @@ export const InventoryPage: React.FC = () => {
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={`flex items-center gap-1.5 px-3 py-2 text-xs rounded-lg whitespace-nowrap transition-colors ${
-                tab === t.id ? 'bg-wood-900 text-sand-100' : 'bg-white text-wood-600 hover:bg-sand-50 border border-wood-100'
+                tab === t.id ? 'bg-wood-900 text-sand-100' : 'bg-[var(--admin-surface)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)] border border-[var(--admin-border)]'
               }`}>
               <Icon size={14} /> {t.label}
               {badgeCount > 0 && (
@@ -272,43 +272,43 @@ export const InventoryPage: React.FC = () => {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => !submitting && setQuickAction(null)}>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+              className="bg-[var(--admin-surface)] rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-bold text-wood-900 flex items-center gap-2">
+                <h4 className="text-sm font-bold text-[var(--admin-text)] flex items-center gap-2">
                   {getMovementIcon(quickAction.type, 16, MOVEMENT_TYPE_CONFIG[quickAction.type].color)}
                   {MOVEMENT_TYPE_CONFIG[quickAction.type].label}
                 </h4>
-                <button onClick={() => setQuickAction(null)} className="text-wood-400 hover:text-wood-700"><X size={18} /></button>
+                <button onClick={() => setQuickAction(null)} className="text-[var(--admin-muted)] hover:text-[var(--admin-text)]"><X size={18} /></button>
               </div>
-              <div className="bg-sand-50 rounded-lg p-3 text-xs space-y-1">
-                <div className="flex justify-between"><span className="text-wood-500">Producto</span><span className="text-wood-900 font-bold">{quickAction.item.title}</span></div>
-                <div className="flex justify-between"><span className="text-wood-500">SKU</span><span className="text-wood-900">{quickAction.item.sku}</span></div>
-                <div className="flex justify-between"><span className="text-wood-500">Stock actual</span><span className="text-wood-900 font-bold">{quickAction.item.current_stock}</span></div>
+              <div className="bg-[var(--admin-surface2)] rounded-lg p-3 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-[var(--admin-text-secondary)]">Producto</span><span className="text-[var(--admin-text)] font-bold">{quickAction.item.title}</span></div>
+                <div className="flex justify-between"><span className="text-[var(--admin-text-secondary)]">SKU</span><span className="text-[var(--admin-text)]">{quickAction.item.sku}</span></div>
+                <div className="flex justify-between"><span className="text-[var(--admin-text-secondary)]">Stock actual</span><span className="text-[var(--admin-text)] font-bold">{quickAction.item.current_stock}</span></div>
                 {quickAction.item.reserved_stock > 0 && (
-                  <div className="flex justify-between"><span className="text-wood-500">Reservado</span><span className="text-orange-600 font-bold">{quickAction.item.reserved_stock}</span></div>
+                  <div className="flex justify-between"><span className="text-[var(--admin-text-secondary)]">Reservado</span><span className="text-orange-600 font-bold">{quickAction.item.reserved_stock}</span></div>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Cantidad *</label>
+                  <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Cantidad *</label>
                   <input type="number" min={1} value={quickQty} onChange={e => setQuickQty(e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" autoFocus />
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" autoFocus />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Costo unitario</label>
+                  <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Costo unitario</label>
                   <input type="number" value={quickCost} onChange={e => setQuickCost(e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
                 </div>
               </div>
               <div>
-                <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Referencia</label>
+                <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Referencia</label>
                 <input value={quickRef} onChange={e => setQuickRef(e.target.value)} placeholder="# factura, orden, etc."
-                  className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+                  className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Notas</label>
+                <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Notas</label>
                 <input value={quickNotes} onChange={e => setQuickNotes(e.target.value)} placeholder="Observaciones..."
-                  className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+                  className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
               </div>
               {quickQty && (
                 <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
@@ -316,7 +316,7 @@ export const InventoryPage: React.FC = () => {
                 </div>
               )}
               <div className="flex justify-end gap-2 pt-2">
-                <button onClick={() => setQuickAction(null)} className="px-4 py-2 text-xs text-wood-500">Cancelar</button>
+                <button onClick={() => setQuickAction(null)} className="px-4 py-2 text-xs text-[var(--admin-text-secondary)]">Cancelar</button>
                 <button onClick={handleQuickAction} disabled={submitting || !quickQty}
                   className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50">
                   {submitting ? "Registrando..." : "Confirmar"}
@@ -332,11 +332,11 @@ export const InventoryPage: React.FC = () => {
 
 // ═══════ KPI CARD ═══════
 const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; sub: string; accent?: boolean }> = ({ icon, value, label, sub, accent }) => (
-  <div className={`bg-white rounded-xl border shadow-sm p-4 ${accent ? 'border-accent-gold/30' : 'border-wood-100'}`}>
-    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-accent-gold/15' : 'bg-sand-50'} mb-2`}>{icon}</div>
-    <p className="text-xl font-sans text-wood-900">{value}</p>
-    <p className="text-[10px] text-wood-400 uppercase tracking-wider mt-0.5">{label}</p>
-    <p className="text-[11px] text-wood-500 mt-1">{sub}</p>
+  <div className={`bg-[var(--admin-surface)] rounded-xl border shadow-sm p-4 ${accent ? 'border-[var(--admin-accent)]/30' : 'border-[var(--admin-border)]'}`}>
+    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-[var(--admin-accent)]/15' : 'bg-[var(--admin-surface2)]'} mb-2`}>{icon}</div>
+    <p className="text-xl font-sans text-[var(--admin-text)]">{value}</p>
+    <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mt-0.5">{label}</p>
+    <p className="text-[11px] text-[var(--admin-text-secondary)] mt-1">{sub}</p>
   </div>
 );
 
@@ -376,15 +376,15 @@ const OverviewTab: React.FC<{
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-wood-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
           <input value={search} onChange={e => onSearch(e.target.value)} placeholder="Buscar por producto, SKU..."
-            className="w-full pl-9 pr-4 py-2.5 bg-white border border-wood-200 rounded-lg text-xs outline-none focus:border-wood-400" />
+            className="w-full pl-9 pr-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-xs outline-none focus:border-wood-400" />
         </div>
         <div className="flex gap-1.5">
           {(["all", "out_of_stock", "low_stock", "in_stock", "overstock"] as const).map(s => (
             <button key={s} onClick={() => onStatusFilter(s)}
               className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all ${
-                statusFilter === s ? 'bg-wood-900 text-sand-100 border-wood-900' : 'bg-white text-wood-500 border-wood-100 hover:border-wood-300'
+                statusFilter === s ? 'bg-wood-900 text-sand-100 border-wood-900' : 'bg-[var(--admin-surface)] text-[var(--admin-text-secondary)] border-[var(--admin-border)] hover:border-wood-300'
               }`}>
               {s === "all" ? "Todos" : STOCK_STATUS_CONFIG[s].label}
             </button>
@@ -393,24 +393,24 @@ const OverviewTab: React.FC<{
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[800px]">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
                 <th className="px-4 py-3 w-10"></th>
-                <th className="px-4 py-3 cursor-pointer hover:text-wood-700" onClick={() => onSort("name")}>
+                <th className="px-4 py-3 cursor-pointer hover:text-[var(--admin-text)]" onClick={() => onSort("name")}>
                   Producto {sortKey === "name" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
                 <th className="px-4 py-3">SKU</th>
-                <th className="px-4 py-3 cursor-pointer hover:text-wood-700" onClick={() => onSort("stock")}>
+                <th className="px-4 py-3 cursor-pointer hover:text-[var(--admin-text)]" onClick={() => onSort("stock")}>
                   Stock {sortKey === "stock" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
                 <th className="px-4 py-3">Reorden</th>
-                <th className="px-4 py-3 cursor-pointer hover:text-wood-700" onClick={() => onSort("value")}>
+                <th className="px-4 py-3 cursor-pointer hover:text-[var(--admin-text)]" onClick={() => onSort("value")}>
                   Valor {sortKey === "value" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="px-4 py-3 cursor-pointer hover:text-wood-700" onClick={() => onSort("status")}>
+                <th className="px-4 py-3 cursor-pointer hover:text-[var(--admin-text)]" onClick={() => onSort("status")}>
                   Estado {sortKey === "status" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
                 <th className="px-4 py-3">Ubicación</th>
@@ -419,9 +419,9 @@ const OverviewTab: React.FC<{
             </thead>
             <tbody className="divide-y divide-wood-50">
               {loading ? (
-                <tr><td colSpan={9} className="px-4 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-wood-300" /></td></tr>
+                <tr><td colSpan={9} className="px-4 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-[var(--admin-muted)]" /></td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-12 text-center text-xs text-wood-400">No hay productos en inventario</td></tr>
+                <tr><td colSpan={9} className="px-4 py-12 text-center text-xs text-[var(--admin-muted)]">No hay productos en inventario</td></tr>
               ) : items.map(item => {
                 const statusCfg = STOCK_STATUS_CONFIG[item.status];
                 const isExpanded = expandedId === item.id;
@@ -429,9 +429,9 @@ const OverviewTab: React.FC<{
                 const isEditingThis = editingReorder === item.variant_id;
                 return (
                   <React.Fragment key={item.id}>
-                    <tr className="hover:bg-sand-50/50 transition-colors">
+                    <tr className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
                       <td className="px-4 py-3">
-                        <button onClick={() => setExpandedId(isExpanded ? null : item.id)} className="text-wood-400 hover:text-wood-700">
+                        <button onClick={() => setExpandedId(isExpanded ? null : item.id)} className="text-[var(--admin-muted)] hover:text-[var(--admin-text)]">
                           {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
                       </td>
@@ -440,24 +440,24 @@ const OverviewTab: React.FC<{
                           {item.thumbnail ? (
                             <img src={item.thumbnail} alt="" className="w-9 h-9 rounded-lg object-cover" />
                           ) : (
-                            <div className="w-9 h-9 rounded-lg bg-wood-100 flex items-center justify-center"><Package size={14} className="text-wood-300" /></div>
+                            <div className="w-9 h-9 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center"><Package size={14} className="text-[var(--admin-muted)]" /></div>
                           )}
                           <div>
-                            <span className="text-xs font-medium text-wood-900 block">{item.title}</span>
-                            {item.category && <span className="text-[10px] text-wood-400">{item.category}</span>}
+                            <span className="text-xs font-medium text-[var(--admin-text)] block">{item.title}</span>
+                            {item.category && <span className="text-[10px] text-[var(--admin-muted)]">{item.category}</span>}
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs text-wood-500 font-mono">{item.sku}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)] font-mono">{item.sku}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-wood-900">{item.current_stock}</span>
+                          <span className="text-sm font-bold text-[var(--admin-text)]">{item.current_stock}</span>
                           {item.reserved_stock > 0 && (
                             <span className="text-[9px] px-1 py-0.5 bg-orange-50 text-orange-600 rounded font-bold" title={`${item.reserved_stock} reservados`}>
                               R:{item.reserved_stock}
                             </span>
                           )}
-                          <div className="w-16 h-1.5 bg-wood-100 rounded-full overflow-hidden">
+                          <div className="w-16 h-1.5 bg-[var(--admin-surface2)] rounded-full overflow-hidden">
                             <div className="h-full rounded-full transition-all" style={{
                               width: `${stockPct}%`,
                               backgroundColor: item.status === 'out_of_stock' ? '#ef4444' : item.status === 'low_stock' ? '#f59e0b' : item.status === 'overstock' ? '#3b82f6' : '#22c55e',
@@ -470,23 +470,23 @@ const OverviewTab: React.FC<{
                           <div className="flex items-center gap-1">
                             <input type="number" min={0} value={reorderValue} onChange={e => setReorderValue(e.target.value)}
                               onKeyDown={e => { if (e.key === 'Enter') saveReorder(item.variant_id); if (e.key === 'Escape') setEditingReorder(null); }}
-                              className="w-14 px-1.5 py-1 text-xs text-center bg-white border border-accent-gold rounded outline-none" autoFocus />
+                              className="w-14 px-1.5 py-1 text-xs text-center bg-[var(--admin-surface)] border border-[var(--admin-accent)] rounded outline-none" autoFocus />
                             <button onClick={() => saveReorder(item.variant_id)} className="text-green-600 hover:text-green-700"><CheckCircle size={14} /></button>
-                            <button onClick={() => setEditingReorder(null)} className="text-wood-300 hover:text-red-500"><X size={12} /></button>
+                            <button onClick={() => setEditingReorder(null)} className="text-[var(--admin-muted)] hover:text-red-500"><X size={12} /></button>
                           </div>
                         ) : (
                           <button onClick={() => startEditReorder(item)}
-                            className="text-xs text-wood-500 hover:text-accent-gold cursor-pointer hover:underline transition-colors"
+                            className="text-xs text-[var(--admin-text-secondary)] hover:text-[var(--admin-accent)] cursor-pointer hover:underline transition-colors"
                             title="Click para editar">
                             {item.reorder_point}
                           </button>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-xs text-wood-900">{fmt(item.unit_price * item.current_stock)}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--admin-text)]">{fmt(item.unit_price * item.current_stock)}</td>
                       <td className="px-4 py-3">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${statusCfg.cls}`}>{statusCfg.label}</span>
                       </td>
-                      <td className="px-4 py-3 text-[10px] text-wood-500">{item.location}</td>
+                      <td className="px-4 py-3 text-[10px] text-[var(--admin-text-secondary)]">{item.location}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1">
                           <button onClick={() => onQuickAction(item, "purchase")} title="Entrada (compra)"
@@ -502,25 +502,25 @@ const OverviewTab: React.FC<{
                     </tr>
                     {isExpanded && (
                       <tr>
-                        <td colSpan={9} className="px-4 py-4 bg-sand-50/50">
+                        <td colSpan={9} className="px-4 py-4 bg-[var(--admin-surface2)]/50">
                           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 text-xs">
-                            <div><span className="text-wood-400 block">Costo unitario</span><span className="text-wood-900 font-bold">{fmt(item.unit_cost)}</span></div>
-                            <div><span className="text-wood-400 block">Precio venta</span><span className="text-wood-900 font-bold">{fmt(item.unit_price)}</span></div>
-                            <div><span className="text-wood-400 block">Margen</span><span className="text-wood-900 font-bold">{item.unit_price > 0 ? Math.round((item.unit_price - item.unit_cost) / item.unit_price * 100) : 0}%</span></div>
-                            <div><span className="text-wood-400 block">Reservado</span><span className="text-wood-900">{item.reserved_stock} → disponible: {item.available_stock}</span></div>
-                            <div><span className="text-wood-400 block">Días de inventario</span><span className={`font-bold ${(item.days_of_inventory || 999) > 90 ? 'text-red-500' : (item.days_of_inventory || 999) > 30 ? 'text-amber-600' : 'text-green-600'}`}>{(item.days_of_inventory || 0) >= 999 ? '∞' : item.days_of_inventory || '—'}</span></div>
-                            <div><span className="text-wood-400 block">Ventas 90d</span><span className="text-wood-900 font-bold">{item.total_sold_90d || 0}</span></div>
-                            <div><span className="text-wood-400 block">Venta diaria prom.</span><span className="text-wood-900">{(item.avg_daily_sales || 0).toFixed(2)}</span></div>
-                            <div><span className="text-wood-400 block">Stock máximo</span><span className="text-wood-900">{item.max_stock} uds</span></div>
-                            <div><span className="text-wood-400 block">Cantidad reorden</span><span className="text-wood-900">{item.reorder_qty} uds</span></div>
-                            <div><span className="text-wood-400 block">Último movimiento</span><span className="text-wood-900">{item.last_movement_at ? fmtDateTime(item.last_movement_at) : "—"}</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Costo unitario</span><span className="text-[var(--admin-text)] font-bold">{fmt(item.unit_cost)}</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Precio venta</span><span className="text-[var(--admin-text)] font-bold">{fmt(item.unit_price)}</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Margen</span><span className="text-[var(--admin-text)] font-bold">{item.unit_price > 0 ? Math.round((item.unit_price - item.unit_cost) / item.unit_price * 100) : 0}%</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Reservado</span><span className="text-[var(--admin-text)]">{item.reserved_stock} → disponible: {item.available_stock}</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Días de inventario</span><span className={`font-bold ${(item.days_of_inventory || 999) > 90 ? 'text-red-500' : (item.days_of_inventory || 999) > 30 ? 'text-amber-600' : 'text-green-600'}`}>{(item.days_of_inventory || 0) >= 999 ? '∞' : item.days_of_inventory || '—'}</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Ventas 90d</span><span className="text-[var(--admin-text)] font-bold">{item.total_sold_90d || 0}</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Venta diaria prom.</span><span className="text-[var(--admin-text)]">{(item.avg_daily_sales || 0).toFixed(2)}</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Stock máximo</span><span className="text-[var(--admin-text)]">{item.max_stock} uds</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Cantidad reorden</span><span className="text-[var(--admin-text)]">{item.reorder_qty} uds</span></div>
+                            <div><span className="text-[var(--admin-muted)] block">Último movimiento</span><span className="text-[var(--admin-text)]">{item.last_movement_at ? fmtDateTime(item.last_movement_at) : "—"}</span></div>
                           </div>
-                          <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-wood-200">
+                          <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-[var(--admin-border)]">
                             {(["purchase", "sale", "adjustment", "return", "transfer", "damage", "production"] as MovementType[]).map(type => {
                               const cfg = MOVEMENT_TYPE_CONFIG[type];
                               return (
                                 <button key={type} onClick={() => onQuickAction(item, type)}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-wood-200 rounded-lg text-[10px] font-bold text-wood-600 hover:border-wood-400 transition-colors">
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-[10px] font-bold text-[var(--admin-text-secondary)] hover:border-wood-400 transition-colors">
                                   {getMovementIcon(type, 12, cfg.color)} {cfg.label}
                                 </button>
                               );
@@ -569,26 +569,26 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[180px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-wood-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
           <input value={movSearch} onChange={e => setMovSearch(e.target.value)} placeholder="Buscar producto, SKU, referencia..."
-            className="w-full pl-9 pr-4 py-2 bg-white border border-wood-200 rounded-lg text-xs outline-none focus:border-wood-400" />
+            className="w-full pl-9 pr-4 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-xs outline-none focus:border-wood-400" />
         </div>
         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as MovementType | 'all')}
-          className="px-3 py-2 text-xs bg-white border border-wood-200 rounded-lg outline-none min-w-[150px]">
+          className="px-3 py-2 text-xs bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg outline-none min-w-[150px]">
           <option value="all">Todos los tipos</option>
           {Object.entries(MOVEMENT_TYPE_CONFIG).map(([key, cfg]) => (
             <option key={key} value={key}>{cfg.label}</option>
           ))}
         </select>
-        <span className="text-[10px] text-wood-400">{filtered.length} registros</span>
+        <span className="text-[10px] text-[var(--admin-muted)]">{filtered.length} registros</span>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[700px]">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
                 <th className="px-4 py-3">Fecha</th>
                 <th className="px-4 py-3">Tipo</th>
                 <th className="px-4 py-3">Producto</th>
@@ -601,20 +601,20 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
             </thead>
             <tbody className="divide-y divide-wood-50">
               {paged.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-wood-400">Sin movimientos registrados</td></tr>
+                <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-[var(--admin-muted)]">Sin movimientos registrados</td></tr>
               ) : paged.map((m, i) => {
                 const cfg = MOVEMENT_TYPE_CONFIG[m.type] || MOVEMENT_TYPE_CONFIG.adjustment;
                 const isPositive = m.quantity > 0;
                 return (
-                  <tr key={m.id || i} className="hover:bg-sand-50/50 transition-colors">
-                    <td className="px-4 py-3 text-[11px] text-wood-500">{fmtDateTime(m.created_at)}</td>
+                  <tr key={m.id || i} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
+                    <td className="px-4 py-3 text-[11px] text-[var(--admin-text-secondary)]">{fmtDateTime(m.created_at)}</td>
                     <td className="px-4 py-3"><span className={`text-[10px] font-bold flex items-center gap-1 ${cfg.color}`}>{getMovementIcon(m.type, 12, cfg.color)} {cfg.label}</span></td>
-                    <td className="px-4 py-3 text-xs text-wood-900">{m.product_title}</td>
-                    <td className="px-4 py-3 text-xs text-wood-500 font-mono">{m.sku}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--admin-text)]">{m.product_title}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)] font-mono">{m.sku}</td>
                     <td className="px-4 py-3"><span className={`text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}>{isPositive ? '+' : ''}{m.quantity}</span></td>
-                    <td className="px-4 py-3 text-xs text-wood-500">{m.previous_stock} → <span className="font-bold text-wood-900">{m.new_stock}</span></td>
-                    <td className="px-4 py-3 text-[11px] text-wood-500">{m.reference || "—"}</td>
-                    <td className="px-4 py-3 text-[11px] text-wood-400">{m.created_by}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">{m.previous_stock} → <span className="font-bold text-[var(--admin-text)]">{m.new_stock}</span></td>
+                    <td className="px-4 py-3 text-[11px] text-[var(--admin-text-secondary)]">{m.reference || "—"}</td>
+                    <td className="px-4 py-3 text-[11px] text-[var(--admin-muted)]">{m.created_by}</td>
                   </tr>
                 );
               })}
@@ -624,15 +624,15 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-wood-100 flex items-center justify-between">
-            <span className="text-[10px] text-wood-400">
+          <div className="px-4 py-3 border-t border-[var(--admin-border)] flex items-center justify-between">
+            <span className="text-[10px] text-[var(--admin-muted)]">
               Página {page + 1} de {totalPages} · Mostrando {page * MOVEMENTS_PER_PAGE + 1}–{Math.min((page + 1) * MOVEMENTS_PER_PAGE, filtered.length)} de {filtered.length}
             </span>
             <div className="flex items-center gap-1">
               <button onClick={() => setPage(0)} disabled={page === 0}
-                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">«</button>
+                className="px-2 py-1 text-[10px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded disabled:opacity-30 hover:bg-[var(--admin-surface2)]">«</button>
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">‹</button>
+                className="px-2 py-1 text-[10px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded disabled:opacity-30 hover:bg-[var(--admin-surface2)]">‹</button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 const start = Math.max(0, Math.min(page - 2, totalPages - 5));
                 const idx = start + i;
@@ -640,14 +640,14 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
                 return (
                   <button key={idx} onClick={() => setPage(idx)}
                     className={`px-2.5 py-1 text-[10px] rounded border transition-colors ${
-                      page === idx ? 'bg-wood-900 text-sand-100 border-wood-900' : 'text-wood-500 border-wood-200 hover:bg-sand-50'
+                      page === idx ? 'bg-wood-900 text-sand-100 border-wood-900' : 'text-[var(--admin-text-secondary)] border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]'
                     }`}>{idx + 1}</button>
                 );
               })}
               <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">›</button>
+                className="px-2 py-1 text-[10px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded disabled:opacity-30 hover:bg-[var(--admin-surface2)]">›</button>
               <button onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}
-                className="px-2 py-1 text-[10px] text-wood-500 border border-wood-200 rounded disabled:opacity-30 hover:bg-sand-50">»</button>
+                className="px-2 py-1 text-[10px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded disabled:opacity-30 hover:bg-[var(--admin-surface2)]">»</button>
             </div>
           </div>
         )}
@@ -660,12 +660,12 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
 const AlertsTab: React.FC<{ alerts: InventoryAlert[]; onResolve: (id: string) => void }> = ({ alerts, onResolve }) => (
   <div className="space-y-3">
     {alerts.length === 0 ? (
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-12 text-center">
+      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-12 text-center">
         <CheckCircle size={32} className="text-green-400 mx-auto mb-3" />
-        <p className="text-sm text-wood-500">Sin alertas pendientes</p>
+        <p className="text-sm text-[var(--admin-text-secondary)]">Sin alertas pendientes</p>
       </div>
     ) : alerts.map(a => (
-      <div key={a.id} className={`bg-white rounded-xl border shadow-sm p-4 flex items-start gap-4 ${
+      <div key={a.id} className={`bg-[var(--admin-surface)] rounded-xl border shadow-sm p-4 flex items-start gap-4 ${
         a.severity === 'critical' ? 'border-red-200' : a.severity === 'warning' ? 'border-amber-200' : 'border-blue-200'
       }`}>
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
@@ -673,14 +673,14 @@ const AlertsTab: React.FC<{ alerts: InventoryAlert[]; onResolve: (id: string) =>
         }`}><AlertTriangle size={18} /></div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-bold text-wood-900">{a.product_title}</span>
-            <span className="text-[10px] text-wood-400 font-mono">{a.sku}</span>
+            <span className="text-xs font-bold text-[var(--admin-text)]">{a.product_title}</span>
+            <span className="text-[10px] text-[var(--admin-muted)] font-mono">{a.sku}</span>
             <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
               a.severity === 'critical' ? 'bg-red-50 text-red-500' : a.severity === 'warning' ? 'bg-amber-50 text-amber-500' : 'bg-blue-50 text-blue-500'
             }`}>{a.severity}</span>
           </div>
-          <p className="text-xs text-wood-600 mt-1">{a.message}</p>
-          <p className="text-[10px] text-wood-400 mt-1">{fmtDateTime(a.created_at)}</p>
+          <p className="text-xs text-[var(--admin-text-secondary)] mt-1">{a.message}</p>
+          <p className="text-[10px] text-[var(--admin-muted)] mt-1">{fmtDateTime(a.created_at)}</p>
         </div>
         <button onClick={() => onResolve(a.id)} className="px-3 py-1.5 text-[10px] font-bold text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors shrink-0">
           Resolver
@@ -695,47 +695,47 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
   const [newLocation, setNewLocation] = useState("");
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5 space-y-5">
-        <h4 className="text-sm font-bold text-wood-900">Umbrales y Alertas</h4>
+      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-5 space-y-5">
+        <h4 className="text-sm font-bold text-[var(--admin-text)]">Umbrales y Alertas</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Umbral stock bajo</label>
+            <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Umbral stock bajo</label>
             <input type="number" value={config.low_stock_threshold} onChange={e => onChange({ ...config, low_stock_threshold: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
           </div>
           <div>
-            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Multiplicador sobrestock</label>
+            <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Multiplicador sobrestock</label>
             <input type="number" step={0.5} value={config.overstock_multiplier} onChange={e => onChange({ ...config, overstock_multiplier: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
           </div>
           <div>
-            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Cantidad reorden default</label>
+            <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Cantidad reorden default</label>
             <input type="number" value={config.default_reorder_qty} onChange={e => onChange({ ...config, default_reorder_qty: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
           </div>
           <div>
-            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Email alertas</label>
+            <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Email alertas</label>
             <input value={config.alert_email} onChange={e => onChange({ ...config, alert_email: e.target.value })}
-              className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
           </div>
           <div>
-            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Método de valoración</label>
+            <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Método de valoración</label>
             <select value={config.valuation_method} onChange={e => onChange({ ...config, valuation_method: e.target.value as InventoryConfig['valuation_method'] })}
-              className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg outline-none">
+              className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg outline-none">
               <option value="weighted_average">Costo promedio ponderado</option>
               <option value="fifo">FIFO (primeras entradas, primeras salidas)</option>
               <option value="lifo">LIFO (últimas entradas, primeras salidas)</option>
             </select>
           </div>
           <div>
-            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Frecuencia conteo cíclico (días)</label>
+            <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Frecuencia conteo cíclico (días)</label>
             <input type="number" value={config.cyclic_count_frequency_days} onChange={e => onChange({ ...config, cyclic_count_frequency_days: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
           </div>
           <div>
-            <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Expiración reservas (horas)</label>
+            <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Expiración reservas (horas)</label>
             <input type="number" value={config.reserve_expiry_hours} onChange={e => onChange({ ...config, reserve_expiry_hours: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
           </div>
         </div>
         <div className="flex flex-wrap gap-4">
@@ -747,7 +747,7 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
             { key: 'enable_sound_alerts' as const, label: 'Sonido en alertas' },
             { key: 'auto_reserve_on_quote' as const, label: 'Reservar stock al cotizar' },
           ].map(({ key, label }) => (
-            <label key={key} className="flex items-center gap-2 text-xs text-wood-600 cursor-pointer">
+            <label key={key} className="flex items-center gap-2 text-xs text-[var(--admin-text-secondary)] cursor-pointer">
               <input type="checkbox" checked={config[key]} onChange={e => onChange({ ...config, [key]: e.target.checked })} className="accent-accent-gold" />
               {label}
             </label>
@@ -755,28 +755,28 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5 space-y-4">
-        <h4 className="text-sm font-bold text-wood-900">Ubicaciones / Almacenes</h4>
+      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-5 space-y-4">
+        <h4 className="text-sm font-bold text-[var(--admin-text)]">Ubicaciones / Almacenes</h4>
         <div className="space-y-2">
           {config.locations.map((loc, i) => (
-            <div key={i} className="flex items-center gap-3 px-4 py-2 bg-sand-50 rounded-lg">
-              <Warehouse size={14} className="text-wood-400" />
-              <span className="flex-1 text-sm text-wood-900">{loc}</span>
+            <div key={i} className="flex items-center gap-3 px-4 py-2 bg-[var(--admin-surface2)] rounded-lg">
+              <Warehouse size={14} className="text-[var(--admin-muted)]" />
+              <span className="flex-1 text-sm text-[var(--admin-text)]">{loc}</span>
               <button onClick={() => onChange({ ...config, locations: config.locations.filter((_, j) => j !== i) })}
-                className="text-wood-300 hover:text-red-500 transition-colors"><X size={14} /></button>
+                className="text-[var(--admin-muted)] hover:text-red-500 transition-colors"><X size={14} /></button>
             </div>
           ))}
         </div>
         <div className="flex items-center gap-2">
           <input value={newLocation} onChange={e => setNewLocation(e.target.value)} placeholder="Nueva ubicación..."
             onKeyDown={e => { if (e.key === 'Enter' && newLocation.trim()) { onChange({ ...config, locations: [...config.locations, newLocation.trim()] }); setNewLocation(""); } }}
-            className="flex-1 px-3 py-2 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none" />
+            className="flex-1 px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg focus:border-[var(--admin-accent)] outline-none" />
           <button onClick={() => { if (newLocation.trim()) { onChange({ ...config, locations: [...config.locations, newLocation.trim()] }); setNewLocation(""); } }}
             className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">Agregar</button>
         </div>
       </div>
 
-      <button onClick={onSave} className="px-6 py-3 bg-accent-gold text-wood-900 rounded-xl text-xs font-bold uppercase tracking-widest hover:shadow-lg transition-all">
+      <button onClick={onSave} className="px-6 py-3 bg-[var(--admin-accent)] text-[var(--admin-text)] rounded-xl text-xs font-bold uppercase tracking-widest hover:shadow-lg transition-all">
         Guardar Configuración
       </button>
     </div>

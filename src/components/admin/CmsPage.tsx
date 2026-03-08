@@ -29,17 +29,17 @@ const tabItems: Array<{ id: CmsTab; label: string; icon: React.ElementType }> = 
 
 // ===== SHARED =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-white rounded-xl border border-wood-100 shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function STitle({ children }: { children: React.ReactNode }) {
-  return <h4 className="text-sm font-medium text-wood-900 uppercase tracking-wider border-b border-wood-100 pb-2 mb-4">{children}</h4>;
+  return <h4 className="text-sm font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">{children}</h4>;
 }
 
 function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 'gray' | 'amber' | 'blue' }) {
   const cls: Record<string, string> = {
     green: 'bg-green-50 text-green-600',
-    gray: 'bg-wood-50 text-wood-500',
+    gray: 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]',
     amber: 'bg-amber-50 text-amber-600',
     blue: 'bg-blue-50 text-blue-600',
   };
@@ -136,8 +136,8 @@ function PagesTabLive() {
       if (!trimmed) return null;
       const allLines = trimmed.split('\n').filter(l => l.trim());
       const isAllList = allLines.length > 0 && allLines.every(l => l.trim().startsWith('- '));
-      if (isAllList) return <ul key={bi} className="list-disc pl-5 space-y-1 mb-3">{allLines.map((l, li) => <li key={li} className="text-wood-700 text-[11px] font-light">{l.trim().substring(2)}</li>)}</ul>;
-      return <p key={bi} className="text-wood-700 text-[11px] font-light leading-relaxed mb-3">{trimmed}</p>;
+      if (isAllList) return <ul key={bi} className="list-disc pl-5 space-y-1 mb-3">{allLines.map((l, li) => <li key={li} className="text-[var(--admin-text)] text-[11px] font-light">{l.trim().substring(2)}</li>)}</ul>;
+      return <p key={bi} className="text-[var(--admin-text)] text-[11px] font-light leading-relaxed mb-3">{trimmed}</p>;
     });
   };
 
@@ -152,31 +152,31 @@ function PagesTabLive() {
         {sectionModal && (
           <>
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setSectionModal(null)} />
-            <div className="fixed inset-0 m-auto w-full max-w-2xl h-fit max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-2xl z-[201]">
-              <div className="sticky top-0 bg-white border-b border-wood-100 px-6 py-4 flex items-center justify-between z-10 rounded-t-2xl">
-                <div><h4 className="font-serif text-lg text-wood-900">{sectionModal.isNew ? 'Nueva Sección' : 'Editar Sección'}</h4></div>
-                <button onClick={() => setSectionModal(null)} className="p-1.5 hover:bg-wood-100 rounded-lg"><X size={16} /></button>
+            <div className="fixed inset-0 m-auto w-full max-w-2xl h-fit max-h-[85vh] overflow-y-auto bg-[var(--admin-surface)] rounded-2xl shadow-2xl z-[201]">
+              <div className="sticky top-0 bg-[var(--admin-surface)] border-b border-[var(--admin-border)] px-6 py-4 flex items-center justify-between z-10 rounded-t-2xl">
+                <div><h4 className="font-serif text-lg text-[var(--admin-text)]">{sectionModal.isNew ? 'Nueva Sección' : 'Editar Sección'}</h4></div>
+                <button onClick={() => setSectionModal(null)} className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg"><X size={16} /></button>
               </div>
               <div className="p-6 space-y-5">
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">Título en sidebar</label>
-                    <input value={sectionForm.label} onChange={e => setSectionForm(f => ({ ...f, label: e.target.value, ...(sectionModal.isNew ? { id: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') } : {}) }))} className="w-full px-3 py-2.5 border border-wood-200 rounded-xl text-sm focus:ring-2 focus:ring-accent-gold/30 focus:border-accent-gold outline-none" placeholder="Ej: 1. Objeto" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">ID anchor</label>
-                    <input value={sectionForm.id} onChange={e => setSectionForm(f => ({ ...f, id: e.target.value }))} className="w-full px-3 py-2.5 border border-wood-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-accent-gold/30 focus:border-accent-gold outline-none" placeholder="objeto" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1.5 block">Título en sidebar</label>
+                    <input value={sectionForm.label} onChange={e => setSectionForm(f => ({ ...f, label: e.target.value, ...(sectionModal.isNew ? { id: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') } : {}) }))} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-xl text-sm focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none" placeholder="Ej: 1. Objeto" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1.5 block">ID anchor</label>
+                    <input value={sectionForm.id} onChange={e => setSectionForm(f => ({ ...f, id: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-xl text-sm font-mono focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none" placeholder="objeto" /></div>
                 </div>
-                <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">Contenido</label>
-                  <textarea value={sectionForm.content} onChange={e => setSectionForm(f => ({ ...f, content: e.target.value }))} rows={12} className="w-full px-4 py-3 border border-wood-200 rounded-xl text-sm leading-relaxed focus:ring-2 focus:ring-accent-gold/30 focus:border-accent-gold outline-none resize-y" placeholder={"Escribe el contenido.\n\nUsa línea vacía para separar párrafos.\n\n- Usa guiones para listas"} /></div>
+                <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1.5 block">Contenido</label>
+                  <textarea value={sectionForm.content} onChange={e => setSectionForm(f => ({ ...f, content: e.target.value }))} rows={12} className="w-full px-4 py-3 border border-[var(--admin-border)] rounded-xl text-sm leading-relaxed focus:ring-2 focus:ring-[var(--admin-accent)]/30 focus:border-[var(--admin-accent)] outline-none resize-y" placeholder={"Escribe el contenido.\n\nUsa línea vacía para separar párrafos.\n\n- Usa guiones para listas"} /></div>
                 {sectionForm.content && (
-                  <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1.5 block">Vista previa</label>
-                    <div className="p-4 bg-sand-50 rounded-xl border border-wood-100 max-h-48 overflow-y-auto">
-                      <h4 className="font-serif text-base text-wood-900 mb-3">{sectionForm.label || 'Sin título'}</h4>
+                  <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1.5 block">Vista previa</label>
+                    <div className="p-4 bg-[var(--admin-surface2)] rounded-xl border border-[var(--admin-border)] max-h-48 overflow-y-auto">
+                      <h4 className="font-serif text-base text-[var(--admin-text)] mb-3">{sectionForm.label || 'Sin título'}</h4>
                       {renderContent(sectionForm.content)}
                     </div></div>
                 )}
               </div>
-              <div className="sticky bottom-0 bg-white border-t border-wood-100 px-6 py-4 flex justify-end gap-2 rounded-b-2xl">
-                <button onClick={() => setSectionModal(null)} className="px-4 py-2.5 border border-wood-200 rounded-xl text-xs font-medium hover:bg-wood-50">Cancelar</button>
-                <button onClick={saveSectionModal} disabled={!sectionForm.label} className="px-5 py-2.5 bg-accent-gold text-white rounded-xl text-xs font-medium hover:bg-accent-gold/90 disabled:opacity-40 flex items-center gap-1.5"><Save size={12} /> {sectionModal.isNew ? 'Agregar' : 'Guardar'}</button>
+              <div className="sticky bottom-0 bg-[var(--admin-surface)] border-t border-[var(--admin-border)] px-6 py-4 flex justify-end gap-2 rounded-b-2xl">
+                <button onClick={() => setSectionModal(null)} className="px-4 py-2.5 border border-[var(--admin-border)] rounded-xl text-xs font-medium hover:bg-[var(--admin-surface2)]">Cancelar</button>
+                <button onClick={saveSectionModal} disabled={!sectionForm.label} className="px-5 py-2.5 bg-[var(--admin-accent)] text-white rounded-xl text-xs font-medium hover:bg-[var(--admin-accent)]/90 disabled:opacity-40 flex items-center gap-1.5"><Save size={12} /> {sectionModal.isNew ? 'Agregar' : 'Guardar'}</button>
               </div>
             </div>
           </>
@@ -186,11 +186,11 @@ function PagesTabLive() {
         {deleteModal !== null && (
           <>
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setDeleteModal(null)} />
-            <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-white rounded-2xl shadow-2xl z-[201] p-6">
-              <h4 className="font-serif text-lg text-wood-900 mb-2">Eliminar sección</h4>
-              <p className="text-sm text-wood-600 mb-6">¿Eliminar &ldquo;{editingPage?.sections?.[deleteModal]?.label}&rdquo;?</p>
+            <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-[var(--admin-surface)] rounded-2xl shadow-2xl z-[201] p-6">
+              <h4 className="font-serif text-lg text-[var(--admin-text)] mb-2">Eliminar sección</h4>
+              <p className="text-sm text-[var(--admin-text-secondary)] mb-6">¿Eliminar &ldquo;{editingPage?.sections?.[deleteModal]?.label}&rdquo;?</p>
               <div className="flex gap-2">
-                <button onClick={() => setDeleteModal(null)} className="flex-1 py-2.5 border border-wood-200 rounded-xl text-xs font-medium hover:bg-wood-50">Cancelar</button>
+                <button onClick={() => setDeleteModal(null)} className="flex-1 py-2.5 border border-[var(--admin-border)] rounded-xl text-xs font-medium hover:bg-[var(--admin-surface2)]">Cancelar</button>
                 <button onClick={confirmDeleteSection} className="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-xs font-medium hover:bg-red-700">Eliminar</button>
               </div>
             </div>
@@ -198,42 +198,42 @@ function PagesTabLive() {
         )}
 
         {/* Top bar */}
-        <div className="flex items-center gap-3 bg-white border border-wood-100 rounded-xl p-3">
-          <button onClick={() => { if (dirty && !confirm('¿Salir sin guardar?')) return; setEditingPage(null); setDirty(false); }} className="p-1.5 hover:bg-wood-100 rounded-lg"><ArrowLeft size={16} className="text-wood-500" /></button>
+        <div className="flex items-center gap-3 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-xl p-3">
+          <button onClick={() => { if (dirty && !confirm('¿Salir sin guardar?')) return; setEditingPage(null); setDirty(false); }} className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg"><ArrowLeft size={16} className="text-[var(--admin-text-secondary)]" /></button>
           <div className="flex-1 min-w-0">
-            <input value={editingPage.title} onChange={e => updatePage({ title: e.target.value })} className="text-sm font-medium text-wood-900 bg-transparent border-b border-transparent hover:border-wood-200 focus:border-accent-gold outline-none w-full" />
-            <p className="text-[10px] text-wood-400 font-mono">{editingPage.slug} · {TEMPLATES.find(t => t.id === editingPage.template)?.label}</p>
+            <input value={editingPage.title} onChange={e => updatePage({ title: e.target.value })} className="text-sm font-medium text-[var(--admin-text)] bg-transparent border-b border-transparent hover:border-[var(--admin-border)] focus:border-[var(--admin-accent)] outline-none w-full" />
+            <p className="text-[10px] text-[var(--admin-muted)] font-mono">{editingPage.slug} · {TEMPLATES.find(t => t.id === editingPage.template)?.label}</p>
           </div>
-          <select value={editingPage.template} onChange={e => updatePage({ template: e.target.value })} className="text-[10px] border border-wood-200 rounded-lg px-2 py-1 bg-white">
+          <select value={editingPage.template} onChange={e => updatePage({ template: e.target.value })} className="text-[10px] border border-[var(--admin-border)] rounded-lg px-2 py-1 bg-[var(--admin-surface)]">
             {TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.icon} {t.label}</option>)}
           </select>
-          <a href={editingPage.slug} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-wood-100 rounded-lg text-wood-400"><ExternalLink size={14} /></a>
-          <button onClick={handleSavePage} disabled={!dirty} className={"px-4 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 " + (dirty ? "bg-accent-gold text-white hover:bg-accent-gold/90" : "bg-wood-100 text-wood-400 cursor-default")}><Save size={12} /> Guardar</button>
+          <a href={editingPage.slug} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg text-[var(--admin-muted)]"><ExternalLink size={14} /></a>
+          <button onClick={handleSavePage} disabled={!dirty} className={"px-4 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 " + (dirty ? "bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent)]/90" : "bg-[var(--admin-surface2)] text-[var(--admin-muted)] cursor-default")}><Save size={12} /> Guardar</button>
         </div>
 
         {/* Split screen: sections editor + live preview */}
         {isLegal && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ minHeight: '70vh' }}>
             {/* LEFT — Sections list */}
-            <div className="border border-wood-100 rounded-xl bg-white overflow-hidden flex flex-col">
-              <div className="px-4 py-3 border-b border-wood-100 bg-sand-50/50 flex items-center justify-between shrink-0">
-                <div><p className="text-xs font-medium text-wood-900">Secciones</p><p className="text-[9px] text-wood-400">{sections.length} secciones · Clic para previsualizar</p></div>
-                <button onClick={() => openSectionEditor(sections.length, true)} className="px-2.5 py-1 bg-accent-gold/10 text-accent-gold rounded-lg text-[10px] font-medium hover:bg-accent-gold/20 flex items-center gap-1"><Plus size={10} /> Agregar</button>
+            <div className="border border-[var(--admin-border)] rounded-xl bg-[var(--admin-surface)] overflow-hidden flex flex-col">
+              <div className="px-4 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50 flex items-center justify-between shrink-0">
+                <div><p className="text-xs font-medium text-[var(--admin-text)]">Secciones</p><p className="text-[9px] text-[var(--admin-muted)]">{sections.length} secciones · Clic para previsualizar</p></div>
+                <button onClick={() => openSectionEditor(sections.length, true)} className="px-2.5 py-1 bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] rounded-lg text-[10px] font-medium hover:bg-[var(--admin-accent)]/20 flex items-center gap-1"><Plus size={10} /> Agregar</button>
               </div>
               <div className="flex-1 overflow-y-auto">
                 {sections.map((sec: any, idx: number) => (
-                  <div key={sec.id || idx} onClick={() => setSelectedSection(idx)} className={"flex items-center gap-2 px-4 py-3 border-b border-wood-50 cursor-pointer transition-colors group " + (selectedSection === idx ? "bg-accent-gold/5 border-l-2 border-l-accent-gold" : "hover:bg-sand-50/50 border-l-2 border-l-transparent")}>
+                  <div key={sec.id || idx} onClick={() => setSelectedSection(idx)} className={"flex items-center gap-2 px-4 py-3 border-b border-[var(--admin-border)] cursor-pointer transition-colors group " + (selectedSection === idx ? "bg-[var(--admin-accent)]/5 border-l-2 border-l-accent-gold" : "hover:bg-[var(--admin-surface2)]/50 border-l-2 border-l-transparent")}>
                     <div className="flex flex-col gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={e => { e.stopPropagation(); moveSection(idx, -1); }} disabled={idx === 0} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-20"><ChevronDown size={9} className="rotate-180" /></button>
-                      <button onClick={e => { e.stopPropagation(); moveSection(idx, 1); }} disabled={idx === sections.length - 1} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-20"><ChevronDown size={9} /></button>
+                      <button onClick={e => { e.stopPropagation(); moveSection(idx, -1); }} disabled={idx === 0} className="p-0.5 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] disabled:opacity-20"><ChevronDown size={9} className="rotate-180" /></button>
+                      <button onClick={e => { e.stopPropagation(); moveSection(idx, 1); }} disabled={idx === sections.length - 1} className="p-0.5 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] disabled:opacity-20"><ChevronDown size={9} /></button>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={"text-xs font-medium truncate " + (selectedSection === idx ? "text-accent-gold" : "text-wood-900")}>{sec.label}</p>
-                      <p className="text-[9px] text-wood-400 truncate">{(sec.content || '').substring(0, 60)}...</p>
+                      <p className={"text-xs font-medium truncate " + (selectedSection === idx ? "text-[var(--admin-accent)]" : "text-[var(--admin-text)]")}>{sec.label}</p>
+                      <p className="text-[9px] text-[var(--admin-muted)] truncate">{(sec.content || '').substring(0, 60)}...</p>
                     </div>
                     <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={e => { e.stopPropagation(); openSectionEditor(idx, false); }} className="p-1 text-wood-400 hover:text-accent-gold rounded" title="Editar"><Edit3 size={12} /></button>
-                      <button onClick={e => { e.stopPropagation(); setDeleteModal(idx); }} className="p-1 text-wood-400 hover:text-red-600 rounded" title="Eliminar"><Trash2 size={12} /></button>
+                      <button onClick={e => { e.stopPropagation(); openSectionEditor(idx, false); }} className="p-1 text-[var(--admin-muted)] hover:text-[var(--admin-accent)] rounded" title="Editar"><Edit3 size={12} /></button>
+                      <button onClick={e => { e.stopPropagation(); setDeleteModal(idx); }} className="p-1 text-[var(--admin-muted)] hover:text-red-600 rounded" title="Eliminar"><Trash2 size={12} /></button>
                     </div>
                   </div>
                 ))}
@@ -241,24 +241,24 @@ function PagesTabLive() {
             </div>
 
             {/* RIGHT — Live preview */}
-            <div className="border border-wood-100 rounded-xl bg-sand-50 overflow-hidden flex flex-col">
-              <div className="px-4 py-3 border-b border-wood-100 bg-white shrink-0">
-                <p className="text-xs font-medium text-wood-900">Vista previa en vivo</p>
-                <p className="text-[9px] text-wood-400">Los cambios se reflejan al instante</p>
+            <div className="border border-[var(--admin-border)] rounded-xl bg-[var(--admin-surface2)] overflow-hidden flex flex-col">
+              <div className="px-4 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface)] shrink-0">
+                <p className="text-xs font-medium text-[var(--admin-text)]">Vista previa en vivo</p>
+                <p className="text-[9px] text-[var(--admin-muted)]">Los cambios se reflejan al instante</p>
               </div>
               <div className="flex-1 overflow-y-auto p-6">
                 {/* Simulate LegalLayout preview */}
-                <div className="bg-white rounded-xl shadow-sm border border-wood-100 overflow-hidden" style={{ minHeight: '400px' }}>
+                <div className="bg-[var(--admin-surface)] rounded-xl shadow-sm border border-[var(--admin-border)] overflow-hidden" style={{ minHeight: '400px' }}>
                   <div className="grid grid-cols-12 gap-0">
                     {/* Sidebar preview */}
-                    <div className="col-span-4 bg-sand-50/50 border-r border-wood-100 p-5">
-                      <h2 className="font-serif text-sm text-wood-900 mb-2 leading-tight">{editingPage.title}</h2>
+                    <div className="col-span-4 bg-[var(--admin-surface2)]/50 border-r border-[var(--admin-border)] p-5">
+                      <h2 className="font-serif text-sm text-[var(--admin-text)] mb-2 leading-tight">{editingPage.title}</h2>
                       <div className="h-0.5 w-10 bg-wood-200 mb-2" />
-                      <p className="text-[8px] text-wood-400 font-mono uppercase mb-4">{editingPage.last_updated}</p>
-                      <nav className="space-y-0.5 border-l border-wood-200 pl-3">
-                        <span className="text-[7px] uppercase tracking-widest text-wood-400 mb-2 block">Contenido</span>
+                      <p className="text-[8px] text-[var(--admin-muted)] font-mono uppercase mb-4">{editingPage.last_updated}</p>
+                      <nav className="space-y-0.5 border-l border-[var(--admin-border)] pl-3">
+                        <span className="text-[7px] uppercase tracking-widest text-[var(--admin-muted)] mb-2 block">Contenido</span>
                         {sections.map((sec: any, i: number) => (
-                          <button key={i} onClick={() => setSelectedSection(i)} className={"block w-full text-left py-0.5 text-[9px] transition-colors border-l -ml-[13px] pl-3 " + (selectedSection === i ? "border-wood-900 text-wood-900 font-medium" : "border-transparent text-wood-400 hover:text-wood-600")}>{sec.label}</button>
+                          <button key={i} onClick={() => setSelectedSection(i)} className={"block w-full text-left py-0.5 text-[9px] transition-colors border-l -ml-[13px] pl-3 " + (selectedSection === i ? "border-wood-900 text-[var(--admin-text)] font-medium" : "border-transparent text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]")}>{sec.label}</button>
                         ))}
                       </nav>
                     </div>
@@ -266,20 +266,20 @@ function PagesTabLive() {
                     <div className="col-span-8 p-5">
                       {selectedSection !== null && sections[selectedSection] ? (
                         <div>
-                          <h3 className="font-serif text-base text-wood-900 mb-3">{sections[selectedSection].label}</h3>
+                          <h3 className="font-serif text-base text-[var(--admin-text)] mb-3">{sections[selectedSection].label}</h3>
                           {renderContent(sections[selectedSection].content)}
                         </div>
                       ) : sections.length > 0 ? (
                         <div className="space-y-8">
                           {sections.map((sec: any, i: number) => (
-                            <div key={i} className={"scroll-mt-4 " + (selectedSection === i ? "ring-2 ring-accent-gold/20 rounded-lg p-3 -m-3" : "")}>
-                              <h3 className="font-serif text-base text-wood-900 mb-3">{sec.label}</h3>
+                            <div key={i} className={"scroll-mt-4 " + (selectedSection === i ? "ring-2 ring-[var(--admin-accent)]/20 rounded-lg p-3 -m-3" : "")}>
+                              <h3 className="font-serif text-base text-[var(--admin-text)] mb-3">{sec.label}</h3>
                               {renderContent(sec.content)}
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div className="text-center py-16 text-wood-300">
+                        <div className="text-center py-16 text-[var(--admin-muted)]">
                           <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
                           <p className="text-xs">Sin secciones</p>
                         </div>
@@ -295,8 +295,8 @@ function PagesTabLive() {
         {/* Non-legal pages: simple info */}
         {!isLegal && (
           <Card className="p-8 text-center">
-            <p className="text-sm text-wood-500">Editor visual disponible para plantilla "Legal (sidebar)".</p>
-            <p className="text-xs text-wood-400 mt-1">Otras plantillas próximamente.</p>
+            <p className="text-sm text-[var(--admin-text-secondary)]">Editor visual disponible para plantilla "Legal (sidebar)".</p>
+            <p className="text-xs text-[var(--admin-muted)] mt-1">Otras plantillas próximamente.</p>
           </Card>
         )}
       </div>
@@ -306,33 +306,33 @@ function PagesTabLive() {
   // ═══ PAGE LIST ═══
   const editablePages = pages.filter(p => p.is_editable);
   const systemPages = pages.filter(p => !p.is_editable);
-  if (loading) return <Card className="p-12 text-center text-wood-400">Cargando páginas...</Card>;
+  if (loading) return <Card className="p-12 text-center text-[var(--admin-muted)]">Cargando páginas...</Card>;
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-wood-500">{pages.length} páginas ({editablePages.length} editables)</p>
+      <p className="text-sm text-[var(--admin-text-secondary)]">{pages.length} páginas ({editablePages.length} editables)</p>
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas Editables</p></div>
+        <div className="px-5 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50"><p className="text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">Páginas Editables</p></div>
         {editablePages.map(p => (
-          <div key={p.id} className="flex items-center gap-3 px-5 py-3.5 border-b border-wood-50 hover:bg-sand-50/30 transition-colors cursor-pointer group" onClick={() => { setEditingPage({ ...p }); setSelectedSection(null); setDirty(false); }}>
-            <div className="w-8 h-8 bg-wood-100 rounded-lg flex items-center justify-center text-xs text-wood-500 shrink-0">{TEMPLATES.find(t => t.id === p.template)?.icon || '?'}</div>
+          <div key={p.id} className="flex items-center gap-3 px-5 py-3.5 border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30 transition-colors cursor-pointer group" onClick={() => { setEditingPage({ ...p }); setSelectedSection(null); setDirty(false); }}>
+            <div className="w-8 h-8 bg-[var(--admin-surface2)] rounded-lg flex items-center justify-center text-xs text-[var(--admin-text-secondary)] shrink-0">{TEMPLATES.find(t => t.id === p.template)?.icon || '?'}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-wood-900 group-hover:text-accent-gold transition-colors">{p.title}</p>
-              <p className="text-[10px] text-wood-400 font-mono">{p.slug} · {(p.sections || []).length} secciones</p>
+              <p className="text-sm font-medium text-[var(--admin-text)] group-hover:text-[var(--admin-accent)] transition-colors">{p.title}</p>
+              <p className="text-[10px] text-[var(--admin-muted)] font-mono">{p.slug} · {(p.sections || []).length} secciones</p>
             </div>
             <Badge text={TEMPLATES.find(t => t.id === p.template)?.label || p.template} variant="blue" />
             <Badge text={p.status === 'published' ? 'Publicada' : 'Borrador'} variant={p.status === 'published' ? 'green' : 'amber'} />
-            <ChevronRight size={14} className="text-wood-300 group-hover:text-accent-gold transition-colors" />
+            <ChevronRight size={14} className="text-[var(--admin-muted)] group-hover:text-[var(--admin-accent)] transition-colors" />
           </div>
         ))}
       </Card>
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100 bg-sand-50/50"><p className="text-[10px] font-bold uppercase tracking-wider text-wood-500">Páginas del Sistema</p></div>
+        <div className="px-5 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50"><p className="text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">Páginas del Sistema</p></div>
         {systemPages.map(p => (
-          <div key={p.id} className="flex items-center gap-3 px-5 py-2.5 border-b border-wood-50 opacity-60">
-            <Settings2 size={14} className="text-wood-300 shrink-0" />
-            <p className="text-xs text-wood-500 flex-1">{p.title}</p>
-            <p className="text-[10px] text-wood-300 font-mono">{p.slug}</p>
+          <div key={p.id} className="flex items-center gap-3 px-5 py-2.5 border-b border-[var(--admin-border)] opacity-60">
+            <Settings2 size={14} className="text-[var(--admin-muted)] shrink-0" />
+            <p className="text-xs text-[var(--admin-text-secondary)] flex-1">{p.title}</p>
+            <p className="text-[10px] text-[var(--admin-muted)] font-mono">{p.slug}</p>
           </div>
         ))}
       </Card>
@@ -394,7 +394,7 @@ function MenusTabLive() {
     setEditModal(null);
   };
 
-  if (loading) return <Card className="p-12 text-center text-wood-400">Cargando menús...</Card>;
+  if (loading) return <Card className="p-12 text-center text-[var(--admin-muted)]">Cargando menús...</Card>;
 
   return (
     <div className="space-y-6">
@@ -402,30 +402,30 @@ function MenusTabLive() {
       {editModal && (
         <>
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setEditModal(null)} />
-          <div className="fixed inset-0 m-auto w-full max-w-md h-fit bg-white rounded-2xl shadow-2xl z-[201] overflow-hidden">
-            <div className="px-6 py-4 border-b border-wood-100 flex items-center justify-between">
-              <h4 className="font-serif text-lg text-wood-900">Editar Enlace</h4>
-              <button onClick={() => setEditModal(null)} className="p-1.5 hover:bg-wood-100 rounded-lg"><X size={16} /></button>
+          <div className="fixed inset-0 m-auto w-full max-w-md h-fit bg-[var(--admin-surface)] rounded-2xl shadow-2xl z-[201] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[var(--admin-border)] flex items-center justify-between">
+              <h4 className="font-serif text-lg text-[var(--admin-text)]">Editar Enlace</h4>
+              <button onClick={() => setEditModal(null)} className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg"><X size={16} /></button>
             </div>
             <div className="p-6 space-y-4">
-              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Texto del enlace</label>
-                <input value={editModal.item.label} onChange={e => setEditModal(m => m ? { ...m, item: { ...m.item, label: e.target.value } } : null)} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm" placeholder="Ej: Sobre Nosotros" /></div>
-              <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">URL destino</label>
-                <input value={editModal.item.url} onChange={e => setEditModal(m => m ? { ...m, item: { ...m.item, url: e.target.value } } : null)} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm font-mono" placeholder="/about" /></div>
-              <div className="flex items-center justify-between p-3 bg-sand-50 rounded-lg">
-                <div><p className="text-xs font-medium text-wood-900">Visible</p><p className="text-[10px] text-wood-400">Mostrar en el menú</p></div>
+              <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">Texto del enlace</label>
+                <input value={editModal.item.label} onChange={e => setEditModal(m => m ? { ...m, item: { ...m.item, label: e.target.value } } : null)} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm" placeholder="Ej: Sobre Nosotros" /></div>
+              <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">URL destino</label>
+                <input value={editModal.item.url} onChange={e => setEditModal(m => m ? { ...m, item: { ...m.item, url: e.target.value } } : null)} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm font-mono" placeholder="/about" /></div>
+              <div className="flex items-center justify-between p-3 bg-[var(--admin-surface2)] rounded-lg">
+                <div><p className="text-xs font-medium text-[var(--admin-text)]">Visible</p><p className="text-[10px] text-[var(--admin-muted)]">Mostrar en el menú</p></div>
                 <button onClick={() => setEditModal(m => m ? { ...m, item: { ...m.item, is_visible: !m.item.is_visible } } : null)} className={"w-9 h-5 rounded-full transition-colors" + (editModal.item.is_visible ? "bg-green-500" : "bg-wood-200")}>
-                  <div className={"w-4 h-4 bg-white rounded-full shadow transition-transform" + (editModal.item.is_visible ? "translate-x-4" : "translate-x-0.5")} /></button>
+                  <div className={"w-4 h-4 bg-[var(--admin-surface)] rounded-full shadow transition-transform" + (editModal.item.is_visible ? "translate-x-4" : "translate-x-0.5")} /></button>
               </div>
-              <div className="flex items-center justify-between p-3 bg-sand-50 rounded-lg">
-                <div><p className="text-xs font-medium text-wood-900">Abrir en nueva pestaña</p></div>
+              <div className="flex items-center justify-between p-3 bg-[var(--admin-surface2)] rounded-lg">
+                <div><p className="text-xs font-medium text-[var(--admin-text)]">Abrir en nueva pestaña</p></div>
                 <button onClick={() => setEditModal(m => m ? { ...m, item: { ...m.item, open_new_tab: !m.item.open_new_tab } } : null)} className={"w-9 h-5 rounded-full transition-colors" + (editModal.item.open_new_tab ? "bg-green-500" : "bg-wood-200")}>
-                  <div className={"w-4 h-4 bg-white rounded-full shadow transition-transform" + (editModal.item.open_new_tab ? "translate-x-4" : "translate-x-0.5")} /></button>
+                  <div className={"w-4 h-4 bg-[var(--admin-surface)] rounded-full shadow transition-transform" + (editModal.item.open_new_tab ? "translate-x-4" : "translate-x-0.5")} /></button>
               </div>
             </div>
-            <div className="px-6 py-4 border-t border-wood-100 flex justify-end gap-2">
-              <button onClick={() => setEditModal(null)} className="px-4 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
-              <button onClick={saveEditModal} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1"><Save size={12} /> Guardar</button>
+            <div className="px-6 py-4 border-t border-[var(--admin-border)] flex justify-end gap-2">
+              <button onClick={() => setEditModal(null)} className="px-4 py-2 border border-[var(--admin-border)] rounded-lg text-xs font-medium hover:bg-[var(--admin-surface2)]">Cancelar</button>
+              <button onClick={saveEditModal} className="px-4 py-2 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1"><Save size={12} /> Guardar</button>
             </div>
           </div>
         </>
@@ -435,12 +435,12 @@ function MenusTabLive() {
       {deleteModal && (
         <>
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]" onClick={() => setDeleteModal(null)} />
-          <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-white rounded-2xl shadow-2xl z-[201] p-6">
-            <h4 className="font-serif text-lg text-wood-900 mb-3">Eliminar Enlace</h4>
-            <p className="text-sm text-wood-600 mb-1">¿Eliminar <strong>"{deleteModal.item.label}"</strong> del menú?</p>
-            <p className="text-xs text-wood-400 mb-6">Recuerda guardar el menú para aplicar el cambio.</p>
+          <div className="fixed inset-0 m-auto w-full max-w-sm h-fit bg-[var(--admin-surface)] rounded-2xl shadow-2xl z-[201] p-6">
+            <h4 className="font-serif text-lg text-[var(--admin-text)] mb-3">Eliminar Enlace</h4>
+            <p className="text-sm text-[var(--admin-text-secondary)] mb-1">¿Eliminar <strong>"{deleteModal.item.label}"</strong> del menú?</p>
+            <p className="text-xs text-[var(--admin-muted)] mb-6">Recuerda guardar el menú para aplicar el cambio.</p>
             <div className="flex gap-2">
-              <button onClick={() => setDeleteModal(null)} className="flex-1 py-2 border border-wood-200 rounded-lg text-xs font-medium hover:bg-wood-50">Cancelar</button>
+              <button onClick={() => setDeleteModal(null)} className="flex-1 py-2 border border-[var(--admin-border)] rounded-lg text-xs font-medium hover:bg-[var(--admin-surface2)]">Cancelar</button>
               <button onClick={removeItem} className="flex-1 py-2 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700">Eliminar</button>
             </div>
           </div>
@@ -452,27 +452,27 @@ function MenusTabLive() {
           <STitle>{g.label}</STitle>
           <div className="space-y-2">
             {(menus[g.key] || []).map((item, idx) => (
-              <div key={item.id || idx} className={"flex items-center gap-2 p-2.5 rounded-lg transition-colors group" + (item.is_visible ? "bg-sand-50 hover:bg-sand-100" : "bg-wood-50 opacity-60")}>
-                <GripVertical size={14} className="text-wood-300 shrink-0 cursor-grab" />
+              <div key={item.id || idx} className={"flex items-center gap-2 p-2.5 rounded-lg transition-colors group" + (item.is_visible ? "bg-[var(--admin-surface2)] hover:bg-[var(--admin-surface2)]" : "bg-[var(--admin-surface2)] opacity-60")}>
+                <GripVertical size={14} className="text-[var(--admin-muted)] shrink-0 cursor-grab" />
                 <div className="flex-1 min-w-0">
-                  <p className={"text-xs font-medium" + (item.is_visible ? "text-wood-900" : "text-wood-400 line-through")}>{item.label}</p>
-                  <p className="text-[10px] text-wood-400 font-mono">{item.url}</p>
+                  <p className={"text-xs font-medium" + (item.is_visible ? "text-[var(--admin-text)]" : "text-[var(--admin-muted)] line-through")}>{item.label}</p>
+                  <p className="text-[10px] text-[var(--admin-muted)] font-mono">{item.url}</p>
                 </div>
                 {!item.is_visible && <Badge text="Oculto" variant="gray" />}
-                <button onClick={() => toggleVisibility(g.key, idx)} className="p-1.5 rounded-lg hover:bg-wood-100 text-wood-400 transition-colors" title={item.is_visible ? 'Ocultar' : 'Mostrar'}>
+                <button onClick={() => toggleVisibility(g.key, idx)} className="p-1.5 rounded-lg hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] transition-colors" title={item.is_visible ? 'Ocultar' : 'Mostrar'}>
                   {item.is_visible ? <Eye size={13} /> : <EyeOff size={13} />}
                 </button>
-                <button onClick={() => setEditModal({ group: g.key, idx, item: { ...item } })} className="p-1.5 rounded-lg hover:bg-wood-100 text-wood-400 hover:text-accent-gold transition-colors" title="Editar">
+                <button onClick={() => setEditModal({ group: g.key, idx, item: { ...item } })} className="p-1.5 rounded-lg hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] hover:text-[var(--admin-accent)] transition-colors" title="Editar">
                   <Edit3 size={13} />
                 </button>
-                <button onClick={() => setDeleteModal({ group: g.key, idx, item })} className="p-1.5 rounded-lg hover:bg-red-50 text-wood-400 hover:text-red-600 transition-colors" title="Eliminar">
+                <button onClick={() => setDeleteModal({ group: g.key, idx, item })} className="p-1.5 rounded-lg hover:bg-red-50 text-[var(--admin-muted)] hover:text-red-600 transition-colors" title="Eliminar">
                   <Trash2 size={13} />
                 </button>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-3 mt-3">
-            <button onClick={() => addItem(g.key)} className="text-xs text-accent-gold hover:underline flex items-center gap-1"><Plus size={12} /> Agregar enlace</button>
+            <button onClick={() => addItem(g.key)} className="text-xs text-[var(--admin-accent)] hover:underline flex items-center gap-1"><Plus size={12} /> Agregar enlace</button>
             <div className="flex-1" />
             <button onClick={() => handleSave(g.key)} disabled={saving} className="text-xs bg-wood-900 text-white px-3 py-1.5 rounded-lg hover:bg-wood-800 disabled:opacity-50 flex items-center gap-1"><Save size={12} /> Guardar menú</button>
           </div>
@@ -525,15 +525,15 @@ function HomepageTabLive() {
     newsletter: Type, custom: Layout,
   };
 
-  if (loading) return <Card className="p-12 text-center text-wood-400">Cargando secciones...</Card>;
+  if (loading) return <Card className="p-12 text-center text-[var(--admin-muted)]">Cargando secciones...</Card>;
 
   return (
     <div className="space-y-4">
       {sections.length === 0 ? (
         <Card className="p-12 text-center">
-          <Home size={32} className="mx-auto mb-3 text-wood-200" />
-          <p className="text-sm text-wood-500">No hay secciones configuradas.</p>
-          <p className="text-xs text-wood-400 mt-1">Ejecuta el SQL seed para crear las secciones iniciales del homepage.</p>
+          <Home size={32} className="mx-auto mb-3 text-[var(--admin-muted)]" />
+          <p className="text-sm text-[var(--admin-text-secondary)]">No hay secciones configuradas.</p>
+          <p className="text-xs text-[var(--admin-muted)] mt-1">Ejecuta el SQL seed para crear las secciones iniciales del homepage.</p>
         </Card>
       ) : (
         <>
@@ -542,23 +542,23 @@ function HomepageTabLive() {
             return (
               <Card key={s.id || idx} className={`p-5 flex items-center gap-4 ${!s.is_visible ? 'opacity-50' : ''}`}>
                 <div className="flex flex-col gap-1">
-                  <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronRight size={14} className="rotate-[-90deg]" /></button>
-                  <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1} className="p-0.5 text-wood-300 hover:text-wood-600 disabled:opacity-30"><ChevronRight size={14} className="rotate-90" /></button>
+                  <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-0.5 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] disabled:opacity-30"><ChevronRight size={14} className="rotate-[-90deg]" /></button>
+                  <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1} className="p-0.5 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] disabled:opacity-30"><ChevronRight size={14} className="rotate-90" /></button>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-sand-100 flex items-center justify-center">
-                  <Icon size={18} className="text-wood-400" />
+                <div className="w-10 h-10 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center">
+                  <Icon size={18} className="text-[var(--admin-muted)]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-wood-900">{s.title || s.section_type}</p>
-                  <p className="text-[10px] text-wood-400 uppercase tracking-wider">{s.section_type}</p>
+                  <p className="text-sm font-medium text-[var(--admin-text)]">{s.title || s.section_type}</p>
+                  <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">{s.section_type}</p>
                 </div>
-                <button onClick={() => toggleVisibility(idx)} className={`text-xs px-2 py-1 rounded-full ${s.is_visible ? 'bg-green-50 text-green-600' : 'bg-wood-50 text-wood-400'}`}>
+                <button onClick={() => toggleVisibility(idx)} className={`text-xs px-2 py-1 rounded-full ${s.is_visible ? 'bg-green-50 text-green-600' : 'bg-[var(--admin-surface2)] text-[var(--admin-muted)]'}`}>
                   {s.is_visible ? 'Visible' : 'Oculta'}
                 </button>
               </Card>
             );
           })}
-          <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 disabled:opacity-50 flex items-center gap-1.5">
+          <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 disabled:opacity-50 flex items-center gap-1.5">
             <Save size={12} /> Guardar orden y visibilidad
           </button>
         </>
@@ -597,24 +597,24 @@ function BlogTabLive() {
     return (
       <Card className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h4 className="font-serif text-lg text-wood-900">{editing?.id ? 'Editar Post' : 'Nuevo Post'}</h4>
-          <button onClick={() => setEditing(null)} className="text-wood-400 hover:text-wood-900"><X size={18} /></button>
+          <h4 className="font-serif text-lg text-[var(--admin-text)]">{editing?.id ? 'Editar Post' : 'Nuevo Post'}</h4>
+          <button onClick={() => setEditing(null)} className="text-[var(--admin-muted)] hover:text-[var(--admin-text)]"><X size={18} /></button>
         </div>
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Título</label><input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
-          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Slug</label><input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
+          <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">Título</label><input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm" /></div>
+          <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">Slug</label><input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm" /></div>
         </div>
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Categoría</label><input value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
-          <div><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Tags (separados por coma)</label><input value={form.tags} onChange={e => setForm(f => ({ ...f, tags: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
+          <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">Categoría</label><input value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm" /></div>
+          <div><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">Tags (separados por coma)</label><input value={form.tags} onChange={e => setForm(f => ({ ...f, tags: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm" /></div>
         </div>
-        <div className="mb-4"><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Extracto</label><input value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm" /></div>
-        <div className="mb-4"><label className="text-[10px] font-bold uppercase text-wood-500 mb-1 block">Contenido</label><textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={10} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm font-mono" /></div>
+        <div className="mb-4"><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">Extracto</label><input value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm" /></div>
+        <div className="mb-4"><label className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)] mb-1 block">Contenido</label><textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={10} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm font-mono" /></div>
         <div className="flex items-center gap-3">
-          <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="px-3 py-2 border border-wood-200 rounded-lg text-sm">
+          <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm">
             <option value="draft">Borrador</option><option value="published">Publicado</option><option value="archived">Archivado</option>
           </select>
-          <button onClick={handleSave} className="px-4 py-2 bg-accent-gold text-white rounded-lg text-sm font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Save size={14} /> Guardar</button>
+          <button onClick={handleSave} className="px-4 py-2 bg-[var(--admin-accent)] text-white rounded-lg text-sm font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1.5"><Save size={14} /> Guardar</button>
         </div>
       </Card>
     );
@@ -623,23 +623,23 @@ function BlogTabLive() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-wood-500">{posts.length} publicaciones</p>
-        <button onClick={() => { setForm({ title: '', slug: '', excerpt: '', body: '', status: 'draft', category: '', tags: '' }); setEditing({}); }} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Post</button>
+        <p className="text-sm text-[var(--admin-text-secondary)]">{posts.length} publicaciones</p>
+        <button onClick={() => { setForm({ title: '', slug: '', excerpt: '', body: '', status: 'draft', category: '', tags: '' }); setEditing({}); }} className="px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Post</button>
       </div>
-      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : posts.length === 0 ? (
-        <Card className="p-12 text-center"><PenLine className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500 mb-2">Sin publicaciones aún</p><button onClick={() => { setForm({ title: '', slug: '', excerpt: '', body: '', status: 'draft', category: '', tags: '' }); setEditing({}); }} className="text-accent-gold text-sm font-medium hover:underline">Crear primera publicación</button></Card>
+      {loading ? <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando...</Card> : posts.length === 0 ? (
+        <Card className="p-12 text-center"><PenLine className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)] mb-2">Sin publicaciones aún</p><button onClick={() => { setForm({ title: '', slug: '', excerpt: '', body: '', status: 'draft', category: '', tags: '' }); setEditing({}); }} className="text-[var(--admin-accent)] text-sm font-medium hover:underline">Crear primera publicación</button></Card>
       ) : (
-        <Card className="divide-y divide-wood-100">
+        <Card className="divide-y divide-[var(--admin-border)]">
           {posts.map(p => (
-            <div key={p.id} className="p-4 flex items-center justify-between hover:bg-wood-50/50 transition-colors">
+            <div key={p.id} className="p-4 flex items-center justify-between hover:bg-[var(--admin-surface2)]/50 transition-colors">
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-wood-900 truncate">{p.title}</p>
-                <p className="text-[10px] text-wood-400 mt-0.5">{p.slug} · {p.category || 'Sin categoría'} · {new Date(p.created_at).toLocaleDateString('es-MX')}</p>
+                <p className="text-sm font-medium text-[var(--admin-text)] truncate">{p.title}</p>
+                <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{p.slug} · {p.category || 'Sin categoría'} · {new Date(p.created_at).toLocaleDateString('es-MX')}</p>
               </div>
               <div className="flex items-center gap-2 ml-4">
                 <Badge text={p.status === 'published' ? 'Publicado' : p.status === 'archived' ? 'Archivado' : 'Borrador'} variant={p.status === 'published' ? 'green' : p.status === 'archived' ? 'gray' : 'amber'} />
-                <button onClick={() => { setForm({ title: p.title, slug: p.slug, excerpt: p.excerpt || '', body: p.body || '', status: p.status, category: p.category || '', tags: (p.tags || []).join(', ') }); setEditing(p); }} className="p-1.5 text-wood-400 hover:text-wood-900 hover:bg-wood-100 rounded-lg"><Edit3 size={14} /></button>
-                <button onClick={() => handleDelete(p.id)} className="p-1.5 text-wood-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+                <button onClick={() => { setForm({ title: p.title, slug: p.slug, excerpt: p.excerpt || '', body: p.body || '', status: p.status, category: p.category || '', tags: (p.tags || []).join(', ') }); setEditing(p); }} className="p-1.5 text-[var(--admin-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-surface2)] rounded-lg"><Edit3 size={14} /></button>
+                <button onClick={() => handleDelete(p.id)} className="p-1.5 text-[var(--admin-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
               </div>
             </div>
           ))}
@@ -674,23 +674,23 @@ function PopupsTabLive() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-wood-500">{popups.length} pop-ups configurados</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Pop-up</button>
+        <p className="text-sm text-[var(--admin-text-secondary)]">{popups.length} pop-ups configurados</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Pop-up</button>
       </div>
-      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : popups.length === 0 ? (
-        <Card className="p-12 text-center"><MessageSquare className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin pop-ups configurados</p></Card>
+      {loading ? <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando...</Card> : popups.length === 0 ? (
+        <Card className="p-12 text-center"><MessageSquare className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)]">Sin pop-ups configurados</p></Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {popups.map(p => (
             <Card key={p.id} className="p-5">
               <div className="flex items-start justify-between mb-3">
-                <div><p className="text-sm font-medium text-wood-900">{p.name}</p><p className="text-[10px] text-wood-400 mt-0.5">{p.type} · trigger: {p.trigger_type} ({p.trigger_value})</p></div>
+                <div><p className="text-sm font-medium text-[var(--admin-text)]">{p.name}</p><p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{p.type} · trigger: {p.trigger_type} ({p.trigger_value})</p></div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => handleToggle(p)} className={`w-9 h-5 rounded-full transition-colors ${p.is_active ? 'bg-green-500' : 'bg-wood-200'}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform ${p.is_active ? 'translate-x-4' : 'translate-x-0.5'}`} /></button>
-                  <button onClick={() => handleDelete(p.id)} className="p-1 text-wood-400 hover:text-red-600"><Trash2 size={14} /></button>
+                  <button onClick={() => handleToggle(p)} className={`w-9 h-5 rounded-full transition-colors ${p.is_active ? 'bg-green-500' : 'bg-wood-200'}`}><div className={`w-4 h-4 bg-[var(--admin-surface)] rounded-full transition-transform ${p.is_active ? 'translate-x-4' : 'translate-x-0.5'}`} /></button>
+                  <button onClick={() => handleDelete(p.id)} className="p-1 text-[var(--admin-muted)] hover:text-red-600"><Trash2 size={14} /></button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-[10px] text-wood-400">
+              <div className="flex items-center gap-2 text-[10px] text-[var(--admin-muted)]">
                 <Badge text={p.is_active ? 'Activo' : 'Inactivo'} variant={p.is_active ? 'green' : 'gray'} />
                 <span>Mostrar en: {(p.show_on || ['/']).join(', ')}</span>
               </div>
@@ -714,20 +714,20 @@ function MediaTabLive() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-wood-500">{files.length} archivos</p>
-        <p className="text-[10px] text-wood-400">Subir archivos desde Supabase Storage Dashboard</p>
+        <p className="text-sm text-[var(--admin-text-secondary)]">{files.length} archivos</p>
+        <p className="text-[10px] text-[var(--admin-muted)]">Subir archivos desde Supabase Storage Dashboard</p>
       </div>
-      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : files.length === 0 ? (
-        <Card className="p-12 text-center"><ImageIcon className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500 mb-2">Sin archivos en media</p><p className="text-[10px] text-wood-400">Sube archivos desde el dashboard de Supabase Storage (bucket: media)</p></Card>
+      {loading ? <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando...</Card> : files.length === 0 ? (
+        <Card className="p-12 text-center"><ImageIcon className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)] mb-2">Sin archivos en media</p><p className="text-[10px] text-[var(--admin-muted)]">Sube archivos desde el dashboard de Supabase Storage (bucket: media)</p></Card>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {files.map(f => (
             <Card key={f.id} className="overflow-hidden group">
-              <div className="aspect-square bg-wood-50 flex items-center justify-center relative">
-                {isImage(f.name) ? <img src={f.url} alt={f.name} className="w-full h-full object-cover" /> : <FileText className="w-8 h-8 text-wood-300" />}
+              <div className="aspect-square bg-[var(--admin-surface2)] flex items-center justify-center relative">
+                {isImage(f.name) ? <img src={f.url} alt={f.name} className="w-full h-full object-cover" /> : <FileText className="w-8 h-8 text-[var(--admin-muted)]" />}
                 <a href={f.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/0 group-hover:bg-black/20 flex items-center justify-center transition-colors"><ExternalLink className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" /></a>
               </div>
-              <div className="p-2"><p className="text-[10px] text-wood-700 truncate font-medium">{f.name}</p><p className="text-[9px] text-wood-400">{fmtSize(f.size)}</p></div>
+              <div className="p-2"><p className="text-[10px] text-[var(--admin-text)] truncate font-medium">{f.name}</p><p className="text-[9px] text-[var(--admin-muted)]">{fmtSize(f.size)}</p></div>
             </Card>
           ))}
         </div>
@@ -762,30 +762,30 @@ function TextsTabLive() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-wood-500">{texts.length} textos en {sections.length} secciones</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-accent-gold text-white rounded-lg text-xs font-medium hover:bg-accent-gold/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Texto</button>
+        <p className="text-sm text-[var(--admin-text-secondary)]">{texts.length} textos en {sections.length} secciones</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1.5"><Plus size={12} /> Nuevo Texto</button>
       </div>
-      {loading ? <Card className="p-8 text-center text-wood-400">Cargando...</Card> : texts.length === 0 ? (
-        <Card className="p-12 text-center"><Type className="w-10 h-10 text-wood-200 mx-auto mb-3" /><p className="text-sm text-wood-500">Sin textos configurados</p></Card>
+      {loading ? <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando...</Card> : texts.length === 0 ? (
+        <Card className="p-12 text-center"><Type className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)]">Sin textos configurados</p></Card>
       ) : sections.map(section => (
         <Card key={section} className="overflow-hidden">
-          <div className="bg-wood-50 px-4 py-2 border-b border-wood-100"><STitle>{section}</STitle></div>
+          <div className="bg-[var(--admin-surface2)] px-4 py-2 border-b border-[var(--admin-border)]"><STitle>{section}</STitle></div>
           <div className="divide-y divide-wood-50">
             {texts.filter(t => t.section === section).map(t => (
-              <div key={t.id} className="p-3 flex items-center gap-4 hover:bg-wood-50/30 transition-colors">
-                <code className="text-[10px] text-wood-400 font-mono w-40 truncate shrink-0">{t.key}</code>
+              <div key={t.id} className="p-3 flex items-center gap-4 hover:bg-[var(--admin-surface2)]/30 transition-colors">
+                <code className="text-[10px] text-[var(--admin-muted)] font-mono w-40 truncate shrink-0">{t.key}</code>
                 {editId === t.id ? (
                   <div className="flex-1 flex items-center gap-2">
-                    <input value={editValues.value_es} onChange={e => setEditValues(v => ({ ...v, value_es: e.target.value }))} className="flex-1 px-2 py-1 border border-wood-200 rounded text-sm" placeholder="Español" />
-                    <input value={editValues.value_en} onChange={e => setEditValues(v => ({ ...v, value_en: e.target.value }))} className="flex-1 px-2 py-1 border border-wood-200 rounded text-sm" placeholder="English" />
+                    <input value={editValues.value_es} onChange={e => setEditValues(v => ({ ...v, value_es: e.target.value }))} className="flex-1 px-2 py-1 border border-[var(--admin-border)] rounded text-sm" placeholder="Español" />
+                    <input value={editValues.value_en} onChange={e => setEditValues(v => ({ ...v, value_en: e.target.value }))} className="flex-1 px-2 py-1 border border-[var(--admin-border)] rounded text-sm" placeholder="English" />
                     <button onClick={() => handleSave(t.id)} className="p-1 text-green-600 hover:bg-green-50 rounded"><Check size={16} /></button>
-                    <button onClick={() => setEditId(null)} className="p-1 text-wood-400 hover:bg-wood-100 rounded"><X size={16} /></button>
+                    <button onClick={() => setEditId(null)} className="p-1 text-[var(--admin-muted)] hover:bg-[var(--admin-surface2)] rounded"><X size={16} /></button>
                   </div>
                 ) : (
                   <div className="flex-1 flex items-center gap-4 min-w-0">
-                    <span className="text-sm text-wood-700 truncate flex-1">{t.value_es || '—'}</span>
-                    <span className="text-sm text-wood-400 truncate flex-1">{t.value_en || '—'}</span>
-                    <button onClick={() => { setEditId(t.id); setEditValues({ value_es: t.value_es || '', value_en: t.value_en || '' }); }} className="p-1 text-wood-400 hover:text-wood-900"><Edit3 size={14} /></button>
+                    <span className="text-sm text-[var(--admin-text)] truncate flex-1">{t.value_es || '—'}</span>
+                    <span className="text-sm text-[var(--admin-muted)] truncate flex-1">{t.value_en || '—'}</span>
+                    <button onClick={() => { setEditId(t.id); setEditValues({ value_es: t.value_es || '', value_en: t.value_en || '' }); }} className="p-1 text-[var(--admin-muted)] hover:text-[var(--admin-text)]"><Edit3 size={14} /></button>
                   </div>
                 )}
               </div>
@@ -803,7 +803,7 @@ function SeoTabLive() {
 
   useEffect(() => { fetch('/api/admin/cms?type=seo').then(r => r.ok ? r.json() : null).then(d => { if (d) setSeo(d.seo); }).catch(() => {}).finally(() => setLoading(false)); }, []);
 
-  if (loading) return <Card className="p-8 text-center text-wood-400">Cargando...</Card>;
+  if (loading) return <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando...</Card>;
 
   const items = seo ? [
     { label: 'Dominio', value: seo.domain, icon: Globe },
@@ -817,26 +817,26 @@ function SeoTabLive() {
   return (
     <div className="space-y-4">
       <Card className="p-6">
-        <h4 className="font-serif text-lg text-wood-900 mb-4 flex items-center gap-2"><Search size={18} className="text-accent-gold" /> SEO Global</h4>
+        <h4 className="font-serif text-lg text-[var(--admin-text)] mb-4 flex items-center gap-2"><Search size={18} className="text-[var(--admin-accent)]" /> SEO Global</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {items.map(item => (
-            <div key={item.label} className="flex items-start gap-3 p-3 bg-wood-50 rounded-lg">
-              <item.icon size={16} className="text-wood-400 mt-0.5 shrink-0" />
-              <div><p className="text-[10px] font-bold uppercase text-wood-500">{item.label}</p><p className="text-sm text-wood-900">{item.value}</p></div>
+            <div key={item.label} className="flex items-start gap-3 p-3 bg-[var(--admin-surface2)] rounded-lg">
+              <item.icon size={16} className="text-[var(--admin-muted)] mt-0.5 shrink-0" />
+              <div><p className="text-[10px] font-bold uppercase text-[var(--admin-text-secondary)]">{item.label}</p><p className="text-sm text-[var(--admin-text)]">{item.value}</p></div>
             </div>
           ))}
         </div>
       </Card>
       <Card className="p-6">
-        <h4 className="text-sm font-medium text-wood-900 mb-3">Archivos SEO</h4>
+        <h4 className="text-sm font-medium text-[var(--admin-text)] mb-3">Archivos SEO</h4>
         <div className="space-y-2">
           {seo && [
             { label: 'Sitemap', url: seo.sitemap },
             { label: 'Robots.txt', url: seo.robots },
           ].map(f => (
-            <a key={f.label} href={f.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 bg-wood-50 rounded-lg hover:bg-wood-100 transition-colors group">
-              <span className="text-sm text-wood-700">{f.label}</span>
-              <ExternalLink size={14} className="text-wood-400 group-hover:text-accent-gold" />
+            <a key={f.label} href={f.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 bg-[var(--admin-surface2)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors group">
+              <span className="text-sm text-[var(--admin-text)]">{f.label}</span>
+              <ExternalLink size={14} className="text-[var(--admin-muted)] group-hover:text-[var(--admin-accent)]" />
             </a>
           ))}
         </div>
@@ -849,11 +849,11 @@ function SeoTabLive() {
 function CmsComingSoon({ title, description }: { title: string; description: string }) {
   return (
     <Card className="p-12 text-center">
-      <div className="w-16 h-16 mx-auto mb-4 bg-wood-50 rounded-2xl flex items-center justify-center">
-        <Settings2 className="w-8 h-8 text-wood-300" />
+      <div className="w-16 h-16 mx-auto mb-4 bg-[var(--admin-surface2)] rounded-2xl flex items-center justify-center">
+        <Settings2 className="w-8 h-8 text-[var(--admin-muted)]" />
       </div>
-      <h4 className="text-lg font-serif text-wood-900 mb-2">{title}</h4>
-      <p className="text-sm text-wood-500 max-w-md mx-auto mb-4">{description}</p>
+      <h4 className="text-lg font-serif text-[var(--admin-text)] mb-2">{title}</h4>
+      <p className="text-sm text-[var(--admin-text-secondary)] max-w-md mx-auto mb-4">{description}</p>
       <Badge text="Próximamente" variant="amber" />
     </Card>
   );
@@ -885,11 +885,11 @@ export const CmsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-wood-900 flex items-center gap-2">
-          <FileText size={20} className="text-accent-gold" /> CMS - Contenido del Sitio
+        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
+          <FileText size={20} className="text-[var(--admin-accent)]" /> CMS - Contenido del Sitio
         </h3>
         {activeTab === 'pages' && (
-          <button onClick={() => toast.success('Creando nueva pagina...')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
+          <button onClick={() => toast.success('Creando nueva pagina...')} className="px-3 py-1.5 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5">
             <Plus size={12} /> Nueva Pagina
           </button>
         )}
@@ -897,7 +897,7 @@ export const CmsPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="overflow-x-auto -mx-1 px-1">
-        <div className="flex gap-1 min-w-max border-b border-wood-100">
+        <div className="flex gap-1 min-w-max border-b border-[var(--admin-border)]">
           {tabItems.map((t) => (
             <button
               key={t.id}
@@ -905,8 +905,8 @@ export const CmsPage: React.FC = () => {
               className={
                 'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 whitespace-nowrap ' +
                 (activeTab === t.id
-                  ? 'border-accent-gold text-accent-gold font-medium'
-                  : 'border-transparent text-wood-500 hover:text-wood-700')
+                  ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium'
+                  : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')
               }
             >
               <t.icon size={14} />{t.label}

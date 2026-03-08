@@ -251,7 +251,7 @@ export default function AdminShippingPage() {
         <button
           onClick={fetchOrders}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-[#EFEBE9] rounded-lg text-[13px] text-[#5D4037] hover:bg-[#FAFAF8] transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--admin-surface)] border border-[#EFEBE9] rounded-lg text-[13px] text-[#5D4037] hover:bg-[#FAFAF8] transition-colors disabled:opacity-50"
         >
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           Actualizar
@@ -260,7 +260,7 @@ export default function AdminShippingPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white border border-[#EFEBE9] rounded-lg p-5">
+        <div className="bg-[var(--admin-surface)] border border-[#EFEBE9] rounded-lg p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
               <Clock size={18} className="text-amber-600" />
@@ -271,7 +271,7 @@ export default function AdminShippingPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white border border-[#EFEBE9] rounded-lg p-5">
+        <div className="bg-[var(--admin-surface)] border border-[#EFEBE9] rounded-lg p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
               <Truck size={18} className="text-green-600" />
@@ -282,7 +282,7 @@ export default function AdminShippingPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white border border-[#EFEBE9] rounded-lg p-5">
+        <div className="bg-[var(--admin-surface)] border border-[#EFEBE9] rounded-lg p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
               <Package size={18} className="text-blue-600" />
@@ -298,7 +298,7 @@ export default function AdminShippingPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-white border border-[#EFEBE9] rounded-lg p-1 w-fit">
+      <div className="flex gap-1 mb-6 bg-[var(--admin-surface)] border border-[#EFEBE9] rounded-lg p-1 w-fit">
         <button
           onClick={() => setActiveTab("pending")}
           className={`px-4 py-2 rounded text-[13px] font-medium transition-colors ${
@@ -338,7 +338,7 @@ export default function AdminShippingPage() {
 
       {/* Empty state */}
       {!loading && orders.length === 0 && (
-        <div className="bg-white border border-[#EFEBE9] rounded-lg p-12 text-center">
+        <div className="bg-[var(--admin-surface)] border border-[#EFEBE9] rounded-lg p-12 text-center">
           {activeTab === "pending" ? (
             <>
               <CheckCircle size={40} className="mx-auto mb-4 text-green-400" />
@@ -376,7 +376,7 @@ export default function AdminShippingPage() {
             return (
               <div
                 key={order.id}
-                className="bg-white border border-[#EFEBE9] rounded-lg overflow-hidden"
+                className="bg-[var(--admin-surface)] border border-[#EFEBE9] rounded-lg overflow-hidden"
               >
                 {/* Order row — clickable header */}
                 <button
@@ -460,7 +460,7 @@ export default function AdminShippingPage() {
                           {order.items.map((item) => (
                             <div
                               key={item.id}
-                              className="flex items-center gap-3 bg-white rounded p-2 border border-[#EFEBE9]"
+                              className="flex items-center gap-3 bg-[var(--admin-surface)] rounded p-2 border border-[#EFEBE9]"
                             >
                               {item.thumbnail ? (
                                 <img
@@ -515,7 +515,7 @@ export default function AdminShippingPage() {
                         <h3 className="text-[11px] uppercase tracking-wider text-[#A1887F] mb-3 font-semibold">
                           Dirección de envío
                         </h3>
-                        <div className="bg-white rounded p-4 border border-[#EFEBE9] space-y-1">
+                        <div className="bg-[var(--admin-surface)] rounded p-4 border border-[#EFEBE9] space-y-1">
                           <p className="text-[14px] font-semibold text-[#2d2419]">
                             {addr.first_name} {addr.last_name}
                           </p>
@@ -533,7 +533,7 @@ export default function AdminShippingPage() {
                         </div>
 
                         {order.shipping_method && (
-                          <div className="mt-3 bg-white rounded p-3 border border-[#EFEBE9]">
+                          <div className="mt-3 bg-[var(--admin-surface)] rounded p-3 border border-[#EFEBE9]">
                             <p className="text-[11px] uppercase tracking-wider text-[#A1887F] mb-1">
                               Método seleccionado
                             </p>
@@ -608,7 +608,7 @@ export default function AdminShippingPage() {
                                   className={`flex items-center gap-3 p-3 rounded border cursor-pointer transition-colors ${
                                     selectedCarrier === c.value
                                       ? "bg-[#2d2419] text-white border-[#2d2419]"
-                                      : "bg-white border-[#EFEBE9] text-[#2d2419] hover:border-[#795548]"
+                                      : "bg-[var(--admin-surface)] border-[#EFEBE9] text-[#2d2419] hover:border-[#795548]"
                                   }`}
                                 >
                                   <input

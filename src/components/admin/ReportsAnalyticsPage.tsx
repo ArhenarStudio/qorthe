@@ -247,7 +247,7 @@ const widgetCategories = [
 // ===== SHARED COMPONENTS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={'bg-white rounded-xl border border-wood-100 shadow-sm ' + className}>
+    <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>
       {children}
     </div>
   );
@@ -255,7 +255,7 @@ function Card({ children, className = '' }: { children: React.ReactNode; classNa
 
 function STitle({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="text-sm font-medium text-wood-900 uppercase tracking-wider border-b border-wood-100 pb-2 mb-4">
+    <h4 className="text-sm font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">
       {children}
     </h4>
   );
@@ -293,7 +293,7 @@ function ResumenTab() {
       {/* Scorecard */}
       <Card className="p-5">
         <STitle>Scorecard de Negocio - Febrero 2026</STitle>
-        <p className="text-[10px] text-wood-400 mb-4 -mt-2 flex items-center gap-3">
+        <p className="text-[10px] text-[var(--admin-muted)] mb-4 -mt-2 flex items-center gap-3">
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-green-500" /> En meta</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Cerca (&lt;10% debajo)</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Debajo de meta</span>
@@ -316,11 +316,11 @@ function ResumenTab() {
             >
               <div className="flex items-center gap-1.5 mb-1.5">
                 <StatusDot status={s.status} />
-                <span className="text-[10px] font-medium text-wood-700 uppercase tracking-wider">{s.area}</span>
+                <span className="text-[10px] font-medium text-[var(--admin-text)] uppercase tracking-wider">{s.area}</span>
               </div>
-              <p className="text-sm font-semibold text-wood-900">{s.value}</p>
-              <p className="text-[10px] text-wood-500">{s.metric} {s.met ? '(ok)' : '(!)'}</p>
-              <p className="text-[10px] text-wood-400">{s.delta}</p>
+              <p className="text-sm font-semibold text-[var(--admin-text)]">{s.value}</p>
+              <p className="text-[10px] text-[var(--admin-text-secondary)]">{s.metric} {s.met ? '(ok)' : '(!)'}</p>
+              <p className="text-[10px] text-[var(--admin-muted)]">{s.delta}</p>
             </motion.div>
           ))}
         </div>
@@ -331,7 +331,7 @@ function ResumenTab() {
         <STitle>Tendencias clave (30 dias)</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sparklineData.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 bg-sand-50 rounded-lg">
+            <div key={i} className="flex items-center gap-3 p-3 bg-[var(--admin-surface2)] rounded-lg">
               <div className="w-24 h-8 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={s.data.map((v, j) => ({ v, i: j }))}>
@@ -345,8 +345,8 @@ function ResumenTab() {
                 </ResponsiveContainer>
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] text-wood-400 truncate">{s.label}</p>
-                <p className="text-sm font-semibold text-wood-900">{s.value}</p>
+                <p className="text-[10px] text-[var(--admin-muted)] truncate">{s.label}</p>
+                <p className="text-sm font-semibold text-[var(--admin-text)]">{s.value}</p>
               </div>
             </div>
           ))}
@@ -365,13 +365,13 @@ function ResumenTab() {
 
       {/* Comparison table */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100">
+        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
           <STitle>Comparativa: Actual vs Anterior</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                 <th className="px-5 py-2">Metrica</th>
                 <th className="px-5 py-2 text-right">Actual</th>
                 <th className="px-5 py-2 text-right">Anterior</th>
@@ -381,14 +381,14 @@ function ResumenTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {comparisonTable.map((r) => (
-                <tr key={r.metric} className="hover:bg-sand-50/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{r.metric}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-900 text-right font-mono">{r.actual}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500 text-right font-mono">{r.prev}</td>
+                <tr key={r.metric} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{r.metric}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text)] text-right font-mono">{r.actual}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right font-mono">{r.prev}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={r.up ? 'text-green-600' : 'text-red-500'}>{r.change}</span>
                   </td>
-                  <td className="px-5 py-2.5 text-[10px] text-wood-500 flex items-center gap-1">
+                  <td className="px-5 py-2.5 text-[10px] text-[var(--admin-text-secondary)] flex items-center gap-1">
                     {r.up ? <ArrowUpRight size={10} className="text-green-600" /> : <ArrowDownRight size={10} className="text-red-500" />}
                     {r.trend}
                   </td>
@@ -413,12 +413,12 @@ function VentasTab() {
           {funnelData.map((step, i) => (
             <div key={step.name}>
               <div className="flex items-center justify-between text-xs mb-1">
-                <span className="text-wood-700 font-medium">{step.name}</span>
-                <span className="text-wood-900 font-mono">
-                  {step.value.toLocaleString()} <span className="text-wood-400">({step.pct}%)</span>
+                <span className="text-[var(--admin-text)] font-medium">{step.name}</span>
+                <span className="text-[var(--admin-text)] font-mono">
+                  {step.value.toLocaleString()} <span className="text-[var(--admin-muted)]">({step.pct}%)</span>
                 </span>
               </div>
-              <div className="w-full bg-wood-50 rounded-full h-6 overflow-hidden">
+              <div className="w-full bg-[var(--admin-surface2)] rounded-full h-6 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: step.pct + '%' }}
@@ -461,13 +461,13 @@ function VentasTab() {
 
       {/* Traffic Sources */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100">
+        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
           <STitle>Ventas por fuente de trafico</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                 <th className="px-5 py-2">Fuente</th>
                 <th className="px-5 py-2 text-right">Ingresos</th>
                 <th className="px-5 py-2 text-right">%</th>
@@ -477,16 +477,16 @@ function VentasTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {trafficSources.map((t) => (
-                <tr key={t.source} className="hover:bg-sand-50/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{t.source}</td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-wood-900 text-right">{fmt(t.revenue)}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-500 text-right">{t.pct}%</td>
+                <tr key={t.source} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{t.source}</td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--admin-text)] text-right">{fmt(t.revenue)}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{t.pct}%</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={'px-1.5 py-0.5 rounded-full ' + (t.conv >= 4 ? 'bg-green-50 text-green-600' : t.conv >= 2.5 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500')}>
                       {t.conv}%
                     </span>
                   </td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-wood-600 text-right">{fmt(t.ticket)}</td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--admin-text-secondary)] text-right">{fmt(t.ticket)}</td>
                 </tr>
               ))}
             </tbody>
@@ -502,35 +502,35 @@ function VentasTab() {
         <STitle>Analisis de carritos abandonados</STitle>
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-[10px] text-wood-400 uppercase">Carritos abandonados</p>
-            <p className="text-xl font-semibold text-wood-900 font-sans">518</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Carritos abandonados</p>
+            <p className="text-xl font-semibold text-[var(--admin-text)] font-sans">518</p>
           </div>
           <div>
-            <p className="text-[10px] text-wood-400 uppercase">Valor total abandonado</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Valor total abandonado</p>
             <p className="text-xl font-semibold text-red-500 font-sans">$456,800</p>
           </div>
         </div>
-        <h6 className="text-xs font-medium text-wood-700 mb-2">Productos mas abandonados:</h6>
+        <h6 className="text-xs font-medium text-[var(--admin-text)] mb-2">Productos mas abandonados:</h6>
         <div className="space-y-2 mb-4">
           {abandonedProducts.map((p) => (
-            <div key={p.product} className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg text-xs">
-              <span className="text-wood-900">{p.product} ({fmt(p.price)})</span>
-              <span className="text-wood-600">
-                {p.abandons} abandonos{p.reason && <span className="text-wood-400 ml-1">- {p.reason}</span>}
+            <div key={p.product} className="flex items-center justify-between p-2.5 bg-[var(--admin-surface2)] rounded-lg text-xs">
+              <span className="text-[var(--admin-text)]">{p.product} ({fmt(p.price)})</span>
+              <span className="text-[var(--admin-text-secondary)]">
+                {p.abandons} abandonos{p.reason && <span className="text-[var(--admin-muted)] ml-1">- {p.reason}</span>}
               </span>
             </div>
           ))}
         </div>
-        <h6 className="text-xs font-medium text-wood-700 mb-2">Punto de abandono:</h6>
+        <h6 className="text-xs font-medium text-[var(--admin-text)] mb-2">Punto de abandono:</h6>
         <div className="space-y-2">
           {abandonReasons.map((r) => (
             <div key={r.reason}>
               <div className="flex items-center justify-between text-xs mb-0.5">
-                <span className="text-wood-600">{r.reason}</span>
-                <span className="font-medium text-wood-900">{r.pct}%</span>
+                <span className="text-[var(--admin-text-secondary)]">{r.reason}</span>
+                <span className="font-medium text-[var(--admin-text)]">{r.pct}%</span>
               </div>
-              <div className="w-full bg-wood-50 rounded-full h-2">
-                <div className="bg-accent-gold h-2 rounded-full" style={{ width: r.pct + '%' }} />
+              <div className="w-full bg-[var(--admin-surface2)] rounded-full h-2">
+                <div className="bg-[var(--admin-accent)] h-2 rounded-full" style={{ width: r.pct + '%' }} />
               </div>
             </div>
           ))}
@@ -542,10 +542,10 @@ function VentasTab() {
         <STitle>Dispositivos y plataformas</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {deviceData.map((d) => (
-            <div key={d.device} className="p-4 bg-sand-50 rounded-xl text-center">
-              <d.icon size={24} className="mx-auto text-wood-500 mb-2" />
-              <p className="text-sm font-semibold text-wood-900">{d.device}</p>
-              <div className="mt-2 space-y-1 text-xs text-wood-600">
+            <div key={d.device} className="p-4 bg-[var(--admin-surface2)] rounded-xl text-center">
+              <d.icon size={24} className="mx-auto text-[var(--admin-text-secondary)] mb-2" />
+              <p className="text-sm font-semibold text-[var(--admin-text)]">{d.device}</p>
+              <div className="mt-2 space-y-1 text-xs text-[var(--admin-text-secondary)]">
                 <p>{d.traffic}% trafico</p>
                 <p>{d.sales}% ventas</p>
                 <p className={'font-medium ' + (d.conv >= 3 ? 'text-green-600' : 'text-amber-600')}>{d.conv}% conversion</p>
@@ -566,8 +566,8 @@ function ClientesTab() {
       {/* Acquisition */}
       <Card className="p-5">
         <STitle>Adquisicion de clientes</STitle>
-        <div className="flex items-center gap-4 mb-3 text-xs text-wood-600">
-          <span>Total nuevos (periodo): <span className="font-semibold text-wood-900">18</span></span>
+        <div className="flex items-center gap-4 mb-3 text-xs text-[var(--admin-text-secondary)]">
+          <span>Total nuevos (periodo): <span className="font-semibold text-[var(--admin-text)]">18</span></span>
           <span>Costo de adquisicion est.: <span className="font-semibold text-green-600">$0</span> (organico)</span>
         </div>
         <div className="h-48">
@@ -589,7 +589,7 @@ function ClientesTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">
                 <th className="py-2 pr-4">Cohorte</th>
                 {['Mes 0', 'Mes 1', 'Mes 2', 'Mes 3', 'Mes 4', 'Mes 5', 'Mes 6'].map((m) => (
                   <th key={m} className="py-2 text-center px-2">{m}</th>
@@ -598,8 +598,8 @@ function ClientesTab() {
             </thead>
             <tbody>
               {cohortData.map((c) => (
-                <tr key={c.cohort} className="border-t border-wood-50">
-                  <td className="py-2 pr-4 text-xs font-medium text-wood-900 whitespace-nowrap">{c.cohort}</td>
+                <tr key={c.cohort} className="border-t border-[var(--admin-border)]">
+                  <td className="py-2 pr-4 text-xs font-medium text-[var(--admin-text)] whitespace-nowrap">{c.cohort}</td>
                   {c.months.map((v, i) => (
                     <td key={i} className="py-2 px-2 text-center">
                       {v !== null ? (
@@ -613,7 +613,7 @@ function ClientesTab() {
                           {v}%
                         </span>
                       ) : (
-                        <span className="text-wood-200">&mdash;</span>
+                        <span className="text-[var(--admin-muted)]">&mdash;</span>
                       )}
                     </td>
                   ))}
@@ -630,18 +630,18 @@ function ClientesTab() {
         <STitle>Analisis RFM (Recencia, Frecuencia, Monetizacion)</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
           {rfmSegments.map((s) => (
-            <div key={s.segment} className="p-3 rounded-xl border border-wood-100">
+            <div key={s.segment} className="p-3 rounded-xl border border-[var(--admin-border)]">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-                <span className="text-xs font-medium text-wood-900">{s.segment}</span>
-                <span className="text-[10px] text-wood-400">({s.desc})</span>
+                <span className="text-xs font-medium text-[var(--admin-text)]">{s.segment}</span>
+                <span className="text-[10px] text-[var(--admin-muted)]">({s.desc})</span>
               </div>
-              <div className="text-[10px] text-wood-600 space-y-0.5">
+              <div className="text-[10px] text-[var(--admin-text-secondary)] space-y-0.5">
                 <p>{s.clients} clientes ({s.pct}%)</p>
                 <p>{fmt(s.revenue)} ({s.revPct}% ingresos)</p>
               </div>
-              <div className="mt-2 p-2 bg-sand-50 rounded text-[10px] text-wood-500">
-                <span className="font-medium text-wood-700">Accion:</span> {s.action}
+              <div className="mt-2 p-2 bg-[var(--admin-surface2)] rounded text-[10px] text-[var(--admin-text-secondary)]">
+                <span className="font-medium text-[var(--admin-text)]">Accion:</span> {s.action}
               </div>
             </div>
           ))}
@@ -674,13 +674,13 @@ function ClientesTab() {
         <STitle>Distribucion geografica de clientes</STitle>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {geoData.map((g) => (
-            <div key={g.city} className="p-3 bg-sand-50 rounded-lg">
+            <div key={g.city} className="p-3 bg-[var(--admin-surface2)] rounded-lg">
               <div className="flex items-center gap-1.5 mb-1">
-                <MapPin size={12} className="text-accent-gold" />
-                <span className="text-xs font-medium text-wood-900">{g.city}</span>
+                <MapPin size={12} className="text-[var(--admin-accent)]" />
+                <span className="text-xs font-medium text-[var(--admin-text)]">{g.city}</span>
               </div>
-              <p className="text-lg font-semibold text-wood-900 font-sans">{g.clients}</p>
-              <p className="text-[10px] text-wood-400">{g.pct}% del total</p>
+              <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">{g.clients}</p>
+              <p className="text-[10px] text-[var(--admin-muted)]">{g.pct}% del total</p>
             </div>
           ))}
         </div>
@@ -731,12 +731,12 @@ function ProductosTab() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
           {(['star', 'cow', 'question', 'dog'] as const).map((cat) => (
-            <div key={cat} className="p-3 rounded-lg border border-wood-100">
+            <div key={cat} className="p-3 rounded-lg border border-[var(--admin-border)]">
               <p className="text-xs font-medium mb-1" style={{ color: catColors[cat] }}>{catLabels[cat]}</p>
               <div className="space-y-1">
                 {bcgProducts.filter((p) => p.category === cat).map((p) => (
-                  <p key={p.name} className="text-[10px] text-wood-600">
-                    {p.name} <span className="text-wood-400">({p.growth > 0 ? '+' : ''}{p.growth}%, {p.share}%)</span>
+                  <p key={p.name} className="text-[10px] text-[var(--admin-text-secondary)]">
+                    {p.name} <span className="text-[var(--admin-muted)]">({p.growth > 0 ? '+' : ''}{p.growth}%, {p.share}%)</span>
                   </p>
                 ))}
               </div>
@@ -793,13 +793,13 @@ function ProductosTab() {
       {/* Cross-sell */}
       <Card className="p-5">
         <STitle>Cross-sell / Afinidad de productos</STitle>
-        <p className="text-xs text-wood-500 mb-3">"Los que compraron X tambien compraron Y"</p>
+        <p className="text-xs text-[var(--admin-text-secondary)] mb-3">"Los que compraron X tambien compraron Y"</p>
         <div className="space-y-3">
           {crossSellData.map((c) => (
-            <div key={c.product} className="flex items-center gap-3 p-3 bg-sand-50 rounded-lg text-xs">
-              <span className="font-medium text-wood-900">{c.product}</span>
-              <ChevronRight size={14} className="text-wood-400" />
-              <span className="text-wood-700">{c.pct}% tambien compro <span className="font-medium">{c.related}</span></span>
+            <div key={c.product} className="flex items-center gap-3 p-3 bg-[var(--admin-surface2)] rounded-lg text-xs">
+              <span className="font-medium text-[var(--admin-text)]">{c.product}</span>
+              <ChevronRight size={14} className="text-[var(--admin-muted)]" />
+              <span className="text-[var(--admin-text)]">{c.pct}% tambien compro <span className="font-medium">{c.related}</span></span>
             </div>
           ))}
         </div>
@@ -808,13 +808,13 @@ function ProductosTab() {
 
       {/* Sell-through */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100">
+        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
           <STitle>Velocidad de venta (sell-through rate)</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                 <th className="px-5 py-2">Producto</th>
                 <th className="px-5 py-2 text-right">Stock inicio</th>
                 <th className="px-5 py-2 text-right">Vendidos</th>
@@ -824,16 +824,16 @@ function ProductosTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {sellThroughData.map((p) => (
-                <tr key={p.product} className="hover:bg-sand-50/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{p.product}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{p.stockStart}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{p.sold}</td>
+                <tr key={p.product} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{p.product}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{p.stockStart}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{p.sold}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={'px-1.5 py-0.5 rounded-full ' + (p.level === 'green' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500')}>
                       {p.sellThrough}%
                     </span>
                   </td>
-                  <td className="px-5 py-2.5 text-xs text-wood-600 text-right">
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">
                     {p.daysToEmpty >= 999 ? '(no se vende)' : '~' + p.daysToEmpty + ' dias'}
                   </td>
                 </tr>
@@ -855,11 +855,11 @@ function OperacionesTab() {
         <STitle>SLA de Tiempos</STitle>
         <div className="space-y-3">
           {slaData.map((s) => (
-            <div key={s.name} className="flex items-center justify-between p-3 bg-sand-50 rounded-lg">
-              <span className="text-xs text-wood-700">{s.name}</span>
+            <div key={s.name} className="flex items-center justify-between p-3 bg-[var(--admin-surface2)] rounded-lg">
+              <span className="text-xs text-[var(--admin-text)]">{s.name}</span>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-medium text-wood-900">{s.actual}</span>
-                <span className="text-[10px] text-wood-400">Meta: {s.target}</span>
+                <span className="text-xs font-mono font-medium text-[var(--admin-text)]">{s.actual}</span>
+                <span className="text-[10px] text-[var(--admin-muted)]">Meta: {s.target}</span>
                 {s.met ? (
                   <CheckCircle size={14} className="text-green-500" />
                 ) : (
@@ -889,18 +889,18 @@ function OperacionesTab() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <p className="text-xs text-wood-500 mt-2">68% en &lt;5 dias | 22% en 5-7 dias | 10% en &gt;7 dias</p>
+        <p className="text-xs text-[var(--admin-text-secondary)] mt-2">68% en &lt;5 dias | 22% en 5-7 dias | 10% en &gt;7 dias</p>
       </Card>
 
       {/* Carrier performance */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100">
+        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
           <STitle>Rendimiento por carrier</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                 <th className="px-5 py-2">Carrier</th>
                 <th className="px-5 py-2 text-right">Envios</th>
                 <th className="px-5 py-2 text-right">Prom. entrega</th>
@@ -912,24 +912,24 @@ function OperacionesTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {carrierPerformance.map((c) => (
-                <tr key={c.carrier} className="hover:bg-sand-50/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-wood-900">{c.carrier}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{c.shipments}</td>
-                  <td className="px-5 py-2.5 text-xs text-wood-600 text-right">{c.avgDelivery}</td>
+                <tr key={c.carrier} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{c.carrier}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{c.shipments}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{c.avgDelivery}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={'px-1.5 py-0.5 rounded-full ' + (c.onTime >= 90 ? 'bg-green-50 text-green-600' : c.onTime >= 80 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500')}>
                       {c.onTime}%
                     </span>
                   </td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className={c.problemPct > 10 ? 'text-red-500' : 'text-wood-600'}>
+                    <span className={c.problemPct > 10 ? 'text-red-500' : 'text-[var(--admin-text-secondary)]'}>
                       {c.problems} ({c.problemPct}%)
                     </span>
                   </td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-wood-600 text-right">{fmt(c.costAvg)}</td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--admin-text-secondary)] text-right">{fmt(c.costAvg)}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className="flex items-center justify-end gap-0.5">
-                      <Star size={10} className="text-accent-gold fill-accent-gold" />{c.rating}
+                      <Star size={10} className="text-[var(--admin-accent)] fill-accent-gold" />{c.rating}
                     </span>
                   </td>
                 </tr>
@@ -947,11 +947,11 @@ function OperacionesTab() {
         <STitle>Tasa de problemas</STitle>
         <div className="space-y-2">
           {problemRates.map((p) => (
-            <div key={p.name} className="flex items-center justify-between p-3 bg-sand-50 rounded-lg text-xs">
-              <span className="text-wood-700">{p.name}</span>
+            <div key={p.name} className="flex items-center justify-between p-3 bg-[var(--admin-surface2)] rounded-lg text-xs">
+              <span className="text-[var(--admin-text)]">{p.name}</span>
               <div className="flex items-center gap-3">
-                <span className="font-mono font-medium text-wood-900">{p.actual}</span>
-                <span className="text-[10px] text-wood-400">Meta: {p.target}</span>
+                <span className="font-mono font-medium text-[var(--admin-text)]">{p.actual}</span>
+                <span className="text-[10px] text-[var(--admin-muted)]">Meta: {p.target}</span>
                 {p.met ? (
                   <CheckCircle size={14} className="text-green-500" />
                 ) : (
@@ -968,28 +968,28 @@ function OperacionesTab() {
         <STitle>Capacidad del taller</STitle>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <div>
-            <p className="text-[10px] text-wood-400 uppercase">En produccion</p>
-            <p className="text-lg font-semibold text-wood-900 font-sans">8 pedidos</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase">En produccion</p>
+            <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">8 pedidos</p>
           </div>
           <div>
-            <p className="text-[10px] text-wood-400 uppercase">Cotizaciones en prod.</p>
-            <p className="text-lg font-semibold text-wood-900 font-sans">1 (5 piezas)</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Cotizaciones en prod.</p>
+            <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">1 (5 piezas)</p>
           </div>
           <div>
-            <p className="text-[10px] text-wood-400 uppercase">Capacidad estimada</p>
-            <p className="text-lg font-semibold text-wood-900 font-sans">12 simultaneos</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Capacidad estimada</p>
+            <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">12 simultaneos</p>
           </div>
           <div>
-            <p className="text-[10px] text-wood-400 uppercase">Utilizacion</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Utilizacion</p>
             <p className="text-lg font-semibold text-green-600 font-sans">67%</p>
           </div>
         </div>
-        <div className="w-full bg-wood-50 rounded-full h-4 mb-3">
+        <div className="w-full bg-[var(--admin-surface2)] rounded-full h-4 mb-3">
           <div className="bg-green-500 h-4 rounded-full flex items-center justify-center" style={{ width: '67%' }}>
             <span className="text-[10px] text-white font-medium">67%</span>
           </div>
         </div>
-        <p className="text-xs text-wood-600 mb-2">
+        <p className="text-xs text-[var(--admin-text-secondary)] mb-2">
           Cuello de botella: <span className="font-medium">Grabado laser</span> (1 maquina, 45 grabados este mes)
         </p>
         <Insight text="Si las ventas siguen creciendo +18%, necesitaras un 3er artesano o ampliar las horas del taller en ~3 meses." type="warning" />
@@ -1010,13 +1010,13 @@ function CustomTab() {
             <button
               key={d.id}
               onClick={() => toast.success('Abriendo "' + d.name + '"...')}
-              className="p-4 bg-sand-50 rounded-xl text-left hover:bg-sand-100 transition-colors border border-transparent hover:border-accent-gold/30"
+              className="p-4 bg-[var(--admin-surface2)] rounded-xl text-left hover:bg-[var(--admin-surface2)] transition-colors border border-transparent hover:border-[var(--admin-accent)]/30"
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-medium bg-accent-gold/10 text-accent-gold px-1.5 py-0.5 rounded">{d.icon}</span>
-                <span className="text-xs font-medium text-wood-900">{d.name}</span>
+                <span className="text-xs font-medium bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] px-1.5 py-0.5 rounded">{d.icon}</span>
+                <span className="text-xs font-medium text-[var(--admin-text)]">{d.name}</span>
               </div>
-              <p className="text-[10px] text-wood-400">{d.widgets} widgets</p>
+              <p className="text-[10px] text-[var(--admin-muted)]">{d.widgets} widgets</p>
             </button>
           ))}
         </div>
@@ -1026,23 +1026,23 @@ function CustomTab() {
       <Card className="p-5">
         <STitle>Crear / Editar Dashboard</STitle>
         <div className="mb-4">
-          <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Nombre del dashboard</label>
+          <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Nombre del dashboard</label>
           <input
             type="text"
             defaultValue="Mi Resumen Diario"
-            className="w-full max-w-md border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white"
+            className="w-full max-w-md border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]"
           />
         </div>
 
-        <h6 className="text-xs font-medium text-wood-700 mb-3">Widgets disponibles (arrastrar al canvas)</h6>
+        <h6 className="text-xs font-medium text-[var(--admin-text)] mb-3">Widgets disponibles (arrastrar al canvas)</h6>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           {widgetCategories.map((cat) => (
-            <div key={cat.category} className="p-3 bg-sand-50 rounded-xl">
-              <p className="text-xs font-medium text-wood-700 mb-2">{cat.category}</p>
+            <div key={cat.category} className="p-3 bg-[var(--admin-surface2)] rounded-xl">
+              <p className="text-xs font-medium text-[var(--admin-text)] mb-2">{cat.category}</p>
               <div className="space-y-1.5">
                 {cat.items.map((item) => (
-                  <div key={item} className="flex items-center gap-2 p-2 bg-white rounded-lg border border-wood-100 text-[10px] text-wood-600 hover:border-accent-gold/40 transition-colors">
-                    <GripVertical size={10} className="text-wood-300" />
+                  <div key={item} className="flex items-center gap-2 p-2 bg-[var(--admin-surface)] rounded-lg border border-[var(--admin-border)] text-[10px] text-[var(--admin-text-secondary)] hover:border-[var(--admin-accent)]/40 transition-colors">
+                    <GripVertical size={10} className="text-[var(--admin-muted)]" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -1052,40 +1052,40 @@ function CustomTab() {
         </div>
 
         {/* Placeholder canvas */}
-        <div className="border-2 border-dashed border-wood-200 rounded-xl p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
+        <div className="border-2 border-dashed border-[var(--admin-border)] rounded-xl p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl mb-4">
             {[
               { title: 'Ingresos Hoy', value: '$5,200', type: 'KPI' },
               { title: 'Pedidos Pendientes', value: '8', type: 'KPI' },
               { title: 'Stock Bajo', value: '3 productos', type: 'Alerta' },
             ].map((w, i) => (
-              <div key={i} className="bg-white p-3 rounded-lg border border-wood-100 shadow-sm text-left">
+              <div key={i} className="bg-[var(--admin-surface)] p-3 rounded-lg border border-[var(--admin-border)] shadow-sm text-left">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] text-wood-400 uppercase">{w.type}</span>
-                  <GripVertical size={10} className="text-wood-300" />
+                  <span className="text-[9px] text-[var(--admin-muted)] uppercase">{w.type}</span>
+                  <GripVertical size={10} className="text-[var(--admin-muted)]" />
                 </div>
-                <p className="text-sm font-semibold text-wood-900">{w.value}</p>
-                <p className="text-[10px] text-wood-500">{w.title}</p>
+                <p className="text-sm font-semibold text-[var(--admin-text)]">{w.value}</p>
+                <p className="text-[10px] text-[var(--admin-text-secondary)]">{w.title}</p>
               </div>
             ))}
           </div>
-          <p className="text-xs text-wood-400">Arrastra widgets aqui para construir tu dashboard</p>
-          <p className="text-[10px] text-wood-300 mt-1">Los widgets son configurables: metrica, periodo, comparativa, tamano</p>
+          <p className="text-xs text-[var(--admin-muted)]">Arrastra widgets aqui para construir tu dashboard</p>
+          <p className="text-[10px] text-[var(--admin-muted)] mt-1">Los widgets son configurables: metrica, periodo, comparativa, tamano</p>
         </div>
 
         <div className="flex items-center justify-end gap-2 mt-4">
-          <button className="px-4 py-2 text-xs text-wood-600 hover:bg-wood-50 rounded-lg transition-colors">
+          <button className="px-4 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)] rounded-lg transition-colors">
             Cancelar
           </button>
           <button
             onClick={() => toast.success('Dashboard guardado')}
-            className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors"
+            className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors"
           >
             Guardar dashboard
           </button>
           <button
             onClick={() => toast.success('Establecido como inicio')}
-            className="px-4 py-2 text-xs border border-accent-gold text-accent-gold rounded-lg hover:bg-accent-gold/10 transition-colors"
+            className="px-4 py-2 text-xs border border-[var(--admin-accent)] text-[var(--admin-accent)] rounded-lg hover:bg-[var(--admin-accent)]/10 transition-colors"
           >
             Establecer como mi inicio
           </button>
@@ -1121,19 +1121,19 @@ export const ReportsAnalyticsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-wood-900 flex items-center gap-2">
-          <BarChart3 size={20} className="text-accent-gold" /> Reportes y Analytics
+        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
+          <BarChart3 size={20} className="text-[var(--admin-accent)]" /> Reportes y Analytics
         </h3>
         <div className="flex items-center gap-2">
           <button
             onClick={() => toast.success('Creando nuevo dashboard...')}
-            className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5"
           >
             <Plus size={12} /> Nuevo Dashboard
           </button>
           <button
             onClick={() => toast.success('Exportando...')}
-            className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5"
           >
             <Download size={12} /> Exportar
           </button>
@@ -1142,7 +1142,7 @@ export const ReportsAnalyticsPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="overflow-x-auto -mx-1 px-1">
-        <div className="flex gap-1 min-w-max border-b border-wood-100">
+        <div className="flex gap-1 min-w-max border-b border-[var(--admin-border)]">
           {tabItems.map((t) => (
             <button
               key={t.id}
@@ -1150,8 +1150,8 @@ export const ReportsAnalyticsPage: React.FC = () => {
               className={
                 'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 whitespace-nowrap ' +
                 (activeTab === t.id
-                  ? 'border-accent-gold text-accent-gold font-medium'
-                  : 'border-transparent text-wood-500 hover:text-wood-700')
+                  ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium'
+                  : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')
               }
             >
               <t.icon size={14} />{t.label}
@@ -1162,22 +1162,22 @@ export const ReportsAnalyticsPage: React.FC = () => {
 
       {/* Period */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1.5 text-xs text-wood-600">
-          <Calendar size={12} className="text-wood-400" />
+        <div className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
+          <Calendar size={12} className="text-[var(--admin-muted)]" />
           <span>Periodo:</span>
           <select
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
-            className="border border-wood-200 rounded-lg px-2 py-1 text-xs bg-white"
+            className="border border-[var(--admin-border)] rounded-lg px-2 py-1 text-xs bg-[var(--admin-surface)]"
           >
             {periods.map((p) => (
               <option key={p}>{p}</option>
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-wood-600">
+        <div className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
           <span>Comparar:</span>
-          <select className="border border-wood-200 rounded-lg px-2 py-1 text-xs bg-white">
+          <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1 text-xs bg-[var(--admin-surface)]">
             <option>Mes anterior</option>
             <option>Mismo periodo ano anterior</option>
             <option>Sin comparar</option>

@@ -14,6 +14,7 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
 import { AdminThemeProvider } from "@/contexts/AdminThemeContext";
+import "@/src/styles/admin-theme.css";
 
 // Admin email whitelist — extend as needed
 const ADMIN_EMAILS = [
@@ -41,7 +42,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F3F0]">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--admin-bg, #F5F3F0)' }}>
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <AdminSidebar
@@ -78,7 +79,8 @@ function AdminShell({ children }: { children: React.ReactNode }) {
               />
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-3 right-3 p-1.5 bg-[#2d2419] rounded-full text-[#A1887F] hover:text-[#f5f0e8] z-50"
+                className="absolute top-3 right-3 p-1.5 rounded-full z-50 hover:opacity-80"
+                style={{ backgroundColor: "var(--admin-sidebar-bg)", color: "var(--admin-muted)" }}
               >
                 <X size={14} />
               </button>
@@ -137,8 +139,8 @@ export default function AdminLayout({
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#C5A065] border-t-transparent rounded-full" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--admin-bg, #F5F3F0)" }}>
+        <div className="animate-spin w-8 h-8 rounded-full" style={{ border: "2px solid var(--admin-accent, #C5A065)", borderTopColor: "transparent" }} />
       </div>
     );
   }
@@ -146,18 +148,19 @@ export default function AdminLayout({
   // Not logged in
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
-        <div className="bg-white border border-[#EFEBE9] rounded-xl p-8 max-w-md text-center shadow-sm">
-          <Shield size={40} className="mx-auto mb-4 text-[#A1887F]" />
-          <h1 className="text-2xl text-[#2d2419] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--admin-bg, #F5F3F0)" }}>
+        <div className="rounded-xl p-8 max-w-md text-center" style={{ backgroundColor: "var(--admin-surface, #FFFFFF)", border: "1px solid var(--admin-border, #EFEBE9)", boxShadow: "var(--admin-shadow, 0 1px 3px rgba(0,0,0,0.06))" }}>
+          <Shield size={40} className="mx-auto mb-4" style={{ color: "var(--admin-muted, #A1887F)" }} />
+          <h1 className="text-2xl mb-2" style={{ color: "var(--admin-text, #2d2419)", fontFamily: "var(--admin-font-heading)" }}>
             Acceso Restringido
           </h1>
-          <p className="text-[14px] text-[#795548] mb-6">
+          <p className="text-[14px] mb-6" style={{ color: "var(--admin-text-secondary, #795548)" }}>
             Necesitas iniciar sesión con una cuenta de administrador.
           </p>
           <Link
             href="/auth"
-            className="inline-block px-6 py-3 bg-[#2d2419] text-white text-[13px] font-semibold rounded-lg hover:bg-[#3e3226] transition-colors"
+            className="inline-block px-6 py-3 text-[13px] font-semibold rounded-lg transition-colors"
+            style={{ backgroundColor: "var(--admin-accent, #2d2419)", color: "var(--admin-accent-text, white)" }}
           >
             Iniciar Sesión
           </Link>
@@ -169,18 +172,19 @@ export default function AdminLayout({
   // Not authorized
   if (!authorized) {
     return (
-      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
-        <div className="bg-white border border-[#EFEBE9] rounded-xl p-8 max-w-md text-center shadow-sm">
-          <Shield size={40} className="mx-auto mb-4 text-red-400" />
-          <h1 className="text-2xl text-[#2d2419] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--admin-bg, #F5F3F0)" }}>
+        <div className="rounded-xl p-8 max-w-md text-center" style={{ backgroundColor: "var(--admin-surface, #FFFFFF)", border: "1px solid var(--admin-border, #EFEBE9)", boxShadow: "var(--admin-shadow, 0 1px 3px rgba(0,0,0,0.06))" }}>
+          <Shield size={40} className="mx-auto mb-4" style={{ color: "var(--admin-error, #DC2626)" }} />
+          <h1 className="text-2xl mb-2" style={{ color: "var(--admin-text, #2d2419)", fontFamily: "var(--admin-font-heading)" }}>
             Sin Autorización
           </h1>
-          <p className="text-[14px] text-[#795548] mb-2">
+          <p className="text-[14px] mb-2" style={{ color: "var(--admin-text-secondary, #795548)" }}>
             Tu cuenta ({user.email}) no tiene permisos de administrador.
           </p>
           <Link
             href="/"
-            className="inline-block mt-4 px-6 py-3 bg-[#2d2419] text-white text-[13px] font-semibold rounded-lg hover:bg-[#3e3226] transition-colors"
+            className="inline-block mt-4 px-6 py-3 text-[13px] font-semibold rounded-lg transition-colors"
+            style={{ backgroundColor: "var(--admin-accent, #2d2419)", color: "var(--admin-accent-text, white)" }}
           >
             Volver al Sitio
           </Link>

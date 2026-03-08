@@ -107,18 +107,18 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
   }, []);
 
   return (
-    <header className="bg-white border-b border-wood-100 px-4 sm:px-6 lg:px-8 py-4">
+    <header className="bg-[var(--admin-surface)] border-b border-[var(--admin-border)] px-4 sm:px-6 lg:px-8 py-4">
       <div className="flex items-center justify-between gap-4">
         {/* Left: Greeting + mobile menu */}
         <div className="flex items-center gap-3 min-w-0">
           {onMobileMenuToggle && (
-            <button onClick={onMobileMenuToggle} className="lg:hidden p-2 -ml-2 text-wood-600 hover:text-wood-900">
+            <button onClick={onMobileMenuToggle} className="lg:hidden p-2 -ml-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
               <Menu size={20} />
             </button>
           )}
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-xl font-serif text-wood-900 truncate">{greeting}, {displayName}</h2>
-            <p className="text-xs text-wood-400 capitalize hidden sm:block">{dateStr}</p>
+            <h2 className="text-lg sm:text-xl font-serif text-[var(--admin-text)] truncate">{greeting}, {displayName}</h2>
+            <p className="text-xs text-[var(--admin-muted)] capitalize hidden sm:block">{dateStr}</p>
           </div>
         </div>
 
@@ -127,21 +127,21 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
           {/* Search */}
           <div className="relative">
             {searchOpen ? (
-              <div className="flex items-center bg-sand-50 border border-wood-200 rounded-lg overflow-hidden">
-                <Search size={16} className="ml-3 text-wood-400" />
+              <div className="flex items-center bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg overflow-hidden">
+                <Search size={16} className="ml-3 text-[var(--admin-muted)]" />
                 <input
                   autoFocus
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Buscar pedidos, productos..."
-                  className="bg-transparent px-2 py-2 text-sm w-40 sm:w-64 outline-none text-wood-900 placeholder:text-wood-400"
+                  className="bg-transparent px-2 py-2 text-sm w-40 sm:w-64 outline-none text-[var(--admin-text)] placeholder:text-[var(--admin-muted)]"
                 />
-                <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }} className="p-2 text-wood-400 hover:text-wood-600">
+                <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }} className="p-2 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]">
                   <X size={14} />
                 </button>
               </div>
             ) : (
-              <button onClick={() => setSearchOpen(true)} className="p-2 text-wood-500 hover:text-wood-900 hover:bg-sand-50 rounded-lg transition-colors">
+              <button onClick={() => setSearchOpen(true)} className="p-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-surface2)] rounded-lg transition-colors">
                 <Search size={18} />
               </button>
             )}
@@ -151,19 +151,19 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
           <div className="relative hidden sm:block" ref={periodRef}>
             <button
               onClick={() => setPeriodOpen(!periodOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs text-wood-600 bg-sand-50 border border-wood-200 rounded-lg hover:border-wood-300 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs text-[var(--admin-text-secondary)] bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg hover:border-wood-300 transition-colors"
             >
               <Calendar size={14} />
               <span>{periodLabels[period]}</span>
               <ChevronDown size={12} />
             </button>
             {periodOpen && (
-              <div className="absolute right-0 mt-1 bg-white border border-wood-200 rounded-lg shadow-lg py-1 z-20 min-w-[140px]">
+              <div className="absolute right-0 mt-1 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg shadow-lg py-1 z-20 min-w-[140px]">
                 {(Object.keys(periodLabels) as Period[]).map(p => (
                   <button
                     key={p}
                     onClick={() => { onPeriodChange(p); setPeriodOpen(false); }}
-                    className={`w-full text-left px-3 py-2 text-xs hover:bg-sand-50 transition-colors ${p === period ? 'text-accent-gold font-medium' : 'text-wood-600'}`}
+                    className={`w-full text-left px-3 py-2 text-xs hover:bg-[var(--admin-surface2)] transition-colors ${p === period ? 'text-[var(--admin-accent)] font-medium' : 'text-[var(--admin-text-secondary)]'}`}
                   >
                     {periodLabels[p]}
                   </button>
@@ -176,7 +176,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setNotifOpen(!notifOpen)}
-              className="relative p-2 text-wood-500 hover:text-wood-900 hover:bg-sand-50 rounded-lg transition-colors"
+              className="relative p-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-surface2)] rounded-lg transition-colors"
             >
               <Bell size={18} />
               {unreadCount > 0 && (
@@ -186,17 +186,17 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
               )}
             </button>
             {notifOpen && (
-              <div className="absolute right-0 mt-2 w-[340px] bg-white border border-wood-200 rounded-xl shadow-xl z-30 overflow-hidden">
-                <div className="px-4 py-3 border-b border-wood-100 flex items-center justify-between">
+              <div className="absolute right-0 mt-2 w-[340px] bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-xl shadow-xl z-30 overflow-hidden">
+                <div className="px-4 py-3 border-b border-[var(--admin-border)] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-medium text-wood-900">Notificaciones</h4>
+                    <h4 className="text-sm font-medium text-[var(--admin-text)]">Notificaciones</h4>
                     {unreadCount > 0 && (
                       <span className="text-[9px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full">{unreadCount}</span>
                     )}
                   </div>
                   <button
                     onClick={() => { setNotifOpen(false); onNavigate('notifications'); }}
-                    className="text-[10px] text-accent-gold font-medium hover:underline flex items-center gap-0.5"
+                    className="text-[10px] text-[var(--admin-accent)] font-medium hover:underline flex items-center gap-0.5"
                   >
                     Ver todas <ArrowRight size={8} />
                   </button>
@@ -208,7 +208,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
                       <button
                         key={n.id}
                         onClick={() => { setNotifOpen(false); onNavigate(n.target); }}
-                        className={`w-full text-left px-4 py-3 border-b border-wood-50 hover:bg-sand-50/80 transition-colors flex items-start gap-3 ${!n.read ? 'bg-accent-gold/5' : ''}`}
+                        className={`w-full text-left px-4 py-3 border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/80 transition-colors flex items-start gap-3 ${!n.read ? 'bg-[var(--admin-accent)]/5' : ''}`}
                       >
                         <div className={'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ' + n.iconCls}>
                           <Icon size={14} />
@@ -216,20 +216,20 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5">
                             {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />}
-                            <p className={'text-xs text-wood-900 truncate ' + (!n.read ? 'font-medium' : '')}>{n.title}</p>
+                            <p className={'text-xs text-[var(--admin-text)] truncate ' + (!n.read ? 'font-medium' : '')}>{n.title}</p>
                             {n.priority && <span className="text-[8px] font-bold bg-red-50 text-red-500 px-1 py-0.5 rounded shrink-0">!</span>}
                           </div>
-                          <p className="text-[11px] text-wood-500 truncate">{n.detail}</p>
-                          <p className="text-[10px] text-wood-400 mt-0.5">{n.time}</p>
+                          <p className="text-[11px] text-[var(--admin-text-secondary)] truncate">{n.detail}</p>
+                          <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{n.time}</p>
                         </div>
                       </button>
                     );
                   })}
                 </div>
-                <div className="px-4 py-2.5 bg-sand-50/50 border-t border-wood-100">
+                <div className="px-4 py-2.5 bg-[var(--admin-surface2)]/50 border-t border-[var(--admin-border)]">
                   <button
                     onClick={() => { setNotifOpen(false); onNavigate('notifications'); }}
-                    className="w-full text-center text-[11px] text-accent-gold font-medium hover:underline flex items-center justify-center gap-1"
+                    className="w-full text-center text-[11px] text-[var(--admin-accent)] font-medium hover:underline flex items-center justify-center gap-1"
                   >
                     Ver todas las notificaciones <ArrowRight size={10} />
                   </button>

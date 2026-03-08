@@ -299,8 +299,8 @@ export const ReviewsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-serif text-lg text-wood-900 dark:text-sand-100">Reviews</h3>
-          <p className="text-[11px] text-wood-400 mt-0.5">{totalReviews} reseñas totales</p>
+          <h3 className="font-serif text-lg text-[var(--admin-text)] dark:text-sand-100">Reviews</h3>
+          <p className="text-[11px] text-[var(--admin-muted)] mt-0.5">{totalReviews} reseñas totales</p>
         </div>
         <div className="flex items-center gap-2">
           {isLive ? (
@@ -308,12 +308,12 @@ export const ReviewsPage: React.FC = () => {
               <Wifi size={12} /> En vivo
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 text-[10px] text-wood-400 font-medium">
+            <span className="flex items-center gap-1.5 text-[10px] text-[var(--admin-muted)] font-medium">
               <WifiOff size={12} /> Sin conexión
             </span>
           )}
-          <button onClick={() => fetchReviews()} className="p-1.5 hover:bg-wood-50 dark:hover:bg-wood-800 rounded-lg transition-colors" title="Actualizar">
-            <RefreshCw size={14} className={`text-wood-400 ${loading ? 'animate-spin' : ''}`} />
+          <button onClick={() => fetchReviews()} className="p-1.5 hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-800 rounded-lg transition-colors" title="Actualizar">
+            <RefreshCw size={14} className={`text-[var(--admin-muted)] ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
@@ -321,38 +321,38 @@ export const ReviewsPage: React.FC = () => {
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         {/* Avg Rating */}
-        <div className="bg-white dark:bg-wood-900 rounded-xl border border-wood-100 dark:border-wood-800 shadow-sm p-5 text-center">
+        <div className="bg-[var(--admin-surface)] dark:bg-wood-900 rounded-xl border border-[var(--admin-border)] dark:border-wood-800 shadow-sm p-5 text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} size={16} className={i < Math.round(stats.avgRating) ? 'fill-accent-gold text-accent-gold' : 'text-wood-200 dark:text-wood-700'} />
+              <Star key={i} size={16} className={i < Math.round(stats.avgRating) ? 'fill-accent-gold text-[var(--admin-accent)]' : 'text-[var(--admin-muted)] dark:text-[var(--admin-text)]'} />
             ))}
           </div>
-          <p className="text-2xl font-bold text-wood-900 dark:text-sand-100 font-sans">{stats.avgRating > 0 ? stats.avgRating : '—'}</p>
-          <p className="text-[10px] text-wood-400 uppercase tracking-wider">Rating promedio</p>
+          <p className="text-2xl font-bold text-[var(--admin-text)] dark:text-sand-100 font-sans">{stats.avgRating > 0 ? stats.avgRating : '—'}</p>
+          <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">Rating promedio</p>
         </div>
 
         {/* Distribution */}
-        <div className="bg-white dark:bg-wood-900 rounded-xl border border-wood-100 dark:border-wood-800 shadow-sm p-5">
-          <p className="text-[10px] text-wood-400 uppercase tracking-wider mb-2">Distribución</p>
+        <div className="bg-[var(--admin-surface)] dark:bg-wood-900 rounded-xl border border-[var(--admin-border)] dark:border-wood-800 shadow-sm p-5">
+          <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mb-2">Distribución</p>
           {distribution.map(d => {
             const pct = totalReviews > 0 ? Math.round((d.count / totalReviews) * 100) : 0;
             return (
-              <button key={d.star} onClick={() => setRatingFilter(ratingFilter === d.star ? null : d.star)} className={`flex items-center gap-2 mb-1 w-full rounded px-1 -mx-1 transition-colors ${ratingFilter === d.star ? 'bg-accent-gold/10' : 'hover:bg-wood-50 dark:hover:bg-wood-800'}`}>
-                <span className="text-[10px] text-wood-500 w-3">{d.star}</span>
-                <Star size={10} className="text-accent-gold fill-accent-gold" />
-                <div className="flex-1 h-2 bg-wood-100 dark:bg-wood-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-accent-gold rounded-full transition-all" style={{ width: `${pct}%` }} />
+              <button key={d.star} onClick={() => setRatingFilter(ratingFilter === d.star ? null : d.star)} className={`flex items-center gap-2 mb-1 w-full rounded px-1 -mx-1 transition-colors ${ratingFilter === d.star ? 'bg-[var(--admin-accent)]/10' : 'hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-800'}`}>
+                <span className="text-[10px] text-[var(--admin-text-secondary)] w-3">{d.star}</span>
+                <Star size={10} className="text-[var(--admin-accent)] fill-accent-gold" />
+                <div className="flex-1 h-2 bg-[var(--admin-surface2)] dark:bg-wood-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-[var(--admin-accent)] rounded-full transition-all" style={{ width: `${pct}%` }} />
                 </div>
-                <span className="text-[10px] text-wood-400 w-8 text-right">{d.count}</span>
+                <span className="text-[10px] text-[var(--admin-muted)] w-8 text-right">{d.count}</span>
               </button>
             );
           })}
         </div>
 
         {/* Pending */}
-        <div className="bg-white dark:bg-wood-900 rounded-xl border border-wood-100 dark:border-wood-800 shadow-sm p-5 flex flex-col items-center justify-center">
+        <div className="bg-[var(--admin-surface)] dark:bg-wood-900 rounded-xl border border-[var(--admin-border)] dark:border-wood-800 shadow-sm p-5 flex flex-col items-center justify-center">
           <p className="text-3xl font-bold text-amber-600 font-sans">{counts.pending}</p>
-          <p className="text-[10px] text-wood-400 uppercase tracking-wider">Pendientes</p>
+          <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">Pendientes</p>
           <div className="flex gap-3 mt-2 text-[10px]">
             <span className="text-green-600">{counts.approved} aprobados</span>
             <span className="text-red-400">{counts.rejected} rechazados</span>
@@ -360,19 +360,19 @@ export const ReviewsPage: React.FC = () => {
         </div>
 
         {/* Photos + Actions */}
-        <div className="bg-white dark:bg-wood-900 rounded-xl border border-wood-100 dark:border-wood-800 shadow-sm p-5 flex flex-col items-center justify-center gap-3">
+        <div className="bg-[var(--admin-surface)] dark:bg-wood-900 rounded-xl border border-[var(--admin-border)] dark:border-wood-800 shadow-sm p-5 flex flex-col items-center justify-center gap-3">
           <div className="text-center">
             <div className="flex items-center justify-center gap-1.5 mb-1">
-              <Camera size={14} className="text-wood-400" />
-              <p className="text-xl font-bold text-wood-900 dark:text-sand-100 font-sans">{stats.withPhotos}</p>
+              <Camera size={14} className="text-[var(--admin-muted)]" />
+              <p className="text-xl font-bold text-[var(--admin-text)] dark:text-sand-100 font-sans">{stats.withPhotos}</p>
             </div>
-            <p className="text-[10px] text-wood-400 uppercase tracking-wider">Con fotos</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">Con fotos</p>
           </div>
           <div className="flex gap-2 w-full">
-            <button onClick={handleExportCsv} disabled={exporting} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-wood-50 dark:bg-wood-800 text-wood-600 dark:text-sand-300 rounded-lg text-[10px] font-medium hover:bg-wood-100 dark:hover:bg-wood-700 transition-colors disabled:opacity-50">
+            <button onClick={handleExportCsv} disabled={exporting} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-[var(--admin-surface2)] dark:bg-wood-800 text-[var(--admin-text-secondary)] dark:text-sand-300 rounded-lg text-[10px] font-medium hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-700 transition-colors disabled:opacity-50">
               <Download size={11} /> {exporting ? 'Exportando...' : 'CSV'}
             </button>
-            <button onClick={() => setShowRequestModal(true)} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-wood-900 dark:bg-accent-gold text-white dark:text-wood-900 rounded-lg text-[10px] font-medium hover:bg-wood-800 dark:hover:bg-accent-gold/90 transition-colors">
+            <button onClick={() => setShowRequestModal(true)} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-wood-900 dark:bg-[var(--admin-accent)] text-white dark:text-[var(--admin-text)] rounded-lg text-[10px] font-medium hover:bg-wood-800 dark:hover:bg-[var(--admin-accent)]/90 transition-colors">
               <Mail size={11} /> Solicitar
             </button>
           </div>
@@ -382,29 +382,29 @@ export const ReviewsPage: React.FC = () => {
       {/* Toolbar: Search + Filters + Bulk */}
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search */}
-        <div className="flex-1 flex items-center gap-2 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 rounded-lg px-3 py-2">
-          <Search size={14} className="text-wood-400" />
+        <div className="flex-1 flex items-center gap-2 bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-700 rounded-lg px-3 py-2">
+          <Search size={14} className="text-[var(--admin-muted)]" />
           <input
             type="text"
             placeholder="Buscar por cliente, producto o texto..."
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            className="flex-1 bg-transparent text-xs text-wood-700 dark:text-sand-200 placeholder:text-wood-300 dark:placeholder:text-wood-600 outline-none"
+            className="flex-1 bg-transparent text-xs text-[var(--admin-text)] dark:text-sand-200 placeholder:text-[var(--admin-muted)] dark:placeholder:text-[var(--admin-text-secondary)] outline-none"
           />
           {searchQuery && (
-            <button onClick={() => { setSearchInput(''); setSearchQuery(''); }} className="text-wood-400 hover:text-wood-600">
+            <button onClick={() => { setSearchInput(''); setSearchQuery(''); }} className="text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]">
               <X size={14} />
             </button>
           )}
-          <button onClick={handleSearch} className="text-[10px] text-accent-gold font-medium hover:underline">
+          <button onClick={handleSearch} className="text-[10px] text-[var(--admin-accent)] font-medium hover:underline">
             Buscar
           </button>
         </div>
 
         {/* Status Filter */}
         <div className="relative">
-          <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 rounded-lg text-xs text-wood-600 dark:text-sand-300 h-full">
+          <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center gap-2 px-4 py-2 bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-700 rounded-lg text-xs text-[var(--admin-text-secondary)] dark:text-sand-300 h-full">
             <Filter size={14} /> {statusFilter === 'all' ? 'Todos' : statusConfig[statusFilter]?.label}
             {statusFilter === 'all' && counts.pending > 0 && (
               <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{counts.pending}</span>
@@ -412,16 +412,16 @@ export const ReviewsPage: React.FC = () => {
             <ChevronDown size={12} />
           </button>
           {filterOpen && (
-            <div className="absolute right-0 mt-1 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 rounded-lg shadow-lg py-1 z-20 min-w-[180px]">
+            <div className="absolute right-0 mt-1 bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-700 rounded-lg shadow-lg py-1 z-20 min-w-[180px]">
               {[
                 { key: 'all', label: 'Todos', count: totalReviews },
                 { key: 'pending', label: 'Pendientes', count: counts.pending },
                 { key: 'approved', label: 'Aprobados', count: counts.approved },
                 { key: 'rejected', label: 'Rechazados', count: counts.rejected },
               ].map(s => (
-                <button key={s.key} onClick={() => { setStatusFilter(s.key); setFilterOpen(false); }} className={`w-full text-left px-3 py-2 text-xs hover:bg-sand-50 dark:hover:bg-wood-800 flex justify-between ${s.key === statusFilter ? 'text-accent-gold font-medium' : 'text-wood-600 dark:text-sand-300'}`}>
+                <button key={s.key} onClick={() => { setStatusFilter(s.key); setFilterOpen(false); }} className={`w-full text-left px-3 py-2 text-xs hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-800 flex justify-between ${s.key === statusFilter ? 'text-[var(--admin-accent)] font-medium' : 'text-[var(--admin-text-secondary)] dark:text-sand-300'}`}>
                   <span>{s.label}</span>
-                  <span className="text-wood-300 dark:text-wood-600">{s.count}</span>
+                  <span className="text-[var(--admin-muted)] dark:text-[var(--admin-text-secondary)]">{s.count}</span>
                 </button>
               ))}
             </div>
@@ -429,30 +429,30 @@ export const ReviewsPage: React.FC = () => {
         </div>
 
         {/* Sort */}
-        <button onClick={() => toggleSort(sortBy === 'created_at' ? 'rating' : sortBy === 'rating' ? 'helpful_count' : 'created_at')} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 rounded-lg text-xs text-wood-600 dark:text-sand-300">
+        <button onClick={() => toggleSort(sortBy === 'created_at' ? 'rating' : sortBy === 'rating' ? 'helpful_count' : 'created_at')} className="flex items-center gap-2 px-4 py-2 bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-700 rounded-lg text-xs text-[var(--admin-text-secondary)] dark:text-sand-300">
           <ArrowUpDown size={14} />
           {sortBy === 'created_at' ? 'Fecha' : sortBy === 'rating' ? 'Rating' : 'Útil'}
-          <span className="text-[10px] text-wood-400">{sortDir === 'desc' ? '↓' : '↑'}</span>
+          <span className="text-[10px] text-[var(--admin-muted)]">{sortDir === 'desc' ? '↓' : '↑'}</span>
         </button>
       </div>
 
       {/* Active filters */}
       {(searchQuery || ratingFilter) && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] text-wood-400">Filtros activos:</span>
+          <span className="text-[10px] text-[var(--admin-muted)]">Filtros activos:</span>
           {searchQuery && (
-            <span className="inline-flex items-center gap-1 text-[10px] bg-accent-gold/10 text-accent-gold px-2 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[10px] bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] px-2 py-1 rounded-full">
               &ldquo;{searchQuery}&rdquo;
               <button onClick={() => { setSearchInput(''); setSearchQuery(''); }}><X size={10} /></button>
             </span>
           )}
           {ratingFilter && (
-            <span className="inline-flex items-center gap-1 text-[10px] bg-accent-gold/10 text-accent-gold px-2 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[10px] bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] px-2 py-1 rounded-full">
               {ratingFilter} <Star size={8} className="fill-current" />
               <button onClick={() => setRatingFilter(null)}><X size={10} /></button>
             </span>
           )}
-          <button onClick={() => { setSearchInput(''); setSearchQuery(''); setRatingFilter(null); setStatusFilter('all'); }} className="text-[10px] text-wood-400 hover:text-wood-600 underline">
+          <button onClick={() => { setSearchInput(''); setSearchQuery(''); setRatingFilter(null); setStatusFilter('all'); }} className="text-[10px] text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] underline">
             Limpiar todo
           </button>
         </div>
@@ -467,7 +467,7 @@ export const ReviewsPage: React.FC = () => {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center gap-3 bg-wood-900 dark:bg-accent-gold/10 text-white dark:text-sand-100 rounded-xl px-5 py-3">
+            <div className="flex items-center gap-3 bg-wood-900 dark:bg-[var(--admin-accent)]/10 text-white dark:text-sand-100 rounded-xl px-5 py-3">
               <span className="text-xs font-medium">{selectedIds.size} seleccionado{selectedIds.size > 1 ? 's' : ''}</span>
               <div className="flex-1" />
               <button
@@ -500,24 +500,24 @@ export const ReviewsPage: React.FC = () => {
         {/* Select All header */}
         {reviews.length > 0 && (
           <div className="flex items-center gap-3 px-2">
-            <button onClick={toggleSelectAll} className="text-wood-400 hover:text-wood-600 dark:hover:text-sand-300">
-              {isAllSelected ? <CheckSquare size={16} className="text-accent-gold" /> : <Square size={16} />}
+            <button onClick={toggleSelectAll} className="text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] dark:hover:text-sand-300">
+              {isAllSelected ? <CheckSquare size={16} className="text-[var(--admin-accent)]" /> : <Square size={16} />}
             </button>
-            <span className="text-[10px] text-wood-400">
+            <span className="text-[10px] text-[var(--admin-muted)]">
               {isAllSelected ? 'Deseleccionar todos' : 'Seleccionar todos'} • Mostrando {reviews.length} de {total}
             </span>
           </div>
         )}
 
         {loading && reviews.length === 0 ? (
-          <div className="text-center py-16 text-wood-400 text-sm">
-            <RefreshCw size={20} className="animate-spin mx-auto mb-3 text-wood-300" />
+          <div className="text-center py-16 text-[var(--admin-muted)] text-sm">
+            <RefreshCw size={20} className="animate-spin mx-auto mb-3 text-[var(--admin-muted)]" />
             Cargando reviews...
           </div>
         ) : reviews.length === 0 ? (
           <div className="text-center py-16">
-            <Star size={32} className="mx-auto mb-3 text-wood-200 dark:text-wood-700" />
-            <p className="text-sm text-wood-400">
+            <Star size={32} className="mx-auto mb-3 text-[var(--admin-muted)] dark:text-[var(--admin-text)]" />
+            <p className="text-sm text-[var(--admin-muted)]">
               {searchQuery || ratingFilter || statusFilter !== 'all'
                 ? 'No se encontraron reviews con estos filtros'
                 : 'Aún no hay reviews'}
@@ -530,19 +530,19 @@ export const ReviewsPage: React.FC = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.02 }}
-              className={`bg-white dark:bg-wood-900 rounded-xl border shadow-sm p-5 transition-colors ${selectedIds.has(review.id) ? 'border-accent-gold ring-1 ring-accent-gold/30' : 'border-wood-100 dark:border-wood-800'}`}
+              className={`bg-[var(--admin-surface)] dark:bg-wood-900 rounded-xl border shadow-sm p-5 transition-colors ${selectedIds.has(review.id) ? 'border-[var(--admin-accent)] ring-1 ring-[var(--admin-accent)]/30' : 'border-[var(--admin-border)] dark:border-wood-800'}`}
             >
               <div className="flex gap-4">
                 {/* Checkbox */}
-                <button onClick={() => toggleSelect(review.id)} className="mt-1 flex-shrink-0 text-wood-300 hover:text-accent-gold">
-                  {selectedIds.has(review.id) ? <CheckSquare size={16} className="text-accent-gold" /> : <Square size={16} />}
+                <button onClick={() => toggleSelect(review.id)} className="mt-1 flex-shrink-0 text-[var(--admin-muted)] hover:text-[var(--admin-accent)]">
+                  {selectedIds.has(review.id) ? <CheckSquare size={16} className="text-[var(--admin-accent)]" /> : <Square size={16} />}
                 </button>
 
                 {/* Product thumbnail */}
                 {review.product_thumbnail ? (
                   <img src={review.product_thumbnail} alt={review.product_title || ''} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
                 ) : (
-                  <div className="w-14 h-14 rounded-xl bg-wood-100 dark:bg-wood-800 flex-shrink-0 flex items-center justify-center text-wood-300 dark:text-wood-600">
+                  <div className="w-14 h-14 rounded-xl bg-[var(--admin-surface2)] dark:bg-wood-800 flex-shrink-0 flex items-center justify-center text-[var(--admin-muted)] dark:text-[var(--admin-text-secondary)]">
                     <Star size={18} />
                   </div>
                 )}
@@ -551,11 +551,11 @@ export const ReviewsPage: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <p className="text-sm font-medium text-wood-900 dark:text-sand-100">{review.product_title || 'Producto'}</p>
+                      <p className="text-sm font-medium text-[var(--admin-text)] dark:text-sand-100">{review.product_title || 'Producto'}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} size={12} className={i < review.rating ? 'fill-accent-gold text-accent-gold' : 'text-wood-200 dark:text-wood-700'} />
+                            <Star key={i} size={12} className={i < review.rating ? 'fill-accent-gold text-[var(--admin-accent)]' : 'text-[var(--admin-muted)] dark:text-[var(--admin-text)]'} />
                           ))}
                         </div>
                         <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusConfig[review.status]?.bg}`}>
@@ -565,34 +565,34 @@ export const ReviewsPage: React.FC = () => {
                           <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">Compra verificada</span>
                         )}
                         {review.photos && review.photos.length > 0 && (
-                          <span className="text-[10px] text-wood-400 flex items-center gap-0.5">
+                          <span className="text-[10px] text-[var(--admin-muted)] flex items-center gap-0.5">
                             <Camera size={10} /> {review.photos.length}
                           </span>
                         )}
                         {review.helpful_count > 0 && (
-                          <span className="text-[10px] text-wood-400 flex items-center gap-0.5">
+                          <span className="text-[10px] text-[var(--admin-muted)] flex items-center gap-0.5">
                             <TrendingUp size={10} /> {review.helpful_count} útil
                           </span>
                         )}
                       </div>
                     </div>
-                    <p className="text-[10px] text-wood-400 flex-shrink-0">
+                    <p className="text-[10px] text-[var(--admin-muted)] flex-shrink-0">
                       {new Date(review.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </p>
                   </div>
 
                   {review.title && (
-                    <p className="text-xs font-semibold text-wood-800 dark:text-sand-200 mb-1">{review.title}</p>
+                    <p className="text-xs font-semibold text-[var(--admin-text)] dark:text-sand-200 mb-1">{review.title}</p>
                   )}
                   {review.body && (
-                    <p className="text-xs text-wood-600 dark:text-sand-400 leading-relaxed mb-3">&ldquo;{review.body}&rdquo;</p>
+                    <p className="text-xs text-[var(--admin-text-secondary)] dark:text-sand-400 leading-relaxed mb-3">&ldquo;{review.body}&rdquo;</p>
                   )}
 
                   {/* Photos */}
                   {review.photos && review.photos.length > 0 && (
                     <div className="flex gap-2 mb-3 flex-wrap">
                       {review.photos.map((photo, i) => (
-                        <button key={i} onClick={() => setLightboxPhoto(photo)} className="group relative w-16 h-16 rounded-lg overflow-hidden border border-wood-100 dark:border-wood-700 hover:border-accent-gold transition-colors">
+                        <button key={i} onClick={() => setLightboxPhoto(photo)} className="group relative w-16 h-16 rounded-lg overflow-hidden border border-[var(--admin-border)] dark:border-wood-700 hover:border-[var(--admin-accent)] transition-colors">
                           <img src={photo} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                             <Eye size={14} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -604,11 +604,11 @@ export const ReviewsPage: React.FC = () => {
 
                   {/* Admin Reply */}
                   {review.admin_reply && (
-                    <div className="mb-3 bg-wood-50 dark:bg-wood-800 rounded-lg p-3 border border-wood-100 dark:border-wood-700">
-                      <p className="text-[10px] text-wood-400 uppercase tracking-wider mb-1">Tu respuesta:</p>
-                      <p className="text-xs text-wood-600 dark:text-sand-400 italic">{review.admin_reply}</p>
+                    <div className="mb-3 bg-[var(--admin-surface2)] dark:bg-wood-800 rounded-lg p-3 border border-[var(--admin-border)] dark:border-wood-700">
+                      <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mb-1">Tu respuesta:</p>
+                      <p className="text-xs text-[var(--admin-text-secondary)] dark:text-sand-400 italic">{review.admin_reply}</p>
                       {review.admin_reply_at && (
-                        <p className="text-[9px] text-wood-300 mt-1">{new Date(review.admin_reply_at).toLocaleDateString('es-MX')}</p>
+                        <p className="text-[9px] text-[var(--admin-muted)] mt-1">{new Date(review.admin_reply_at).toLocaleDateString('es-MX')}</p>
                       )}
                     </div>
                   )}
@@ -622,22 +622,22 @@ export const ReviewsPage: React.FC = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="mb-3 overflow-hidden"
                       >
-                        <div className="bg-sand-50 dark:bg-wood-800 rounded-lg p-3 border border-wood-100 dark:border-wood-700">
+                        <div className="bg-[var(--admin-surface2)] dark:bg-wood-800 rounded-lg p-3 border border-[var(--admin-border)] dark:border-wood-700">
                           <textarea
                             value={replyText}
                             onChange={e => setReplyText(e.target.value)}
                             placeholder="Escribe tu respuesta al cliente..."
-                            className="w-full text-xs text-wood-700 dark:text-sand-200 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-600 rounded-lg p-2 min-h-[60px] resize-none focus:outline-none focus:border-accent-gold"
+                            className="w-full text-xs text-[var(--admin-text)] dark:text-sand-200 bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-600 rounded-lg p-2 min-h-[60px] resize-none focus:outline-none focus:border-[var(--admin-accent)]"
                             autoFocus
                           />
                           <div className="flex justify-end gap-2 mt-2">
-                            <button onClick={() => { setReplyingTo(null); setReplyText(''); }} className="px-3 py-1.5 text-[11px] text-wood-500 hover:text-wood-700">
+                            <button onClick={() => { setReplyingTo(null); setReplyText(''); }} className="px-3 py-1.5 text-[11px] text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
                               Cancelar
                             </button>
                             <button
                               onClick={() => handleReply(review.id)}
                               disabled={!replyText.trim()}
-                              className="flex items-center gap-1 px-3 py-1.5 bg-wood-900 dark:bg-accent-gold text-white dark:text-wood-900 rounded-lg text-[11px] font-medium hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="flex items-center gap-1 px-3 py-1.5 bg-wood-900 dark:bg-[var(--admin-accent)] text-white dark:text-[var(--admin-text)] rounded-lg text-[11px] font-medium hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <Send size={10} /> Publicar
                             </button>
@@ -650,14 +650,14 @@ export const ReviewsPage: React.FC = () => {
                   {/* Footer: User + Actions */}
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-wood-100 dark:bg-wood-800 flex items-center justify-center text-[9px] font-bold text-wood-600 dark:text-sand-400 overflow-hidden">
+                      <div className="w-6 h-6 rounded-full bg-[var(--admin-surface2)] dark:bg-wood-800 flex items-center justify-center text-[9px] font-bold text-[var(--admin-text-secondary)] dark:text-sand-400 overflow-hidden">
                         {review.user_avatar ? (
                           <img src={review.user_avatar} alt="" className="w-full h-full object-cover" />
                         ) : (
                           (review.user_name || '?').charAt(0).toUpperCase()
                         )}
                       </div>
-                      <span className="text-[11px] text-wood-500 dark:text-sand-400">{review.user_name || 'Cliente'}</span>
+                      <span className="text-[11px] text-[var(--admin-text-secondary)] dark:text-sand-400">{review.user_name || 'Cliente'}</span>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       {review.status === 'pending' && (
@@ -683,7 +683,7 @@ export const ReviewsPage: React.FC = () => {
                       {replyingTo !== review.id && (
                         <button
                           onClick={() => { setReplyingTo(review.id); setReplyText(review.admin_reply || ''); }}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-sand-50 dark:bg-wood-800 text-wood-600 dark:text-sand-300 rounded-lg text-[11px] font-medium hover:bg-sand-100 dark:hover:bg-wood-700 transition-colors"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-[var(--admin-surface2)] dark:bg-wood-800 text-[var(--admin-text-secondary)] dark:text-sand-300 rounded-lg text-[11px] font-medium hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-700 transition-colors"
                         >
                           <MessageSquare size={12} /> {review.admin_reply ? 'Editar respuesta' : 'Responder'}
                         </button>
@@ -703,7 +703,7 @@ export const ReviewsPage: React.FC = () => {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 rounded-lg text-xs text-wood-600 dark:text-sand-300 hover:bg-wood-50 dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 px-3 py-2 bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-700 rounded-lg text-xs text-[var(--admin-text-secondary)] dark:text-sand-300 hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronLeft size={14} /> Anterior
           </button>
@@ -723,7 +723,7 @@ export const ReviewsPage: React.FC = () => {
                 <button
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
-                  className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${page === pageNum ? 'bg-wood-900 dark:bg-accent-gold text-white dark:text-wood-900' : 'bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 text-wood-500 dark:text-sand-400 hover:bg-wood-50 dark:hover:bg-wood-800'}`}
+                  className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${page === pageNum ? 'bg-wood-900 dark:bg-[var(--admin-accent)] text-white dark:text-[var(--admin-text)]' : 'bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-700 text-[var(--admin-text-secondary)] dark:text-sand-400 hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-800'}`}
                 >
                   {pageNum}
                 </button>
@@ -733,7 +733,7 @@ export const ReviewsPage: React.FC = () => {
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-wood-900 border border-wood-200 dark:border-wood-700 rounded-lg text-xs text-wood-600 dark:text-sand-300 hover:bg-wood-50 dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 px-3 py-2 bg-[var(--admin-surface)] dark:bg-wood-900 border border-[var(--admin-border)] dark:border-wood-700 rounded-lg text-xs text-[var(--admin-text-secondary)] dark:text-sand-300 hover:bg-[var(--admin-surface2)] dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Siguiente <ChevronRight size={14} />
           </button>
@@ -760,9 +760,9 @@ export const ReviewsPage: React.FC = () => {
               <img src={lightboxPhoto} alt="Review photo" className="max-w-full max-h-[80vh] rounded-xl object-contain" />
               <button
                 onClick={() => setLightboxPhoto(null)}
-                className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-wood-50 transition-colors"
+                className="absolute -top-3 -right-3 w-8 h-8 bg-[var(--admin-surface)] rounded-full flex items-center justify-center shadow-lg hover:bg-[var(--admin-surface2)] transition-colors"
               >
-                <X size={16} className="text-wood-600" />
+                <X size={16} className="text-[var(--admin-text-secondary)]" />
               </button>
             </motion.div>
           </motion.div>
@@ -783,48 +783,48 @@ export const ReviewsPage: React.FC = () => {
               initial={{ scale: 0.95, y: 10 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 10 }}
-              className="bg-white dark:bg-wood-900 rounded-2xl shadow-2xl p-6 max-w-md w-full"
+              className="bg-[var(--admin-surface)] dark:bg-wood-900 rounded-2xl shadow-2xl p-6 max-w-md w-full"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-serif text-lg text-wood-900 dark:text-sand-100">Solicitar Review</h4>
-                <button onClick={() => setShowRequestModal(false)} className="text-wood-400 hover:text-wood-600">
+                <h4 className="font-serif text-lg text-[var(--admin-text)] dark:text-sand-100">Solicitar Review</h4>
+                <button onClick={() => setShowRequestModal(false)} className="text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]">
                   <X size={18} />
                 </button>
               </div>
-              <p className="text-xs text-wood-500 dark:text-sand-400 mb-4">
+              <p className="text-xs text-[var(--admin-text-secondary)] dark:text-sand-400 mb-4">
                 Envía un email al cliente invitándolo a dejar una reseña sobre su compra.
               </p>
               <div className="space-y-3">
                 <div>
-                  <label className="text-[10px] text-wood-400 uppercase tracking-wider mb-1 block">Email del cliente</label>
+                  <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mb-1 block">Email del cliente</label>
                   <input
                     type="email"
                     value={requestEmail}
                     onChange={e => setRequestEmail(e.target.value)}
                     placeholder="cliente@ejemplo.com"
-                    className="w-full text-xs text-wood-700 dark:text-sand-200 bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-600 rounded-lg px-3 py-2 focus:outline-none focus:border-accent-gold"
+                    className="w-full text-xs text-[var(--admin-text)] dark:text-sand-200 bg-[var(--admin-surface2)] dark:bg-wood-800 border border-[var(--admin-border)] dark:border-wood-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[var(--admin-accent)]"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-wood-400 uppercase tracking-wider mb-1 block">ID de orden (opcional)</label>
+                  <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mb-1 block">ID de orden (opcional)</label>
                   <input
                     type="text"
                     value={requestOrderId}
                     onChange={e => setRequestOrderId(e.target.value)}
                     placeholder="order_01ABC..."
-                    className="w-full text-xs text-wood-700 dark:text-sand-200 bg-sand-50 dark:bg-wood-800 border border-wood-200 dark:border-wood-600 rounded-lg px-3 py-2 focus:outline-none focus:border-accent-gold"
+                    className="w-full text-xs text-[var(--admin-text)] dark:text-sand-200 bg-[var(--admin-surface2)] dark:bg-wood-800 border border-[var(--admin-border)] dark:border-wood-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[var(--admin-accent)]"
                   />
                 </div>
               </div>
               <div className="flex justify-end gap-2 mt-5">
-                <button onClick={() => setShowRequestModal(false)} className="px-4 py-2 text-xs text-wood-500 hover:text-wood-700">
+                <button onClick={() => setShowRequestModal(false)} className="px-4 py-2 text-xs text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
                   Cancelar
                 </button>
                 <button
                   onClick={handleRequestReview}
                   disabled={!requestEmail.trim()}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 dark:bg-accent-gold text-white dark:text-wood-900 rounded-lg text-xs font-medium hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 dark:bg-[var(--admin-accent)] text-white dark:text-[var(--admin-text)] rounded-lg text-xs font-medium hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Mail size={13} /> Enviar solicitud
                 </button>

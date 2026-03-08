@@ -24,17 +24,17 @@ const tabItems: Array<{ id: NTab; label: string; icon: React.ElementType }> = [
 
 // ===== SHARED =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-white rounded-xl border border-wood-100 shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function STitle({ children }: { children: React.ReactNode }) {
-  return <h4 className="text-sm font-medium text-wood-900 uppercase tracking-wider border-b border-wood-100 pb-2 mb-4">{children}</h4>;
+  return <h4 className="text-sm font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">{children}</h4>;
 }
 
 function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 'gray' | 'amber' | 'blue' | 'red' | 'purple' }) {
   const cls: Record<string, string> = {
     green: 'bg-green-50 text-green-600',
-    gray: 'bg-wood-50 text-wood-500',
+    gray: 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]',
     amber: 'bg-amber-50 text-amber-600',
     blue: 'bg-blue-50 text-blue-600',
     red: 'bg-red-50 text-red-500',
@@ -229,24 +229,24 @@ function CenterTab() {
     const cfg = categoryConfig[n.category];
     const Icon = cfg.icon;
     return (
-      <div className={'flex items-start gap-3 p-4 hover:bg-sand-50/50 transition-colors border-b border-wood-50 last:border-0 ' + (!n.read ? 'bg-accent-gold/5' : '')}>
+      <div className={'flex items-start gap-3 p-4 hover:bg-[var(--admin-surface2)]/50 transition-colors border-b border-[var(--admin-border)] last:border-0 ' + (!n.read ? 'bg-[var(--admin-accent)]/5' : '')}>
         <div className={'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ' + cfg.cls}>
           <Icon size={14} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start gap-2">
-            <p className={'text-xs text-wood-900 flex-1 ' + (!n.read ? 'font-medium' : '')}>
+            <p className={'text-xs text-[var(--admin-text)] flex-1 ' + (!n.read ? 'font-medium' : '')}>
               {n.title}
             </p>
-            {!n.read && <span className="w-2 h-2 rounded-full bg-accent-gold shrink-0 mt-1" />}
+            {!n.read && <span className="w-2 h-2 rounded-full bg-[var(--admin-accent)] shrink-0 mt-1" />}
             {n.priority && <Badge text="PRIORIDAD" variant="red" />}
           </div>
-          {n.detail && <p className="text-[11px] text-wood-500 mt-0.5">{n.detail}</p>}
-          <button className="text-[10px] text-accent-gold hover:underline mt-1 flex items-center gap-0.5">
+          {n.detail && <p className="text-[11px] text-[var(--admin-text-secondary)] mt-0.5">{n.detail}</p>}
+          <button className="text-[10px] text-[var(--admin-accent)] hover:underline mt-1 flex items-center gap-0.5">
             {n.action} <ArrowRight size={8} />
           </button>
         </div>
-        <span className="text-[10px] text-wood-400 shrink-0 mt-0.5">{n.time}</span>
+        <span className="text-[10px] text-[var(--admin-muted)] shrink-0 mt-0.5">{n.time}</span>
       </div>
     );
   }
@@ -256,7 +256,7 @@ function CenterTab() {
     if (filtered.length === 0) return null;
     return (
       <div>
-        <p className="text-[10px] text-wood-400 uppercase tracking-wider font-medium px-4 py-2 bg-sand-50/80">{title}</p>
+        <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider font-medium px-4 py-2 bg-[var(--admin-surface2)]/80">{title}</p>
         {filtered.map((n) => <NotifItem key={n.id} n={n} />)}
       </div>
     );
@@ -268,32 +268,32 @@ function CenterTab() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-wood-500">Filtros:</span>
+          <span className="text-xs text-[var(--admin-text-secondary)]">Filtros:</span>
           <div className="flex flex-wrap gap-1">
             {categories.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setFilter(c.id)}
-                className={'px-2.5 py-1 text-[10px] rounded-full transition-colors ' + (filter === c.id ? 'bg-accent-gold text-white' : 'bg-sand-50 text-wood-500 hover:bg-sand-100')}
+                className={'px-2.5 py-1 text-[10px] rounded-full transition-colors ' + (filter === c.id ? 'bg-[var(--admin-accent)] text-white' : 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]')}
               >
                 {c.label}
               </button>
             ))}
           </div>
         </div>
-        <button onClick={markAllRead} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1.5">
+        <button onClick={markAllRead} className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5">
           <CheckCheck size={12} /> Marcar todo como leido {unreadCount > 0 && <Badge text={String(unreadCount)} variant="red" />}
         </button>
       </div>
 
       <Card className="overflow-hidden">
         {notifsLoading ? (
-          <div className="p-8 text-center text-wood-400 text-xs">Cargando notificaciones...</div>
+          <div className="p-8 text-center text-[var(--admin-muted)] text-xs">Cargando notificaciones...</div>
         ) : isLive ? (
           <>
             {unreadNotifs.length > 0 && <NotifGroup title={`Sin leer (${unreadNotifs.length})`} items={unreadNotifs} />}
             {readNotifs.length > 0 && <NotifGroup title="Le\u00eddas" items={readNotifs} />}
-            {allNotifs.length === 0 && <div className="p-8 text-center text-wood-400 text-xs">Sin notificaciones pendientes</div>}
+            {allNotifs.length === 0 && <div className="p-8 text-center text-[var(--admin-muted)] text-xs">Sin notificaciones pendientes</div>}
           </>
         ) : (
           <>
@@ -304,8 +304,8 @@ function CenterTab() {
         )}
       </Card>
 
-      <div className="flex items-center gap-3 text-[10px] text-wood-400">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-gold" /> No leida</span>
+      <div className="flex items-center gap-3 text-[10px] text-[var(--admin-muted)]">
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--admin-accent)]" /> No leida</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-wood-200" /> Leida</span>
         <span className="ml-auto">Cada notificacion tiene link directo a la pantalla relevante</span>
       </div>
@@ -359,37 +359,37 @@ function EmailsTab() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <button onClick={() => setEditingEmail(null)} className="text-xs text-wood-500 hover:text-wood-700 transition-colors">Emails al Cliente</button>
-          <ChevronRight size={12} className="text-wood-300" />
-          <span className="text-xs font-medium text-wood-900">{editingEmail.name}</span>
+          <button onClick={() => setEditingEmail(null)} className="text-xs text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors">Emails al Cliente</button>
+          <ChevronRight size={12} className="text-[var(--admin-muted)]" />
+          <span className="text-xs font-medium text-[var(--admin-text)]">{editingEmail.name}</span>
         </div>
         <Card className="p-5 space-y-4">
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Template Key</label>
-            <p className="text-xs font-mono text-wood-600 bg-wood-50 px-3 py-2 rounded-lg">{editingEmail.template_key}</p>
+            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Template Key</label>
+            <p className="text-xs font-mono text-[var(--admin-text-secondary)] bg-[var(--admin-surface2)] px-3 py-2 rounded-lg">{editingEmail.template_key}</p>
           </div>
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Override del Asunto (dejar vacío para usar el default)</label>
+            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Override del Asunto (dejar vacío para usar el default)</label>
             <input
               value={subjectOverride}
               onChange={(e) => setSubjectOverride(e.target.value)}
               placeholder="Ej: Tu pedido #{order_id} está confirmado"
-              className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white"
+              className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]"
             />
           </div>
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Trigger</label>
-            <p className="text-xs text-wood-600">{editingEmail.trigger_description}</p>
+            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Trigger</label>
+            <p className="text-xs text-[var(--admin-text-secondary)]">{editingEmail.trigger_description}</p>
           </div>
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Destinatario</label>
-            <p className="text-xs text-wood-600 capitalize">{editingEmail.recipient_type}</p>
+            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Destinatario</label>
+            <p className="text-xs text-[var(--admin-text-secondary)] capitalize">{editingEmail.recipient_type}</p>
           </div>
           <div className="flex items-center gap-2 pt-2">
-            <button onClick={handleSaveSubject} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1">
+            <button onClick={handleSaveSubject} className="px-3 py-1.5 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1">
               <Save size={12} /> Guardar
             </button>
-            <button onClick={() => setEditingEmail(null)} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors">
+            <button onClick={() => setEditingEmail(null)} className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">
               Cancelar
             </button>
           </div>
@@ -403,27 +403,27 @@ function EmailsTab() {
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
-          <h4 className="text-sm font-medium text-wood-900">Emails Automáticos</h4>
-          <span className="text-[10px] text-wood-400">{templates.length} templates · {templates.filter(t => t.is_active).length} activos</span>
+        <div className="px-5 py-3 border-b border-[var(--admin-border)] flex items-center justify-between">
+          <h4 className="text-sm font-medium text-[var(--admin-text)]">Emails Automáticos</h4>
+          <span className="text-[10px] text-[var(--admin-muted)]">{templates.length} templates · {templates.filter(t => t.is_active).length} activos</span>
         </div>
         {loading ? (
-          <div className="p-8 text-center text-wood-400 text-sm">Cargando templates...</div>
+          <div className="p-8 text-center text-[var(--admin-muted)] text-sm">Cargando templates...</div>
         ) : categories.map(cat => (
           <div key={cat} className="mb-1">
-            <p className="text-[10px] text-wood-400 uppercase tracking-wider font-medium px-5 py-2 bg-sand-50/80 border-b border-wood-50 capitalize">{cat}</p>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider font-medium px-5 py-2 bg-[var(--admin-surface2)]/80 border-b border-[var(--admin-border)] capitalize">{cat}</p>
             {templates.filter(t => t.category === cat).map(tpl => (
-              <div key={tpl.id} className="flex items-center gap-3 px-5 py-3 border-b border-wood-50 hover:bg-sand-50/30 transition-colors">
+              <div key={tpl.id} className="flex items-center gap-3 px-5 py-3 border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30 transition-colors">
                 <button
                   onClick={() => handleToggle(tpl)}
                   className={'w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ' + (tpl.is_active ? 'bg-green-500' : 'bg-wood-200')}
                 >
-                  <div className={'w-4 h-4 rounded-full bg-white shadow transition-transform ' + (tpl.is_active ? 'translate-x-3' : 'translate-x-0')} />
+                  <div className={'w-4 h-4 rounded-full bg-[var(--admin-surface)] shadow transition-transform ' + (tpl.is_active ? 'translate-x-3' : 'translate-x-0')} />
                 </button>
-                <span className="text-xs text-wood-900 flex-1">{tpl.name}</span>
-                <span className="text-[10px] text-wood-400 hidden sm:block">{tpl.trigger_description}</span>
-                <span className="text-[9px] text-wood-300 hidden md:block capitalize">{tpl.recipient_type}</span>
-                <button onClick={() => { setEditingEmail(tpl); setSubjectOverride(tpl.subject_override || ''); }} className="p-1.5 rounded hover:bg-wood-50 text-wood-400 transition-colors" title="Editar">
+                <span className="text-xs text-[var(--admin-text)] flex-1">{tpl.name}</span>
+                <span className="text-[10px] text-[var(--admin-muted)] hidden sm:block">{tpl.trigger_description}</span>
+                <span className="text-[9px] text-[var(--admin-muted)] hidden md:block capitalize">{tpl.recipient_type}</span>
+                <button onClick={() => { setEditingEmail(tpl); setSubjectOverride(tpl.subject_override || ''); }} className="p-1.5 rounded hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] transition-colors" title="Editar">
                   <Layout size={12} />
                 </button>
               </div>
@@ -441,28 +441,28 @@ function TemplatesTab() {
     <div className="space-y-6">
       <Card className="p-5">
         <STitle>Plantilla Base (branding)</STitle>
-        <p className="text-[10px] text-wood-400 mb-4">Todos los emails heredan de esta plantilla base.</p>
+        <p className="text-[10px] text-[var(--admin-muted)] mb-4">Todos los emails heredan de esta plantilla base.</p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Config */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div>
-                <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Logo</label>
-                <button className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
+                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Logo</label>
+                <button className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1">
                   <Upload size={12} /> Subir logo
                 </button>
               </div>
               <div>
-                <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Posicion</label>
-                <select className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Posicion</label>
+                <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
                   <option>Centro</option>
                   <option>Izquierda</option>
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Tamano</label>
-                <select className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Tamano</label>
+                <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
                   <option>180px</option>
                   <option>150px</option>
                   <option>120px</option>
@@ -480,10 +480,10 @@ function TemplatesTab() {
                 { label: 'Texto botones', value: '#F5F3F0', name: 'sand' },
               ].map((c) => (
                 <div key={c.label}>
-                  <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">{c.label}</label>
+                  <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">{c.label}</label>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded border border-wood-200" style={{ backgroundColor: c.value }} />
-                    <input defaultValue={c.value} className="flex-1 border border-wood-200 rounded px-2 py-1 text-xs bg-white font-mono" />
+                    <div className="w-6 h-6 rounded border border-[var(--admin-border)]" style={{ backgroundColor: c.value }} />
+                    <input defaultValue={c.value} className="flex-1 border border-[var(--admin-border)] rounded px-2 py-1 text-xs bg-[var(--admin-surface)] font-mono" />
                   </div>
                 </div>
               ))}
@@ -491,16 +491,16 @@ function TemplatesTab() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Tipografia titulos</label>
-                <select className="w-full border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Tipografia titulos</label>
+                <select className="w-full border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
                   <option>Playfair Display</option>
                   <option>Georgia</option>
                   <option>Times New Roman</option>
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Tipografia body</label>
-                <select className="w-full border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Tipografia body</label>
+                <select className="w-full border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
                   <option>Inter</option>
                   <option>Arial</option>
                   <option>Helvetica</option>
@@ -509,12 +509,12 @@ function TemplatesTab() {
             </div>
 
             <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Ancho maximo</label>
-              <input defaultValue="600px" className="w-24 border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white" />
+              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Ancho maximo</label>
+              <input defaultValue="600px" className="w-24 border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
             </div>
 
             <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-2">Footer incluye</label>
+              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-2">Footer incluye</label>
               {[
                 'Logo pequeno',
                 'Direccion: Hermosillo, Sonora, Mexico',
@@ -523,8 +523,8 @@ function TemplatesTab() {
                 'Link "Darse de baja"',
                 'Texto legal: "Recibiste este email porque..."',
               ].map((opt) => (
-                <label key={opt} className="flex items-center gap-2 text-xs text-wood-600 mb-1.5">
-                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+                <label key={opt} className="flex items-center gap-2 text-xs text-[var(--admin-text-secondary)] mb-1.5">
+                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
                   {opt}
                 </label>
               ))}
@@ -533,16 +533,16 @@ function TemplatesTab() {
 
           {/* Preview */}
           <div>
-            <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-2">Preview</label>
-            <div className="border border-wood-200 rounded-lg overflow-hidden shadow-sm">
+            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-2">Preview</label>
+            <div className="border border-[var(--admin-border)] rounded-lg overflow-hidden shadow-sm">
               <div className="bg-[#2d2419] p-5 text-center">
-                <div className="text-accent-gold font-serif">DavidSon's Design</div>
+                <div className="text-[var(--admin-accent)] font-serif">DavidSon's Design</div>
               </div>
               <div className="bg-[#F5F3F0] p-6">
-                <div className="bg-white rounded-lg p-5 max-w-xs mx-auto space-y-3">
+                <div className="bg-[var(--admin-surface)] rounded-lg p-5 max-w-xs mx-auto space-y-3">
                   <h3 className="text-sm font-serif text-[#2d2419] text-center">[Titulo del email]</h3>
                   <p className="text-[11px] text-[#2d2419]/70 text-center">
-                    Contenido del email con <span className="text-accent-gold">links dorados</span> y tipografia Inter para el body.
+                    Contenido del email con <span className="text-[var(--admin-accent)]">links dorados</span> y tipografia Inter para el body.
                   </p>
                   <div className="text-center">
                     <span className="inline-block bg-[#2d2419] text-[#F5F3F0] px-5 py-1.5 rounded text-[10px]">
@@ -558,7 +558,7 @@ function TemplatesTab() {
                   ))}
                 </div>
                 <p className="text-[8px] text-[#F5F3F0]/40">DavidSon's Design | Hermosillo, Sonora, Mexico</p>
-                <p className="text-[8px] text-accent-gold/40">Gestionar preferencias | Darse de baja</p>
+                <p className="text-[8px] text-[var(--admin-accent)]/40">Gestionar preferencias | Darse de baja</p>
                 <p className="text-[8px] text-[#F5F3F0]/30">Recibiste este email porque eres cliente de DavidSon's Design</p>
               </div>
             </div>
@@ -566,7 +566,7 @@ function TemplatesTab() {
         </div>
       </Card>
 
-      <button onClick={() => toast.success('Plantilla base guardada')} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
+      <button onClick={() => toast.success('Plantilla base guardada')} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5">
         <Save size={12} /> Guardar plantilla base
       </button>
     </div>
@@ -601,7 +601,7 @@ function HistoryTab() {
   const historyData = liveHistory || [];
 
   const statusConfig: Record<string, { label: string; icon: React.ElementType; cls: string }> = {
-    sent: { label: 'No abierto', icon: Mail, cls: 'text-wood-400' },
+    sent: { label: 'No abierto', icon: Mail, cls: 'text-[var(--admin-muted)]' },
     opened: { label: 'Abierto', icon: MailOpen, cls: 'text-green-600' },
     clicked: { label: 'Abierto+Clic', icon: MousePointerClick, cls: 'text-blue-600' },
     bounced: { label: 'Rebotado', icon: XCircle, cls: 'text-red-500' },
@@ -611,15 +611,15 @@ function HistoryTab() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-wood-500">Filtros:</span>
-        <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+        <span className="text-xs text-[var(--admin-text-secondary)]">Filtros:</span>
+        <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
           <option value="all">Tipo: Todos</option>
           <option>Confirmacion pedido</option>
           <option>Solicitar review</option>
           <option>Puntos ganados</option>
           <option>Campana</option>
         </select>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
           <option value="all">Estado: Todos</option>
           <option value="sent">No abierto</option>
           <option value="opened">Abierto</option>
@@ -632,7 +632,7 @@ function HistoryTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                 <th className="px-5 py-2">Fecha/Hora</th>
                 <th className="px-5 py-2">Tipo</th>
                 <th className="px-5 py-2">Destinatario</th>
@@ -642,15 +642,15 @@ function HistoryTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {historyLoading ? (
-                <tr><td colSpan={5} className="p-8 text-center text-wood-400 text-xs">Cargando historial de emails...</td></tr>
+                <tr><td colSpan={5} className="p-8 text-center text-[var(--admin-muted)] text-xs">Cargando historial de emails...</td></tr>
               ) : historyData.map((h) => {
                 const sc = statusConfig[h.status] || statusConfig['sent'];
                 return (
-                  <tr key={h.id} className="hover:bg-sand-50/50 transition-colors cursor-pointer">
-                    <td className="px-5 py-2.5 text-xs text-wood-500 whitespace-nowrap">{h.date}</td>
-                    <td className="px-5 py-2.5 text-xs text-wood-700">{h.type}</td>
-                    <td className="px-5 py-2.5 text-xs text-wood-600">{h.recipient}</td>
-                    <td className="px-5 py-2.5 text-xs text-wood-900">{h.subject}</td>
+                  <tr key={h.id} className="hover:bg-[var(--admin-surface2)]/50 transition-colors cursor-pointer">
+                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] whitespace-nowrap">{h.date}</td>
+                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text)]">{h.type}</td>
+                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)]">{h.recipient}</td>
+                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text)]">{h.subject}</td>
                     <td className="px-5 py-2.5">
                       <span className={'flex items-center gap-1 text-[10px] font-medium ' + sc.cls}>
                         <sc.icon size={10} /> {sc.label}
@@ -676,14 +676,14 @@ function HistoryTab() {
             { label: 'Unsubscribes', value: '1 (0.3%)' },
           ].map((m) => (
             <div key={m.label} className="text-center">
-              <p className="text-lg font-serif text-wood-900">{m.value}</p>
-              <p className="text-[10px] text-wood-400">{m.label}</p>
+              <p className="text-lg font-serif text-[var(--admin-text)]">{m.value}</p>
+              <p className="text-[10px] text-[var(--admin-muted)]">{m.label}</p>
             </div>
           ))}
         </div>
       </Card>
 
-      <p className="text-[10px] text-wood-400">Click en cualquier email para ver detalle: contenido completo, timeline (Enviado &rarr; Entregado &rarr; Abierto &rarr; Click), device, y opcion de reenviar.</p>
+      <p className="text-[10px] text-[var(--admin-muted)]">Click en cualquier email para ver detalle: contenido completo, timeline (Enviado &rarr; Entregado &rarr; Abierto &rarr; Click), device, y opcion de reenviar.</p>
     </div>
   );
 }
@@ -700,15 +700,15 @@ function ConfigTab() {
     'Critica': 'bg-red-50 text-red-600',
     'Alta': 'bg-amber-50 text-amber-600',
     'Normal': 'bg-blue-50 text-blue-600',
-    'Baja': 'bg-wood-50 text-wood-500',
+    'Baja': 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]',
   };
 
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-wood-100 flex items-center justify-between">
-          <h4 className="text-sm font-medium text-wood-900">Mis Preferencias de Notificacion</h4>
-          <div className="flex items-center gap-3 text-[10px] text-wood-400">
+        <div className="px-5 py-3 border-b border-[var(--admin-border)] flex items-center justify-between">
+          <h4 className="text-sm font-medium text-[var(--admin-text)]">Mis Preferencias de Notificacion</h4>
+          <div className="flex items-center gap-3 text-[10px] text-[var(--admin-muted)]">
             <span className="flex items-center gap-1"><Bell size={10} /> In-App</span>
             <span className="flex items-center gap-1"><Mail size={10} /> Email</span>
             <span className="flex items-center gap-1"><Send size={10} /> Push</span>
@@ -717,7 +717,7 @@ function ConfigTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                 <th className="px-5 py-2">Notificacion</th>
                 <th className="px-5 py-2 text-center w-16">In-App</th>
                 <th className="px-5 py-2 text-center w-16">Email</th>
@@ -727,20 +727,20 @@ function ConfigTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {prefs.map((p, idx) => (
-                <tr key={p.name} className="hover:bg-sand-50/30 transition-colors">
-                  <td className="px-5 py-2.5 text-xs text-wood-900">{p.name}</td>
+                <tr key={p.name} className="hover:bg-[var(--admin-surface2)]/30 transition-colors">
+                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text)]">{p.name}</td>
                   {(['inApp', 'email', 'push'] as const).map((ch) => (
                     <td key={ch} className="px-5 py-2.5 text-center">
                       <button
                         onClick={() => togglePref(idx, ch)}
                         className={'w-8 h-5 rounded-full p-0.5 transition-colors mx-auto block ' + (p[ch] ? 'bg-green-500' : 'bg-wood-200')}
                       >
-                        <div className={'w-4 h-4 rounded-full bg-white shadow transition-transform ' + (p[ch] ? 'translate-x-3' : 'translate-x-0')} />
+                        <div className={'w-4 h-4 rounded-full bg-[var(--admin-surface)] shadow transition-transform ' + (p[ch] ? 'translate-x-3' : 'translate-x-0')} />
                       </button>
                     </td>
                   ))}
                   <td className="px-5 py-2.5 text-center">
-                    <span className={'text-[9px] font-medium px-2 py-0.5 rounded-full ' + (priorityCls[p.priority] || 'bg-wood-50 text-wood-500')}>
+                    <span className={'text-[9px] font-medium px-2 py-0.5 rounded-full ' + (priorityCls[p.priority] || 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]')}>
                       {p.priority}
                     </span>
                   </td>
@@ -755,21 +755,21 @@ function ConfigTab() {
       <Card className="p-5">
         <STitle>Resumen diario</STitle>
         <div className="space-y-3">
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Enviar resumen del dia
           </label>
           <div className="grid grid-cols-2 gap-3 pl-6">
             <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Hora de envio</label>
-              <input type="time" defaultValue="08:00" className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white" />
+              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Hora de envio</label>
+              <input type="time" defaultValue="08:00" className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
             </div>
             <div>
-              <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">Enviar a</label>
-              <input defaultValue="admin@davidsonsdesign.com" className="w-full border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white" />
+              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Enviar a</label>
+              <input defaultValue="admin@davidsonsdesign.com" className="w-full border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
             </div>
           </div>
-          <p className="text-[10px] text-wood-400 pl-6">Incluye: pedidos, ingresos, reviews, cotizaciones, alertas</p>
+          <p className="text-[10px] text-[var(--admin-muted)] pl-6">Incluye: pedidos, ingresos, reviews, cotizaciones, alertas</p>
         </div>
       </Card>
 
@@ -778,20 +778,20 @@ function ConfigTab() {
         <STitle>Horario silencioso (no enviar push)</STitle>
         <div className="flex items-center gap-3">
           <div>
-            <label className="text-[10px] text-wood-400 block mb-1">Desde</label>
-            <input type="time" defaultValue="22:00" className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white" />
+            <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Desde</label>
+            <input type="time" defaultValue="22:00" className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
           </div>
           <div>
-            <label className="text-[10px] text-wood-400 block mb-1">Hasta</label>
-            <input type="time" defaultValue="07:00" className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white" />
+            <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Hasta</label>
+            <input type="time" defaultValue="07:00" className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
           </div>
         </div>
-        <p className="text-[10px] text-wood-400 mt-2">(excepto prioridad Critica)</p>
+        <p className="text-[10px] text-[var(--admin-muted)] mt-2">(excepto prioridad Critica)</p>
       </Card>
 
       <button
         onClick={() => toast.success('Preferencias de notificacion guardadas')}
-        className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5"
+        className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5"
       >
         <Save size={12} /> Guardar preferencias
       </button>
@@ -815,12 +815,12 @@ export const NotificationsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-wood-900 flex items-center gap-2">
-          <Bell size={20} className="text-accent-gold" /> Notificaciones
+        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
+          <Bell size={20} className="text-[var(--admin-accent)]" /> Notificaciones
         </h3>
         <button
           onClick={() => setActiveTab('config')}
-          className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1.5"
+          className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5"
         >
           <Settings2 size={12} /> Configurar
         </button>
@@ -828,7 +828,7 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="overflow-x-auto -mx-1 px-1">
-        <div className="flex gap-1 min-w-max border-b border-wood-100">
+        <div className="flex gap-1 min-w-max border-b border-[var(--admin-border)]">
           {tabItems.map((t) => (
             <button
               key={t.id}
@@ -836,8 +836,8 @@ export const NotificationsPage: React.FC = () => {
               className={
                 'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 whitespace-nowrap ' +
                 (activeTab === t.id
-                  ? 'border-accent-gold text-accent-gold font-medium'
-                  : 'border-transparent text-wood-500 hover:text-wood-700')
+                  ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium'
+                  : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')
               }
             >
               <t.icon size={14} />{t.label}

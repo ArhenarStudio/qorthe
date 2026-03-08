@@ -24,7 +24,7 @@ interface ImportJob {
 }
 
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-white rounded-xl border border-wood-100 shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
 }
 
 // ===== IMPORT TAB =====
@@ -60,15 +60,15 @@ function ImportTab() {
   if (step === 0) {
     return (
       <div className="space-y-4">
-        <p className="text-xs text-wood-400">Selecciona que datos quieres importar:</p>
+        <p className="text-xs text-[var(--admin-muted)]">Selecciona que datos quieres importar:</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {dataTypes.map(dt => (
             <button key={dt.id} onClick={() => { setImportType(dt.id); setStep(1); }}
-              className="p-4 border border-wood-100 rounded-xl text-left hover:border-accent-gold hover:bg-accent-gold/5 transition-all group">
-              <dt.icon size={18} className="text-wood-400 group-hover:text-accent-gold mb-2" />
-              <p className="text-xs font-medium text-wood-900">{dt.label}</p>
-              <p className="text-[10px] text-wood-400 mt-0.5">{dt.desc}</p>
-              <p className="text-[9px] text-wood-300 mt-1">{dt.count}</p>
+              className="p-4 border border-[var(--admin-border)] rounded-xl text-left hover:border-[var(--admin-accent)] hover:bg-[var(--admin-accent)]/5 transition-all group">
+              <dt.icon size={18} className="text-[var(--admin-muted)] group-hover:text-[var(--admin-accent)] mb-2" />
+              <p className="text-xs font-medium text-[var(--admin-text)]">{dt.label}</p>
+              <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{dt.desc}</p>
+              <p className="text-[9px] text-[var(--admin-muted)] mt-1">{dt.count}</p>
             </button>
           ))}
         </div>
@@ -81,27 +81,27 @@ function ImportTab() {
       <div className="space-y-4">
         <StepIndicator current={1} />
         <Card className="p-6 text-center">
-          <Upload size={32} className="text-wood-300 mx-auto mb-3" />
-          <p className="text-sm font-serif text-wood-900 mb-1">Sube tu archivo de {dataTypes.find(d => d.id === importType)?.label}</p>
-          <p className="text-xs text-wood-400 mb-4">Formatos aceptados: CSV, Excel (.xlsx), JSON</p>
+          <Upload size={32} className="text-[var(--admin-muted)] mx-auto mb-3" />
+          <p className="text-sm font-serif text-[var(--admin-text)] mb-1">Sube tu archivo de {dataTypes.find(d => d.id === importType)?.label}</p>
+          <p className="text-xs text-[var(--admin-muted)] mb-4">Formatos aceptados: CSV, Excel (.xlsx), JSON</p>
           <div className="flex flex-col items-center gap-3">
-            <div className="border-2 border-dashed border-wood-200 rounded-xl p-8 w-full max-w-md hover:border-accent-gold/50 transition-colors cursor-pointer">
+            <div className="border-2 border-dashed border-[var(--admin-border)] rounded-xl p-8 w-full max-w-md hover:border-[var(--admin-accent)]/50 transition-colors cursor-pointer">
               <input type="file" className="hidden" id="import-file" />
               <label htmlFor="import-file" className="cursor-pointer text-center">
-                <FileSpreadsheet size={24} className="text-wood-300 mx-auto mb-2" />
-                <p className="text-xs text-wood-500">Arrastra un archivo aqui o haz clic para seleccionar</p>
-                <p className="text-[10px] text-wood-400 mt-1">Tamano maximo: 50MB</p>
+                <FileSpreadsheet size={24} className="text-[var(--admin-muted)] mx-auto mb-2" />
+                <p className="text-xs text-[var(--admin-text-secondary)]">Arrastra un archivo aqui o haz clic para seleccionar</p>
+                <p className="text-[10px] text-[var(--admin-muted)] mt-1">Tamano maximo: 50MB</p>
               </label>
             </div>
-            <button onClick={() => setStep(2)} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors">
+            <button onClick={() => setStep(2)} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors">
               Subir y continuar
             </button>
-            <button onClick={() => toast.success('Template descargado')} className="text-xs text-accent-gold hover:underline flex items-center gap-1">
+            <button onClick={() => toast.success('Template descargado')} className="text-xs text-[var(--admin-accent)] hover:underline flex items-center gap-1">
               <Download size={10} /> Descargar template de Excel
             </button>
           </div>
         </Card>
-        <button onClick={() => setStep(0)} className="text-xs text-wood-400 hover:text-wood-600 flex items-center gap-1"><X size={10} /> Cancelar</button>
+        <button onClick={() => setStep(0)} className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] flex items-center gap-1"><X size={10} /> Cancelar</button>
       </div>
     );
   }
@@ -111,12 +111,12 @@ function ImportTab() {
       <div className="space-y-4">
         <StepIndicator current={2} />
         <Card className="p-5">
-          <h4 className="text-xs font-medium text-wood-900 mb-1">Mapeo de columnas</h4>
-          <p className="text-[10px] text-wood-400 mb-4">Verifica que las columnas de tu archivo coincidan con los campos del sistema.</p>
+          <h4 className="text-xs font-medium text-[var(--admin-text)] mb-1">Mapeo de columnas</h4>
+          <p className="text-[10px] text-[var(--admin-muted)] mb-4">Verifica que las columnas de tu archivo coincidan con los campos del sistema.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+                <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                   <th className="px-3 py-2">Columna del archivo</th>
                   <th className="px-3 py-2 text-center"><ArrowRight size={10} className="inline" /></th>
                   <th className="px-3 py-2">Campo del sistema</th>
@@ -126,10 +126,10 @@ function ImportTab() {
               <tbody className="divide-y divide-wood-50">
                 {sampleMapping.map((m, i) => (
                   <tr key={i}>
-                    <td className="px-3 py-2 text-xs font-mono text-wood-700">{m.source}</td>
-                    <td className="px-3 py-2 text-center"><ArrowRight size={10} className="text-wood-300" /></td>
+                    <td className="px-3 py-2 text-xs font-mono text-[var(--admin-text)]">{m.source}</td>
+                    <td className="px-3 py-2 text-center"><ArrowRight size={10} className="text-[var(--admin-muted)]" /></td>
                     <td className="px-3 py-2">
-                      <select defaultValue={m.target} className="border border-wood-200 rounded px-2 py-1 text-xs bg-white w-40">
+                      <select defaultValue={m.target} className="border border-[var(--admin-border)] rounded px-2 py-1 text-xs bg-[var(--admin-surface)] w-40">
                         <option value="—">— No mapear —</option>
                         {['Nombre', 'Precio', 'SKU', 'Stock', 'Descripcion', 'Imagen principal', 'Peso', 'Categoria', 'Madera', 'Variantes'].map(f => (
                           <option key={f} value={f}>{f}</option>
@@ -147,8 +147,8 @@ function ImportTab() {
           </div>
         </Card>
         <div className="flex gap-2">
-          <button onClick={() => setStep(1)} className="px-3 py-2 text-xs border border-wood-200 text-wood-500 rounded-lg">Atras</button>
-          <button onClick={() => setStep(3)} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg">Continuar</button>
+          <button onClick={() => setStep(1)} className="px-3 py-2 text-xs border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg">Atras</button>
+          <button onClick={() => setStep(3)} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg">Continuar</button>
         </div>
       </div>
     );
@@ -159,26 +159,26 @@ function ImportTab() {
       <div className="space-y-4">
         <StepIndicator current={3} />
         <Card className="p-5">
-          <h4 className="text-xs font-medium text-wood-900 mb-1">Preview de datos</h4>
-          <p className="text-[10px] text-wood-400 mb-4">Revisa los datos antes de importar.</p>
-          <div className="bg-sand-50 rounded-lg p-4 space-y-2">
+          <h4 className="text-xs font-medium text-[var(--admin-text)] mb-1">Preview de datos</h4>
+          <p className="text-[10px] text-[var(--admin-muted)] mb-4">Revisa los datos antes de importar.</p>
+          <div className="bg-[var(--admin-surface2)] rounded-lg p-4 space-y-2">
             <div className="flex items-center gap-3">
               <CheckCircle size={14} className="text-green-500" />
-              <span className="text-xs text-wood-700">48 registros listos para importar</span>
+              <span className="text-xs text-[var(--admin-text)]">48 registros listos para importar</span>
             </div>
             <div className="flex items-center gap-3">
               <AlertTriangle size={14} className="text-amber-500" />
-              <span className="text-xs text-wood-700">3 registros con advertencias (campos opcionales vacios)</span>
+              <span className="text-xs text-[var(--admin-text)]">3 registros con advertencias (campos opcionales vacios)</span>
             </div>
             <div className="flex items-center gap-3">
               <X size={14} className="text-red-400" />
-              <span className="text-xs text-wood-700">1 registro con errores (precio invalido)</span>
+              <span className="text-xs text-[var(--admin-text)]">1 registro con errores (precio invalido)</span>
             </div>
           </div>
           <div className="overflow-x-auto mt-4">
             <table className="w-full text-left">
               <thead>
-                <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+                <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                   <th className="px-3 py-2">#</th>
                   <th className="px-3 py-2">Nombre</th>
                   <th className="px-3 py-2">Precio</th>
@@ -193,21 +193,21 @@ function ImportTab() {
                   { n: 'Set Cubiertos Pack', p: 'N/A', sku: 'SC-PK-001', ok: false },
                 ].map((r, i) => (
                   <tr key={i} className={!r.ok ? 'bg-red-50/50' : ''}>
-                    <td className="px-3 py-2 text-wood-400">{i + 1}</td>
-                    <td className="px-3 py-2 text-wood-900">{r.n}</td>
-                    <td className="px-3 py-2 text-wood-700">{r.p}</td>
-                    <td className="px-3 py-2 font-mono text-wood-500">{r.sku}</td>
+                    <td className="px-3 py-2 text-[var(--admin-muted)]">{i + 1}</td>
+                    <td className="px-3 py-2 text-[var(--admin-text)]">{r.n}</td>
+                    <td className="px-3 py-2 text-[var(--admin-text)]">{r.p}</td>
+                    <td className="px-3 py-2 font-mono text-[var(--admin-text-secondary)]">{r.sku}</td>
                     <td className="px-3 py-2">{r.ok ? <span className="text-green-600 text-[10px]">✓ OK</span> : <span className="text-red-500 text-[10px]">✗ Error</span>}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="text-[10px] text-wood-400 mt-2 px-3">Mostrando 3 de 52 registros</p>
+            <p className="text-[10px] text-[var(--admin-muted)] mt-2 px-3">Mostrando 3 de 52 registros</p>
           </div>
         </Card>
         <div className="flex gap-2">
-          <button onClick={() => setStep(2)} className="px-3 py-2 text-xs border border-wood-200 text-wood-500 rounded-lg">Atras</button>
-          <button onClick={() => setStep(4)} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg flex items-center gap-1.5">
+          <button onClick={() => setStep(2)} className="px-3 py-2 text-xs border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg">Atras</button>
+          <button onClick={() => setStep(4)} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg flex items-center gap-1.5">
             <Upload size={12} /> Importar 48 registros
           </button>
         </div>
@@ -222,15 +222,15 @@ function ImportTab() {
       <div className="space-y-4">
         <StepIndicator current={4} />
         <Card className="p-8 text-center">
-          <RefreshCw size={24} className="text-accent-gold mx-auto mb-3 animate-spin" />
-          <p className="text-sm font-serif text-wood-900">Importando datos...</p>
-          <p className="text-xs text-wood-400 mt-1">Procesando 48 registros</p>
-          <div className="w-full max-w-xs mx-auto mt-4 h-2 bg-wood-100 rounded-full overflow-hidden">
+          <RefreshCw size={24} className="text-[var(--admin-accent)] mx-auto mb-3 animate-spin" />
+          <p className="text-sm font-serif text-[var(--admin-text)]">Importando datos...</p>
+          <p className="text-xs text-[var(--admin-muted)] mt-1">Procesando 48 registros</p>
+          <div className="w-full max-w-xs mx-auto mt-4 h-2 bg-[var(--admin-surface2)] rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
               transition={{ duration: 2 }}
-              className="h-full bg-accent-gold rounded-full"
+              className="h-full bg-[var(--admin-accent)] rounded-full"
             />
           </div>
         </Card>
@@ -246,24 +246,24 @@ function ImportTab() {
         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
           <CheckCircle size={24} className="text-green-600" />
         </div>
-        <p className="text-sm font-serif text-wood-900">Importacion completada</p>
+        <p className="text-sm font-serif text-[var(--admin-text)]">Importacion completada</p>
         <div className="flex justify-center gap-6 mt-4 text-center">
           <div>
             <p className="text-lg font-serif text-green-600">48</p>
-            <p className="text-[10px] text-wood-400">Importados</p>
+            <p className="text-[10px] text-[var(--admin-muted)]">Importados</p>
           </div>
           <div>
             <p className="text-lg font-serif text-amber-500">3</p>
-            <p className="text-[10px] text-wood-400">Advertencias</p>
+            <p className="text-[10px] text-[var(--admin-muted)]">Advertencias</p>
           </div>
           <div>
             <p className="text-lg font-serif text-red-500">1</p>
-            <p className="text-[10px] text-wood-400">Errores</p>
+            <p className="text-[10px] text-[var(--admin-muted)]">Errores</p>
           </div>
         </div>
         <div className="flex justify-center gap-2 mt-4">
-          <button onClick={() => { setStep(0); setImportType(null); }} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg">Nueva importacion</button>
-          <button onClick={() => toast.success('Reporte descargado')} className="px-4 py-2 text-xs border border-wood-200 text-wood-500 rounded-lg flex items-center gap-1"><Download size={10} /> Descargar reporte</button>
+          <button onClick={() => { setStep(0); setImportType(null); }} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg">Nueva importacion</button>
+          <button onClick={() => toast.success('Reporte descargado')} className="px-4 py-2 text-xs border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg flex items-center gap-1"><Download size={10} /> Descargar reporte</button>
         </div>
       </Card>
     </div>
@@ -276,11 +276,11 @@ function StepIndicator({ current }: { current: number }) {
     <div className="flex items-center gap-1 mb-2">
       {steps.map((s, i) => (
         <React.Fragment key={s}>
-          <div className={'flex items-center gap-1 text-[10px] ' + (i + 1 <= current ? 'text-accent-gold font-medium' : 'text-wood-300')}>
-            <span className={'w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold ' + (i + 1 < current ? 'bg-accent-gold text-white' : i + 1 === current ? 'bg-accent-gold/20 text-accent-gold' : 'bg-wood-100 text-wood-300')}>{i + 1 < current ? '✓' : i + 1}</span>
+          <div className={'flex items-center gap-1 text-[10px] ' + (i + 1 <= current ? 'text-[var(--admin-accent)] font-medium' : 'text-[var(--admin-muted)]')}>
+            <span className={'w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold ' + (i + 1 < current ? 'bg-[var(--admin-accent)] text-white' : i + 1 === current ? 'bg-[var(--admin-accent)]/20 text-[var(--admin-accent)]' : 'bg-[var(--admin-surface2)] text-[var(--admin-muted)]')}>{i + 1 < current ? '✓' : i + 1}</span>
             <span className="hidden sm:inline">{s}</span>
           </div>
-          {i < steps.length - 1 && <div className={'flex-1 h-px max-w-8 ' + (i + 1 < current ? 'bg-accent-gold' : 'bg-wood-200')} />}
+          {i < steps.length - 1 && <div className={'flex-1 h-px max-w-8 ' + (i + 1 < current ? 'bg-[var(--admin-accent)]' : 'bg-wood-200')} />}
         </React.Fragment>
       ))}
     </div>
@@ -300,24 +300,24 @@ function ExportTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-wood-400">Selecciona que datos quieres exportar:</p>
+      <p className="text-xs text-[var(--admin-muted)]">Selecciona que datos quieres exportar:</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {sections.map(s => (
-          <Card key={s.id} className="p-4 hover:border-accent-gold/30 transition-colors">
+          <Card key={s.id} className="p-4 hover:border-[var(--admin-accent)]/30 transition-colors">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-lg bg-accent-gold/10 flex items-center justify-center">
-                <s.icon size={16} className="text-accent-gold" />
+              <div className="w-9 h-9 rounded-lg bg-[var(--admin-accent)]/10 flex items-center justify-center">
+                <s.icon size={16} className="text-[var(--admin-accent)]" />
               </div>
               <div>
-                <p className="text-xs font-medium text-wood-900">{s.label}</p>
-                {s.count && <p className="text-[10px] text-wood-400">{s.count} registros</p>}
+                <p className="text-xs font-medium text-[var(--admin-text)]">{s.label}</p>
+                {s.count && <p className="text-[10px] text-[var(--admin-muted)]">{s.count} registros</p>}
               </div>
             </div>
-            <p className="text-[10px] text-wood-400 mb-3">{s.desc}</p>
+            <p className="text-[10px] text-[var(--admin-muted)] mb-3">{s.desc}</p>
             <div className="flex gap-1.5">
               {['CSV', 'Excel', 'JSON'].map(f => (
                 <button key={f} onClick={() => toast.success(`${s.label} exportados como ${f}`)}
-                  className="flex-1 px-2 py-1.5 text-[10px] border border-wood-200 rounded-lg text-wood-500 hover:border-accent-gold hover:text-accent-gold transition-colors flex items-center justify-center gap-1">
+                  className="flex-1 px-2 py-1.5 text-[10px] border border-[var(--admin-border)] rounded-lg text-[var(--admin-text-secondary)] hover:border-[var(--admin-accent)] hover:text-[var(--admin-accent)] transition-colors flex items-center justify-center gap-1">
                   <Download size={8} /> {f}
                 </button>
               ))}
@@ -342,24 +342,24 @@ function MigrateTab() {
   return (
     <div className="space-y-4">
       <Card className="p-5">
-        <h4 className="text-xs font-medium text-wood-900 mb-1">Migrar desde otra plataforma</h4>
-        <p className="text-[10px] text-wood-400 mb-4">Importa los datos de tu tienda anterior con un wizard paso a paso.</p>
+        <h4 className="text-xs font-medium text-[var(--admin-text)] mb-1">Migrar desde otra plataforma</h4>
+        <p className="text-[10px] text-[var(--admin-muted)] mb-4">Importa los datos de tu tienda anterior con un wizard paso a paso.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {platforms.map(p => (
             <button key={p.id} onClick={() => toast.success(`Wizard de migracion desde ${p.name} iniciado`)}
-              className="p-4 border border-wood-100 rounded-xl text-left hover:border-accent-gold hover:bg-accent-gold/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-sand-50 flex items-center justify-center mb-2">
-                <span className="text-sm font-bold text-wood-500">{p.name[0]}</span>
+              className="p-4 border border-[var(--admin-border)] rounded-xl text-left hover:border-[var(--admin-accent)] hover:bg-[var(--admin-accent)]/5 transition-all group">
+              <div className="w-10 h-10 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center mb-2">
+                <span className="text-sm font-bold text-[var(--admin-text-secondary)]">{p.name[0]}</span>
               </div>
-              <p className="text-xs font-medium text-wood-900">{p.name}</p>
-              <p className="text-[10px] text-wood-400 mt-0.5">{p.desc}</p>
-              <p className="text-[9px] text-wood-300 mt-1">Formato: {p.format}</p>
+              <p className="text-xs font-medium text-[var(--admin-text)]">{p.name}</p>
+              <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{p.desc}</p>
+              <p className="text-[9px] text-[var(--admin-muted)] mt-1">Formato: {p.format}</p>
               <div className="flex flex-wrap gap-1 mt-2">
                 {p.supported.map(s => (
-                  <span key={s} className="text-[8px] bg-wood-50 text-wood-500 px-1.5 py-0.5 rounded-full">{s}</span>
+                  <span key={s} className="text-[8px] bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)] px-1.5 py-0.5 rounded-full">{s}</span>
                 ))}
               </div>
-              <span className="text-[10px] text-accent-gold mt-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-[10px] text-[var(--admin-accent)] mt-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 Iniciar migracion <ChevronRight size={10} />
               </span>
             </button>
@@ -392,7 +392,7 @@ function HistoryTab() {
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+            <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
               <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">Tipo</th>
               <th className="px-4 py-3">Archivo</th>
@@ -406,11 +406,11 @@ function HistoryTab() {
             {jobs.map(j => {
               const st = statusCfg[j.status];
               return (
-                <tr key={j.id} className="hover:bg-sand-50/50">
-                  <td className="px-4 py-3 text-xs font-mono text-wood-900">{j.id}</td>
-                  <td className="px-4 py-3 text-xs text-wood-700">{typeLabel[j.type]}</td>
-                  <td className="px-4 py-3 text-xs text-wood-500 font-mono">{j.source}</td>
-                  <td className="px-4 py-3 text-xs text-wood-400">{j.date}</td>
+                <tr key={j.id} className="hover:bg-[var(--admin-surface2)]/50">
+                  <td className="px-4 py-3 text-xs font-mono text-[var(--admin-text)]">{j.id}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--admin-text)]">{typeLabel[j.type]}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)] font-mono">{j.source}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--admin-muted)]">{j.date}</td>
                   <td className="px-4 py-3 text-xs text-green-600 font-medium">{j.imported}</td>
                   <td className="px-4 py-3 text-xs text-red-500">{j.errors}</td>
                   <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${st.bg} ${st.color}`}>{st.label}</span></td>
@@ -446,16 +446,16 @@ export const ImportExportPage: React.FC = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-serif text-wood-900 flex items-center gap-2">
-          <ArrowUpDown size={20} className="text-accent-gold" /> Importar / Exportar
+        <h1 className="text-xl font-serif text-[var(--admin-text)] flex items-center gap-2">
+          <ArrowUpDown size={20} className="text-[var(--admin-accent)]" /> Importar / Exportar
         </h1>
-        <p className="text-xs text-wood-400 mt-0.5">Importa datos, exporta backups o migra desde otra plataforma</p>
+        <p className="text-xs text-[var(--admin-muted)] mt-0.5">Importa datos, exporta backups o migra desde otra plataforma</p>
       </div>
 
-      <div className="flex gap-1 border-b border-wood-100">
+      <div className="flex gap-1 border-b border-[var(--admin-border)]">
         {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className={'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 ' + (tab === t.id ? 'border-accent-gold text-accent-gold font-medium' : 'border-transparent text-wood-500 hover:text-wood-700')}>
+            className={'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 ' + (tab === t.id ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium' : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')}>
             <t.icon size={14} />{t.label}
           </button>
         ))}

@@ -203,7 +203,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           ${collapsed ? 'px-0 py-2 justify-center rounded-xl' : 'px-2.5 py-[7px] rounded-lg'}
           ${isActive
             ? ''
-            : 'hover:bg-stone-100/70'
+            : 'hover:bg-[var(--admin-surface2)]/70'
           }
         `}
       >
@@ -222,7 +222,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
         <div className={`
           relative z-10 flex items-center justify-center w-5 h-5 transition-colors
-          ${isActive ? 'text-white' : 'text-stone-400'}
+          ${isActive ? 'text-[var(--admin-sidebar-text)]' : 'text-[var(--admin-muted)]'}
         `}>
           <ItemIcon size={16} strokeWidth={isActive ? 2 : 1.5} />
         </div>
@@ -236,7 +236,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               transition={{ duration: 0.12 }}
               className={`
                 relative z-10 truncate flex-1 text-left transition-colors
-                ${isActive ? 'text-white font-medium' : 'text-stone-500'}
+                ${isActive ? 'text-[var(--admin-sidebar-text)] font-medium' : 'text-[var(--admin-text-secondary)]'}
               `}
             >
               {item.label}
@@ -251,7 +251,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1
             text-[9px] font-bold
             ${isActive
-              ? 'bg-white/25 text-white'
+              ? 'bg-[var(--admin-sidebar-active)] text-[var(--admin-sidebar-text)]'
               : 'bg-amber-50 text-amber-600 border border-amber-200/50'
             }
           `}>
@@ -262,9 +262,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         {/* Collapsed tooltip */}
         {collapsed && (
           <span className="
-            absolute left-full ml-2.5 bg-white text-stone-700 text-[11px] px-2.5 py-1.5 rounded-lg
+            absolute left-full ml-2.5 bg-[var(--admin-surface)] text-[var(--admin-text)] text-[11px] px-2.5 py-1.5 rounded-lg
             opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[60]
-            border border-stone-200/80 shadow-lg shadow-stone-200/50
+            border border-[var(--admin-border)] shadow-lg shadow-stone-200/50
           ">
             {item.label}
             {badgeCount > 0 && (
@@ -282,7 +282,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     <motion.aside
       animate={{ width: collapsed ? 68 : 256 }}
       transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-      className="fixed left-0 top-0 h-full flex flex-col z-50 overflow-hidden bg-white/80 backdrop-blur-xl border-r border-stone-200/60"
+      className="fixed left-0 top-0 h-full flex flex-col z-50 overflow-hidden backdrop-blur-xl border-r"
+        style={{ backgroundColor: "var(--admin-sidebar-bg, rgba(255,255,255,0.8))", borderColor: "var(--admin-sidebar-border, rgba(214,211,209,0.6))" }}
     >
       {/* ===== HEADER / BRAND ===== */}
       <div className={`px-3 pt-4 pb-2 ${collapsed ? 'flex flex-col items-center' : ''}`}>
@@ -301,7 +302,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 </h1>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className={`w-[5px] h-[5px] rounded-full ring-2 ${siteOnline ? 'bg-emerald-400 ring-emerald-100' : 'bg-red-400 ring-red-100'}`} />
-                  <span className="text-[10px] text-stone-400">{siteOnline ? 'Online' : 'Offline'}</span>
+                  <span className="text-[10px] text-[var(--admin-muted)]">{siteOnline ? 'Online' : 'Offline'}</span>
                 </div>
               </motion.div>
             )}
@@ -312,11 +313,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       {/* ===== COLLAPSE TOGGLE ===== */}
       <button
         onClick={onToggleCollapse}
-        className="absolute top-[18px] -right-[13px] w-[26px] h-[26px] rounded-full flex items-center justify-center z-10 transition-all bg-white border border-stone-200/80 shadow-sm hover:shadow-md hover:border-stone-300 group/toggle"
+        className="absolute top-[18px] -right-[13px] w-[26px] h-[26px] rounded-full flex items-center justify-center z-10 transition-all bg-[var(--admin-surface)] border border-[var(--admin-border)] shadow-sm hover:shadow-md hover:border-[var(--admin-border)] group/toggle"
       >
         {collapsed
-          ? <PanelLeft size={12} className="text-stone-400 group-hover/toggle:text-accent-gold transition-colors" />
-          : <PanelLeftClose size={12} className="text-stone-400 group-hover/toggle:text-accent-gold transition-colors" />
+          ? <PanelLeft size={12} className="text-[var(--admin-muted)] group-hover/toggle:text-[var(--admin-accent)] transition-colors" />
+          : <PanelLeftClose size={12} className="text-[var(--admin-muted)] group-hover/toggle:text-[var(--admin-accent)] transition-colors" />
         }
       </button>
 
@@ -330,15 +331,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             className="px-3 pb-1 overflow-hidden"
           >
             <div className="relative mt-1">
-              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-300" />
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Buscar seccion..."
-                className="w-full pl-8 pr-7 py-[6px] rounded-lg bg-stone-50 border border-stone-200/60 text-[11px] text-stone-600 placeholder:text-stone-300 outline-none focus:border-accent-gold/40 focus:ring-2 focus:ring-accent-gold/10 focus:bg-white transition-all"
+                className="w-full pl-8 pr-7 py-[6px] rounded-lg bg-[var(--admin-surface2)] border border-[var(--admin-border)] text-[11px] text-[var(--admin-text-secondary)] placeholder:text-[var(--admin-muted)] outline-none focus:border-[var(--admin-accent)] focus:ring-2 focus:ring-[var(--admin-accent)] focus:bg-[var(--admin-surface)] transition-all"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 transition-colors">
+                <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] transition-colors">
                   <X size={12} />
                 </button>
               )}
@@ -355,13 +356,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         {searchActive && filteredItems ? (
           <div className="space-y-0.5 pt-1">
             {!collapsed && (
-              <p className="px-2.5 py-1.5 text-[9px] text-stone-400 uppercase tracking-[0.15em]">
+              <p className="px-2.5 py-1.5 text-[9px] text-[var(--admin-muted)] uppercase tracking-[0.15em]">
                 {filteredItems.length} resultado{filteredItems.length !== 1 ? 's' : ''}
               </p>
             )}
             {filteredItems.map(item => renderNavItem(item))}
             {filteredItems.length === 0 && !collapsed && (
-              <p className="px-3 py-6 text-[11px] text-stone-300 text-center">Sin resultados</p>
+              <p className="px-3 py-6 text-[11px] text-[var(--admin-muted)] text-center">Sin resultados</p>
             )}
           </div>
         ) : (
@@ -381,7 +382,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     >
                       <span className={`
                         text-[10px] uppercase tracking-[0.12em] transition-colors
-                        ${groupHasActive ? 'text-accent-gold' : 'text-stone-400 group-hover/header:text-stone-500'}
+                        ${groupHasActive ? 'text-[var(--admin-accent)]' : 'text-[var(--admin-muted)] group-hover/header:text-[var(--admin-text-secondary)]'}
                       `}>
                         {group.label}
                       </span>
@@ -395,7 +396,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                           animate={{ rotate: isGroupCollapsed ? -90 : 0 }}
                           transition={{ duration: 0.15 }}
                         >
-                          <ChevronDown size={10} className="text-stone-300" />
+                          <ChevronDown size={10} className="text-[var(--admin-muted)]" />
                         </motion.div>
                       </div>
                     </button>
@@ -440,11 +441,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-stone-400 hover:text-accent-gold bg-stone-50 hover:bg-amber-50/50 border border-stone-200/50 hover:border-amber-200/60 rounded-lg py-[5px] transition-all"
+                className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-[var(--admin-muted)] hover:text-[var(--admin-accent)] bg-[var(--admin-surface2)] hover:opacity-80 border border-[var(--admin-border)]  rounded-lg py-[5px] transition-all"
               >
                 <ExternalLink size={10} /> Ver tienda
               </a>
-              <button className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-stone-400 hover:text-red-500 bg-stone-50 hover:bg-red-50/50 border border-stone-200/50 hover:border-red-200/60 rounded-lg py-[5px] transition-all">
+              <button className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-[var(--admin-muted)] hover:text-red-500 bg-[var(--admin-surface2)] hover:bg-red-50/50 border border-[var(--admin-border)] hover:border-red-200/60 rounded-lg py-[5px] transition-all">
                 <LogOut size={10} /> Cerrar sesion
               </button>
             </motion.div>
@@ -463,18 +464,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   boxShadow: '0 1px 4px rgba(197,160,101,0.3)',
                 }}
               >
-                <span className="text-[11px] font-bold text-white">DA</span>
+                <span className="text-[11px] font-bold text-[var(--admin-sidebar-text)]">DA</span>
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-white rounded-full" />
               {/* Collapsed tooltip for user */}
               {collapsed && (
                 <span className="
-                  absolute left-full ml-2.5 bg-white text-stone-700 text-[11px] px-2.5 py-1.5 rounded-lg
+                  absolute left-full ml-2.5 bg-[var(--admin-surface)] text-[var(--admin-text)] text-[11px] px-2.5 py-1.5 rounded-lg
                   opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[60]
-                  border border-stone-200/80 shadow-lg shadow-stone-200/50
+                  border border-[var(--admin-border)] shadow-lg shadow-stone-200/50
                 ">
                   {adminName}
-                  <span className="block text-[9px] text-stone-400">Owner</span>
+                  <span className="block text-[9px] text-[var(--admin-muted)]">Owner</span>
                 </span>
               )}
             </div>
@@ -487,8 +488,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   transition={{ duration: 0.12 }}
                   className="flex-1 min-w-0"
                 >
-                  <p className="text-[12px] text-stone-700 truncate font-medium">{adminName}</p>
-                  <p className="text-[10px] text-stone-400">Owner</p>
+                  <p className="text-[12px] text-[var(--admin-text)] truncate font-medium">{adminName}</p>
+                  <p className="text-[10px] text-[var(--admin-muted)]">Owner</p>
                 </motion.div>
               )}
             </AnimatePresence>

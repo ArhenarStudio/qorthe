@@ -221,14 +221,14 @@ export const ProductsPage: React.FC = () => {
     <div className="space-y-4" onClick={() => setContextMenuId(null)}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="font-serif text-lg text-wood-900 flex items-center gap-2">
-          <ShoppingBag size={18} className="text-accent-gold" /> Productos
+        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
+          <ShoppingBag size={18} className="text-[var(--admin-accent)]" /> Productos
         </h3>
         <div className="flex items-center gap-2">
-          <button onClick={() => refetch()} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-600 text-xs rounded-lg hover:bg-sand-50">
+          <button onClick={() => refetch()} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] text-xs rounded-lg hover:bg-[var(--admin-surface2)]">
             <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Actualizar
           </button>
-          <button onClick={exportAll} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-600 text-xs rounded-lg hover:bg-sand-50">
+          <button onClick={exportAll} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] text-xs rounded-lg hover:bg-[var(--admin-surface2)]">
             <Download size={13} /> Exportar
           </button>
         </div>
@@ -237,7 +237,7 @@ export const ProductsPage: React.FC = () => {
       {/* KPIs */}
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <KpiCard icon={<ShoppingBag size={14} />} iconCls="text-accent-gold bg-accent-gold/10"
+          <KpiCard icon={<ShoppingBag size={14} />} iconCls="text-[var(--admin-accent)] bg-[var(--admin-accent)]/10"
             value={String(stats.total_products)} label="Productos"
             sub={`${stats.total_variants} variantes · ${stats.active_count} activos`} />
           <KpiCard icon={<DollarSign size={14} />} iconCls="text-green-600 bg-green-50"
@@ -249,7 +249,7 @@ export const ProductsPage: React.FC = () => {
           <KpiCard icon={<AlertTriangle size={14} />} iconCls={stats.out_of_stock_count > 0 ? "text-red-500 bg-red-50" : "text-amber-500 bg-amber-50"}
             value={String(stats.low_stock_count + stats.out_of_stock_count)} label="Alertas stock"
             sub={`${stats.low_stock_count} bajo · ${stats.out_of_stock_count} agotados`} />
-          <KpiCard icon={<Star size={14} />} iconCls="text-accent-gold bg-accent-gold/10"
+          <KpiCard icon={<Star size={14} />} iconCls="text-[var(--admin-accent)] bg-[var(--admin-accent)]/10"
             value={stats.avg_rating > 0 ? String(stats.avg_rating) : "—"} label="Rating promedio"
             sub={`${products.reduce((s, p) => s + p.review_count, 0)} reviews totales`} />
         </div>
@@ -258,31 +258,31 @@ export const ProductsPage: React.FC = () => {
       {/* Toolbar */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 flex items-center bg-white border border-wood-200 rounded-lg overflow-hidden">
-            <Search size={16} className="ml-3 text-wood-400" />
+          <div className="flex-1 flex items-center bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg overflow-hidden">
+            <Search size={16} className="ml-3 text-[var(--admin-muted)]" />
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Buscar por nombre, SKU, categoría..."
-              className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none text-wood-900 placeholder:text-wood-400" />
-            {search && <button onClick={() => setSearch("")} className="mr-2 text-wood-300 hover:text-wood-600"><X size={14} /></button>}
+              className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none text-[var(--admin-text)] placeholder:text-[var(--admin-muted)]" />
+            {search && <button onClick={() => setSearch("")} className="mr-2 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]"><X size={14} /></button>}
           </div>
           <div className="flex gap-2 items-center">
-            <div className="flex bg-white border border-wood-200 rounded-lg overflow-hidden">
-              <button onClick={() => setViewMode("grid")} className={`p-2.5 transition-colors ${viewMode === "grid" ? "bg-wood-900 text-sand-100" : "text-wood-400 hover:text-wood-600"}`}>
+            <div className="flex bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg overflow-hidden">
+              <button onClick={() => setViewMode("grid")} className={`p-2.5 transition-colors ${viewMode === "grid" ? "bg-wood-900 text-sand-100" : "text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]"}`}>
                 <Grid3X3 size={14} />
               </button>
-              <button onClick={() => setViewMode("table")} className={`p-2.5 transition-colors ${viewMode === "table" ? "bg-wood-900 text-sand-100" : "text-wood-400 hover:text-wood-600"}`}>
+              <button onClick={() => setViewMode("table")} className={`p-2.5 transition-colors ${viewMode === "table" ? "bg-wood-900 text-sand-100" : "text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]"}`}>
                 <List size={14} />
               </button>
             </div>
             <button onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs transition-colors ${
                 showFilters || activeFilterCount > 0
-                  ? "bg-accent-gold/10 text-accent-gold border border-accent-gold/30"
-                  : "bg-white border border-wood-200 text-wood-600 hover:border-wood-300"
+                  ? "bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] border border-[var(--admin-accent)]/30"
+                  : "bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:border-wood-300"
               }`}>
               <Filter size={13} /> Filtros
               {activeFilterCount > 0 && (
-                <span className="bg-accent-gold text-white text-[9px] px-1.5 py-0.5 rounded-full">{activeFilterCount}</span>
+                <span className="bg-[var(--admin-accent)] text-white text-[9px] px-1.5 py-0.5 rounded-full">{activeFilterCount}</span>
               )}
             </button>
           </div>
@@ -291,14 +291,14 @@ export const ProductsPage: React.FC = () => {
         {/* Filter pills */}
         {activeFilterCount > 0 && (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] text-wood-400">Filtros:</span>
+            <span className="text-[10px] text-[var(--admin-muted)]">Filtros:</span>
             {Object.entries(filters).map(([key, val]) => val !== "all" ? (
-              <span key={key} className="inline-flex items-center gap-1 px-2 py-0.5 bg-accent-gold/10 text-accent-gold text-[11px] rounded-full">
+              <span key={key} className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] text-[11px] rounded-full">
                 {val}
                 <button onClick={() => setFilters(f => ({ ...f, [key]: "all" }))} className="hover:text-red-500"><X size={10} /></button>
               </span>
             ) : null)}
-            <button onClick={() => setFilters(DEFAULT_FILTERS)} className="text-[10px] text-wood-400 hover:text-red-500 underline">Limpiar</button>
+            <button onClick={() => setFilters(DEFAULT_FILTERS)} className="text-[10px] text-[var(--admin-muted)] hover:text-red-500 underline">Limpiar</button>
           </div>
         )}
 
@@ -306,7 +306,7 @@ export const ProductsPage: React.FC = () => {
         <AnimatePresence>
           {showFilters && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="bg-white rounded-xl border border-wood-100 p-5 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-5 grid grid-cols-2 md:grid-cols-4 gap-4">
                 <FilterSelect label="Estado" value={filters.status} onChange={v => setFilters(f => ({ ...f, status: v as ProductStatus | "all" }))}
                   options={[["all", "Todos"], ["active", "Activo"], ["draft", "Borrador"], ["outOfStock", "Agotado"]]} />
                 <FilterSelect label="Categoría" value={filters.category} onChange={v => setFilters(f => ({ ...f, category: v }))}
@@ -325,8 +325,8 @@ export const ProductsPage: React.FC = () => {
       <AnimatePresence>
         {selectedIds.size > 0 && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="bg-accent-gold/5 border border-accent-gold/20 rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap">
-              <span className="text-xs text-accent-gold font-bold">{selectedIds.size} seleccionado{selectedIds.size > 1 ? "s" : ""}</span>
+            <div className="bg-[var(--admin-accent)]/5 border border-[var(--admin-accent)]/20 rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap">
+              <span className="text-xs text-[var(--admin-accent)] font-bold">{selectedIds.size} seleccionado{selectedIds.size > 1 ? "s" : ""}</span>
               <div className="flex items-center gap-2">
                 <button onClick={() => handleBulkAction("activate")} disabled={actionLoading === "bulk"}
                   className="px-3 py-1.5 text-[11px] bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-bold">Activar</button>
@@ -335,7 +335,7 @@ export const ProductsPage: React.FC = () => {
                 <button onClick={() => handleBulkAction("export")} disabled={actionLoading === "bulk"}
                   className="px-3 py-1.5 text-[11px] bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-bold">Exportar CSV</button>
               </div>
-              <button onClick={() => setSelectedIds(new Set())} className="ml-auto text-[10px] text-wood-400 hover:text-red-500">Deseleccionar</button>
+              <button onClick={() => setSelectedIds(new Set())} className="ml-auto text-[10px] text-[var(--admin-muted)] hover:text-red-500">Deseleccionar</button>
             </div>
           </motion.div>
         )}
@@ -343,14 +343,14 @@ export const ProductsPage: React.FC = () => {
 
       {/* Content */}
       {loading && products.length === 0 ? (
-        <div className="bg-white rounded-xl border border-wood-100 p-12 text-center">
-          <Loader2 className="w-6 h-6 animate-spin mx-auto text-wood-300 mb-3" />
-          <p className="text-xs text-wood-400">Cargando productos...</p>
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-12 text-center">
+          <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--admin-muted)] mb-3" />
+          <p className="text-xs text-[var(--admin-muted)]">Cargando productos...</p>
         </div>
       ) : products.length === 0 ? (
-        <div className="bg-white rounded-xl border border-wood-100 p-12 text-center">
-          <Package size={32} className="text-wood-200 mx-auto mb-3" />
-          <p className="text-sm text-wood-500">Sin productos encontrados</p>
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-12 text-center">
+          <Package size={32} className="text-[var(--admin-muted)] mx-auto mb-3" />
+          <p className="text-sm text-[var(--admin-text-secondary)]">Sin productos encontrados</p>
         </div>
       ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -369,7 +369,7 @@ export const ProductsPage: React.FC = () => {
       )}
 
       {/* Footer */}
-      <div className="text-[10px] text-wood-400 pt-1">
+      <div className="text-[10px] text-[var(--admin-muted)] pt-1">
         Mostrando {filtered.length} de {products.length} productos
       </div>
     </div>
@@ -380,11 +380,11 @@ export const ProductsPage: React.FC = () => {
 const KpiCard: React.FC<{
   icon: React.ReactNode; iconCls: string; value: string; label: string; sub: string;
 }> = ({ icon, iconCls, value, label, sub }) => (
-  <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
+  <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-4">
     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconCls} mb-2`}>{icon}</div>
-    <p className="text-lg font-sans text-wood-900">{value}</p>
-    <p className="text-[10px] text-wood-400 uppercase tracking-wider mt-0.5">{label}</p>
-    <p className="text-[10px] text-wood-500 mt-1">{sub}</p>
+    <p className="text-lg font-sans text-[var(--admin-text)]">{value}</p>
+    <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mt-0.5">{label}</p>
+    <p className="text-[10px] text-[var(--admin-text-secondary)] mt-1">{sub}</p>
   </div>
 );
 
@@ -393,9 +393,9 @@ const FilterSelect: React.FC<{
   label: string; value: string; onChange: (v: string) => void; options: [string, string][];
 }> = ({ label, value, onChange, options }) => (
   <div>
-    <label className="text-[10px] text-wood-400 uppercase tracking-wider mb-1.5 block">{label}</label>
+    <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mb-1.5 block">{label}</label>
     <select value={value} onChange={e => onChange(e.target.value)}
-      className="w-full px-3 py-2 text-xs border border-wood-200 rounded-lg bg-white text-wood-700 outline-none">
+      className="w-full px-3 py-2 text-xs border border-[var(--admin-border)] rounded-lg bg-[var(--admin-surface)] text-[var(--admin-text)] outline-none">
       {options.map(([val, lbl]) => <option key={val} value={val}>{lbl}</option>)}
     </select>
   </div>
@@ -415,18 +415,18 @@ const ProductCard: React.FC<{
   const isLoading = actionLoading === p.id;
 
   return (
-    <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden group hover:shadow-md transition-shadow relative">
+    <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden group hover:shadow-md transition-shadow relative">
       {isLoading && (
-        <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-20">
-          <Loader2 className="w-5 h-5 animate-spin text-accent-gold" />
+        <div className="absolute inset-0 bg-[var(--admin-surface)]/70 flex items-center justify-center z-20">
+          <Loader2 className="w-5 h-5 animate-spin text-[var(--admin-accent)]" />
         </div>
       )}
       {/* Image */}
-      <div className="relative aspect-square bg-sand-50">
+      <div className="relative aspect-square bg-[var(--admin-surface2)]">
         {p.thumbnail ? (
           <img src={p.thumbnail} alt={p.title} className="w-full h-full object-cover" loading="lazy" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center"><Package size={32} className="text-wood-200" /></div>
+          <div className="w-full h-full flex items-center justify-center"><Package size={32} className="text-[var(--admin-muted)]" /></div>
         )}
         <div className="absolute top-2 left-2">
           <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 ${statusCfg.cls}`}>
@@ -447,29 +447,29 @@ const ProductCard: React.FC<{
         )}
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-wood-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-          <button onClick={() => onAction("view", p.id)} className="p-2 bg-white rounded-lg text-wood-900 hover:bg-sand-50"><Eye size={16} /></button>
-          <button onClick={() => onAction("duplicate", p.id)} className="p-2 bg-white rounded-lg text-wood-900 hover:bg-sand-50"><Copy size={16} /></button>
+          <button onClick={() => onAction("view", p.id)} className="p-2 bg-[var(--admin-surface)] rounded-lg text-[var(--admin-text)] hover:bg-[var(--admin-surface2)]"><Eye size={16} /></button>
+          <button onClick={() => onAction("duplicate", p.id)} className="p-2 bg-[var(--admin-surface)] rounded-lg text-[var(--admin-text)] hover:bg-[var(--admin-surface2)]"><Copy size={16} /></button>
         </div>
       </div>
 
       {/* Info */}
       <div className="p-4">
-        <p className="text-[10px] text-wood-400 font-mono">{p.sku}</p>
-        <h4 className="text-sm text-wood-900 truncate mt-0.5">{p.title}</h4>
+        <p className="text-[10px] text-[var(--admin-muted)] font-mono">{p.sku}</p>
+        <h4 className="text-sm text-[var(--admin-text)] truncate mt-0.5">{p.title}</h4>
 
         {/* Price + margin */}
         <div className="flex items-center gap-2 mt-2">
-          <span className="text-sm font-bold text-wood-900">{fmt(p.price)}</span>
-          {p.compare_price && <span className="text-[10px] text-wood-400 line-through">{fmt(p.compare_price)}</span>}
+          <span className="text-sm font-bold text-[var(--admin-text)]">{fmt(p.price)}</span>
+          {p.compare_price && <span className="text-[10px] text-[var(--admin-muted)] line-through">{fmt(p.compare_price)}</span>}
         </div>
         {p.unit_cost > 0 && (
-          <p className="text-[10px] text-wood-400 mt-0.5">
+          <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">
             Costo: {fmt(p.unit_cost)} · Margen: <span className={margin >= 40 ? "text-green-600" : "text-amber-500"}>{fmtPct(margin)}</span>
           </p>
         )}
 
         {/* Stock + reviews */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-wood-50">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--admin-border)]">
           <div className="flex items-center gap-1.5">
             <Package size={11} className={stockCls} />
             <span className={`text-[11px] ${stockCls}`}>Stock: {p.stock}</span>
@@ -478,7 +478,7 @@ const ProductCard: React.FC<{
             )}
           </div>
           {p.review_count > 0 && (
-            <span className="flex items-center gap-0.5 text-[10px] text-accent-gold">
+            <span className="flex items-center gap-0.5 text-[10px] text-[var(--admin-accent)]">
               <Star size={10} fill="currentColor" /> {p.avg_rating} ({p.review_count})
             </span>
           )}
@@ -486,7 +486,7 @@ const ProductCard: React.FC<{
 
         {/* Sales info */}
         {p.sold_units_30d > 0 && (
-          <p className="text-[10px] text-wood-400 mt-1.5">
+          <p className="text-[10px] text-[var(--admin-muted)] mt-1.5">
             <TrendingUp size={9} className="inline mr-0.5" /> {p.sold_units_30d} vendidos (30d) · {fmt(p.revenue_30d)}
           </p>
         )}
@@ -500,7 +500,7 @@ const ProductCard: React.FC<{
           )}
           <div className="ml-auto relative">
             <button onClick={e => { e.stopPropagation(); onContextMenu(contextMenuId === p.id ? null : p.id); }}
-              className="p-1.5 hover:bg-sand-50 rounded-lg text-wood-400 hover:text-wood-600">
+              className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]">
               <MoreVertical size={14} />
             </button>
             {contextMenuId === p.id && <ContextMenu product={p} onAction={onAction} />}
@@ -513,19 +513,19 @@ const ProductCard: React.FC<{
 
 // ═══════ CONTEXT MENU ═══════
 const ContextMenu: React.FC<{ product: Product; onAction: (a: string, id: string) => void }> = ({ product: p, onAction }) => (
-  <div className="absolute right-0 top-full mt-1 bg-white border border-wood-200 rounded-xl shadow-xl py-1 z-30 min-w-[180px]"
+  <div className="absolute right-0 top-full mt-1 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-xl shadow-xl py-1 z-30 min-w-[180px]"
     onClick={e => e.stopPropagation()}>
-    <button onClick={() => onAction("view", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+    <button onClick={() => onAction("view", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
       <ExternalLink size={12} /> Ver en tienda
     </button>
-    <button onClick={() => onAction("duplicate", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+    <button onClick={() => onAction("duplicate", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
       <Copy size={12} /> Duplicar
     </button>
-    <button onClick={() => onAction(p.status === "active" ? "draft" : "activate", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+    <button onClick={() => onAction(p.status === "active" ? "draft" : "activate", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
       {p.status === "active" ? <Archive size={12} /> : <Check size={12} />}
       {p.status === "active" ? "Pasar a borrador" : "Activar"}
     </button>
-    <div className="border-t border-wood-100 my-1" />
+    <div className="border-t border-[var(--admin-border)] my-1" />
     <button onClick={() => onAction("delete", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50">
       <Trash2 size={12} /> Eliminar
     </button>
@@ -544,18 +544,18 @@ const ProductTable: React.FC<{
   const SortHeader: React.FC<{ label: string; k: SortKey; className?: string }> = ({ label, k, className = "" }) => (
     <th className={`px-3 py-3 cursor-pointer select-none ${className}`} onClick={() => onSort(k)}>
       <span className="flex items-center gap-1">
-        {label} <ArrowUpDown size={10} className={sortKey === k ? "text-accent-gold" : ""} />
+        {label} <ArrowUpDown size={10} className={sortKey === k ? "text-[var(--admin-accent)]" : ""} />
         {sortKey === k && <span className="text-[8px]">{sortDir === "asc" ? "↑" : "↓"}</span>}
       </span>
     </th>
   );
 
   return (
-    <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+    <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left min-w-[900px]">
           <thead>
-            <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
+            <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
               <th className="pl-4 py-3 w-8">
                 <input type="checkbox" checked={selectedIds.size === products.length && products.length > 0}
                   onChange={onToggleSelectAll} className="accent-accent-gold rounded" />
@@ -575,13 +575,13 @@ const ProductTable: React.FC<{
           </thead>
           <tbody className="divide-y divide-wood-50">
             {products.length === 0 ? (
-              <tr><td colSpan={12} className="px-4 py-12 text-center text-xs text-wood-400">Sin productos</td></tr>
+              <tr><td colSpan={12} className="px-4 py-12 text-center text-xs text-[var(--admin-muted)]">Sin productos</td></tr>
             ) : products.map(p => {
               const statusCfg = STATUS_CONFIG[p.status];
               const margin = getMargin(p);
               const stockCls = getStockColor(p);
               return (
-                <tr key={p.id} className={`hover:bg-sand-50/50 transition-colors ${selectedIds.has(p.id) ? "bg-accent-gold/5" : ""}`}>
+                <tr key={p.id} className={`hover:bg-[var(--admin-surface2)]/50 transition-colors ${selectedIds.has(p.id) ? "bg-[var(--admin-accent)]/5" : ""}`}>
                   <td className="pl-4 py-3">
                     <input type="checkbox" checked={selectedIds.has(p.id)} onChange={() => onToggleSelect(p.id)} className="accent-accent-gold rounded" />
                   </td>
@@ -589,23 +589,23 @@ const ProductTable: React.FC<{
                     {p.thumbnail ? (
                       <img src={p.thumbnail} alt="" className="w-10 h-10 rounded-lg object-cover" loading="lazy" />
                     ) : (
-                      <div className="w-10 h-10 rounded-lg bg-wood-100 flex items-center justify-center"><Package size={14} className="text-wood-300" /></div>
+                      <div className="w-10 h-10 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center"><Package size={14} className="text-[var(--admin-muted)]" /></div>
                     )}
                   </td>
                   <td className="px-3 py-3">
-                    <p className="text-xs text-wood-900 truncate max-w-[200px]">{p.title}</p>
-                    {p.variants_count > 1 && <p className="text-[10px] text-wood-400">{p.variants_count} variantes</p>}
+                    <p className="text-xs text-[var(--admin-text)] truncate max-w-[200px]">{p.title}</p>
+                    {p.variants_count > 1 && <p className="text-[10px] text-[var(--admin-muted)]">{p.variants_count} variantes</p>}
                   </td>
-                  <td className="px-3 py-3 text-xs text-wood-500 font-mono">{p.sku}</td>
-                  <td className="px-3 py-3 text-xs text-wood-500">{p.category}</td>
+                  <td className="px-3 py-3 text-xs text-[var(--admin-text-secondary)] font-mono">{p.sku}</td>
+                  <td className="px-3 py-3 text-xs text-[var(--admin-text-secondary)]">{p.category}</td>
                   <td className="px-3 py-3">
-                    <span className="text-xs font-bold text-wood-900">{fmt(p.price)}</span>
-                    {p.unit_cost > 0 && <p className="text-[10px] text-wood-400">C: {fmt(p.unit_cost)}</p>}
+                    <span className="text-xs font-bold text-[var(--admin-text)]">{fmt(p.price)}</span>
+                    {p.unit_cost > 0 && <p className="text-[10px] text-[var(--admin-muted)]">C: {fmt(p.unit_cost)}</p>}
                   </td>
                   <td className="px-3 py-3 hidden md:table-cell">
                     {p.unit_cost > 0 ? (
                       <span className={`text-xs font-bold ${margin >= 40 ? "text-green-600" : margin >= 20 ? "text-amber-500" : "text-red-500"}`}>{fmtPct(margin)}</span>
-                    ) : <span className="text-[10px] text-wood-300">—</span>}
+                    ) : <span className="text-[10px] text-[var(--admin-muted)]">—</span>}
                   </td>
                   <td className="px-3 py-3">
                     <span className={`text-xs font-bold ${stockCls}`}>{p.stock}</span>
@@ -615,18 +615,18 @@ const ProductTable: React.FC<{
                   <td className="px-3 py-3 hidden lg:table-cell">
                     {p.sold_units_30d > 0 ? (
                       <div>
-                        <span className="text-xs text-wood-900">{p.sold_units_30d}</span>
-                        <p className="text-[10px] text-wood-400">{fmt(p.revenue_30d)}</p>
+                        <span className="text-xs text-[var(--admin-text)]">{p.sold_units_30d}</span>
+                        <p className="text-[10px] text-[var(--admin-muted)]">{fmt(p.revenue_30d)}</p>
                       </div>
-                    ) : <span className="text-[10px] text-wood-300">—</span>}
+                    ) : <span className="text-[10px] text-[var(--admin-muted)]">—</span>}
                   </td>
                   <td className="px-3 py-3 hidden lg:table-cell">
                     {p.review_count > 0 ? (
-                      <span className="flex items-center gap-0.5 text-xs text-accent-gold">
+                      <span className="flex items-center gap-0.5 text-xs text-[var(--admin-accent)]">
                         <Star size={10} fill="currentColor" /> {p.avg_rating}
-                        <span className="text-[10px] text-wood-400">({p.review_count})</span>
+                        <span className="text-[10px] text-[var(--admin-muted)]">({p.review_count})</span>
                       </span>
-                    ) : <span className="text-[10px] text-wood-300">—</span>}
+                    ) : <span className="text-[10px] text-[var(--admin-muted)]">—</span>}
                   </td>
                   <td className="px-3 py-3">
                     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 w-fit ${statusCfg.cls}`}>
@@ -636,7 +636,7 @@ const ProductTable: React.FC<{
                   <td className="px-3 py-3">
                     <div className="relative">
                       <button onClick={e => { e.stopPropagation(); onContextMenu(contextMenuId === p.id ? null : p.id); }}
-                        className="p-1.5 hover:bg-sand-50 rounded-lg text-wood-400 hover:text-wood-600">
+                        className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]">
                         <MoreVertical size={14} />
                       </button>
                       {contextMenuId === p.id && <ContextMenu product={p} onAction={onAction} />}

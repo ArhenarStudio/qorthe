@@ -229,7 +229,7 @@ const legacySalesChart = Array.from({ length: 30 }, (_, i) => ({
 const statusBadge = (status: string) => {
   switch (status) {
     case 'active': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-600">● Activa</span>;
-    case 'hidden': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-wood-100 text-wood-500">○ Oculta</span>;
+    case 'hidden': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]">○ Oculta</span>;
     case 'disabled': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">○ Desactivada</span>;
     case 'expired': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">○ Expirada</span>;
     case 'scheduled': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">◷ Programada</span>;
@@ -328,27 +328,27 @@ export const CategoriesPage: React.FC = () => {
 
   /* --- Context menu --- */
   const CatContextMenu: React.FC<{ cat: Category }> = ({ cat }) => (
-    <div className="absolute right-0 top-full mt-1 bg-white border border-wood-200 rounded-xl shadow-xl py-1 z-30 min-w-[200px]" onClick={e => e.stopPropagation()}>
-      <button onClick={() => { setEditing(cat); setContextMenu(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+    <div className="absolute right-0 top-full mt-1 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-xl shadow-xl py-1 z-30 min-w-[200px]" onClick={e => e.stopPropagation()}>
+      <button onClick={() => { setEditing(cat); setContextMenu(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
         <Pencil size={12} /> Editar categoria
       </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
         <FolderPlus size={12} /> Agregar sub-categoria
       </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
         <ShoppingBag size={12} /> Ver productos ({cat.products})
       </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
         <Copy size={12} /> Duplicar estructura
       </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
         {cat.status === 'hidden' ? <Eye size={12} /> : <EyeOff size={12} />}
         {cat.status === 'hidden' ? 'Mostrar en menu' : 'Ocultar del menu'}
       </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-wood-600 hover:bg-sand-50">
+      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]">
         <ExternalLink size={12} /> Ver en tienda
       </button>
-      <div className="border-t border-wood-100 my-1" />
+      <div className="border-t border-[var(--admin-border)] my-1" />
       <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50">
         <Trash2 size={12} /> Eliminar
       </button>
@@ -365,16 +365,16 @@ export const CategoriesPage: React.FC = () => {
     return (
       <div>
         <div
-          className={`group flex items-center gap-2 px-3 py-3 hover:bg-sand-50/50 transition-colors ${depth > 0 ? 'border-l-2 border-wood-100' : ''}`}
+          className={`group flex items-center gap-2 px-3 py-3 hover:bg-[var(--admin-surface2)]/50 transition-colors ${depth > 0 ? 'border-l-2 border-[var(--admin-border)]' : ''}`}
           style={{ paddingLeft: `${12 + depth * 24}px` }}
         >
           {reorderMode && (
-            <GripVertical size={14} className="text-wood-300 cursor-grab flex-shrink-0" />
+            <GripVertical size={14} className="text-[var(--admin-muted)] cursor-grab flex-shrink-0" />
           )}
 
           {/* Expand toggle */}
           {hasChildren ? (
-            <button onClick={() => toggleExpand(cat.id)} className="p-0.5 text-wood-400 hover:text-wood-600 flex-shrink-0">
+            <button onClick={() => toggleExpand(cat.id)} className="p-0.5 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] flex-shrink-0">
               {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
           ) : (
@@ -387,19 +387,19 @@ export const CategoriesPage: React.FC = () => {
           {/* Name + info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <button onClick={() => setEditing(cat)} className="text-sm text-wood-900 hover:text-accent-gold transition-colors truncate">
+              <button onClick={() => setEditing(cat)} className="text-sm text-[var(--admin-text)] hover:text-[var(--admin-accent)] transition-colors truncate">
                 {cat.name}
               </button>
               {isEmpty && <AlertTriangle size={11} className="text-amber-400 flex-shrink-0" />}
             </div>
-            <div className="flex items-center gap-3 text-[10px] text-wood-400 mt-0.5">
+            <div className="flex items-center gap-3 text-[10px] text-[var(--admin-muted)] mt-0.5">
               {cat.hasImage && <span className="flex items-center gap-0.5"><ImageIcon size={9} /> Imagen</span>}
               <span>Ventas: ${cat.salesMonth.toLocaleString()}/mes</span>
             </div>
           </div>
 
           {/* Product count */}
-          <span className={`text-[11px] flex-shrink-0 ${isEmpty ? 'text-amber-500' : 'text-wood-500'}`}>
+          <span className={`text-[11px] flex-shrink-0 ${isEmpty ? 'text-amber-500' : 'text-[var(--admin-text-secondary)]'}`}>
             {cat.products} producto{cat.products !== 1 ? 's' : ''}
           </span>
 
@@ -408,13 +408,13 @@ export const CategoriesPage: React.FC = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={() => setEditing(cat)} className="p-1 text-wood-400 hover:text-accent-gold rounded">
+            <button onClick={() => setEditing(cat)} className="p-1 text-[var(--admin-muted)] hover:text-[var(--admin-accent)] rounded">
               <Pencil size={12} />
             </button>
             <div className="relative">
               <button
                 onClick={e => { e.stopPropagation(); setContextMenu(contextMenu === cat.id ? null : cat.id); }}
-                className="p-1 text-wood-400 hover:text-wood-600 rounded"
+                className="p-1 text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] rounded"
               >
                 <MoreVertical size={12} />
               </button>
@@ -448,21 +448,21 @@ export const CategoriesPage: React.FC = () => {
       {/* ===== HEADER ===== */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <FolderTree size={18} className="text-accent-gold" />
-          <h3 className="font-serif text-lg text-wood-900">Categorias y Colecciones</h3>
+          <FolderTree size={18} className="text-[var(--admin-accent)]" />
+          <h3 className="font-serif text-lg text-[var(--admin-text)]">Categorias y Colecciones</h3>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setEditing('new')} className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors">
             <Plus size={14} /> Nueva Categoria
           </button>
-          <button onClick={() => setEditingCollection('new')} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-wood-200 text-wood-600 rounded-lg text-xs hover:bg-sand-50 transition-colors">
+          <button onClick={() => setEditingCollection('new')} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg text-xs hover:bg-[var(--admin-surface2)] transition-colors">
             <Plus size={13} /> Nueva Coleccion
           </button>
         </div>
       </div>
 
       {/* ===== TABS ===== */}
-      <div className="flex items-center gap-6 border-b border-wood-100">
+      <div className="flex items-center gap-6 border-b border-[var(--admin-border)]">
         {[
           { key: 'categories' as const, label: 'Categorias', icon: FolderTree },
           { key: 'collections' as const, label: 'Colecciones', icon: Tag },
@@ -471,7 +471,7 @@ export const CategoriesPage: React.FC = () => {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex items-center gap-1.5 pb-2.5 text-xs border-b-2 transition-colors ${
-              tab === t.key ? 'border-accent-gold text-accent-gold' : 'border-transparent text-wood-400 hover:text-wood-600'
+              tab === t.key ? 'border-[var(--admin-accent)] text-[var(--admin-accent)]' : 'border-transparent text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]'
             }`}
           >
             <t.icon size={13} /> {t.label}
@@ -481,38 +481,38 @@ export const CategoriesPage: React.FC = () => {
 
       {/* ===== KPIs ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-white rounded-xl border border-wood-100 p-4">
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-accent-gold/10 rounded-lg"><FolderTree size={14} className="text-accent-gold" /></div>
-            <span className="text-lg text-wood-900">{kpis.totalCats}</span>
+            <div className="p-1.5 bg-[var(--admin-accent)]/10 rounded-lg"><FolderTree size={14} className="text-[var(--admin-accent)]" /></div>
+            <span className="text-lg text-[var(--admin-text)]">{kpis.totalCats}</span>
           </div>
-          <p className="text-[11px] text-wood-500">Categorias activas</p>
-          <p className="text-[10px] text-wood-400">{kpis.subCats} con sub-categorias</p>
+          <p className="text-[11px] text-[var(--admin-text-secondary)]">Categorias activas</p>
+          <p className="text-[10px] text-[var(--admin-muted)]">{kpis.subCats} con sub-categorias</p>
         </div>
-        <div className="bg-white rounded-xl border border-wood-100 p-4">
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="p-1.5 bg-green-50 rounded-lg"><ShoppingBag size={14} className="text-green-600" /></div>
-            <span className="text-lg text-wood-900">{kpis.totalProducts}</span>
+            <span className="text-lg text-[var(--admin-text)]">{kpis.totalProducts}</span>
           </div>
-          <p className="text-[11px] text-wood-500">Productos categorizados</p>
-          <p className="text-[10px] text-wood-400">{kpis.uncategorized} sin categoria</p>
+          <p className="text-[11px] text-[var(--admin-text-secondary)]">Productos categorizados</p>
+          <p className="text-[10px] text-[var(--admin-muted)]">{kpis.uncategorized} sin categoria</p>
         </div>
-        <div className="bg-white rounded-xl border border-wood-100 p-4">
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className={`p-1.5 rounded-lg ${kpis.empty > 0 ? 'bg-amber-50' : 'bg-green-50'}`}>
               <AlertTriangle size={14} className={kpis.empty > 0 ? 'text-amber-500' : 'text-green-600'} />
             </div>
-            <span className="text-lg text-wood-900">{kpis.empty}</span>
+            <span className="text-lg text-[var(--admin-text)]">{kpis.empty}</span>
           </div>
-          <p className="text-[11px] text-wood-500">Categorias vacias</p>
+          <p className="text-[11px] text-[var(--admin-text-secondary)]">Categorias vacias</p>
         </div>
-        <div className="bg-white rounded-xl border border-wood-100 p-4">
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-accent-gold/10 rounded-lg"><Tag size={14} className="text-accent-gold" /></div>
-            <span className="text-lg text-wood-900">{kpis.activeCols}</span>
+            <div className="p-1.5 bg-[var(--admin-accent)]/10 rounded-lg"><Tag size={14} className="text-[var(--admin-accent)]" /></div>
+            <span className="text-lg text-[var(--admin-text)]">{kpis.activeCols}</span>
           </div>
-          <p className="text-[11px] text-wood-500">Colecciones activas</p>
-          <p className="text-[10px] text-wood-400">{kpis.expiredCols} expirada{kpis.expiredCols !== 1 ? 's' : ''}</p>
+          <p className="text-[11px] text-[var(--admin-text-secondary)]">Colecciones activas</p>
+          <p className="text-[10px] text-[var(--admin-muted)]">{kpis.expiredCols} expirada{kpis.expiredCols !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
@@ -521,29 +521,29 @@ export const CategoriesPage: React.FC = () => {
         <div className="space-y-4">
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 flex items-center bg-white border border-wood-200 rounded-lg overflow-hidden">
-              <Search size={16} className="ml-3 text-wood-400" />
+            <div className="flex-1 flex items-center bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg overflow-hidden">
+              <Search size={16} className="ml-3 text-[var(--admin-muted)]" />
               <input
                 value={searchQ}
                 onChange={e => setSearchQ(e.target.value)}
                 placeholder="Buscar categoria..."
-                className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none text-wood-900 placeholder:text-wood-400"
+                className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none text-[var(--admin-text)] placeholder:text-[var(--admin-muted)]"
               />
             </div>
             <div className="flex gap-2 items-center">
-              <div className="flex items-center gap-0.5 text-[10px] text-wood-400 mr-1">Vista:</div>
-              <div className="flex bg-white border border-wood-200 rounded-lg overflow-hidden">
-                <button onClick={() => setCatView('tree')} className={`p-2.5 transition-colors ${catView === 'tree' ? 'bg-wood-900 text-sand-100' : 'text-wood-400 hover:text-wood-600'}`}>
+              <div className="flex items-center gap-0.5 text-[10px] text-[var(--admin-muted)] mr-1">Vista:</div>
+              <div className="flex bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg overflow-hidden">
+                <button onClick={() => setCatView('tree')} className={`p-2.5 transition-colors ${catView === 'tree' ? 'bg-wood-900 text-sand-100' : 'text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]'}`}>
                   <TreePine size={14} />
                 </button>
-                <button onClick={() => setCatView('list')} className={`p-2.5 transition-colors ${catView === 'list' ? 'bg-wood-900 text-sand-100' : 'text-wood-400 hover:text-wood-600'}`}>
+                <button onClick={() => setCatView('list')} className={`p-2.5 transition-colors ${catView === 'list' ? 'bg-wood-900 text-sand-100' : 'text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]'}`}>
                   <List size={14} />
                 </button>
               </div>
               <div className="w-px h-6 bg-wood-200 mx-1" />
               <button
                 onClick={() => setReorderMode(!reorderMode)}
-                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs transition-colors ${reorderMode ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/30' : 'bg-white border border-wood-200 text-wood-600 hover:border-wood-300'}`}
+                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs transition-colors ${reorderMode ? 'bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] border border-[var(--admin-accent)]/30' : 'bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:border-wood-300'}`}
               >
                 <GripVertical size={12} /> {reorderMode ? 'Guardar orden' : 'Reordenar'}
               </button>
@@ -552,9 +552,9 @@ export const CategoriesPage: React.FC = () => {
 
           {/* Tree view */}
           {catView === 'tree' ? (
-            <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
-              <div className="px-4 py-3 border-b border-wood-100 bg-sand-50/50 flex items-center justify-between">
-                <p className="text-[11px] text-wood-400">
+            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50 flex items-center justify-between">
+                <p className="text-[11px] text-[var(--admin-muted)]">
                   Arrastra las categorias para reordenar. El orden define como aparecen en el menu de la tienda.
                 </p>
               </div>
@@ -563,22 +563,22 @@ export const CategoriesPage: React.FC = () => {
                   <TreeNode key={cat.id} cat={cat} depth={0} />
                 ))}
               </div>
-              <div className="px-4 py-3 border-t border-wood-100 flex gap-3">
-                <button onClick={() => setEditing('new')} className="text-[11px] text-accent-gold hover:underline flex items-center gap-1">
+              <div className="px-4 py-3 border-t border-[var(--admin-border)] flex gap-3">
+                <button onClick={() => setEditing('new')} className="text-[11px] text-[var(--admin-accent)] hover:underline flex items-center gap-1">
                   <Plus size={11} /> Nueva categoria raiz
                 </button>
-                <button className="text-[11px] text-wood-400 hover:text-wood-600 flex items-center gap-1">
+                <button className="text-[11px] text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] flex items-center gap-1">
                   <FolderPlus size={11} /> Nueva sub-categoria
                 </button>
               </div>
             </div>
           ) : (
             /* List view (table) */
-            <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
+                    <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
                       <th className="px-4 py-3 w-12">Orden</th>
                       <th className="px-3 py-3">Categoria</th>
                       <th className="px-3 py-3 hidden md:table-cell">Padre</th>
@@ -601,19 +601,19 @@ export const CategoriesPage: React.FC = () => {
                         ? `${parent.order}.${cat.order}`
                         : `${cat.order}`;
                       return (
-                        <tr key={cat.id} className="hover:bg-sand-50/30 transition-colors">
-                          <td className="px-4 py-3 text-xs text-wood-400 font-mono">{orderLabel}</td>
+                        <tr key={cat.id} className="hover:bg-[var(--admin-surface2)]/30 transition-colors">
+                          <td className="px-4 py-3 text-xs text-[var(--admin-muted)] font-mono">{orderLabel}</td>
                           <td className="px-3 py-3">
-                            <button onClick={() => setEditing(cat)} className="flex items-center gap-2 hover:text-accent-gold transition-colors">
+                            <button onClick={() => setEditing(cat)} className="flex items-center gap-2 hover:text-[var(--admin-accent)] transition-colors">
                               <span>{cat.icon}</span>
-                              <span className="text-xs text-wood-900">{parent ? '↳ ' : ''}{cat.name}</span>
+                              <span className="text-xs text-[var(--admin-text)]">{parent ? '↳ ' : ''}{cat.name}</span>
                             </button>
                           </td>
-                          <td className="px-3 py-3 text-xs text-wood-400 hidden md:table-cell">{parent?.name || '—'}</td>
+                          <td className="px-3 py-3 text-xs text-[var(--admin-muted)] hidden md:table-cell">{parent?.name || '—'}</td>
                           <td className="px-3 py-3">
-                            <span className={`text-xs ${cat.products === 0 ? 'text-amber-500' : 'text-wood-700'}`}>{cat.products}</span>
+                            <span className={`text-xs ${cat.products === 0 ? 'text-amber-500' : 'text-[var(--admin-text)]'}`}>{cat.products}</span>
                           </td>
-                          <td className="px-3 py-3 text-xs text-wood-500 hidden lg:table-cell">${cat.salesMonth.toLocaleString()}</td>
+                          <td className="px-3 py-3 text-xs text-[var(--admin-text-secondary)] hidden lg:table-cell">${cat.salesMonth.toLocaleString()}</td>
                           <td className="px-3 py-3">{cat.products === 0 ? <span className="text-[10px] text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">⚠ Vacia</span> : statusBadge(cat.status)}</td>
                           <td className="px-3 py-3 text-center hidden md:table-cell">
                             {cat.hasImage ? <Check size={12} className="mx-auto text-green-500" /> : <X size={12} className="mx-auto text-red-400" />}
@@ -625,7 +625,7 @@ export const CategoriesPage: React.FC = () => {
                             <div className="relative">
                               <button
                                 onClick={e => { e.stopPropagation(); setContextMenu(contextMenu === cat.id ? null : cat.id); }}
-                                className="p-1.5 hover:bg-sand-50 rounded-lg text-wood-400 hover:text-wood-600 transition-colors"
+                                className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] transition-colors"
                               >
                                 <MoreVertical size={14} />
                               </button>
@@ -646,24 +646,24 @@ export const CategoriesPage: React.FC = () => {
       {/* ===== TAB: COLLECTIONS ===== */}
       {tab === 'collections' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm divide-y divide-wood-50">
+          <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm divide-y divide-wood-50">
             {liveCollections.length === 0 ? (
               <div className="p-12 text-center">
-                <Tag size={32} className="mx-auto mb-3 text-wood-200" />
-                <p className="text-sm text-wood-500 mb-1">No hay colecciones creadas</p>
-                <p className="text-xs text-wood-400">Las colecciones agrupan productos manualmente para promociones o temporadas.</p>
+                <Tag size={32} className="mx-auto mb-3 text-[var(--admin-muted)]" />
+                <p className="text-sm text-[var(--admin-text-secondary)] mb-1">No hay colecciones creadas</p>
+                <p className="text-xs text-[var(--admin-muted)]">Las colecciones agrupan productos manualmente para promociones o temporadas.</p>
               </div>
             ) : liveCollections.map(col => (
-              <div key={col.id} className="p-5 flex items-start gap-4 hover:bg-sand-50/30 transition-colors group">
-                <div className="w-16 h-16 rounded-xl bg-sand-100 flex-shrink-0 flex items-center justify-center">
-                  <Tag size={20} className="text-accent-gold" />
+              <div key={col.id} className="p-5 flex items-start gap-4 hover:bg-[var(--admin-surface2)]/30 transition-colors group">
+                <div className="w-16 h-16 rounded-xl bg-[var(--admin-surface2)] flex-shrink-0 flex items-center justify-center">
+                  <Tag size={20} className="text-[var(--admin-accent)]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm text-wood-900 truncate">{col.title}</span>
+                    <span className="text-sm text-[var(--admin-text)] truncate">{col.title}</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-50 text-green-600">Activa</span>
                   </div>
-                  <p className="text-[11px] text-wood-500">{col.productCount} productos | Handle: {col.handle}</p>
+                  <p className="text-[11px] text-[var(--admin-text-secondary)]">{col.productCount} productos | Handle: {col.handle}</p>
                 </div>
               </div>
             ))}
@@ -736,16 +736,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 hover:bg-sand-50 rounded-lg text-wood-400 hover:text-wood-600 transition-colors">
+          <button onClick={onBack} className="p-2 hover:bg-[var(--admin-surface2)] rounded-lg text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] transition-colors">
             <ArrowLeft size={18} />
           </button>
           <div>
-            <p className="text-[10px] text-wood-400 uppercase tracking-wider">Categorias</p>
-            <h3 className="font-serif text-wood-900">{isEditing ? `Editar: ${category.name}` : 'Nueva Categoria'}</h3>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">Categorias</p>
+            <h3 className="font-serif text-[var(--admin-text)]">{isEditing ? `Editar: ${category.name}` : 'Nueva Categoria'}</h3>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onBack} className="px-3 py-2 text-xs text-wood-500 hover:text-wood-700 transition-colors">Cancelar</button>
+          <button onClick={onBack} className="px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors">Cancelar</button>
           <button onClick={async () => {
             try {
               const res = await fetch('/api/admin/categories', {
@@ -765,7 +765,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               toast.success('Borrador guardado');
               onBack();
             } catch { toast.error('Error al guardar'); }
-          }} className="px-3 py-2 text-xs text-wood-600 bg-white border border-wood-200 rounded-lg hover:bg-sand-50 transition-colors">Guardar borrador</button>
+          }} className="px-3 py-2 text-xs text-[var(--admin-text-secondary)] bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">Guardar borrador</button>
           <button onClick={async () => {
             if (!form.name.trim()) { toast.error('El nombre es obligatorio'); return; }
             try {
@@ -799,7 +799,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                 key={s.id}
                 onClick={() => { setActiveSection(s.id); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-colors ${
-                  activeSection === s.id ? 'bg-accent-gold/10 text-accent-gold' : 'text-wood-500 hover:text-wood-700 hover:bg-sand-50'
+                  activeSection === s.id ? 'bg-[var(--admin-accent)]/10 text-[var(--admin-accent)]' : 'text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-surface2)]'
                 }`}
               >
                 <s.icon size={13} /> {s.label}
@@ -811,55 +811,55 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
         {/* Form content */}
         <div className="flex-1 space-y-6 min-w-0">
           {/* ===== BASIC INFO ===== */}
-          <div id="basic" className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-            <h4 className="text-xs text-wood-400 uppercase tracking-wider">Informacion basica</h4>
+          <div id="basic" className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+            <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Informacion basica</h4>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Nombre de la categoria *</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Nombre de la categoria *</label>
               <input
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none focus:border-accent-gold/40"
+                className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]/40"
                 placeholder="Ej: Tablas para Cortar"
               />
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Categoria padre</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Categoria padre</label>
               <select
                 value={form.parentId}
                 onChange={e => setForm(f => ({ ...f, parentId: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-700 outline-none bg-white focus:border-accent-gold/40"
+                className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none bg-[var(--admin-surface)] focus:border-[var(--admin-accent)]/40"
               >
                 <option value="">— Ninguna (categoria raiz) —</option>
                 {allCategories.filter(c => c.parentId === null && c.id !== category?.id).map(c => (
                   <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                 ))}
               </select>
-              <p className="text-[10px] text-wood-400 mt-1">Si seleccionas un padre, esta sera una sub-categoria.</p>
+              <p className="text-[10px] text-[var(--admin-muted)] mt-1">Si seleccionas un padre, esta sera una sub-categoria.</p>
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Descripcion</label>
-              <div className="border border-wood-200 rounded-lg overflow-hidden">
-                <div className="flex items-center gap-1 px-3 py-1.5 bg-sand-50/50 border-b border-wood-100">
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Descripcion</label>
+              <div className="border border-[var(--admin-border)] rounded-lg overflow-hidden">
+                <div className="flex items-center gap-1 px-3 py-1.5 bg-[var(--admin-surface2)]/50 border-b border-[var(--admin-border)]">
                   {['B', 'I', 'U', 'Link', 'Lista'].map(b => (
-                    <button key={b} className="px-2 py-1 text-[10px] text-wood-500 hover:bg-white rounded transition-colors">{b}</button>
+                    <button key={b} className="px-2 py-1 text-[10px] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface)] rounded transition-colors">{b}</button>
                   ))}
                 </div>
                 <textarea
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   rows={4}
-                  className="w-full px-3 py-2.5 text-sm text-wood-900 outline-none resize-none"
+                  className="w-full px-3 py-2.5 text-sm text-[var(--admin-text)] outline-none resize-none"
                   placeholder="Descripcion de la categoria (aparece en la pagina de la tienda)"
                 />
               </div>
-              <p className="text-[10px] text-wood-400 mt-1">Aparece en la pagina de la categoria en la tienda, arriba de los productos.</p>
+              <p className="text-[10px] text-[var(--admin-muted)] mt-1">Aparece en la pagina de la categoria en la tienda, arriba de los productos.</p>
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Estado</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Estado</label>
               <div className="space-y-1.5">
                 {[
                   { val: 'active', label: 'Activa — Visible en la tienda y menu de navegacion' },
@@ -868,7 +868,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                 ].map(opt => (
                   <label key={opt.val} className="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="catStatus" checked={form.status === opt.val} onChange={() => setForm(f => ({ ...f, status: opt.val as any }))} className="accent-accent-gold" />
-                    <span className="text-xs text-wood-700">{opt.label}</span>
+                    <span className="text-xs text-[var(--admin-text)]">{opt.label}</span>
                   </label>
                 ))}
               </div>
@@ -876,63 +876,63 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           </div>
 
           {/* ===== IMAGE ===== */}
-          <div id="image" className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-            <h4 className="text-xs text-wood-400 uppercase tracking-wider">Imagen de portada</h4>
+          <div id="image" className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+            <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Imagen de portada</h4>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <div className="w-48 h-24 bg-sand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div className="w-48 h-24 bg-[var(--admin-surface2)] rounded-xl flex items-center justify-center flex-shrink-0">
                 {category?.hasImage ? (
                   <div className="text-center">
-                    <ImageIcon size={24} className="text-accent-gold mx-auto mb-1" />
-                    <p className="text-[10px] text-wood-400">1200 x 600 px</p>
+                    <ImageIcon size={24} className="text-[var(--admin-accent)] mx-auto mb-1" />
+                    <p className="text-[10px] text-[var(--admin-muted)]">1200 x 600 px</p>
                   </div>
                 ) : (
                   <div className="text-center">
-                    <Upload size={20} className="text-wood-300 mx-auto mb-1" />
-                    <p className="text-[10px] text-wood-400">Sin imagen</p>
+                    <Upload size={20} className="text-[var(--admin-muted)] mx-auto mb-1" />
+                    <p className="text-[10px] text-[var(--admin-muted)]">Sin imagen</p>
                   </div>
                 )}
               </div>
               <div className="flex-1">
-                <p className="text-[11px] text-wood-500 mb-2">Esta imagen aparece como:</p>
-                <ul className="text-[10px] text-wood-400 space-y-0.5 mb-3">
+                <p className="text-[11px] text-[var(--admin-text-secondary)] mb-2">Esta imagen aparece como:</p>
+                <ul className="text-[10px] text-[var(--admin-muted)] space-y-0.5 mb-3">
                   <li>• Banner de la categoria</li>
                   <li>• Card en el homepage</li>
                   <li>• Preview en el menu</li>
                 </ul>
-                <p className="text-[10px] text-wood-400 mb-2">Recomendado: 1200x600px | JPG, PNG, WebP</p>
+                <p className="text-[10px] text-[var(--admin-muted)] mb-2">Recomendado: 1200x600px | JPG, PNG, WebP</p>
                 <div className="flex gap-2">
-                  <button className="text-[11px] text-accent-gold hover:underline flex items-center gap-1"><Upload size={11} /> Cambiar imagen</button>
+                  <button className="text-[11px] text-[var(--admin-accent)] hover:underline flex items-center gap-1"><Upload size={11} /> Cambiar imagen</button>
                   {category?.hasImage && <button className="text-[11px] text-red-400 hover:underline flex items-center gap-1"><Trash2 size={11} /> Eliminar</button>}
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Icono de categoria (para menu y sidebar)</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Icono de categoria (para menu y sidebar)</label>
               <div className="flex flex-wrap gap-2">
                 {iconOptions.map(ico => (
                   <button
                     key={ico}
                     onClick={() => setForm(f => ({ ...f, icon: ico }))}
                     className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm transition-colors ${
-                      form.icon === ico ? 'bg-accent-gold/10 border-2 border-accent-gold' : 'bg-sand-50 border border-wood-100 hover:border-wood-200'
+                      form.icon === ico ? 'bg-[var(--admin-accent)]/10 border-2 border-[var(--admin-accent)]' : 'bg-[var(--admin-surface2)] border border-[var(--admin-border)] hover:border-[var(--admin-border)]'
                     }`}
                   >
                     {ico}
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] text-wood-400 mt-1">Se muestra junto al nombre en la navegacion del sitio.</p>
+              <p className="text-[10px] text-[var(--admin-muted)] mt-1">Se muestra junto al nombre en la navegacion del sitio.</p>
             </div>
           </div>
 
           {/* ===== APPEARANCE ===== */}
-          <div id="appearance" className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-            <h4 className="text-xs text-wood-400 uppercase tracking-wider">Apariencia en la tienda</h4>
+          <div id="appearance" className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+            <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Apariencia en la tienda</h4>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Layout de productos en esta categoria</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Layout de productos en esta categoria</label>
               <div className="space-y-1.5">
                 {[
                   { val: 'grid', label: 'Grid (3-4 columnas) — por defecto' },
@@ -941,7 +941,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                 ].map(opt => (
                   <label key={opt.val} className="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="layout" checked={form.layout === opt.val} onChange={() => setForm(f => ({ ...f, layout: opt.val as any }))} className="accent-accent-gold" />
-                    <span className="text-xs text-wood-700">{opt.label}</span>
+                    <span className="text-xs text-[var(--admin-text)]">{opt.label}</span>
                   </label>
                 ))}
               </div>
@@ -949,15 +949,15 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-wood-600 block mb-1.5">Productos por pagina</label>
-                <select value={form.productsPerPage} onChange={e => setForm(f => ({ ...f, productsPerPage: Number(e.target.value) }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm text-wood-700 outline-none bg-white">
+                <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Productos por pagina</label>
+                <select value={form.productsPerPage} onChange={e => setForm(f => ({ ...f, productsPerPage: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none bg-[var(--admin-surface)]">
                   {[8, 12, 16, 24].map(n => <option key={n} value={n}>{n}</option>)}
                   <option value={999}>Todos</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs text-wood-600 block mb-1.5">Orden por defecto</label>
-                <select value={form.sortDefault} onChange={e => setForm(f => ({ ...f, sortDefault: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-sm text-wood-700 outline-none bg-white">
+                <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Orden por defecto</label>
+                <select value={form.sortDefault} onChange={e => setForm(f => ({ ...f, sortDefault: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none bg-[var(--admin-surface)]">
                   <option value="manual">Manual (personalizado)</option>
                   <option value="newest">Mas recientes</option>
                   <option value="price-asc">Precio menor-mayor</option>
@@ -969,7 +969,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-2">Filtros visibles</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-2">Filtros visibles</label>
               <div className="flex flex-wrap gap-3">
                 {[
                   { key: 'wood', label: 'Filtros de madera' },
@@ -979,7 +979,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                 ].map(f => (
                   <label key={f.key} className="flex items-center gap-1.5 cursor-pointer">
                     <input type="checkbox" checked={(form.filters as any)[f.key]} onChange={() => setForm(prev => ({ ...prev, filters: { ...prev.filters, [f.key]: !(prev.filters as any)[f.key] } }))} className="accent-accent-gold rounded" />
-                    <span className="text-xs text-wood-700">{f.label}</span>
+                    <span className="text-xs text-[var(--admin-text)]">{f.label}</span>
                   </label>
                 ))}
               </div>
@@ -987,30 +987,30 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
 
             {/* Banner */}
             <div>
-              <label className="text-xs text-wood-600 block mb-2">Banner promocional (opcional)</label>
-              <div className="bg-sand-50 rounded-xl p-4 space-y-3">
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-2">Banner promocional (opcional)</label>
+              <div className="bg-[var(--admin-surface2)] rounded-xl p-4 space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-wood-400 block mb-1">Texto</label>
-                    <input value={form.bannerText} onChange={e => setForm(f => ({ ...f, bannerText: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-xs text-wood-900 outline-none bg-white" placeholder="Envio gratis en pedidos de $2,500+" />
+                    <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Texto</label>
+                    <input value={form.bannerText} onChange={e => setForm(f => ({ ...f, bannerText: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] outline-none bg-[var(--admin-surface)]" placeholder="Envio gratis en pedidos de $2,500+" />
                   </div>
                   <div>
-                    <label className="text-[10px] text-wood-400 block mb-1">Link</label>
-                    <input value={form.bannerLink} onChange={e => setForm(f => ({ ...f, bannerLink: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-xs text-wood-900 outline-none bg-white" placeholder="/shop?promo=..." />
+                    <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Link</label>
+                    <input value={form.bannerLink} onChange={e => setForm(f => ({ ...f, bannerLink: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] outline-none bg-[var(--admin-surface)]" placeholder="/shop?promo=..." />
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <label className="text-[10px] text-wood-400">Fondo:</label>
+                    <label className="text-[10px] text-[var(--admin-muted)]">Fondo:</label>
                     <input type="color" value={form.bannerBg} onChange={e => setForm(f => ({ ...f, bannerBg: e.target.value }))} className="w-7 h-7 rounded cursor-pointer" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <label className="text-[10px] text-wood-400">Texto:</label>
+                    <label className="text-[10px] text-[var(--admin-muted)]">Texto:</label>
                     <input type="color" value={form.bannerTextColor} onChange={e => setForm(f => ({ ...f, bannerTextColor: e.target.value }))} className="w-7 h-7 rounded cursor-pointer" />
                   </div>
                   <label className="flex items-center gap-1.5 cursor-pointer">
                     <input type="checkbox" checked={form.bannerActive} onChange={e => setForm(f => ({ ...f, bannerActive: e.target.checked }))} className="accent-accent-gold rounded" />
-                    <span className="text-xs text-wood-700">Activo</span>
+                    <span className="text-xs text-[var(--admin-text)]">Activo</span>
                   </label>
                 </div>
                 {form.bannerText && form.bannerActive && (
@@ -1023,85 +1023,85 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           </div>
 
           {/* ===== SEO ===== */}
-          <div id="seo" className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
+          <div id="seo" className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs text-wood-400 uppercase tracking-wider">SEO — Optimizacion para buscadores</h4>
-              <button className="flex items-center gap-1 text-[11px] text-accent-gold hover:underline"><Sparkles size={11} /> Generar SEO con IA</button>
+              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">SEO — Optimizacion para buscadores</h4>
+              <button className="flex items-center gap-1 text-[11px] text-[var(--admin-accent)] hover:underline"><Sparkles size={11} /> Generar SEO con IA</button>
             </div>
 
             {/* Google preview */}
-            <div className="bg-sand-50 rounded-xl p-4 space-y-1">
-              <p className="text-[10px] text-wood-400 mb-2">Preview de Google</p>
+            <div className="bg-[var(--admin-surface2)] rounded-xl p-4 space-y-1">
+              <p className="text-[10px] text-[var(--admin-muted)] mb-2">Preview de Google</p>
               <p className="text-sm text-blue-700 truncate">{form.metaTitle || form.name || 'Titulo de la categoria'} | DavidSon's Design</p>
               <p className="text-[11px] text-green-700 truncate">davidsonsdesign.com/shop/{form.slug || 'categoria'}</p>
-              <p className="text-[11px] text-wood-500 line-clamp-2">{form.metaDescription || form.description || 'Descripcion de la categoria...'}</p>
+              <p className="text-[11px] text-[var(--admin-text-secondary)] line-clamp-2">{form.metaDescription || form.description || 'Descripcion de la categoria...'}</p>
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Meta titulo</label>
-              <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none focus:border-accent-gold/40" placeholder="Titulo para buscadores" />
-              <p className="text-[10px] text-wood-400 mt-1">{form.metaTitle.length}/70 caracteres</p>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Meta titulo</label>
+              <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]/40" placeholder="Titulo para buscadores" />
+              <p className="text-[10px] text-[var(--admin-muted)] mt-1">{form.metaTitle.length}/70 caracteres</p>
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Meta descripcion</label>
-              <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none resize-none focus:border-accent-gold/40" placeholder="Descripcion para buscadores" />
-              <p className="text-[10px] text-wood-400 mt-1">{form.metaDescription.length}/160 caracteres</p>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Meta descripcion</label>
+              <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none resize-none focus:border-[var(--admin-accent)]/40" placeholder="Descripcion para buscadores" />
+              <p className="text-[10px] text-[var(--admin-muted)] mt-1">{form.metaDescription.length}/160 caracteres</p>
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">URL (slug)</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">URL (slug)</label>
               <div className="flex items-center gap-1">
-                <span className="text-xs text-wood-400">davidsonsdesign.com/shop/</span>
-                <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none focus:border-accent-gold/40" />
+                <span className="text-xs text-[var(--admin-muted)]">davidsonsdesign.com/shop/</span>
+                <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]/40" />
               </div>
-              <p className="text-[10px] text-wood-400 mt-1">Se genera automaticamente del nombre. Editable.</p>
+              <p className="text-[10px] text-[var(--admin-muted)] mt-1">Se genera automaticamente del nombre. Editable.</p>
               {isEditing && <p className="text-[10px] text-amber-500 mt-0.5">⚠ Cambiar la URL puede afectar el SEO. Se creara un redirect automatico.</p>}
             </div>
           </div>
 
           {/* ===== PRODUCTS ===== */}
-          <div id="products" className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-            <h4 className="text-xs text-wood-400 uppercase tracking-wider">Productos en esta categoria</h4>
+          <div id="products" className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+            <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Productos en esta categoria</h4>
             {isEditing && category.products > 0 ? (
               <>
-                <p className="text-[11px] text-wood-500">{category.products} productos en "{category.name}"</p>
+                <p className="text-[11px] text-[var(--admin-text-secondary)]">{category.products} productos en "{category.name}"</p>
                 <div className="space-y-1">
                   {legacyDetailProducts.map((p, i) => (
-                    <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-sand-50 rounded-lg hover:bg-sand-100 transition-colors">
-                      <GripVertical size={12} className="text-wood-300 cursor-grab" />
-                      <div className="w-8 h-8 rounded-lg bg-wood-100 flex items-center justify-center flex-shrink-0">
-                        <ShoppingBag size={12} className="text-wood-400" />
+                    <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-[var(--admin-surface2)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">
+                      <GripVertical size={12} className="text-[var(--admin-muted)] cursor-grab" />
+                      <div className="w-8 h-8 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center flex-shrink-0">
+                        <ShoppingBag size={12} className="text-[var(--admin-muted)]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-wood-900 truncate">{p.name}</p>
+                        <p className="text-xs text-[var(--admin-text)] truncate">{p.name}</p>
                       </div>
-                      <span className="text-xs text-wood-700">${p.price.toLocaleString()}</span>
-                      <span className={`text-[10px] ${p.stock <= 3 ? 'text-amber-500' : 'text-wood-400'}`}>Stock: {p.stock} {p.stock <= 3 && '⚠'}</span>
+                      <span className="text-xs text-[var(--admin-text)]">${p.price.toLocaleString()}</span>
+                      <span className={`text-[10px] ${p.stock <= 3 ? 'text-amber-500' : 'text-[var(--admin-muted)]'}`}>Stock: {p.stock} {p.stock <= 3 && '⚠'}</span>
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-wood-400">Arrastra para reordenar los productos dentro de la categoria.</p>
+                <p className="text-[10px] text-[var(--admin-muted)]">Arrastra para reordenar los productos dentro de la categoria.</p>
                 <div className="flex gap-3">
-                  <button className="text-[11px] text-accent-gold hover:underline flex items-center gap-1"><Plus size={11} /> Agregar producto</button>
-                  <button className="text-[11px] text-wood-400 hover:text-wood-600 flex items-center gap-1"><ShoppingBag size={11} /> Ver todos en Productos</button>
+                  <button className="text-[11px] text-[var(--admin-accent)] hover:underline flex items-center gap-1"><Plus size={11} /> Agregar producto</button>
+                  <button className="text-[11px] text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] flex items-center gap-1"><ShoppingBag size={11} /> Ver todos en Productos</button>
                 </div>
               </>
             ) : (
               <div className="p-8 text-center">
-                <ShoppingBag size={24} className="mx-auto text-wood-200 mb-2" />
-                <p className="text-xs text-wood-400">Sin productos asignados</p>
-                <button className="mt-3 text-[11px] text-accent-gold hover:underline flex items-center gap-1 mx-auto"><Plus size={11} /> Agregar producto</button>
+                <ShoppingBag size={24} className="mx-auto text-[var(--admin-muted)] mb-2" />
+                <p className="text-xs text-[var(--admin-muted)]">Sin productos asignados</p>
+                <button className="mt-3 text-[11px] text-[var(--admin-accent)] hover:underline flex items-center gap-1 mx-auto"><Plus size={11} /> Agregar producto</button>
               </div>
             )}
           </div>
 
           {/* ===== STATS ===== */}
           {isEditing && (
-            <div id="stats" className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
+            <div id="stats" className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs text-wood-400 uppercase tracking-wider">Estadisticas</h4>
-                <select className="text-[11px] text-wood-500 border border-wood-200 rounded-lg px-2 py-1 bg-white outline-none">
+                <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Estadisticas</h4>
+                <select className="text-[11px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded-lg px-2 py-1 bg-[var(--admin-surface)] outline-none">
                   <option>30 dias</option>
                   <option>7 dias</option>
                   <option>90 dias</option>
@@ -1109,27 +1109,27 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-sand-50 rounded-xl p-3 text-center">
-                  <p className="text-lg text-wood-900">${category.salesMonth.toLocaleString()}</p>
-                  <p className="text-[10px] text-wood-500">Ventas del periodo</p>
+                <div className="bg-[var(--admin-surface2)] rounded-xl p-3 text-center">
+                  <p className="text-lg text-[var(--admin-text)]">${category.salesMonth.toLocaleString()}</p>
+                  <p className="text-[10px] text-[var(--admin-text-secondary)]">Ventas del periodo</p>
                   <p className="text-[10px] text-green-600">+15% vs prev</p>
                 </div>
-                <div className="bg-sand-50 rounded-xl p-3 text-center">
-                  <p className="text-lg text-wood-900">52</p>
-                  <p className="text-[10px] text-wood-500">Unidades vendidas</p>
+                <div className="bg-[var(--admin-surface2)] rounded-xl p-3 text-center">
+                  <p className="text-lg text-[var(--admin-text)]">52</p>
+                  <p className="text-[10px] text-[var(--admin-text-secondary)]">Unidades vendidas</p>
                   <p className="text-[10px] text-green-600">+8% vs prev</p>
                 </div>
-                <div className="bg-sand-50 rounded-xl p-3 text-center">
-                  <p className="text-lg text-wood-900">3,400</p>
-                  <p className="text-[10px] text-wood-500">Visitas a categoria</p>
+                <div className="bg-[var(--admin-surface2)] rounded-xl p-3 text-center">
+                  <p className="text-lg text-[var(--admin-text)]">3,400</p>
+                  <p className="text-[10px] text-[var(--admin-text-secondary)]">Visitas a categoria</p>
                   <p className="text-[10px] text-green-600">+22% vs prev</p>
                 </div>
               </div>
 
-              <div className="text-[11px] text-wood-500 space-y-1">
-                <p>Tasa de conversion: <span className="text-wood-900">1.5%</span> (visitas → compra)</p>
-                <p>Ticket promedio: <span className="text-wood-900">$927 MXN</span></p>
-                <p>Producto mas vendido: <span className="text-wood-900">Tabla Parota Med (28 uds)</span></p>
+              <div className="text-[11px] text-[var(--admin-text-secondary)] space-y-1">
+                <p>Tasa de conversion: <span className="text-[var(--admin-text)]">1.5%</span> (visitas → compra)</p>
+                <p>Ticket promedio: <span className="text-[var(--admin-text)]">$927 MXN</span></p>
+                <p>Producto mas vendido: <span className="text-[var(--admin-text)]">Tabla Parota Med (28 uds)</span></p>
               </div>
 
               <div className="h-32">
@@ -1154,11 +1154,11 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           )}
 
           {/* ===== ADVANCED CONFIG ===== */}
-          <div id="advanced" className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-            <h4 className="text-xs text-wood-400 uppercase tracking-wider">Configuracion avanzada</h4>
+          <div id="advanced" className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+            <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Configuracion avanzada</h4>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-2">Navegacion</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-2">Navegacion</label>
               <div className="space-y-1.5">
                 {[
                   { key: 'showInMenu', label: 'Mostrar en menu principal de la tienda' },
@@ -1168,29 +1168,29 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                 ].map(opt => (
                   <label key={opt.key} className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={(form as any)[opt.key]} onChange={() => setForm(f => ({ ...f, [opt.key]: !(f as any)[opt.key] }))} className="accent-accent-gold rounded" />
-                    <span className="text-xs text-wood-700">{opt.label}</span>
+                    <span className="text-xs text-[var(--admin-text)]">{opt.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="text-xs text-wood-600 block mb-2">Permisos (para SaaS multi-usuario)</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-2">Permisos (para SaaS multi-usuario)</label>
               <div className="space-y-1.5">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="radio" name="perms" defaultChecked className="accent-accent-gold" />
-                  <span className="text-xs text-wood-700">Todos los admins pueden editar</span>
+                  <span className="text-xs text-[var(--admin-text)]">Todos los admins pueden editar</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="radio" name="perms" className="accent-accent-gold" />
-                  <span className="text-xs text-wood-700">Solo el owner puede editar</span>
+                  <span className="text-xs text-[var(--admin-text)]">Solo el owner puede editar</span>
                 </label>
               </div>
             </div>
 
             {isEditing && (
-              <div className="text-[10px] text-wood-400 space-y-0.5">
-                <p>Handle interno: <span className="font-mono text-wood-500">{category.slug}</span></p>
+              <div className="text-[10px] text-[var(--admin-muted)] space-y-0.5">
+                <p>Handle interno: <span className="font-mono text-[var(--admin-text-secondary)]">{category.slug}</span></p>
                 <p>Creada: {category.createdAt}</p>
                 <p>Ultima edicion: {category.updatedAt}</p>
               </div>
@@ -1203,7 +1203,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                 <button className="flex items-center gap-1.5 px-3 py-2 text-xs text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
                   <Trash2 size={12} /> Eliminar categoria
                 </button>
-                <p className="text-[10px] text-wood-400 mt-2">
+                <p className="text-[10px] text-[var(--admin-muted)] mt-2">
                   Si esta categoria tiene productos, deberas reasignarlos a otra categoria antes de eliminar. Sub-categorias se moveran a nivel raiz.
                 </p>
               </div>
@@ -1268,111 +1268,111 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 hover:bg-sand-50 rounded-lg text-wood-400 hover:text-wood-600 transition-colors">
+          <button onClick={onBack} className="p-2 hover:bg-[var(--admin-surface2)] rounded-lg text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] transition-colors">
             <ArrowLeft size={18} />
           </button>
           <div>
-            <p className="text-[10px] text-wood-400 uppercase tracking-wider">Colecciones</p>
-            <h3 className="font-serif text-wood-900">{isEditing ? `Editar: ${collection.name}` : 'Nueva Coleccion'}</h3>
+            <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">Colecciones</p>
+            <h3 className="font-serif text-[var(--admin-text)]">{isEditing ? `Editar: ${collection.name}` : 'Nueva Coleccion'}</h3>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onBack} className="px-3 py-2 text-xs text-wood-500 hover:text-wood-700">Cancelar</button>
-          <button className="px-3 py-2 text-xs text-wood-600 bg-white border border-wood-200 rounded-lg hover:bg-sand-50">Guardar borrador</button>
+          <button onClick={onBack} className="px-3 py-2 text-xs text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">Cancelar</button>
+          <button className="px-3 py-2 text-xs text-[var(--admin-text-secondary)] bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)]">Guardar borrador</button>
           <button className="px-4 py-2 text-xs text-sand-100 bg-wood-900 rounded-lg hover:bg-wood-800">Publicar</button>
         </div>
       </div>
 
       <div className="space-y-6 max-w-3xl">
         {/* Basic */}
-        <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-          <h4 className="text-xs text-wood-400 uppercase tracking-wider">Informacion basica</h4>
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+          <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Informacion basica</h4>
 
           <div>
-            <label className="text-xs text-wood-600 block mb-1.5">Nombre *</label>
-            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none focus:border-accent-gold/40" placeholder="Ej: Regalos para Mama" />
+            <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Nombre *</label>
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]/40" placeholder="Ej: Regalos para Mama" />
           </div>
 
           <div>
-            <label className="text-xs text-wood-600 block mb-1.5">Descripcion</label>
-            <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none resize-none focus:border-accent-gold/40" placeholder="Descripcion de la coleccion" />
+            <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Descripcion</label>
+            <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none resize-none focus:border-[var(--admin-accent)]/40" placeholder="Descripcion de la coleccion" />
           </div>
 
           <div>
-            <label className="text-xs text-wood-600 block mb-1.5">Imagen de portada</label>
-            <div className="border-2 border-dashed border-wood-200 rounded-xl p-6 text-center hover:border-accent-gold/40 cursor-pointer transition-colors">
-              <Upload size={20} className="mx-auto text-wood-300 mb-1" />
-              <p className="text-[11px] text-wood-500">Subir imagen</p>
-              <p className="text-[10px] text-wood-400">Recomendado: 1200x600px</p>
+            <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Imagen de portada</label>
+            <div className="border-2 border-dashed border-[var(--admin-border)] rounded-xl p-6 text-center hover:border-[var(--admin-accent)]/40 cursor-pointer transition-colors">
+              <Upload size={20} className="mx-auto text-[var(--admin-muted)] mb-1" />
+              <p className="text-[11px] text-[var(--admin-text-secondary)]">Subir imagen</p>
+              <p className="text-[10px] text-[var(--admin-muted)]">Recomendado: 1200x600px</p>
             </div>
           </div>
         </div>
 
         {/* Type */}
-        <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-          <h4 className="text-xs text-wood-400 uppercase tracking-wider">Tipo de coleccion</h4>
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+          <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Tipo de coleccion</h4>
 
           <div className="space-y-1.5">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="colType" checked={form.type === 'manual'} onChange={() => setForm(f => ({ ...f, type: 'manual' }))} className="accent-accent-gold" />
-              <span className="text-xs text-wood-700">Manual — Tu seleccionas los productos</span>
+              <span className="text-xs text-[var(--admin-text)]">Manual — Tu seleccionas los productos</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="colType" checked={form.type === 'automatic'} onChange={() => setForm(f => ({ ...f, type: 'automatic' }))} className="accent-accent-gold" />
-              <span className="text-xs text-wood-700">Automatica — Se llena segun reglas</span>
+              <span className="text-xs text-[var(--admin-text)]">Automatica — Se llena segun reglas</span>
             </label>
           </div>
 
           {/* Manual products */}
           {form.type === 'manual' && (
             <div className="space-y-3 mt-3">
-              <label className="text-xs text-wood-600 block">Productos en esta coleccion:</label>
-              <div className="flex items-center bg-sand-50 border border-wood-200 rounded-lg overflow-hidden">
-                <Search size={14} className="ml-3 text-wood-400" />
-                <input placeholder="Buscar producto para agregar..." className="flex-1 px-3 py-2 text-xs bg-transparent outline-none text-wood-900 placeholder:text-wood-400" />
+              <label className="text-xs text-[var(--admin-text-secondary)] block">Productos en esta coleccion:</label>
+              <div className="flex items-center bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg overflow-hidden">
+                <Search size={14} className="ml-3 text-[var(--admin-muted)]" />
+                <input placeholder="Buscar producto para agregar..." className="flex-1 px-3 py-2 text-xs bg-transparent outline-none text-[var(--admin-text)] placeholder:text-[var(--admin-muted)]" />
               </div>
               <div className="space-y-1">
                 {legacyCollectionProducts.map((p, i) => (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-sand-50 rounded-lg">
-                    <GripVertical size={12} className="text-wood-300 cursor-grab" />
-                    <div className="w-8 h-8 rounded-lg bg-wood-100 flex items-center justify-center flex-shrink-0">
-                      <ShoppingBag size={12} className="text-wood-400" />
+                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-[var(--admin-surface2)] rounded-lg">
+                    <GripVertical size={12} className="text-[var(--admin-muted)] cursor-grab" />
+                    <div className="w-8 h-8 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center flex-shrink-0">
+                      <ShoppingBag size={12} className="text-[var(--admin-muted)]" />
                     </div>
-                    <p className="flex-1 text-xs text-wood-900 truncate">{p.name}</p>
-                    <span className="text-xs text-wood-500">${p.price.toLocaleString()}</span>
-                    <button className="p-1 text-wood-400 hover:text-red-500"><X size={12} /></button>
+                    <p className="flex-1 text-xs text-[var(--admin-text)] truncate">{p.name}</p>
+                    <span className="text-xs text-[var(--admin-text-secondary)]">${p.price.toLocaleString()}</span>
+                    <button className="p-1 text-[var(--admin-muted)] hover:text-red-500"><X size={12} /></button>
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] text-wood-400">Arrastra para ordenar</p>
+              <p className="text-[10px] text-[var(--admin-muted)]">Arrastra para ordenar</p>
             </div>
           )}
 
           {/* Automatic rules */}
           {form.type === 'automatic' && (
             <div className="space-y-3 mt-3">
-              <label className="text-xs text-wood-600 block">Reglas (todas deben cumplirse):</label>
+              <label className="text-xs text-[var(--admin-text-secondary)] block">Reglas (todas deben cumplirse):</label>
               <div className="space-y-2">
                 {rules.map((rule, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <select value={rule.field} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], field: e.target.value }; setRules(nr); }} className="px-2 py-2 border border-wood-200 rounded-lg text-xs text-wood-700 bg-white outline-none">
+                    <select value={rule.field} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], field: e.target.value }; setRules(nr); }} className="px-2 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] bg-[var(--admin-surface)] outline-none">
                       {ruleFields.map(f => <option key={f} value={f}>{f}</option>)}
                     </select>
-                    <select className="px-2 py-2 border border-wood-200 rounded-lg text-xs text-wood-700 bg-white outline-none">
+                    <select className="px-2 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] bg-[var(--admin-surface)] outline-none">
                       {(ruleOps[rule.field] || ruleOps['Categoria']).map(op => <option key={op} value={op}>{op}</option>)}
                     </select>
-                    <input value={rule.value} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], value: e.target.value }; setRules(nr); }} className="flex-1 px-2 py-2 border border-wood-200 rounded-lg text-xs text-wood-900 outline-none" placeholder="Valor" />
-                    <button onClick={() => setRules(rules.filter((_, idx) => idx !== i))} className="p-1 text-wood-400 hover:text-red-500"><X size={14} /></button>
+                    <input value={rule.value} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], value: e.target.value }; setRules(nr); }} className="flex-1 px-2 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] outline-none" placeholder="Valor" />
+                    <button onClick={() => setRules(rules.filter((_, idx) => idx !== i))} className="p-1 text-[var(--admin-muted)] hover:text-red-500"><X size={14} /></button>
                   </div>
                 ))}
               </div>
-              <button onClick={() => setRules([...rules, { field: 'Categoria', op: 'es_igual', value: '' }])} className="text-[11px] text-accent-gold hover:underline flex items-center gap-1">
+              <button onClick={() => setRules([...rules, { field: 'Categoria', op: 'es_igual', value: '' }])} className="text-[11px] text-[var(--admin-accent)] hover:underline flex items-center gap-1">
                 <Plus size={11} /> Agregar regla
               </button>
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div>
-                  <label className="text-[10px] text-wood-400 block mb-1">Ordenar por</label>
-                  <select value={form.sortBy} onChange={e => setForm(f => ({ ...f, sortBy: e.target.value }))} className="w-full px-2 py-2 border border-wood-200 rounded-lg text-xs text-wood-700 bg-white outline-none">
+                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Ordenar por</label>
+                  <select value={form.sortBy} onChange={e => setForm(f => ({ ...f, sortBy: e.target.value }))} className="w-full px-2 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] bg-[var(--admin-surface)] outline-none">
                     <option value="bestsellers">Mas vendidos</option>
                     <option value="newest">Mas recientes</option>
                     <option value="price-asc">Precio menor-mayor</option>
@@ -1380,8 +1380,8 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] text-wood-400 block mb-1">Limite</label>
-                  <input type="number" value={form.limit} onChange={e => setForm(f => ({ ...f, limit: Number(e.target.value) }))} className="w-full px-2 py-2 border border-wood-200 rounded-lg text-xs text-wood-900 outline-none" />
+                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Limite</label>
+                  <input type="number" value={form.limit} onChange={e => setForm(f => ({ ...f, limit: Number(e.target.value) }))} className="w-full px-2 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] outline-none" />
                 </div>
               </div>
             </div>
@@ -1389,56 +1389,56 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
         </div>
 
         {/* Scheduling */}
-        <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-          <h4 className="text-xs text-wood-400 uppercase tracking-wider flex items-center gap-1.5"><Calendar size={12} /> Programacion</h4>
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+          <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider flex items-center gap-1.5"><Calendar size={12} /> Programacion</h4>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Fecha de inicio</label>
-              <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-xs text-wood-700 outline-none bg-white" />
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Fecha de inicio</label>
+              <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] outline-none bg-[var(--admin-surface)]" />
             </div>
             <div>
-              <label className="text-xs text-wood-600 block mb-1.5">Fecha de fin</label>
-              <input type="date" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} disabled={form.noEndDate} className="w-full px-3 py-2 border border-wood-200 rounded-lg text-xs text-wood-700 outline-none bg-white disabled:opacity-40" />
+              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Fecha de fin</label>
+              <input type="date" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} disabled={form.noEndDate} className="w-full px-3 py-2 border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] outline-none bg-[var(--admin-surface)] disabled:opacity-40" />
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer">
                 <input type="checkbox" checked={form.noEndDate} onChange={e => setForm(f => ({ ...f, noEndDate: e.target.checked }))} className="accent-accent-gold rounded" />
-                <span className="text-[10px] text-wood-500">Sin fecha de fin</span>
+                <span className="text-[10px] text-[var(--admin-text-secondary)]">Sin fecha de fin</span>
               </label>
             </div>
           </div>
-          <p className="text-[10px] text-wood-400 flex items-center gap-1">
+          <p className="text-[10px] text-[var(--admin-muted)] flex items-center gap-1">
             <Clock size={10} /> La coleccion se activara y desactivara automaticamente segun las fechas. Ideal para promociones de temporada.
           </p>
         </div>
 
         {/* SEO */}
-        <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-          <h4 className="text-xs text-wood-400 uppercase tracking-wider">SEO</h4>
-          <div className="bg-sand-50 rounded-xl p-4 space-y-1">
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+          <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">SEO</h4>
+          <div className="bg-[var(--admin-surface2)] rounded-xl p-4 space-y-1">
             <p className="text-sm text-blue-700 truncate">{form.metaTitle || form.name || 'Titulo'} | DavidSon's Design</p>
             <p className="text-[11px] text-green-700 truncate">davidsonsdesign.com/shop/coleccion/{form.slug || 'slug'}</p>
-            <p className="text-[11px] text-wood-500 line-clamp-2">{form.metaDescription || form.description || 'Descripcion...'}</p>
+            <p className="text-[11px] text-[var(--admin-text-secondary)] line-clamp-2">{form.metaDescription || form.description || 'Descripcion...'}</p>
           </div>
           <div>
-            <label className="text-xs text-wood-600 block mb-1.5">Meta titulo</label>
-            <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none" />
+            <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Meta titulo</label>
+            <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none" />
           </div>
           <div>
-            <label className="text-xs text-wood-600 block mb-1.5">Meta descripcion</label>
-            <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={2} className="w-full px-3 py-2.5 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none resize-none" />
+            <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Meta descripcion</label>
+            <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={2} className="w-full px-3 py-2.5 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none resize-none" />
           </div>
           <div>
-            <label className="text-xs text-wood-600 block mb-1.5">URL (slug)</label>
+            <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">URL (slug)</label>
             <div className="flex items-center gap-1">
-              <span className="text-xs text-wood-400">davidsonsdesign.com/shop/coleccion/</span>
-              <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-wood-200 rounded-lg text-sm text-wood-900 outline-none" />
+              <span className="text-xs text-[var(--admin-muted)]">davidsonsdesign.com/shop/coleccion/</span>
+              <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--admin-border)] rounded-lg text-sm text-[var(--admin-text)] outline-none" />
             </div>
           </div>
         </div>
 
         {/* Display options */}
-        <div className="bg-white rounded-xl border border-wood-100 p-6 space-y-4">
-          <h4 className="text-xs text-wood-400 uppercase tracking-wider">Donde mostrar</h4>
+        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
+          <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Donde mostrar</h4>
           <div className="space-y-1.5">
             {[
               { key: 'showOnPage', label: `Pagina propia en la tienda (/shop/coleccion/${form.slug || 'slug'})` },
@@ -1447,12 +1447,12 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
             ].map(opt => (
               <label key={opt.key} className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={(form as any)[opt.key]} onChange={() => setForm(f => ({ ...f, [opt.key]: !(f as any)[opt.key] }))} className="accent-accent-gold rounded" />
-                <span className="text-xs text-wood-700">{opt.label}</span>
+                <span className="text-xs text-[var(--admin-text)]">{opt.label}</span>
               </label>
             ))}
             <label className="flex items-center gap-2 cursor-not-allowed opacity-50">
               <input type="checkbox" disabled className="accent-accent-gold rounded" />
-              <span className="text-xs text-wood-500">Email marketing (proximamente)</span>
+              <span className="text-xs text-[var(--admin-text-secondary)]">Email marketing (proximamente)</span>
             </label>
           </div>
         </div>

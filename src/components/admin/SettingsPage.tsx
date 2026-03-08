@@ -27,17 +27,17 @@ const tabItems: Array<{ id: STab; label: string; icon: React.ElementType }> = [
 
 // ===== SHARED =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-white rounded-xl border border-wood-100 shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function STitle({ children }: { children: React.ReactNode }) {
-  return <h4 className="text-[11px] font-medium text-wood-900 uppercase tracking-wider border-b border-wood-100 pb-2 mb-4">{children}</h4>;
+  return <h4 className="text-[11px] font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">{children}</h4>;
 }
 
 function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 'gray' | 'amber' | 'blue' | 'red' }) {
   const cls: Record<string, string> = {
     green: 'bg-green-50 text-green-600',
-    gray: 'bg-wood-50 text-wood-500',
+    gray: 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]',
     amber: 'bg-amber-50 text-amber-600',
     blue: 'bg-blue-50 text-blue-600',
     red: 'bg-red-50 text-red-500',
@@ -48,19 +48,19 @@ function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 
 function Field({ label, children, className = '' }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <label className="text-[10px] text-wood-400 uppercase tracking-wider block mb-1">{label}</label>
+      <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">{label}</label>
       {children}
     </div>
   );
 }
 
 function Input({ defaultValue = '', placeholder = '', className = '', type = 'text', readOnly = false }: { defaultValue?: string; placeholder?: string; className?: string; type?: string; readOnly?: boolean }) {
-  return <input type={type} defaultValue={defaultValue} placeholder={placeholder} readOnly={readOnly} className={'border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white outline-none focus:border-accent-gold/50 transition-colors ' + (readOnly ? 'bg-sand-50 text-wood-500 ' : '') + className} />;
+  return <input type={type} defaultValue={defaultValue} placeholder={placeholder} readOnly={readOnly} className={'border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)] outline-none focus:border-[var(--admin-accent)]/50 transition-colors ' + (readOnly ? 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)] ' : '') + className} />;
 }
 
 function SaveBtn() {
   return (
-    <button onClick={() => toast.success('Configuracion guardada')} className="px-4 py-2 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
+    <button onClick={() => toast.success('Configuracion guardada')} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5">
       <Save size={12} /> Guardar
     </button>
   );
@@ -74,12 +74,12 @@ function SecretField({ label, value }: { label: string; value: string }) {
         <input
           type={visible ? 'text' : 'password'}
           defaultValue={value}
-          className="flex-1 border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white font-mono outline-none"
+          className="flex-1 border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)] font-mono outline-none"
         />
-        <button onClick={() => setVisible(!visible)} className="p-2 rounded-lg hover:bg-wood-50 text-wood-400 transition-colors">
+        <button onClick={() => setVisible(!visible)} className="p-2 rounded-lg hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] transition-colors">
           {visible ? <EyeOff size={12} /> : <Eye size={12} />}
         </button>
-        <button onClick={() => { navigator.clipboard.writeText(value); toast.success('Copiado'); }} className="p-2 rounded-lg hover:bg-wood-50 text-wood-400 transition-colors">
+        <button onClick={() => { navigator.clipboard.writeText(value); toast.success('Copiado'); }} className="p-2 rounded-lg hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] transition-colors">
           <Copy size={12} />
         </button>
       </div>
@@ -98,7 +98,7 @@ function GeneralTab() {
           <Field label="Nombre legal"><Input defaultValue="David Alejandro Perez Rea" className="w-full" /></Field>
           <Field label="RFC"><Input defaultValue="PERD000000XXX" className="w-full font-mono" /></Field>
           <Field label="Regimen fiscal">
-            <select defaultValue="pfae" className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+            <select defaultValue="pfae" className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
               <option value="pfae">Persona Fisica con Actividad Empresarial</option>
               <option value="rif">Regimen de Incorporacion Fiscal</option>
               <option value="pm">Persona Moral</option>
@@ -109,8 +109,8 @@ function GeneralTab() {
         <div className="flex flex-wrap gap-4 mt-4">
           {[{ l: 'Logo principal', n: 'emails, facturas, PDFs' }, { l: 'Logo alternativo (claro)', n: 'fondos oscuros' }, { l: 'Favicon', n: '16x16px' }].map((logo) => (
             <div key={logo.l}>
-              <p className="text-[10px] text-wood-400 uppercase tracking-wider mb-1">{logo.l}</p>
-              <button className="w-20 h-20 border-2 border-dashed border-wood-200 rounded-lg flex flex-col items-center justify-center text-wood-300 hover:border-wood-300 transition-colors">
+              <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mb-1">{logo.l}</p>
+              <button className="w-20 h-20 border-2 border-dashed border-[var(--admin-border)] rounded-lg flex flex-col items-center justify-center text-[var(--admin-muted)] hover:border-wood-300 transition-colors">
                 <Upload size={16} />
                 <span className="text-[8px] mt-1">{logo.n}</span>
               </button>
@@ -128,13 +128,13 @@ function GeneralTab() {
           <Field label="Telefono"><Input defaultValue="662-361-0742" className="w-full" /></Field>
           <Field label="WhatsApp"><Input defaultValue="+52 662 361 0742" className="w-full" /></Field>
           <Field label="Horario de atencion">
-            <div className="flex items-center gap-1 text-xs text-wood-500">
-              <select className="border border-wood-200 rounded px-1.5 py-1 text-xs bg-white"><option>Lun-Vie</option></select>
+            <div className="flex items-center gap-1 text-xs text-[var(--admin-text-secondary)]">
+              <select className="border border-[var(--admin-border)] rounded px-1.5 py-1 text-xs bg-[var(--admin-surface)]"><option>Lun-Vie</option></select>
               <Input defaultValue="09:00" type="time" className="w-20" />
               <span>a</span>
               <Input defaultValue="18:00" type="time" className="w-20" />
               <span className="mx-1">|</span>
-              <select className="border border-wood-200 rounded px-1.5 py-1 text-xs bg-white"><option>Sab</option></select>
+              <select className="border border-[var(--admin-border)] rounded px-1.5 py-1 text-xs bg-[var(--admin-surface)]"><option>Sab</option></select>
               <Input defaultValue="09:00" type="time" className="w-20" />
               <span>-</span>
               <Input defaultValue="14:00" type="time" className="w-20" />
@@ -154,9 +154,9 @@ function GeneralTab() {
           <Field label="Pais"><Input defaultValue="Mexico" className="w-full" /></Field>
           <Field label="Coordenadas (para mapa)">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-wood-400">Lat</span>
+              <span className="text-[10px] text-[var(--admin-muted)]">Lat</span>
               <Input defaultValue="29.0729" className="w-24" />
-              <span className="text-[10px] text-wood-400">Lng</span>
+              <span className="text-[10px] text-[var(--admin-muted)]">Lng</span>
               <Input defaultValue="-110.9559" className="w-24" />
             </div>
           </Field>
@@ -178,26 +178,26 @@ function GeneralTab() {
         <STitle>Zona Horaria y Formato</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <Field label="Zona horaria">
-            <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+            <select className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
               <option>America/Hermosillo (MST, UTC-7)</option>
               <option>America/Mexico_City (CST, UTC-6)</option>
             </select>
           </Field>
           <Field label="Formato de fecha">
-            <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+            <select className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
               <option>DD/MM/AAAA</option>
               <option>MM/DD/AAAA</option>
               <option>AAAA-MM-DD</option>
             </select>
           </Field>
           <Field label="Formato de hora">
-            <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+            <select className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
               <option>12h (AM/PM)</option>
               <option>24h</option>
             </select>
           </Field>
           <Field label="Primer dia de la semana">
-            <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+            <select className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
               <option>Lunes</option>
               <option>Domingo</option>
             </select>
@@ -217,22 +217,22 @@ function StoreTab() {
       <Card className="p-5">
         <STitle>Dominio</STitle>
         <div className="space-y-2 text-xs">
-          <div className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg">
-            <span className="text-wood-500">Dominio principal</span>
-            <span className="font-medium text-wood-900 font-mono">davidsonsdesign.com</span>
+          <div className="flex items-center justify-between p-2.5 bg-[var(--admin-surface2)] rounded-lg">
+            <span className="text-[var(--admin-text-secondary)]">Dominio principal</span>
+            <span className="font-medium text-[var(--admin-text)] font-mono">davidsonsdesign.com</span>
             <Badge text="Cloudflare" variant="blue" />
           </div>
-          <div className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg">
-            <span className="text-wood-500">URL tienda</span>
-            <span className="font-mono text-wood-700">https://davidsonsdesign.com</span>
+          <div className="flex items-center justify-between p-2.5 bg-[var(--admin-surface2)] rounded-lg">
+            <span className="text-[var(--admin-text-secondary)]">URL tienda</span>
+            <span className="font-mono text-[var(--admin-text)]">https://davidsonsdesign.com</span>
           </div>
-          <div className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg">
-            <span className="text-wood-500">Estado SSL</span>
+          <div className="flex items-center justify-between p-2.5 bg-[var(--admin-surface2)] rounded-lg">
+            <span className="text-[var(--admin-text-secondary)]">Estado SSL</span>
             <span className="flex items-center gap-1"><Check size={10} className="text-green-500" /> Activo (Cloudflare)</span>
           </div>
-          <div className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg">
-            <span className="text-wood-500">URL admin</span>
-            <span className="font-mono text-wood-700">https://davidsonsdesign.com/admin</span>
+          <div className="flex items-center justify-between p-2.5 bg-[var(--admin-surface2)] rounded-lg">
+            <span className="text-[var(--admin-text-secondary)]">URL admin</span>
+            <span className="font-mono text-[var(--admin-text)]">https://davidsonsdesign.com/admin</span>
           </div>
         </div>
       </Card>
@@ -241,14 +241,14 @@ function StoreTab() {
         <STitle>Moneda y Precios</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <Field label="Moneda principal">
-            <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+            <select className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
               <option>MXN - Peso Mexicano</option>
               <option>USD - Dolar Estadounidense</option>
             </select>
           </Field>
           <Field label="Simbolo"><Input defaultValue="$" className="w-full" /></Field>
           <Field label="Posicion">
-            <select className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-white">
+            <select className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
               <option>Antes del numero</option>
               <option>Despues del numero</option>
             </select>
@@ -257,12 +257,12 @@ function StoreTab() {
           <Field label="Separador miles"><Input defaultValue="," className="w-full" /></Field>
         </div>
         <div className="flex flex-col gap-1.5 mt-3">
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Mostrar decimales siempre (.00)
           </label>
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             IVA incluido en precios mostrados
           </label>
         </div>
@@ -271,30 +271,30 @@ function StoreTab() {
       <Card className="p-5">
         <STitle>Inventario</STitle>
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Rastrear inventario (mostrar stock disponible)
           </label>
           <div className="pl-6 space-y-2">
             <div>
-              <p className="text-[10px] text-wood-400 mb-1">Cuando el stock llega a 0:</p>
+              <p className="text-[10px] text-[var(--admin-muted)] mb-1">Cuando el stock llega a 0:</p>
               <div className="flex gap-3">
-                <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="stock-0" defaultChecked className="text-accent-gold" /> No permitir compra</label>
-                <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="stock-0" className="text-accent-gold" /> Permitir backorder</label>
+                <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="stock-0" defaultChecked className="text-[var(--admin-accent)]" /> No permitir compra</label>
+                <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="stock-0" className="text-[var(--admin-accent)]" /> Permitir backorder</label>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-wood-600">Alerta stock bajo cuando quedan:</span>
+              <span className="text-xs text-[var(--admin-text-secondary)]">Alerta stock bajo cuando quedan:</span>
               <Input defaultValue="5" className="w-14 text-center" />
-              <span className="text-xs text-wood-500">unidades</span>
+              <span className="text-xs text-[var(--admin-text-secondary)]">unidades</span>
             </div>
           </div>
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Mostrar "Ultimas X unidades" cuando quedan menos de: <Input defaultValue="3" className="w-14 text-center" />
           </label>
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Mostrar cantidad exacta de stock al cliente
           </label>
         </div>
@@ -310,15 +310,15 @@ function StoreTab() {
             { label: 'Mostrar estimado de entrega en checkout', checked: true },
             { label: 'Requiere aceptar terminos y condiciones antes de pagar', checked: false },
           ].map((opt) => (
-            <label key={opt.label} className="flex items-center gap-2 text-xs text-wood-700">
-              <input type="checkbox" defaultChecked={opt.checked} className="rounded border-wood-300 text-accent-gold" />
+            <label key={opt.label} className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+              <input type="checkbox" defaultChecked={opt.checked} className="rounded border-wood-300 text-[var(--admin-accent)]" />
               {opt.label}
             </label>
           ))}
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs text-wood-600">Tiempo de reserva de carrito:</span>
+            <span className="text-xs text-[var(--admin-text-secondary)]">Tiempo de reserva de carrito:</span>
             <Input defaultValue="30" className="w-14 text-center" />
-            <span className="text-xs text-wood-500">minutos</span>
+            <span className="text-xs text-[var(--admin-text-secondary)]">minutos</span>
           </div>
         </div>
       </Card>
@@ -330,18 +330,18 @@ function StoreTab() {
           <Field label="Siguiente numero"><Input defaultValue="166" className="w-full" /></Field>
         </div>
         <div className="space-y-2 mt-3">
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Enviar confirmacion de pedido automaticamente
           </label>
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Permitir que el cliente cancele pedido (solo estado: Pendiente)
           </label>
           <div className="flex items-center gap-2 pl-6">
-            <span className="text-xs text-wood-600">Tiempo maximo para cancelar:</span>
+            <span className="text-xs text-[var(--admin-text-secondary)]">Tiempo maximo para cancelar:</span>
             <Input defaultValue="2" className="w-14 text-center" />
-            <span className="text-xs text-wood-500">horas despues de pagar</span>
+            <span className="text-xs text-[var(--admin-text-secondary)]">horas despues de pagar</span>
           </div>
         </div>
       </Card>
@@ -349,38 +349,38 @@ function StoreTab() {
       <Card className="p-5">
         <STitle>Grabado Laser (configuracion especifica DSD)</STitle>
         <div className="space-y-3">
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Activar servicio de grabado laser
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <Field label="Precio base">
-              <div className="flex items-center gap-1"><span className="text-xs text-wood-400">$</span><Input defaultValue="300" className="w-full" /><span className="text-xs text-wood-400">MXN</span></div>
+              <div className="flex items-center gap-1"><span className="text-xs text-[var(--admin-muted)]">$</span><Input defaultValue="300" className="w-full" /><span className="text-xs text-[var(--admin-muted)]">MXN</span></div>
             </Field>
             <Field label="Tamano maximo de archivo">
-              <div className="flex items-center gap-1"><Input defaultValue="10" className="w-full" /><span className="text-xs text-wood-400">MB</span></div>
+              <div className="flex items-center gap-1"><Input defaultValue="10" className="w-full" /><span className="text-xs text-[var(--admin-muted)]">MB</span></div>
             </Field>
             <Field label="Area maxima de grabado">
-              <div className="flex items-center gap-1"><Input defaultValue="20" className="w-12" /><span className="text-xs text-wood-400">x</span><Input defaultValue="15" className="w-12" /><span className="text-xs text-wood-400">cm</span></div>
+              <div className="flex items-center gap-1"><Input defaultValue="20" className="w-12" /><span className="text-xs text-[var(--admin-muted)]">x</span><Input defaultValue="15" className="w-12" /><span className="text-xs text-[var(--admin-muted)]">cm</span></div>
             </Field>
           </div>
           <Field label="Formatos aceptados">
             <div className="flex flex-wrap gap-1.5">
               {['.svg', '.png', '.jpg', '.pdf'].map((f) => (
-                <span key={f} className="text-[10px] bg-sand-50 text-wood-600 px-2 py-0.5 rounded-full border border-wood-100 flex items-center gap-1">
-                  {f} <X size={8} className="text-wood-400 cursor-pointer" />
+                <span key={f} className="text-[10px] bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)] px-2 py-0.5 rounded-full border border-[var(--admin-border)] flex items-center gap-1">
+                  {f} <X size={8} className="text-[var(--admin-muted)] cursor-pointer" />
                 </span>
               ))}
-              <button className="text-[10px] text-accent-gold hover:underline">+ Agregar</button>
+              <button className="text-[10px] text-[var(--admin-accent)] hover:underline">+ Agregar</button>
             </div>
           </Field>
           <div className="space-y-1.5">
-            <label className="flex items-center gap-2 text-xs text-wood-700">
-              <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+            <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+              <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
               Requerir aprobacion del archivo antes de produccion
             </label>
-            <label className="flex items-center gap-2 text-xs text-wood-700">
-              <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+            <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+              <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
               Mostrar preview del grabado al cliente
             </label>
           </div>
@@ -388,8 +388,8 @@ function StoreTab() {
             <div className="grid grid-cols-3 gap-3">
               {[{ l: 'Basico', v: '300' }, { l: 'Intermedio', v: '500' }, { l: 'Detallado', v: '800' }].map((n) => (
                 <div key={n.l}>
-                  <p className="text-[10px] text-wood-400 mb-1">{n.l}</p>
-                  <div className="flex items-center gap-1"><span className="text-xs text-wood-400">$</span><Input defaultValue={n.v} className="w-full" /></div>
+                  <p className="text-[10px] text-[var(--admin-muted)] mb-1">{n.l}</p>
+                  <div className="flex items-center gap-1"><span className="text-xs text-[var(--admin-muted)]">$</span><Input defaultValue={n.v} className="w-full" /></div>
                 </div>
               ))}
             </div>
@@ -400,31 +400,31 @@ function StoreTab() {
       <Card className="p-5">
         <STitle>Cotizaciones</STitle>
         <div className="space-y-3">
-          <label className="flex items-center gap-2 text-xs text-wood-700">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
             Activar modulo de cotizaciones
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <Field label="Prefijo"><Input defaultValue="COT-" className="w-full" /></Field>
             <Field label="Formato"><Input defaultValue="COT-AAAA-NNN" className="w-full" readOnly /></Field>
             <Field label="Validez por defecto">
-              <div className="flex items-center gap-1"><Input defaultValue="15" className="w-full" /><span className="text-xs text-wood-400">dias</span></div>
+              <div className="flex items-center gap-1"><Input defaultValue="15" className="w-full" /><span className="text-xs text-[var(--admin-muted)]">dias</span></div>
             </Field>
             <Field label="Anticipo requerido">
-              <div className="flex items-center gap-1"><Input defaultValue="50" className="w-full" /><span className="text-xs text-wood-400">%</span></div>
+              <div className="flex items-center gap-1"><Input defaultValue="50" className="w-full" /><span className="text-xs text-[var(--admin-muted)]">%</span></div>
             </Field>
             <Field label="Formula precio base">
-              <div className="flex items-center gap-1 text-xs text-wood-500">Vol x $<Input defaultValue="0.15" className="w-16" />MXN/cm3</div>
+              <div className="flex items-center gap-1 text-xs text-[var(--admin-text-secondary)]">Vol x $<Input defaultValue="0.15" className="w-16" />MXN/cm3</div>
             </Field>
             <Field label="Multiplicador Parota/Nogal">
-              <div className="flex items-center gap-1"><Input defaultValue="1.5" className="w-full" /><span className="text-xs text-wood-400">x</span></div>
+              <div className="flex items-center gap-1"><Input defaultValue="1.5" className="w-full" /><span className="text-xs text-[var(--admin-muted)]">x</span></div>
             </Field>
             <Field label="Recargo grabado">
-              <div className="flex items-center gap-1"><span className="text-xs text-wood-400">$</span><Input defaultValue="300" className="w-full" /><span className="text-xs text-wood-400">MXN</span></div>
+              <div className="flex items-center gap-1"><span className="text-xs text-[var(--admin-muted)]">$</span><Input defaultValue="300" className="w-full" /><span className="text-xs text-[var(--admin-muted)]">MXN</span></div>
             </Field>
             <Field label="Timeline por defecto"><Input defaultValue="4-6 semanas" className="w-full" /></Field>
             <Field label="Recargo cambios post-produccion">
-              <div className="flex items-center gap-1"><Input defaultValue="15" className="w-full" /><span className="text-xs text-wood-400">%</span></div>
+              <div className="flex items-center gap-1"><Input defaultValue="15" className="w-full" /><span className="text-xs text-[var(--admin-muted)]">%</span></div>
             </Field>
           </div>
         </div>
@@ -444,10 +444,10 @@ function PaymentsTab() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sand-50 flex items-center justify-center text-sm font-bold text-wood-600">{name[0]}</div>
+            <div className="w-10 h-10 rounded-xl bg-[var(--admin-surface2)] flex items-center justify-center text-sm font-bold text-[var(--admin-text-secondary)]">{name[0]}</div>
             <div>
-              <h4 className="text-xs font-medium text-wood-900">{name}</h4>
-              <p className="text-[10px] text-wood-400">{displayName}</p>
+              <h4 className="text-xs font-medium text-[var(--admin-text)]">{name}</h4>
+              <p className="text-[10px] text-[var(--admin-muted)]">{displayName}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -457,11 +457,11 @@ function PaymentsTab() {
         </div>
         <div className="space-y-3">
           <div>
-            <p className="text-[10px] text-wood-400 mb-1.5">Metodos habilitados:</p>
+            <p className="text-[10px] text-[var(--admin-muted)] mb-1.5">Metodos habilitados:</p>
             <div className="flex flex-wrap gap-1.5">
               {methods.map((m) => (
-                <label key={m} className="flex items-center gap-1.5 text-xs text-wood-600">
-                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" /> {m}
+                <label key={m} className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
+                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" /> {m}
                 </label>
               ))}
             </div>
@@ -470,12 +470,12 @@ function PaymentsTab() {
           <SecretField label="Secret Key" value="sk_test_••••••••••••••••••••" />
           <SecretField label="Webhook Secret" value="whsec_••••••••••••••••••••" />
           <Field label="Webhook URL"><Input defaultValue={webhookUrl} className="w-full font-mono" readOnly /></Field>
-          <p className="text-[10px] text-wood-400">Comision estimada: {commission}</p>
+          <p className="text-[10px] text-[var(--admin-muted)]">Comision estimada: {commission}</p>
           <div className="flex items-center gap-2">
-            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
+            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1">
               <RefreshCw size={10} /> Verificar conexion
             </button>
-            <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
+            <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1">
               <ExternalLink size={10} /> Dashboard
             </a>
           </div>
@@ -502,20 +502,20 @@ function PaymentsTab() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sand-50 flex items-center justify-center text-sm font-bold text-wood-600">T</div>
+            <div className="w-10 h-10 rounded-xl bg-[var(--admin-surface2)] flex items-center justify-center text-sm font-bold text-[var(--admin-text-secondary)]">T</div>
             <div>
-              <h4 className="text-xs font-medium text-wood-900">Transferencia Bancaria</h4>
-              <p className="text-[10px] text-wood-400">Solo para cotizaciones</p>
+              <h4 className="text-xs font-medium text-[var(--admin-text)]">Transferencia Bancaria</h4>
+              <p className="text-[10px] text-[var(--admin-muted)]">Solo para cotizaciones</p>
             </div>
           </div>
           <Badge text="Activo" variant="green" />
         </div>
         <div className="space-y-3">
           <div>
-            <p className="text-[10px] text-wood-400 mb-1">Disponible para:</p>
+            <p className="text-[10px] text-[var(--admin-muted)] mb-1">Disponible para:</p>
             <div className="flex gap-3">
-              <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="transfer" defaultChecked className="text-accent-gold" /> Cotizaciones</label>
-              <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="transfer" className="text-accent-gold" /> Todos los pedidos</label>
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="transfer" defaultChecked className="text-[var(--admin-accent)]" /> Cotizaciones</label>
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="transfer" className="text-[var(--admin-accent)]" /> Todos los pedidos</label>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -531,12 +531,12 @@ function PaymentsTab() {
         <STitle>Orden de metodos en checkout</STitle>
         <div className="space-y-1.5">
           {['1. Stripe (tarjeta)', '2. MercadoPago', '3. Transferencia (solo cotizaciones)'].map((m) => (
-            <div key={m} className="flex items-center gap-2 p-2.5 bg-sand-50 rounded-lg text-xs text-wood-700">
-              <GripVertical size={14} className="text-wood-300 cursor-grab" />
+            <div key={m} className="flex items-center gap-2 p-2.5 bg-[var(--admin-surface2)] rounded-lg text-xs text-[var(--admin-text)]">
+              <GripVertical size={14} className="text-[var(--admin-muted)] cursor-grab" />
               {m}
             </div>
           ))}
-          <p className="text-[10px] text-wood-400 mt-1">Arrastra para reordenar</p>
+          <p className="text-[10px] text-[var(--admin-muted)] mt-1">Arrastra para reordenar</p>
         </div>
       </Card>
 
@@ -553,65 +553,65 @@ function ShippingTab() {
         <STitle>Zonas de Envio</STitle>
         <div className="space-y-4">
           {/* Zone 1 */}
-          <div className="border border-wood-100 rounded-lg p-4 space-y-2">
+          <div className="border border-[var(--admin-border)] rounded-lg p-4 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-accent-gold" />
-                <span className="text-xs font-medium text-wood-900">Zona 1: Hermosillo Local</span>
+                <MapPin size={14} className="text-[var(--admin-accent)]" />
+                <span className="text-xs font-medium text-[var(--admin-text)]">Zona 1: Hermosillo Local</span>
               </div>
-              <button className="text-[10px] text-accent-gold hover:underline">Editar zona</button>
+              <button className="text-[10px] text-[var(--admin-accent)] hover:underline">Editar zona</button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px]">
-              <div className="bg-sand-50 rounded p-2"><span className="text-wood-400">Cobertura</span><br /><span className="text-wood-700">CP 83000-83999</span></div>
-              <div className="bg-sand-50 rounded p-2"><span className="text-wood-400">Carrier</span><br /><span className="text-wood-700">Uber Flash</span></div>
-              <div className="bg-sand-50 rounded p-2"><span className="text-wood-400">Tarifa fija</span><br /><span className="text-wood-700">$99 MXN</span></div>
-              <div className="bg-sand-50 rounded p-2"><span className="text-wood-400">Tiempo</span><br /><span className="text-wood-700">Mismo dia (2-4h)</span></div>
+              <div className="bg-[var(--admin-surface2)] rounded p-2"><span className="text-[var(--admin-muted)]">Cobertura</span><br /><span className="text-[var(--admin-text)]">CP 83000-83999</span></div>
+              <div className="bg-[var(--admin-surface2)] rounded p-2"><span className="text-[var(--admin-muted)]">Carrier</span><br /><span className="text-[var(--admin-text)]">Uber Flash</span></div>
+              <div className="bg-[var(--admin-surface2)] rounded p-2"><span className="text-[var(--admin-muted)]">Tarifa fija</span><br /><span className="text-[var(--admin-text)]">$99 MXN</span></div>
+              <div className="bg-[var(--admin-surface2)] rounded p-2"><span className="text-[var(--admin-muted)]">Tiempo</span><br /><span className="text-[var(--admin-text)]">Mismo dia (2-4h)</span></div>
             </div>
             <div className="flex items-center gap-2">
-              <label className="flex items-center gap-1.5 text-xs text-wood-600">
-                <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
+                <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
                 Envio gratis a partir de: $
               </label>
               <Input defaultValue="2,500" className="w-20 text-center" />
-              <span className="text-xs text-wood-500">MXN</span>
+              <span className="text-xs text-[var(--admin-text-secondary)]">MXN</span>
             </div>
           </div>
 
           {/* Zone 2 */}
-          <div className="border border-wood-100 rounded-lg p-4 space-y-3">
+          <div className="border border-[var(--admin-border)] rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-accent-gold" />
-                <span className="text-xs font-medium text-wood-900">Zona 2: Mexico Nacional</span>
+                <MapPin size={14} className="text-[var(--admin-accent)]" />
+                <span className="text-xs font-medium text-[var(--admin-text)]">Zona 2: Mexico Nacional</span>
               </div>
-              <button className="text-[10px] text-accent-gold hover:underline">Editar zona</button>
+              <button className="text-[10px] text-[var(--admin-accent)] hover:underline">Editar zona</button>
             </div>
-            <p className="text-[10px] text-wood-400">Cobertura: Todo Mexico excepto Hermosillo local</p>
+            <p className="text-[10px] text-[var(--admin-muted)]">Cobertura: Todo Mexico excepto Hermosillo local</p>
             <div className="space-y-2">
               {[
                 { name: 'Estafeta', range: '$270-$310 MXN', time: '3-5 dias habiles' },
                 { name: 'DHL Express', range: '$350-$400 MXN', time: '2-3 dias habiles' },
                 { name: 'FedEx', range: '$310-$350 MXN', time: '2-4 dias habiles' },
               ].map((c) => (
-                <div key={c.name} className="flex items-center gap-3 p-2.5 bg-sand-50 rounded-lg">
-                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
-                  <span className="text-xs font-medium text-wood-900 w-28">{c.name}</span>
-                  <span className="text-[10px] text-wood-500">Tarifa: {c.range}</span>
-                  <span className="text-[10px] text-wood-400 ml-auto">{c.time}</span>
+                <div key={c.name} className="flex items-center gap-3 p-2.5 bg-[var(--admin-surface2)] rounded-lg">
+                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
+                  <span className="text-xs font-medium text-[var(--admin-text)] w-28">{c.name}</span>
+                  <span className="text-[10px] text-[var(--admin-text-secondary)]">Tarifa: {c.range}</span>
+                  <span className="text-[10px] text-[var(--admin-muted)] ml-auto">{c.time}</span>
                 </div>
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <label className="flex items-center gap-1.5 text-xs text-wood-600">
-                <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
+                <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
                 Envio gratis a partir de: $
               </label>
               <Input defaultValue="2,500" className="w-20 text-center" />
-              <span className="text-xs text-wood-500">MXN</span>
+              <span className="text-xs text-[var(--admin-text-secondary)]">MXN</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-wood-600">Carrier por defecto cuando es gratis:</span>
-              <select className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+              <span className="text-xs text-[var(--admin-text-secondary)]">Carrier por defecto cuando es gratis:</span>
+              <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
                 <option>Estafeta (el mas economico)</option>
                 <option>DHL Express</option>
                 <option>FedEx</option>
@@ -619,7 +619,7 @@ function ShippingTab() {
             </div>
           </div>
         </div>
-        <button className="mt-3 text-xs text-accent-gold hover:underline flex items-center gap-1">
+        <button className="mt-3 text-xs text-[var(--admin-accent)] hover:underline flex items-center gap-1">
           <Plus size={12} /> Agregar zona de envio
         </button>
       </Card>
@@ -630,10 +630,10 @@ function ShippingTab() {
           <SecretField label="API Key" value="••••••••••••••••••••" />
           <div className="flex items-center gap-3">
             <div className="flex gap-3">
-              <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="envia-mode" defaultChecked className="text-accent-gold" /> Test</label>
-              <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="envia-mode" className="text-accent-gold" /> Produccion</label>
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="envia-mode" defaultChecked className="text-[var(--admin-accent)]" /> Test</label>
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="envia-mode" className="text-[var(--admin-accent)]" /> Produccion</label>
             </div>
-            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors flex items-center gap-1">
+            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1">
               <RefreshCw size={10} /> Verificar conexion
             </button>
           </div>
@@ -657,19 +657,19 @@ function ShippingTab() {
         <div className="flex flex-wrap items-center gap-3">
           {[{ l: 'Largo', v: '50' }, { l: 'Ancho', v: '35' }, { l: 'Alto', v: '10' }].map((d) => (
             <div key={d.l} className="flex items-center gap-1">
-              <span className="text-[10px] text-wood-400">{d.l}:</span>
+              <span className="text-[10px] text-[var(--admin-muted)]">{d.l}:</span>
               <Input defaultValue={d.v} className="w-14 text-center" />
-              <span className="text-[10px] text-wood-400">cm</span>
+              <span className="text-[10px] text-[var(--admin-muted)]">cm</span>
             </div>
           ))}
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-wood-400">Peso:</span>
+            <span className="text-[10px] text-[var(--admin-muted)]">Peso:</span>
             <Input defaultValue="3" className="w-14 text-center" />
-            <span className="text-[10px] text-wood-400">kg</span>
+            <span className="text-[10px] text-[var(--admin-muted)]">kg</span>
           </div>
         </div>
-        <label className="flex items-center gap-2 text-xs text-wood-700 mt-2">
-          <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" />
+        <label className="flex items-center gap-2 text-xs text-[var(--admin-text)] mt-2">
+          <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
           Ajustar automaticamente segun el producto
         </label>
       </Card>
@@ -687,23 +687,23 @@ function TaxesTab() {
         <STitle>IVA</STitle>
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-wood-600">Tasa de IVA:</span>
+            <span className="text-xs text-[var(--admin-text-secondary)]">Tasa de IVA:</span>
             <Input defaultValue="16" className="w-14 text-center" />
-            <span className="text-xs text-wood-500">%</span>
+            <span className="text-xs text-[var(--admin-text-secondary)]">%</span>
           </div>
           <div>
-            <p className="text-[10px] text-wood-400 mb-1">IVA incluido en precios:</p>
+            <p className="text-[10px] text-[var(--admin-muted)] mb-1">IVA incluido en precios:</p>
             <div className="flex gap-4">
-              <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="iva" defaultChecked className="text-accent-gold" /> Si (precios mostrados ya incluyen IVA)</label>
-              <label className="flex items-center gap-1.5 text-xs text-wood-600"><input type="radio" name="iva" className="text-accent-gold" /> No (IVA se suma al checkout)</label>
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="iva" defaultChecked className="text-[var(--admin-accent)]" /> Si (precios mostrados ya incluyen IVA)</label>
+              <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]"><input type="radio" name="iva" className="text-[var(--admin-accent)]" /> No (IVA se suma al checkout)</label>
             </div>
           </div>
           <div>
-            <p className="text-[10px] text-wood-400 mb-1">Aplicar IVA a:</p>
+            <p className="text-[10px] text-[var(--admin-muted)] mb-1">Aplicar IVA a:</p>
             <div className="flex gap-4">
               {['Productos', 'Envio', 'Grabado laser'].map((a) => (
-                <label key={a} className="flex items-center gap-1.5 text-xs text-wood-600">
-                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-accent-gold" /> {a}
+                <label key={a} className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
+                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" /> {a}
                 </label>
               ))}
             </div>
@@ -719,27 +719,27 @@ function TaxesTab() {
         </div>
         <div className="space-y-3 opacity-60">
           <Field label="Proveedor CFDI">
-            <select disabled className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-sand-50">
+            <select disabled className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface2)]">
               <option>- Sin configurar -</option>
               <option>Facturapi</option>
               <option>SWsapien</option>
               <option>Finkok</option>
             </select>
           </Field>
-          <p className="text-[10px] text-wood-400">Cuando este activo:</p>
+          <p className="text-[10px] text-[var(--admin-muted)]">Cuando este activo:</p>
           {[
             'Generar CFDI automaticamente en cada venta',
             'Permitir que el cliente solicite factura en checkout',
             'Solicitar RFC y datos fiscales del cliente',
           ].map((opt) => (
-            <label key={opt} className="flex items-center gap-2 text-xs text-wood-500">
+            <label key={opt} className="flex items-center gap-2 text-xs text-[var(--admin-text-secondary)]">
               <input type="checkbox" disabled className="rounded border-wood-300" /> {opt}
             </label>
           ))}
           <div className="grid grid-cols-2 gap-4">
             <Field label="Regimen fiscal emisor"><Input defaultValue="Persona Fisica con Actividad Empresarial" className="w-full" readOnly /></Field>
             <Field label="Uso CFDI por defecto">
-              <select disabled className="w-full border border-wood-200 rounded-lg px-3 py-2 text-xs bg-sand-50">
+              <select disabled className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface2)]">
                 <option>G03 - Gastos en general</option>
               </select>
             </Field>
@@ -749,11 +749,11 @@ function TaxesTab() {
 
       <Card className="p-5">
         <STitle>Region Fronteriza</STitle>
-        <label className="flex items-center gap-2 text-xs text-wood-700">
-          <input type="checkbox" className="rounded border-wood-300 text-accent-gold" />
+        <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
+          <input type="checkbox" className="rounded border-wood-300 text-[var(--admin-accent)]" />
           Aplicar tasa reducida IVA fronterizo (8%) para envios a zona fronteriza
         </label>
-        <p className="text-[10px] text-wood-400 mt-2">Solo aplica si el negocio y el cliente estan en zona fronteriza</p>
+        <p className="text-[10px] text-[var(--admin-muted)] mt-2">Solo aplica si el negocio y el cliente estan en zona fronteriza</p>
       </Card>
 
       <SaveBtn />
@@ -804,13 +804,13 @@ function IntegrationsTab() {
         <STitle>Activas</STitle>
         <div className="space-y-3">
           {active.map((s) => (
-            <div key={s.name} className="border border-wood-100 rounded-lg p-4">
+            <div key={s.name} className="border border-[var(--admin-border)] rounded-lg p-4">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-sand-50 flex items-center justify-center text-xs font-bold text-wood-600">{s.name[0]}</div>
+                  <div className="w-9 h-9 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center text-xs font-bold text-[var(--admin-text-secondary)]">{s.name[0]}</div>
                   <div>
-                    <h4 className="text-xs font-medium text-wood-900">{s.name}</h4>
-                    <p className="text-[10px] text-wood-400">{s.desc}</p>
+                    <h4 className="text-xs font-medium text-[var(--admin-text)]">{s.name}</h4>
+                    <p className="text-[10px] text-[var(--admin-muted)]">{s.desc}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -818,11 +818,11 @@ function IntegrationsTab() {
                   {s.mode && <Badge text={'Modo: ' + s.mode} variant={s.mode === 'Test' || s.mode === 'Sandbox' ? 'amber' : 'green'} />}
                 </div>
               </div>
-              <p className="text-[10px] text-wood-500 ml-12">{s.detail}</p>
+              <p className="text-[10px] text-[var(--admin-text-secondary)] ml-12">{s.detail}</p>
               <div className="flex items-center gap-2 ml-12 mt-2">
-                <button className="text-[10px] text-wood-500 border border-wood-200 rounded px-2 py-0.5 hover:bg-wood-50 transition-colors">Configurar</button>
-                {s.mode && <button className="text-[10px] text-wood-500 border border-wood-200 rounded px-2 py-0.5 hover:bg-wood-50 transition-colors flex items-center gap-0.5"><RefreshCw size={8} /> Re-sync</button>}
-                <button className="text-[10px] text-wood-500 border border-wood-200 rounded px-2 py-0.5 hover:bg-wood-50 transition-colors flex items-center gap-0.5"><ExternalLink size={8} /> Dashboard</button>
+                <button className="text-[10px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded px-2 py-0.5 hover:bg-[var(--admin-surface2)] transition-colors">Configurar</button>
+                {s.mode && <button className="text-[10px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded px-2 py-0.5 hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-0.5"><RefreshCw size={8} /> Re-sync</button>}
+                <button className="text-[10px] text-[var(--admin-text-secondary)] border border-[var(--admin-border)] rounded px-2 py-0.5 hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-0.5"><ExternalLink size={8} /> Dashboard</button>
               </div>
             </div>
           ))}
@@ -833,15 +833,15 @@ function IntegrationsTab() {
         <STitle>Disponibles (por activar)</STitle>
         <div className="space-y-3">
           {available.map((s) => (
-            <div key={s.name} className="flex items-center justify-between border border-dashed border-wood-200 rounded-lg p-4 hover:border-wood-300 transition-colors">
+            <div key={s.name} className="flex items-center justify-between border border-dashed border-[var(--admin-border)] rounded-lg p-4 hover:border-wood-300 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-sand-50 flex items-center justify-center text-xs font-bold text-wood-400">{s.name[0]}</div>
+                <div className="w-9 h-9 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center text-xs font-bold text-[var(--admin-muted)]">{s.name[0]}</div>
                 <div>
-                  <h4 className="text-xs font-medium text-wood-700">{s.name}</h4>
-                  <p className="text-[10px] text-wood-400">{s.desc}</p>
+                  <h4 className="text-xs font-medium text-[var(--admin-text)]">{s.name}</h4>
+                  <p className="text-[10px] text-[var(--admin-muted)]">{s.desc}</p>
                 </div>
               </div>
-              <button onClick={() => toast.success('Configurando ' + s.name + '...')} className="px-3 py-1.5 text-xs text-accent-gold border border-accent-gold/30 rounded-lg hover:bg-accent-gold/5 transition-colors flex items-center gap-1">
+              <button onClick={() => toast.success('Configurando ' + s.name + '...')} className="px-3 py-1.5 text-xs text-[var(--admin-accent)] border border-[var(--admin-accent)]/30 rounded-lg hover:bg-[var(--admin-accent)]/5 transition-colors flex items-center gap-1">
                 Conectar <ChevronRight size={10} />
               </button>
             </div>
@@ -891,7 +891,7 @@ function DeveloperTab() {
           <Field label="Backend URL"><Input defaultValue="https://urchin-app-xxxxx.ondigitalocean.app" className="w-full font-mono" readOnly /></Field>
           <SecretField label="Admin API Key" value="sk_••••••••••••••••••••" />
           <SecretField label="Publishable API Key" value="pk_••••••••••••••••••••" />
-          <button className="text-xs text-accent-gold hover:underline flex items-center gap-1">
+          <button className="text-xs text-[var(--admin-accent)] hover:underline flex items-center gap-1">
             <Plus size={12} /> Generar nueva API Key
           </button>
         </div>
@@ -902,7 +902,7 @@ function DeveloperTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-50">
+              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
                 <th className="px-3 py-2">Webhook</th>
                 <th className="px-3 py-2">URL</th>
                 <th className="px-3 py-2">Eventos</th>
@@ -912,16 +912,16 @@ function DeveloperTab() {
             <tbody className="divide-y divide-wood-50">
               {webhooks.map((w) => (
                 <tr key={w.name}>
-                  <td className="px-3 py-2 text-xs font-medium text-wood-900">{w.name}</td>
-                  <td className="px-3 py-2 text-xs text-wood-500 font-mono">{w.url}</td>
-                  <td className="px-3 py-2 text-xs text-wood-500 font-mono">{w.events}</td>
+                  <td className="px-3 py-2 text-xs font-medium text-[var(--admin-text)]">{w.name}</td>
+                  <td className="px-3 py-2 text-xs text-[var(--admin-text-secondary)] font-mono">{w.url}</td>
+                  <td className="px-3 py-2 text-xs text-[var(--admin-text-secondary)] font-mono">{w.events}</td>
                   <td className="px-3 py-2"><Badge text="Activo" variant="green" /></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <button className="mt-2 text-xs text-accent-gold hover:underline flex items-center gap-1">
+        <button className="mt-2 text-xs text-[var(--admin-accent)] hover:underline flex items-center gap-1">
           <Plus size={12} /> Agregar webhook personalizado
         </button>
       </Card>
@@ -933,36 +933,36 @@ function DeveloperTab() {
             { platform: 'Vercel (frontend)', vars: 12, updated: '26 Feb 2026' },
             { platform: 'DigitalOcean', vars: 18, updated: '27 Feb 2026' },
           ].map((e) => (
-            <div key={e.platform} className="flex items-center justify-between p-2.5 bg-sand-50 rounded-lg text-xs">
-              <span className="text-wood-900 font-medium">{e.platform}</span>
-              <span className="text-wood-500">{e.vars} variables configuradas</span>
-              <span className="text-wood-400">Ultima actualizacion: {e.updated}</span>
+            <div key={e.platform} className="flex items-center justify-between p-2.5 bg-[var(--admin-surface2)] rounded-lg text-xs">
+              <span className="text-[var(--admin-text)] font-medium">{e.platform}</span>
+              <span className="text-[var(--admin-text-secondary)]">{e.vars} variables configuradas</span>
+              <span className="text-[var(--admin-muted)]">Ultima actualizacion: {e.updated}</span>
             </div>
           ))}
         </div>
-        <button className="mt-2 text-[10px] text-accent-gold hover:underline">Ver lista completa (referencia, no editable desde aqui)</button>
+        <button className="mt-2 text-[10px] text-[var(--admin-accent)] hover:underline">Ver lista completa (referencia, no editable desde aqui)</button>
       </Card>
 
       <Card className="p-5">
         <STitle>Logs del Sistema</STitle>
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <select className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+          <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
             <option>Nivel: Todos</option><option>INFO</option><option>WARN</option><option>ERROR</option>
           </select>
-          <select className="border border-wood-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+          <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
             <option>Servicio: Todos</option><option>Medusa</option><option>Stripe</option><option>Envia</option>
           </select>
-          <button className="px-3 py-1.5 text-xs border border-wood-200 rounded-lg hover:bg-wood-50 transition-colors ml-auto">Exportar logs</button>
+          <button className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors ml-auto">Exportar logs</button>
         </div>
-        <div className="border border-wood-100 rounded-lg overflow-hidden">
+        <div className="border border-[var(--admin-border)] rounded-lg overflow-hidden">
           {logs.map((l, i) => {
             const cfg = levelCfg[l.level];
             return (
-              <div key={i} className={'flex items-center gap-3 px-3 py-2 text-xs font-mono ' + (i < logs.length - 1 ? 'border-b border-wood-50' : '')}>
+              <div key={i} className={'flex items-center gap-3 px-3 py-2 text-xs font-mono ' + (i < logs.length - 1 ? 'border-b border-[var(--admin-border)]' : '')}>
                 <span className={'font-bold text-[10px] w-12 ' + cfg.cls}>{cfg.label}</span>
-                <span className="text-wood-400 w-12">{l.time}</span>
-                <span className="text-wood-500 w-16">{l.service}</span>
-                <span className="text-wood-700 flex-1">{l.message}</span>
+                <span className="text-[var(--admin-muted)] w-12">{l.time}</span>
+                <span className="text-[var(--admin-text-secondary)] w-16">{l.service}</span>
+                <span className="text-[var(--admin-text)] flex-1">{l.message}</span>
               </div>
             );
           })}
@@ -973,16 +973,16 @@ function DeveloperTab() {
         <STitle>Salud del Sistema</STitle>
         <div className="space-y-2">
           {health.map((h) => (
-            <div key={h.name} className="flex items-center gap-3 p-2.5 bg-sand-50 rounded-lg text-xs">
+            <div key={h.name} className="flex items-center gap-3 p-2.5 bg-[var(--admin-surface2)] rounded-lg text-xs">
               <Check size={12} className="text-green-500 shrink-0" />
-              <span className="text-wood-900 font-medium w-44">{h.name}</span>
+              <span className="text-[var(--admin-text)] font-medium w-44">{h.name}</span>
               <Badge text={h.status} variant="green" />
-              <span className="text-wood-500 ml-auto">Uptime 30d: {h.uptime}</span>
-              {h.resp && <span className="text-wood-400">Avg resp: {h.resp}</span>}
+              <span className="text-[var(--admin-text-secondary)] ml-auto">Uptime 30d: {h.uptime}</span>
+              {h.resp && <span className="text-[var(--admin-muted)]">Avg resp: {h.resp}</span>}
             </div>
           ))}
         </div>
-        <p className="text-[10px] text-wood-400 mt-3">Ultima alerta: 09:45 - Connection pool exhausted (resuelto automaticamente)</p>
+        <p className="text-[10px] text-[var(--admin-muted)] mt-3">Ultima alerta: 09:45 - Connection pool exhausted (resuelto automaticamente)</p>
       </Card>
 
       <SaveBtn />
@@ -1009,17 +1009,17 @@ export const SettingsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-wood-900 flex items-center gap-2">
-          <Settings size={20} className="text-accent-gold" /> Configuracion
+        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
+          <Settings size={20} className="text-[var(--admin-accent)]" /> Configuracion
         </h3>
-        <button onClick={() => toast.success('Todo guardado')} className="px-3 py-1.5 text-xs bg-accent-gold text-white rounded-lg hover:bg-accent-gold/90 transition-colors flex items-center gap-1.5">
+        <button onClick={() => toast.success('Todo guardado')} className="px-3 py-1.5 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5">
           <Save size={12} /> Guardar todo
         </button>
       </div>
 
       {/* Tabs */}
       <div className="overflow-x-auto -mx-1 px-1">
-        <div className="flex gap-1 min-w-max border-b border-wood-100">
+        <div className="flex gap-1 min-w-max border-b border-[var(--admin-border)]">
           {tabItems.map((t) => (
             <button
               key={t.id}
@@ -1027,8 +1027,8 @@ export const SettingsPage: React.FC = () => {
               className={
                 'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 whitespace-nowrap ' +
                 (activeTab === t.id
-                  ? 'border-accent-gold text-accent-gold font-medium'
-                  : 'border-transparent text-wood-500 hover:text-wood-700')
+                  ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium'
+                  : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')
               }
             >
               <t.icon size={14} />{t.label}
