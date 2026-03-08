@@ -1,35 +1,82 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { AdminTheme, getThemeById, ADMIN_THEMES } from "@/src/themes/admin-themes";
+import type { AdminUITheme } from "@/src/admin/types";
+import { getTheme, allThemes } from "@/src/admin/themes/themeRegistry";
+import { adminNavigation } from "@/src/admin/navigation";
+import type { NavGroup } from "@/src/admin/navigation";
 
 interface AdminThemeContextType {
-  theme: AdminTheme;
+  theme: AdminUITheme;
   themeId: string;
   setTheme: (id: string) => void;
-  themes: AdminTheme[];
+  themes: AdminUITheme[];
   loading: boolean;
   setupCompleted: boolean;
   setSetupCompleted: (v: boolean) => void;
+  navigation: NavGroup[];
 }
 
 const AdminThemeContext = createContext<AdminThemeContextType>({
-  theme: ADMIN_THEMES[0],
+  theme: getTheme("dsd-classic"),
   themeId: "dsd-classic",
   setTheme: () => {},
-  themes: ADMIN_THEMES,
+  themes: allThemes,
   loading: true,
   setupCompleted: false,
   setSetupCompleted: () => {},
+  navigation: adminNavigation,
 });
 
 export const useAdminTheme = () => useContext(AdminThemeContext);
+
+// Apply design tokens as CSS variables
+function applyTokens(theme: AdminUITheme) {
+  const root = document.documentElement;
+  const t = theme.tokens;
+
+  root.style.setProperty("--admin-bg", t.bg);
+  root.style.setProperty("--admin-surface", t.surface);
+  root.style.setProperty("--admin-surface2", t.surface2);
+  root.style.setProperty("--admin-text", t.text);
+  root.style.setProperty("--admin-text-secondary", t.textSecondary);
+  root.style.setProperty("--admin-muted", t.muted);
+  root.style.setProperty("--admin-border", t.border);
+  root.style.setProperty("--admin-accent", t.accent);
+  root.style.setProperty("--admin-accent-hover", t.accentHover);
+  root.style.setProperty("--admin-accent-text", t.accentText);
+  root.style.setProperty("--admin-sidebar-bg", t.sidebarBg);
+  root.style.setProperty("--admin-sidebar-text", t.sidebarText);
+  root.style.setProperty("--admin-sidebar-active", t.sidebarActive);
+  root.style.setProperty("--admin-sidebar-accent", t.sidebarAccent);
+  root.style.setProperty("--admin-sidebar-border", t.sidebarBorder);
+  root.style.setProperty("--admin-sidebar-width", t.sidebarWidth);
+  root.style.setProperty("--admin-success", t.success);
+  root.style.setProperty("--admin-error", t.error);
+  root.style.setProperty("--admin-warning", t.warning);
+  root.style.setProperty("--admin-info", t.info);
+  root.style.setProperty("--admin-card-radius", t.cardRadius);
+  root.style.setProperty("--admin-button-radius", t.buttonRadius);
+  root.style.setProperty("--admin-input-radius", t.inputRadius);
+  root.style.setProperty("--admin-shadow", t.shadow);
+  root.style.setProperty("--admin-shadow-lg", t.shadowLg);
+  root.style.setProperty("--admin-font-heading", theme.fonts.heading);
+  root.style.setProperty("--admin-font-body", theme.fonts.body);
+  root.style.setProperty("--admin-font-mono", theme.fonts.mono);
+
+  // Apply mode and theme to admin-root
+  const adminRoot = document.getElementById("admin-root");
+  if (adminRoot) {
+    adminRoot.setAttribute("data-admin-theme", theme.id);
+    adminRoot.setAttribute("data-admin-mode", theme.mode);
+  }
+}
 
 export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [themeId, setThemeId] = useState("dsd-classic");
   const [loading, setLoading] = useState(true);
   const [setupCompleted, setSetupCompletedState] = useState(false);
-  const theme = getThemeById(themeId);
+  const theme = getTheme(themeId);
 
   // Load from API on mount
   useEffect(() => {
@@ -47,26 +94,11 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
 
   // Apply CSS variables whenever theme changes
   useEffect(() => {
-    const root = document.documentElement;
-    // Apply all tokens
-    for (const [key, value] of Object.entries(theme.tokens)) {
-      root.style.setProperty(key, value as string);
-    }
-    // Apply fonts
-    root.style.setProperty("--admin-font-heading", theme.fonts.heading);
-    root.style.setProperty("--admin-font-body", theme.fonts.body);
-    root.style.setProperty("--admin-font-mono", theme.fonts.mono);
-    // Apply mode class
-    const adminRoot = document.getElementById("admin-root");
-    if (adminRoot) {
-      adminRoot.setAttribute("data-admin-theme", theme.id);
-      adminRoot.setAttribute("data-admin-mode", theme.mode);
-    }
+    applyTokens(theme);
   }, [theme]);
 
   const setTheme = async (id: string) => {
     setThemeId(id);
-    // Persist to API
     try {
       await fetch("/api/admin/panel-config", {
         method: "PUT",
@@ -88,7 +120,18 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   return (
-    <AdminThemeContext.Provider value={{ theme, themeId, setTheme, themes: ADMIN_THEMES, loading, setupCompleted, setSetupCompleted }}>
+    <AdminThemeContext.Provider
+      value={{
+        theme,
+        themeId,
+        setTheme,
+        themes: allThemes,
+        loading,
+        setupCompleted,
+        setSetupCompleted,
+        navigation: adminNavigation,
+      }}
+    >
       {children}
     </AdminThemeContext.Provider>
   );

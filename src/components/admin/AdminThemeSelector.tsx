@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { Check, Monitor, Moon, Sun, Palette } from "lucide-react";
 import { useAdminTheme } from "@/contexts/AdminThemeContext";
+import type { AdminUITheme } from "@/src/admin/types";
 import { toast } from "sonner";
 
 export const AdminThemeSelector: React.FC = () => {

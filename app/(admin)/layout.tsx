@@ -13,7 +13,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
-import { AdminThemeProvider } from "@/contexts/AdminThemeContext";
+import { AdminThemeProvider, useAdminTheme } from "@/contexts/AdminThemeContext";
+import { adminNavigation } from "@/src/admin/navigation";
 import "@/src/styles/admin-theme.css";
 
 // Admin email whitelist — extend as needed
@@ -25,6 +26,9 @@ const ADMIN_EMAILS = [
 
 function AdminShell({ children }: { children: React.ReactNode }) {
   const { currentPage, navigate, period, setPeriod } = useAdmin();
+  const { theme, navigation } = useAdminTheme();
+  const ThemeSidebar = theme.Sidebar;
+  const ThemeHeader = theme.Header;
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -43,13 +47,14 @@ function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--admin-bg, #F5F3F0)' }}>
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar — injected from theme */}
       <div className="hidden lg:block">
-        <AdminSidebar
+        <ThemeSidebar
           currentPage={currentPage}
           onNavigate={handleNavigate}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          navigation={navigation}
         />
       </div>
 
@@ -71,11 +76,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="fixed left-0 top-0 h-full z-50 lg:hidden"
             >
-              <AdminSidebar
+              <ThemeSidebar
                 currentPage={currentPage}
                 onNavigate={handleNavigate}
                 collapsed={false}
                 onToggleCollapse={() => setMobileMenuOpen(false)}
+                navigation={navigation}
               />
               <button
                 onClick={() => setMobileMenuOpen(false)}
@@ -96,7 +102,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           marginLeft: isDesktop ? (sidebarCollapsed ? 68 : 256) : 0,
         }}
       >
-        <AdminHeader
+        <ThemeHeader
           period={period}
           onPeriodChange={setPeriod}
           onNavigate={handleNavigate}
