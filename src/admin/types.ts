@@ -64,6 +64,15 @@ export interface AdminAnimationTokens {
   modalEnter: string;
 }
 
+// Theme UI components that can be overridden
+export interface AdminThemeComponents {
+  Card?: React.ComponentType<{ className?: string; children: React.ReactNode; style?: React.CSSProperties }>;
+  Badge?: React.ComponentType<{ text: string; variant?: string; className?: string }>;
+  Button?: React.ComponentType<{ children: React.ReactNode; variant?: string; size?: string; onClick?: () => void; disabled?: boolean; className?: string }>;
+  Table?: React.ComponentType<{ children: React.ReactNode; className?: string }>;
+  StatCard?: React.ComponentType<{ label: string; value: string | number; change?: string; changeType?: string; icon?: React.ReactNode }>;
+}
+
 // A complete admin UI theme
 export interface AdminUITheme {
   id: string;
@@ -76,6 +85,9 @@ export interface AdminUITheme {
   Sidebar: React.ComponentType<AdminSidebarProps>;
   Header: React.ComponentType<AdminHeaderProps>;
   Layout?: React.ComponentType<AdminLayoutProps>;
+
+  // UI component overrides (optional — defaults to default theme components)
+  components?: AdminThemeComponents;
 
   // Design tokens
   tokens: AdminDesignTokens;

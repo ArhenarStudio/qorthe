@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import type { AdminUITheme } from "@/src/admin/types";
+import type { AdminUITheme, AdminThemeComponents } from "@/src/admin/types";
+import { DefaultCard, DefaultBadge, DefaultButton, DefaultTable, DefaultStatCard } from "@/src/admin/themes/default/components";
 import { getTheme, allThemes } from "@/src/admin/themes/themeRegistry";
 import { adminNavigation } from "@/src/admin/navigation";
 import type { NavGroup } from "@/src/admin/navigation";
@@ -15,7 +16,13 @@ interface AdminThemeContextType {
   setupCompleted: boolean;
   setSetupCompleted: (v: boolean) => void;
   navigation: NavGroup[];
+  components: Required<AdminThemeComponents>;
 }
+
+const defaultComponents: Required<AdminThemeComponents> = {
+  Card: DefaultCard, Badge: DefaultBadge, Button: DefaultButton,
+  Table: DefaultTable, StatCard: DefaultStatCard,
+};
 
 const AdminThemeContext = createContext<AdminThemeContextType>({
   theme: getTheme("dsd-classic"),
@@ -26,6 +33,7 @@ const AdminThemeContext = createContext<AdminThemeContextType>({
   setupCompleted: false,
   setSetupCompleted: () => {},
   navigation: adminNavigation,
+  components: defaultComponents,
 });
 
 export const useAdminTheme = () => useContext(AdminThemeContext);
@@ -77,6 +85,12 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [setupCompleted, setSetupCompletedState] = useState(false);
   const theme = getTheme(themeId);
+
+  // Resolve components — theme overrides merge with defaults
+  const resolvedComponents: Required<AdminThemeComponents> = {
+    ...defaultComponents,
+    ...(theme.components || {}),
+  };
 
   // Load from API on mount
   useEffect(() => {
@@ -130,6 +144,7 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
         setupCompleted,
         setSetupCompleted,
         navigation: adminNavigation,
+        components: resolvedComponents,
       }}
     >
       {children}
