@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Building2, FileText, PieChart, TrendingUp, Download, 
@@ -49,6 +49,17 @@ const BILLING_PROFILES = [
 export const BusinessDashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'billing'>('overview');
   const [expandedProfile, setExpandedProfile] = useState<string | null>(null);
+  const [b2bProfile, setB2bProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('dsd_user_id') || 'anonymous';
+    fetch(`/api/account/b2b?user_id=${userId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.profile) setB2bProfile(d.profile); })
+      .catch(() => {})
+      .finally(() => setProfileLoading(false));
+  }, []);
 
   const handleDownloadInvoice = (id: string, type: 'PDF' | 'XML') => {
     toast.loading(`Generando ${type} para factura ${id}...`);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { FileText, Download, UserCog, Plus, Search, Filter, MoreVertical, CreditCard, AlertCircle, CheckCircle2, XCircle, FileBarChart, Building2, Receipt, X } from 'lucide-react';
 import { FiscalProfileForm } from './FiscalProfileForm';
@@ -11,6 +11,15 @@ export const BillingDashboard = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'profile' | 'reports'>('dashboard');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string | 'all'>('all');
+  const [liveInvoices, setLiveInvoices] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('dsd_user_id') || 'anonymous';
+    fetch(`/api/account/invoices?user_id=${userId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.invoices?.length > 0) setLiveInvoices(d.invoices); })
+      .catch(() => {});
+  }, []);
 
   // Mock Summary Data
   const summary = {
@@ -29,9 +38,18 @@ export const BillingDashboard = () => {
     { id: 'INV-2023-150', order: 'ORD-8612', date: '2023-12-05', rfc: 'XAXX010101000', company: 'Alejandro García', total: 5600.00, status: 'issued' },
   ];
 
+  // Use live data if available, otherwise mock
+  const activeInvoices = liveInvoices || invoices;
+  const activeSummary = liveInvoices ? {
+    totalInvoices: liveInvoices.length,
+    amountYear: liveInvoices.filter(i => i.status === 'issued').reduce((a: number, i: any) => a + (i.total || 0), 0),
+    pending: liveInvoices.filter(i => i.status === 'pending').length,
+    creditNotes: liveInvoices.filter(i => i.status === 'cancelled').length,
+  } : summary;
+
   const filteredInvoices = filterStatus === 'all' 
-    ? invoices 
-    : invoices.filter(inv => {
+    ? activeInvoices 
+    : activeInvoices.filter(inv => {
         if (filterStatus === 'credit_note') return inv.status === 'cancelled';
         return inv.status === filterStatus;
       });

@@ -116,14 +116,16 @@ export const SavedDesigns = () => {
   // Mock B2B Status (This would come from user context)
   const isB2BUser = true;
 
-  // Load Data Simulation
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDesigns(MOCK_DESIGNS);
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  // Load from API
+  const fetchDesigns = () => {
+    const userId = localStorage.getItem('dsd_user_id') || 'anonymous';
+    fetch(`/api/account/designs?user_id=${userId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.designs) setDesigns(d.designs.map((dd: any) => ({ ...dd, thumbnail: dd.thumbnail_url || dd.file_url || '', dimensions: { width: dd.width_mm || 0, height: dd.height_mm || 0, unit: 'mm' as const }, format: dd.file_format as any, engravingType: dd.engraving_type as any, createdAt: dd.created_at }))); else setDesigns(MOCK_DESIGNS); })
+      .catch(() => setDesigns(MOCK_DESIGNS))
+      .finally(() => setIsLoading(false));
+  };
+  useEffect(() => { fetchDesigns(); }, []);
 
   // Filter Logic
   const filteredDesigns = designs.filter(d => {
