@@ -9,14 +9,14 @@ import {
   BarChart3, FileEdit, Bell, Settings,
   ExternalLink, LogOut, Zap, Plug, Palette,
   RotateCcw, Headphones, ArrowUpDown, Target, Search, ChevronDown, X,
-  PanelLeftClose, PanelLeft, MessageSquare
+  PanelLeftClose, PanelLeft, MessageSquare, Monitor
 } from 'lucide-react';
 
 export type AdminPage =
   | 'dashboard' | 'orders' | 'shipping' | 'products' | 'categories' | 'inventory'
   | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
-  | 'integrations' | 'theme' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
+  | 'integrations' | 'theme' | 'appearance' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
   | 'pos' | 'users';
 
 interface NavItem {
@@ -92,6 +92,7 @@ const navGroups: NavGroup[] = [
     items: [
       { id: 'cms', label: 'CMS', icon: FileEdit },
       { id: 'theme', label: 'Editor de Tema', icon: Palette },
+      { id: 'appearance', label: 'Apariencia del Panel', icon: Monitor },
     ],
   },
   {

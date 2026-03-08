@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
+import { AdminThemeProvider } from "@/contexts/AdminThemeContext";
 
 // Admin email whitelist — extend as needed
 const ADMIN_EMAILS = [
@@ -189,8 +190,12 @@ export default function AdminLayout({
   }
 
   return (
+    <AdminThemeProvider>
     <AdminProvider>
-      <AdminShell>{children}</AdminShell>
+      <div id="admin-root">
+        <AdminShell>{children}</AdminShell>
+      </div>
     </AdminProvider>
+    </AdminThemeProvider>
   );
 }

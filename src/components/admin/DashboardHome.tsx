@@ -15,6 +15,23 @@ import {
 import { useAdminData } from '@/hooks/useAdminData';
 import type { Period } from './AdminHeader';
 import type { AdminPage } from './AdminSidebar';
+import { SetupWizard } from './SetupWizard';
+import { useAdminTheme } from '@/contexts/AdminThemeContext';
+
+// Setup Wizard wrapper — shows only if setup not completed
+const SetupWizardWrapper: React.FC = () => {
+  const { setupCompleted, setSetupCompleted } = useAdminTheme();
+  const [dismissed, setDismissed] = React.useState(false);
+
+  if (setupCompleted || dismissed) return null;
+
+  return (
+    <SetupWizard
+      onComplete={() => setSetupCompleted(true)}
+      onDismiss={() => setDismissed(true)}
+    />
+  );
+};
 
 const iconMap: Record<string, React.ElementType> = {
   'shopping-bag': ShoppingCart,
@@ -116,6 +133,9 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
 
   return (
     <div className="space-y-6">
+      {/* Setup Wizard — shows if not completed */}
+      <SetupWizardWrapper />
+
       {/* Live data indicator */}
       <div className={`flex items-center gap-1.5 text-[10px] ${isLive ? 'text-green-600' : 'text-wood-400'}`}>
         {isLive ? <Wifi size={10} /> : <WifiOff size={10} />}
