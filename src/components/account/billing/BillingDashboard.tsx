@@ -39,7 +39,7 @@ export const BillingDashboard = () => {
   ];
 
   // Use live data if available, otherwise mock
-  const activeInvoices = liveInvoices || invoices;
+  const activeInvoices = liveInvoices || [];
   const activeSummary = liveInvoices ? {
     totalInvoices: liveInvoices.length,
     amountYear: liveInvoices.filter(i => i.status === 'issued').reduce((a: number, i: any) => a + (i.total || 0), 0),

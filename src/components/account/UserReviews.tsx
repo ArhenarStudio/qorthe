@@ -71,7 +71,7 @@ export const UserReviews = () => {
   }, [user, session, fetchReviews]);
 
   const handleDelete = async (reviewId: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta opinión?')) return;
+    // Direct delete
     if (!session) return;
 
     // Optimistic update

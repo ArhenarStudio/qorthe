@@ -46,12 +46,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
 
   const handleRemoveItem = async (lineId: string) => {
     await removeItem(lineId);
-    toast.info("Producto eliminado del carrito");
+    toast.success("Producto eliminado del carrito");
   };
 
   const handleRemovePromo = async (code: string) => {
     await removePromo(code);
-    toast.info("Cupón removido");
+    toast.success("Cupón removido");
   };
 
   return (

@@ -38,14 +38,6 @@ const statusConfig: Record<GoalStatus, { label: string; color: string; bg: strin
   failed: { label: 'No cumplida', color: 'text-red-600', bg: 'bg-red-100', icon: XCircle },
 };
 
-const mockGoals: Goal[] = [
-  { id: 'G-001', title: 'Ingresos mensuales', type: 'revenue', icon: DollarSign, target: 150000, current: 98500, unit: '', prefix: '$', period: 'monthly', periodLabel: 'Marzo 2026', deadline: '31 Mar', status: 'on_track', assignee: null, trend: 12 },
-  { id: 'G-002', title: 'Pedidos del mes', type: 'orders', icon: ShoppingBag, target: 50, current: 32, unit: ' pedidos', prefix: '', period: 'monthly', periodLabel: 'Marzo 2026', deadline: '31 Mar', status: 'on_track', assignee: null, trend: 8 },
-  { id: 'G-003', title: 'Clientes nuevos', type: 'new_customers', icon: Users, target: 30, current: 14, unit: ' clientes', prefix: '', period: 'monthly', periodLabel: 'Marzo 2026', deadline: '31 Mar', status: 'at_risk', assignee: null, trend: -5 },
-  { id: 'G-004', title: 'Rating promedio', type: 'rating', icon: Star, target: 4.8, current: 4.6, unit: '/5', prefix: '', period: 'quarterly', periodLabel: 'Q1 2026', deadline: '31 Mar', status: 'at_risk', assignee: null, trend: 0.1 },
-  { id: 'G-005', title: 'Cotizaciones cerradas', type: 'quotes_closed', icon: Target, target: 15, current: 5, unit: ' cotizaciones', prefix: '', period: 'monthly', periodLabel: 'Marzo 2026', deadline: '31 Mar', status: 'behind', assignee: 'Carlos (Ventas)', trend: -20 },
-  { id: 'G-006', title: 'Tasa de recompra', type: 'repeat_rate', icon: TrendingUp, target: 25, current: 22, unit: '%', prefix: '', period: 'quarterly', periodLabel: 'Q1 2026', deadline: '31 Mar', status: 'on_track', assignee: null, trend: 3 },
-];
 
 const historicalGoals = [
   { period: 'Febrero 2026', goals: [
@@ -320,7 +312,7 @@ export const GoalsOkrsPage: React.FC = () => {
     };
   });
 
-  const goals = apiGoals.length > 0 ? apiGoals : mockGoals;
+  const goals = apiGoals;
 
   // Summary stats
   const total = goals.length;

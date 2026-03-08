@@ -42,7 +42,7 @@ export const DesignLibrary = () => {
   const [designs, setDesigns] = useState(SAVED_DESIGNS);
 
   const handleDelete = (id: string) => {
-    if (confirm('¿Eliminar este diseño guardado?')) {
+    { // Direct delete
       setDesigns(designs.filter(d => d.id !== id));
     }
   };

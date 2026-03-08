@@ -74,9 +74,7 @@ export const BusinessDashboard = () => {
   };
 
   const handleDeleteProfile = (id: string) => {
-    if (confirm("¿Estás seguro de eliminar este perfil fiscal?")) {
-      toast.success("Perfil eliminado correctamente");
-    }
+    toast.success("Perfil eliminado correctamente");
   };
 
   const TotalSpend = SPEND_DATA.reduce((acc, curr) => acc + curr.amount, 0);
@@ -281,7 +279,7 @@ export const BusinessDashboard = () => {
                      
                      <div className="flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">
                        <button 
-                         onClick={() => toast.info("Abriendo editor de perfil fiscal...")}
+                         onClick={() => toast.success("Abriendo editor de perfil fiscal")}
                          className="p-2 text-wood-400 hover:text-wood-900 dark:hover:text-sand-100 hover:bg-wood-50 dark:hover:bg-wood-800 rounded-lg transition-colors"
                          title="Editar datos"
                        >

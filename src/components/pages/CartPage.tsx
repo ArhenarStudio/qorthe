@@ -56,12 +56,12 @@ export const CartPage = () => {
 
   const handleRemovePromo = async (code: string) => {
     await removePromo(code);
-    toast.info("Cupón removido");
+    toast.success("Cupón removido");
   };
 
   const handleRemoveItem = async (lineId: string) => {
     await removeItem(lineId);
-    toast.info("Producto eliminado");
+    toast.success("Producto eliminado");
   };
 
   if (loading) {

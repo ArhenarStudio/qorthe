@@ -908,7 +908,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                 { icon: Mail, label: 'Notificar al cliente', action: () => setMessageModalOpen(true) },
                 { icon: Truck, label: 'Generar guía de envío', action: () => window.location.href = '/admin/shipping' },
                 { icon: Printer, label: 'Imprimir orden de producción', action: () => toast.success('Imprimiendo...') },
-                { icon: Camera, label: 'Adjuntar foto del producto', action: () => toast.info('Función disponible próximamente') },
+                { icon: Camera, label: 'Adjuntar foto del producto', action: () => toast.success('Función de adjuntar foto próximamente') },
                 { icon: Zap, label: 'Cambiar estado del pedido', action: () => setStatusDropdownOpen(true) },
                 { icon: MessageSquare, label: 'Agregar nota interna', action: () => document.querySelector<HTMLTextAreaElement>('textarea')?.focus() },
               ].map(item => (

@@ -47,113 +47,15 @@ function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 
 }
 
 // ===== LEGACY DATA (unused — tabs replaced with ComingSoonTab, cleanup pending) =====
-const mockPages = [
-  { id: 'p1', title: 'Sobre Nosotros', url: '/about', lastEdit: '15 Feb 2026', status: 'published' as const, template: 'Completa' },
-  { id: 'p2', title: 'Preguntas Frecuentes', url: '/faq', lastEdit: '10 Feb 2026', status: 'published' as const, template: 'Con sidebar' },
-  { id: 'p3', title: 'Contacto', url: '/contact', lastEdit: '20 Ene 2026', status: 'published' as const, template: 'Completa' },
-  { id: 'p4', title: 'Politica de Envio', url: '/shipping-policy', lastEdit: '25 Feb 2026', status: 'published' as const, template: 'Completa' },
-  { id: 'p5', title: 'Politica de Devolucion', url: '/return-policy', lastEdit: '25 Feb 2026', status: 'published' as const, template: 'Completa' },
-  { id: 'p6', title: 'Terminos y Condiciones', url: '/terms', lastEdit: '01 Ene 2026', status: 'published' as const, template: 'Completa' },
-  { id: 'p7', title: 'Aviso de Privacidad', url: '/privacy', lastEdit: '01 Ene 2026', status: 'published' as const, template: 'Completa' },
-  { id: 'p8', title: 'Cuidado de la Madera', url: '/wood-care', lastEdit: '28 Feb 2026', status: 'published' as const, template: 'Con sidebar' },
-  { id: 'p9', title: 'Nuestro Proceso', url: '/our-process', lastEdit: '', status: 'draft' as const, template: 'Landing' },
-  { id: 'p10', title: 'Programa de Lealtad', url: '/loyalty', lastEdit: '26 Feb 2026', status: 'published' as const, template: 'Completa' },
-];
 
-const mockMenus = {
-  header: [
-    { id: 'm1', label: 'Inicio', url: '/', children: [] },
-    { id: 'm2', label: 'Tienda', url: '/shop', children: [
-      { id: 'm2a', label: 'Tablas para Cortar', url: '/shop/tablas' },
-      { id: 'm2b', label: 'Sets y Colecciones', url: '/shop/sets' },
-      { id: 'm2c', label: 'Accesorios', url: '/shop/accesorios' },
-    ]},
-    { id: 'm3', label: 'Cotizador', url: '/quote', children: [] },
-    { id: 'm4', label: 'Sobre Nosotros', url: '/about', children: [] },
-    { id: 'm5', label: 'Contacto', url: '/contact', children: [] },
-  ],
-  footerShop: [
-    { id: 'f1', label: 'Todos los productos', url: '/shop' },
-    { id: 'f2', label: 'Best Sellers', url: '/shop/collection/best-sellers' },
-    { id: 'f3', label: 'Novedades', url: '/shop/collection/new' },
-    { id: 'f4', label: 'Grabado Laser', url: '/shop?grabado=true' },
-  ],
-  footerInfo: [
-    { id: 'fi1', label: 'Sobre Nosotros', url: '/about' },
-    { id: 'fi2', label: 'Cuidado de la Madera', url: '/wood-care' },
-    { id: 'fi3', label: 'Preguntas Frecuentes', url: '/faq' },
-    { id: 'fi4', label: 'Programa de Lealtad', url: '/loyalty' },
-  ],
-  footerLegal: [
-    { id: 'fl1', label: 'Politica de Envio', url: '/shipping-policy' },
-    { id: 'fl2', label: 'Devoluciones', url: '/return-policy' },
-    { id: 'fl3', label: 'Terminos y Condiciones', url: '/terms' },
-    { id: 'fl4', label: 'Aviso de Privacidad', url: '/privacy' },
-  ],
-};
 
-const mockHomeSections = [
-  { id: 'h1', name: 'Hero Banner (carrusel)', active: true, note: 'Se configura en Marketing > Banners' },
-  { id: 'h2', name: 'Categorias Destacadas', active: true, config: { type: 'Grid de 3 columnas', categories: ['Tablas para Cortar', 'Sets', 'Accesorios'], title: 'Explora Nuestra Coleccion', subtitle: 'Piezas unicas en madera mexicana' } },
-  { id: 'h3', name: 'Productos Destacados', active: true, config: { source: 'Best Sellers', count: 4, title: 'Los Mas Populares', view: 'Carrusel' } },
-  { id: 'h4', name: 'Banner Intermedio', active: true, config: { title: 'Personaliza con Grabado Laser', subtitle: 'Haz cada pieza unica con nuestro servicio de grabado', cta: 'Cotizar ahora', link: '/quote' } },
-  { id: 'h5', name: 'Testimonios / Reviews', active: true, config: { source: 'Reviews destacadas', count: 3, layout: 'Carrusel', title: 'Lo Que Dicen Nuestros Clientes' } },
-  { id: 'h6', name: 'Proceso Artesanal (storytelling)', active: true, config: { type: 'Timeline horizontal', steps: ['Seleccion de Madera', 'Diseno y Corte', 'Acabado y Grabado', 'Empaque y Envio'] } },
-  { id: 'h7', name: 'Instagram Feed', active: false, note: 'Conectar cuenta o subir manualmente' },
-  { id: 'h8', name: 'Newsletter Signup', active: true, config: { title: 'Se el primero en enterarte', text: 'Nuevos productos, ofertas exclusivas y tips de cuidado', incentive: 'Y recibe 10% de descuento en tu primera compra' } },
-];
 
-const mockBlogPosts = [
-  { id: 'b1', title: 'Como elegir tu tabla ideal', category: 'Guias', author: 'David', date: '25 Feb 2026', status: 'published' as const, tags: ['parota', 'guia'] },
-  { id: 'b2', title: '5 maderas mexicanas premium', category: 'Maderas', author: 'David', date: '18 Feb 2026', status: 'published' as const, tags: ['maderas', 'premium'] },
-  { id: 'b3', title: 'Cuidado de tablas de parota', category: 'Cuidado', author: 'David', date: '10 Feb 2026', status: 'published' as const, tags: ['parota', 'cuidado'] },
-  { id: 'b4', title: 'Regalos artesanales empresa', category: 'Corporate', author: 'David', date: '', status: 'draft' as const, tags: ['corporativo', 'regalos'] },
-  { id: 'b5', title: 'Recetas para tu charcuteria', category: 'Lifestyle', author: 'David', date: '', status: 'draft' as const, tags: ['recetas', 'charcuteria'] },
-];
 
 const blogCategories = ['Guias', 'Maderas', 'Cuidado', 'Corporate', 'Lifestyle'];
 
-const mockPopups = [
-  { id: 'pp1', name: 'Bienvenida + 10% desc', trigger: 'Primera visita', views: 2400, conv: 8.2, status: 'active' as const },
-  { id: 'pp2', name: 'Suscripcion newsletter', trigger: 'Scroll 50%', views: 1800, conv: 5.4, status: 'active' as const },
-  { id: 'pp3', name: 'Cupon exit intent', trigger: 'Intento de salir', views: 890, conv: 3.8, status: 'paused' as const },
-  { id: 'pp4', name: 'Aviso envio gratis', trigger: 'Carrito >$2,000', views: 420, conv: 12.0, status: 'active' as const },
-  { id: 'pp5', name: 'Anuncio Dia de las Madres', trigger: 'Todas las paginas', views: 0, conv: 0, status: 'scheduled' as const },
-];
 
-const mockMedia = [
-  { id: 'md1', name: 'hero-spring.jpg', type: 'image', size: '2.4 MB', dims: '1440x500', folder: 'Banners', date: '25 Feb 2026' },
-  { id: 'md2', name: 'parota-detail.jpg', type: 'image', size: '1.1 MB', dims: '1200x800', folder: 'Productos', date: '20 Feb 2026' },
-  { id: 'md3', name: 'logo-dsd.svg', type: 'image', size: '24 KB', dims: 'Vector', folder: 'Branding', date: '01 Dic 2025' },
-  { id: 'md4', name: 'taller-01.jpg', type: 'image', size: '3.2 MB', dims: '1920x1080', folder: 'Paginas', date: '15 Feb 2026' },
-  { id: 'md5', name: 'catalogo.pdf', type: 'document', size: '5.1 MB', dims: '12 pgs', folder: 'Documentos', date: '10 Ene 2026' },
-  { id: 'md6', name: 'banner-flash.jpg', type: 'image', size: '1.8 MB', dims: '1440x500', folder: 'Banners', date: '28 Feb 2026' },
-  { id: 'md7', name: 'rosa-morada-hero.jpg', type: 'image', size: '2.1 MB', dims: '1600x900', folder: 'Productos', date: '22 Feb 2026' },
-  { id: 'md8', name: 'video-proceso.mp4', type: 'video', size: '48 MB', dims: '1920x1080', folder: 'Paginas', date: '05 Feb 2026' },
-];
 
-const mockTexts = [
-  { section: 'Header', key: 'header.cart_empty', value: 'Tu carrito esta vacio' },
-  { section: 'Header', key: 'header.cart_items', value: '{count} articulos' },
-  { section: 'Producto', key: 'product.add_to_cart', value: 'Agregar al carrito' },
-  { section: 'Producto', key: 'product.out_of_stock', value: 'Agotado' },
-  { section: 'Producto', key: 'product.engraving_add', value: 'Agregar grabado laser' },
-  { section: 'Checkout', key: 'checkout.shipping_title', value: 'Informacion de envio' },
-  { section: 'Checkout', key: 'checkout.promo_placeholder', value: 'Codigo de descuento' },
-  { section: 'Checkout', key: 'checkout.free_shipping', value: 'Envio gratis!' },
-  { section: 'Footer', key: 'footer.copyright', value: '2026 DavidSon\'s Design' },
-  { section: 'Lealtad', key: 'loyalty.points_label', value: 'Puntos disponibles' },
-  { section: 'Lealtad', key: 'loyalty.tier_next', value: 'Faltan {amount} para {tier}' },
-  { section: 'Reviews', key: 'reviews.write_button', value: 'Escribir una opinion' },
-  { section: 'Reviews', key: 'reviews.helpful_button', value: 'Fue util?' },
-  { section: '404', key: 'error.not_found', value: 'Pagina no encontrada' },
-  { section: 'General', key: 'general.loading', value: 'Cargando...' },
-];
 
-const mockRedirects = [
-  { from: '/old-about', to: '/about', type: '301' },
-  { from: '/productos', to: '/shop', type: '301' },
-];
 
 // ===== TAB 1: PAGES =====
 function PagesTabLive() {

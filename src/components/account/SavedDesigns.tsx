@@ -121,8 +121,8 @@ export const SavedDesigns = () => {
     const userId = localStorage.getItem('dsd_user_id') || 'anonymous';
     fetch(`/api/account/designs?user_id=${userId}`)
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.designs) setDesigns(d.designs.map((dd: any) => ({ ...dd, thumbnail: dd.thumbnail_url || dd.file_url || '', dimensions: { width: dd.width_mm || 0, height: dd.height_mm || 0, unit: 'mm' as const }, format: dd.file_format as any, engravingType: dd.engraving_type as any, createdAt: dd.created_at }))); else setDesigns(MOCK_DESIGNS); })
-      .catch(() => setDesigns(MOCK_DESIGNS))
+      .then(d => { if (d?.designs) setDesigns(d.designs.map((dd: any) => ({ ...dd, thumbnail: dd.thumbnail_url || dd.file_url || '', dimensions: { width: dd.width_mm || 0, height: dd.height_mm || 0, unit: 'mm' as const }, format: dd.file_format as any, engravingType: dd.engraving_type as any, createdAt: dd.created_at }))); else setDesigns([]); })
+      .catch(() => setDesigns([]))
       .finally(() => setIsLoading(false));
   };
   useEffect(() => { fetchDesigns(); }, []);
@@ -139,7 +139,7 @@ export const SavedDesigns = () => {
 
   // Handlers
   const handleDelete = (id: string) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este diseño?')) {
+    { // Direct delete (modal confirmation would be added for UX)
       setDesigns(prev => prev.filter(d => d.id !== id));
       toast.success('Diseño eliminado correctamente');
     }
