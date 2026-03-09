@@ -6,6 +6,7 @@ import { DefaultCard, DefaultBadge, DefaultButton, DefaultTable, DefaultStatCard
 import { getTheme, allThemes } from "@/src/admin/themes/themeRegistry";
 import { adminNavigation } from "@/src/admin/navigation";
 import type { NavGroup } from "@/src/admin/navigation";
+import { logger } from '@/src/lib/logger';
 
 interface AdminThemeContextType {
   theme: AdminUITheme;
@@ -102,7 +103,7 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
           setSetupCompletedState(d.config.setup_completed || false);
         }
       })
-      .catch(() => {})
+      .catch((e) => logger.warn("[fetch] non-critical fetch error suppressed", e))
       .finally(() => setLoading(false));
   }, []);
 
@@ -119,7 +120,7 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ theme_id: id }),
       });
-    } catch (_err) { void _err; }
+    } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
   };
 
   const setSetupCompleted = async (v: boolean) => {
@@ -130,7 +131,7 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ setup_completed: v }),
       });
-    } catch (_err) { void _err; }
+    } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
   };
 
   return (

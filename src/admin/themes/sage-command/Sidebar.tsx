@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ChevronLeft, ChevronRight, Hexagon } from 'lucide-react';
 import type { AdminPage, NavGroup } from '@/src/admin/navigation';
+import { logger } from '@/src/lib/logger';
 
 interface Props {
   currentPage: AdminPage;
@@ -22,7 +23,7 @@ export const SageCommandSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
   useEffect(() => {
     fetch('/api/admin/dashboard?period=30d').then(r => r.ok ? r.json() : null).then(d => {
       if (d?.kpis?.pending_orders > 0) setLiveBadges({ orders: d.kpis.pending_orders });
-    }).catch(() => {});
+    }).catch((e) => logger.warn("[fetch] non-critical fetch error suppressed", e));
   }, []);
 
   const adminName = medusaCustomer ? `${medusaCustomer.first_name} ${medusaCustomer.last_name}`.trim() : user?.email?.split('@')[0] || 'Admin';

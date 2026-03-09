@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Search, ChevronLeft, ChevronRight, Hexagon, X } from 'lucide-react';
 import type { AdminPage, NavItem, NavGroup } from '@/src/admin/navigation';
+import { logger } from '@/src/lib/logger';
 
 interface Props {
   currentPage: AdminPage;
@@ -28,7 +29,7 @@ export const TealNoirSidebar: React.FC<Props> = ({ currentPage, onNavigate, coll
         const badges: Record<string, number> = {};
         if (dash?.kpis?.pending_orders > 0) badges.orders = dash.kpis.pending_orders;
         setLiveBadges(badges);
-      } catch (_err) { void _err; }
+      } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
     };
     fetchBadges();
   }, []);

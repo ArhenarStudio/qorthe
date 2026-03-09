@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Search, ExternalLink, LogOut, Store } from 'lucide-react';
 import type { AdminPage, NavItem, NavGroup } from '@/src/admin/navigation';
 import { allNavItems } from '@/src/admin/navigation';
+import { logger } from '@/src/lib/logger';
 
 interface Props {
   currentPage: AdminPage;
@@ -30,7 +31,7 @@ export const IndigoGlassSidebar: React.FC<Props> = ({ currentPage, onNavigate, n
         const badges: Record<string, number> = {};
         if (dash?.kpis?.pending_orders > 0) badges.orders = dash.kpis.pending_orders;
         setLiveBadges(badges);
-      } catch (_err) { void _err; }
+      } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
     };
     fetchBadges();
     const interval = setInterval(fetchBadges, 120_000);

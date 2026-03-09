@@ -15,6 +15,7 @@ import {
   Gift, Shield, UserPlus, BarChart3
 } from 'lucide-react';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip as RTooltip } from 'recharts';
+import { logger } from '@/src/lib/logger';
 
 /* ================================================================
    TIER SYSTEM
@@ -464,7 +465,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
       const data = await res.json();
       setDetailOrders(data.orders || []);
       setDetailTransactions(data.transactions || []);
-    } catch (_err) { void _err; }
+    } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
   };
 
   // Handle points adjustment

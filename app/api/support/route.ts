@@ -1,6 +1,7 @@
 // /api/support — Customer-facing support: create tickets + warranty claims
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { logger } from '@/src/lib/logger';
 
 function getSupabase() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ _type: 'route_ticket', ticket_id: data.id, category: ticketData.category, subject: ticketData.subject, description: ticketData.description }),
         });
-      } catch (_err) { void _err; }
+      } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
 
       // Send email notification to admin
       const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
               html: `<p><strong>Nuevo ticket de soporte</strong></p><p>Cliente: ${ticketData.name || ticketData.email}</p><p>Categoría: ${ticketData.category}</p><p>Asunto: ${ticketData.subject}</p><p>Descripción: ${ticketData.description || "Sin descripción"}</p>`,
             }),
           });
-        } catch (_err) { void _err; }
+        } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
       }
 
       return NextResponse.json({ success: true, ticket: data });
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest) {
           const warrantyEnd = new Date(new Date(claimData.purchase_date).getTime() + warrantyDays * 86400000);
           isWithinWarranty = new Date() <= warrantyEnd;
         }
-      } catch (_err) { void _err; }
+      } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
 
       // Auto-approve for shipping damage within 30 days
       let status = "submitted";

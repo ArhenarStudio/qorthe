@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Search, Zap } from 'lucide-react';
 import type { AdminPage, NavItem, NavGroup } from '@/src/admin/navigation';
+import { logger } from '@/src/lib/logger';
 
 interface Props {
   currentPage: AdminPage;
@@ -22,7 +23,7 @@ export const CoralForgeSidebar: React.FC<Props> = ({ currentPage, onNavigate, na
   useEffect(() => {
     fetch('/api/admin/dashboard?period=30d').then(r => r.ok ? r.json() : null).then(d => {
       if (d?.kpis?.pending_orders > 0) setLiveBadges({ orders: d.kpis.pending_orders });
-    }).catch(() => {});
+    }).catch((e) => logger.warn("[fetch] non-critical fetch error suppressed", e));
   }, []);
 
   return (

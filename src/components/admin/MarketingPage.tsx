@@ -19,6 +19,7 @@ import {
 } from 'recharts';
 import { toast } from 'sonner';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
+import { logger } from '@/src/lib/logger';
 
 // Shared UI components for live tabs
 const Card: React.FC<{ className?: string; children: React.ReactNode }> = ({ className = '', children }) => (
@@ -330,7 +331,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
 const CampaignsTabLive: React.FC = () => {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const fetchData = () => { fetch('/api/admin/marketing/campaigns').then(r => r.ok ? r.json() : null).then(d => { if (d) setCampaigns(d.campaigns || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  const fetchData = () => { fetch('/api/admin/marketing/campaigns').then(r => r.ok ? r.json() : null).then(d => { if (d) setCampaigns(d.campaigns || []); }).catch((e) => logger.warn("[fetch] non-critical fetch error suppressed", e)).finally(() => setLoading(false)); };
   useEffect(() => { fetchData(); }, []);
   const handleCreate = async () => { const res = await fetch('/api/admin/marketing/campaigns', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Nueva campaña', subject: '' }) }); if (res.ok) { toast.success('Campaña creada'); fetchData(); } };
   const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/campaigns?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Campaña eliminada'); fetchData(); } };
@@ -358,7 +359,7 @@ const CampaignsTabLive: React.FC = () => {
 const BannersTabLive: React.FC = () => {
   const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const fetchData = () => { fetch('/api/admin/marketing/banners').then(r => r.ok ? r.json() : null).then(d => { if (d) setBanners(d.banners || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  const fetchData = () => { fetch('/api/admin/marketing/banners').then(r => r.ok ? r.json() : null).then(d => { if (d) setBanners(d.banners || []); }).catch((e) => logger.warn("[fetch] non-critical fetch error suppressed", e)).finally(() => setLoading(false)); };
   useEffect(() => { fetchData(); }, []);
   const handleCreate = async () => { const res = await fetch('/api/admin/marketing/banners', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Nuevo banner' }) }); if (res.ok) { toast.success('Banner creado'); fetchData(); } };
   const handleToggle = async (b: any) => { await fetch('/api/admin/marketing/banners', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, is_active: !b.is_active }) }); toast.success(b.is_active ? 'Desactivado' : 'Activado'); fetchData(); };
@@ -390,7 +391,7 @@ const BannersTabLive: React.FC = () => {
 const FlashSalesTabLive: React.FC = () => {
   const [sales, setSales] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const fetchData = () => { fetch('/api/admin/marketing/flash-sales').then(r => r.ok ? r.json() : null).then(d => { if (d) setSales(d.flashSales || []); }).catch(() => {}).finally(() => setLoading(false)); };
+  const fetchData = () => { fetch('/api/admin/marketing/flash-sales').then(r => r.ok ? r.json() : null).then(d => { if (d) setSales(d.flashSales || []); }).catch((e) => logger.warn("[fetch] non-critical fetch error suppressed", e)).finally(() => setLoading(false)); };
   useEffect(() => { fetchData(); }, []);
   const handleCreate = async () => { const res = await fetch('/api/admin/marketing/flash-sales', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Nueva venta flash' }) }); if (res.ok) { toast.success('Venta flash creada'); fetchData(); } };
   const handleToggle = async (s: any) => { await fetch('/api/admin/marketing/flash-sales', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, is_active: !s.is_active }) }); toast.success(s.is_active ? 'Desactivada' : 'Activada'); fetchData(); };
@@ -423,7 +424,7 @@ const ReferralsTabLive: React.FC = () => {
   const [codes, setCodes] = useState<any[]>([]);
   const [redemptions, setRedemptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const fetchData = () => { fetch('/api/admin/marketing/referrals').then(r => r.ok ? r.json() : null).then(d => { if (d) { setCodes(d.codes || []); setRedemptions(d.redemptions || []); } }).catch(() => {}).finally(() => setLoading(false)); };
+  const fetchData = () => { fetch('/api/admin/marketing/referrals').then(r => r.ok ? r.json() : null).then(d => { if (d) { setCodes(d.codes || []); setRedemptions(d.redemptions || []); } }).catch((e) => logger.warn("[fetch] non-critical fetch error suppressed", e)).finally(() => setLoading(false)); };
   useEffect(() => { fetchData(); }, []);
   const handleCreate = async () => { const res = await fetch('/api/admin/marketing/referrals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) }); if (res.ok) { toast.success('Código de referido creado'); fetchData(); } };
   const handleToggle = async (c: any) => { await fetch('/api/admin/marketing/referrals', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, is_active: !c.is_active }) }); toast.success(c.is_active ? 'Desactivado' : 'Activado'); fetchData(); };
@@ -847,7 +848,7 @@ export const MarketingPage: React.FC = () => {
           const data = await res.json();
           setPromoStats(data.stats || { total: 0, active: 0, scheduled: 0, expired: 0 });
         }
-      } catch (_err) { void _err; }
+      } catch (_err) { logger.warn("[fire-and-forget] non-critical error suppressed", _err); }
     }
     fetchStats();
   }, []);
