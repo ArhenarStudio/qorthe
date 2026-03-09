@@ -17,6 +17,7 @@ import {
   ReferenceLine
 } from 'recharts';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type TabId = 'resumen' | 'ventas' | 'clientes' | 'productos' | 'operaciones' | 'custom';
@@ -1098,6 +1099,7 @@ function CustomTab() {
 // ===== MAIN COMPONENT =====
 export const ReportsAnalyticsPage: React.FC = () => {
 
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveReports, setLiveReports] = useState<any>(null);
   const [reportsLoading, setReportsLoading] = useState(true);

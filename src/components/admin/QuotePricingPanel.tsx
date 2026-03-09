@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Loader2, RotateCcw, Plus, Trash2, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Edit3, GripVertical } from 'lucide-react';
 import { FullQuoteConfig, DEFAULT_FULL_CONFIG } from '@/components/quote/quoteConfig';
 import { useAuth } from '@/contexts/AuthContext';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ═══════════════════════════════════════════════════════════════
 // QuotePricingPanel — Admin panel completo para configurar
@@ -41,6 +42,7 @@ const InlineConfirm: React.FC<{ label: string; onConfirm: () => void; children: 
 
 export const QuotePricingPanel: React.FC = () => {
   const { session } = useAuth();
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [config, setConfig] = useState<FullQuoteConfig>(DEFAULT_FULL_CONFIG);
   const [original, setOriginal] = useState<FullQuoteConfig>(DEFAULT_FULL_CONFIG);
   const [loading, setLoading] = useState(true);

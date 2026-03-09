@@ -11,6 +11,7 @@ import {
   RotateCcw, Headphones, ArrowUpDown, Target
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type SubTab = 'users' | 'roles' | 'audit';
@@ -980,6 +981,7 @@ function AuditPanel() {
 // ===== MAIN COMPONENT =====
 export const UsersRolesManager: React.FC = () => {
   const [subTab, setSubTab] = useState<SubTab>('users');
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
 
   const subTabs: Array<{ id: SubTab; label: string; icon: React.ElementType; count?: number }> = [
     { id: 'users', label: 'Usuarios', icon: Users, count: seedUsers.length },

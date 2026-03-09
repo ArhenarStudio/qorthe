@@ -10,6 +10,7 @@ import {
   Eye, BarChart3, Webhook, MessageSquare, Timer, Edit3, Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type AutoStatus = 'active' | 'paused' | 'draft';
@@ -815,6 +816,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
 // ===== MAIN COMPONENT =====
 export const AutomationsPage: React.FC = () => {
 
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveAuto, setLiveAuto] = useState<any>(null);
   const [automationsLoading, setAutomationsLoading] = useState(true);

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
@@ -125,6 +126,7 @@ const daysSince = (d: string) => d ? Math.floor((Date.now() - new Date(d).getTim
    ================================================================ */
 export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNavigate }) => {
   const [tab, setTab] = useState<'all' | 'membership' | 'segments' | 'config'>('all');
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [searchQ, setSearchQ] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerFull | null>(null);
   const [filterTier, setFilterTier] = useState<string>('all');

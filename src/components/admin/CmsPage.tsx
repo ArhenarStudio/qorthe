@@ -12,6 +12,7 @@ import {
   BarChart3, Star, Layout, Smartphone, Monitor
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type CmsTab = 'pages' | 'menus' | 'homepage' | 'blog' | 'popups' | 'media' | 'texts' | 'seo';
@@ -861,6 +862,7 @@ function CmsComingSoon({ title, description }: { title: string; description: str
 
 export const CmsPage: React.FC = () => {
 
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveCms, setLiveCms] = useState<any>(null);
   const [cmsLoading, setCmsLoading] = useState(true);

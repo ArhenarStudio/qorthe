@@ -18,6 +18,7 @@ import {
 const FinanceDataContext = React.createContext<any>(null);
 const useFinanceData = () => React.useContext(FinanceDataContext);
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type TabId = 'general' | 'ingresos' | 'costos' | 'inventario' | 'pagos' | 'flujo' | 'reportes';
@@ -1253,6 +1254,7 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
 // ===== MAIN COMPONENT =====
 export const FinancesPage: React.FC = () => {
 
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveFinances, setLiveFinances] = useState<any>(null);
   const [financesLoading, setFinancesLoading] = useState(true);

@@ -29,6 +29,7 @@ import {
   ArrowUpDown, BarChart3, TrendingUp, Eye,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -78,6 +79,7 @@ const ITEMS_PER_PAGE = 20;
 
 export const ReviewsPage: React.FC = () => {
   // Data state
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [counts, setCounts] = useState<ReviewCounts>({ pending: 0, approved: 0, rejected: 0 });
   const [stats, setStats] = useState<ReviewStats>({ avgRating: 0, totalReviews: 0, ratingDistribution: [], withPhotos: 0 });

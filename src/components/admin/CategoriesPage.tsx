@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RTooltip, XAxis } from 'recharts';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 /* ================================================================
    MOCK DATA
@@ -243,6 +244,7 @@ const statusBadge = (status: string) => {
 
 export const CategoriesPage: React.FC = () => {
   const [tab, setTab] = useState<'categories' | 'collections'>('categories');
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [catView, setCatView] = useState<'tree' | 'list'>('tree');
   const [searchQ, setSearchQ] = useState('');
   const [editing, setEditing] = useState<Category | null | 'new'>(null);

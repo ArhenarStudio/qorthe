@@ -12,6 +12,7 @@ import {
 import { type Order, type OrderItem, type EngravingDesign } from '@/data/adminMockData';
 import { useAdminData } from '@/hooks/useAdminData';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== CONFIG =====
 const statusConfig: Record<string, { label: string; class: string }> = {
@@ -140,6 +141,7 @@ function mapLiveOrder(o: any): Order {
 // ===== MAIN COMPONENT =====
 export const OrdersPage: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [filterOpen, setFilterOpen] = useState(false);

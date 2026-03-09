@@ -68,7 +68,7 @@ const fmtMXN = (n: number) =>
 
 export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
   const [chartView, setChartView] = React.useState<'revenue' | 'orders'>('revenue');
-  const { Card, StatCard } = useThemeComponents();
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
 
   const periodQ = periodQueryMap[period] || '7days';
   const { data: liveData, loading: liveLoading, error: liveError } = useAdminData<{
@@ -154,7 +154,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.08 }}
           >
-            <StatCard
+            <TStatCard
               label={kpi.label}
               value={kpi.value}
               change={kpi.change}
@@ -174,7 +174,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
           transition={{ delay: 0.3 }}
           className="lg:col-span-2"
         >
-          <Card className="p-5">
+          <TCard className="p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-[var(--admin-text)] text-sm">Ventas del periodo</h3>
             <div className="flex bg-[var(--admin-surface2)] rounded-lg p-0.5">
@@ -222,7 +222,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
               </ResponsiveContainer>
             )}
           </div>
-          </Card>
+          </TCard>
         </motion.div>
 
         {/* Activity Feed — REAL events */}
@@ -270,7 +270,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
           transition={{ delay: 0.5 }}
           className="lg:col-span-2"
         >
-          <Card className="overflow-hidden">
+          <TCard className="overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--admin-border)] flex items-center justify-between">
             <h3 className="font-medium text-[var(--admin-text)] text-sm">Pedidos que requieren acción</h3>
             <button onClick={() => onNavigate('orders')} className="text-[10px] text-[var(--admin-accent)] font-bold uppercase tracking-widest hover:underline">
@@ -318,7 +318,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
               </table>
             </div>
           )}
-          </Card>
+          </TCard>
         </motion.div>
 
         {/* Right Column: Top Products + Pending Actions */}

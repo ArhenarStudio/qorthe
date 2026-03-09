@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip as RTooltip } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 import {
   LoyaltyConfig,
   LoyaltyTierConfig,
@@ -83,6 +84,7 @@ const MetricCard: React.FC<{ label: string; value: string; sub?: string; highlig
 
 export const LoyaltyConfigPanel: React.FC = () => {
   const { session } = useAuth();
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [config, setConfig] = useState<LoyaltyConfig>(DEFAULT_LOYALTY_CONFIG);
   const [originalConfig, setOriginalConfig] = useState<LoyaltyConfig>(DEFAULT_LOYALTY_CONFIG);
   const [loading, setLoading] = useState(true);

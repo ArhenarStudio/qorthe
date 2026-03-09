@@ -9,6 +9,7 @@ import {
   GripVertical, Globe, MapPin, Phone, Mail, Instagram
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 
 // ===== TYPES =====
@@ -993,6 +994,7 @@ function DeveloperTab() {
 // ===== MAIN =====
 export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<STab>('general');
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
 
   const tabContent: Record<STab, React.ReactNode> = {
     general: <GeneralTab />,

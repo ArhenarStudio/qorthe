@@ -11,6 +11,7 @@ import {
   Activity, ChevronDown, ArrowLeft, BadgeCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type ViewMode = 'marketplace' | 'installed' | 'detail';
@@ -885,6 +886,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
 // ===== MAIN COMPONENT =====
 export const IntegrationsStorePage: React.FC = () => {
 
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveInteg, setLiveInteg] = useState<any>(null);
   const [integrationsLoading, setIntegrationsLoading] = useState(true);

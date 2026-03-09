@@ -18,6 +18,7 @@ import {
   ResponsiveContainer, Legend
 } from 'recharts';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // Shared UI components for live tabs
 const Card: React.FC<{ className?: string; children: React.ReactNode }> = ({ className = '', children }) => (
@@ -832,6 +833,7 @@ const AnalisisTab: React.FC = () => {
 // ===== MAIN COMPONENT =====
 export const MarketingPage: React.FC = () => {
   const [tab, setTab] = useState<TabId>('cupones');
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [search, setSearch] = useState('');
 
   // ── Live promotion stats ──

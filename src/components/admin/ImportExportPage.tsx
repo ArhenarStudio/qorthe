@@ -8,6 +8,7 @@ import {
   Package, Users, ShoppingBag, Star, FolderTree, Clock, CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type IETab = 'import' | 'export' | 'migrate' | 'history';
@@ -427,6 +428,7 @@ function HistoryTab() {
 // ===== MAIN =====
 export const ImportExportPage: React.FC = () => {
 
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveExport, setLiveExport] = useState<any>(null);
   const [exportLoading, setExportLoading] = useState(true);

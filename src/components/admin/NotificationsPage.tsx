@@ -10,6 +10,7 @@ import {
   XCircle, ArrowRight, Palette, Plus, X, Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type NTab = 'center' | 'emails' | 'templates' | 'history' | 'config';
@@ -802,6 +803,7 @@ function ConfigTab() {
 // ===== MAIN =====
 export const NotificationsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NTab>('center');
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
 
   const tabContent: Record<NTab, React.ReactNode> = {
     center: <CenterTab />,

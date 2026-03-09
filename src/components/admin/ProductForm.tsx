@@ -8,6 +8,7 @@ import {
   Settings, BarChart3, Image as ImageIcon, DollarSign, FileText
 } from 'lucide-react';
 import { type Product } from './products/types';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -146,6 +147,7 @@ interface ProductFormProps {
 
 export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => {
   const isEditing = !!product;
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
 
   const [form, setForm] = useState<ProductFormData>(() => {
     if (!product) return defaultFormData;

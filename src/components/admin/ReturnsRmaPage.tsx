@@ -8,6 +8,7 @@ import {
   ArrowLeft, DollarSign, Settings, TrendingDown, BarChart3, X
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type RmaStatus = 'requested' | 'reviewing' | 'approved' | 'rejected' | 'pickup' | 'inspection' | 'refunded' | 'exchanged' | 'credit';
@@ -327,6 +328,7 @@ function MetricsTab() {
 // ===== MAIN =====
 export const ReturnsRmaPage: React.FC = () => {
 
+  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveReturns, setLiveReturns] = useState<any>(null);
   const [returnsLoading, setReturnsLoading] = useState(true);
