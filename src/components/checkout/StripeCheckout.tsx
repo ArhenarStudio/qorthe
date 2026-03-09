@@ -142,10 +142,10 @@ function CheckoutForm({
           setErrorMsg(`Estado inesperado: ${paymentIntent?.status}`);
           p.onPaymentError({ status: paymentIntent?.status });
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('[Stripe] Error:', err);
         setStatus('error');
-        setErrorMsg(err.message || 'Error de conexión');
+        setErrorMsg((err as Error).message || 'Error de conexión');
         propsRef.current.onPaymentError(err);
       }
     };
@@ -260,8 +260,8 @@ export const StripeCheckout = forwardRef<StripeCheckoutHandle, StripeCheckoutPro
         } else {
           setError(data.error || 'Error inicializando Stripe');
         }
-      } catch (err: any) {
-        setError(err.message || 'Error de conexión');
+      } catch (err: unknown) {
+        setError((err as Error).message || 'Error de conexión');
       } finally {
         setLoading(false);
       }

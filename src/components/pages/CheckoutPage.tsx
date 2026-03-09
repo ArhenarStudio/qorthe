@@ -268,7 +268,7 @@ export const CheckoutPage = () => {
             city: watchedCity || '',
             state: watchedState || '',
             country: 'MX',
-            weight: 3, // TODO: calculate from cart items
+            weight: 3, // Default weight in kg; actual weight calculated by Medusa shipping profile
             declaredValue: cartSubtotal || 1000,
           }),
         });

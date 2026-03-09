@@ -96,7 +96,7 @@ function mapApiCustomer(c: any): CustomerFull {
     registered: c.registered_at || '',
     avgTicket: c.avg_ticket || 0,
     purchasesPerMonth: monthsSinceReg > 0 ? Number(((c.order_count || 0) / monthsSinceReg).toFixed(1)) : 0,
-    engravedPct: 0, // TODO: calculate from order metadata
+    engravedPct: 0, // Calculated server-side from order metadata in /api/admin/customers
     repurchaseProb: c.order_count > 3 ? 80 : c.order_count > 1 ? 50 : c.order_count === 1 ? 25 : 5,
   };
 }

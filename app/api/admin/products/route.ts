@@ -206,7 +206,7 @@ export async function GET(req: NextRequest) {
           revenue_90d: totalSold90d * price,
           avg_rating: avgRating,
           review_count: reviewCount,
-          quote_count: 0, // TODO: match by product type when we have product_id in quotes
+          quote_count: 0, // Quote-product linkage pending inventory module (Fase 11)
           material: (meta.material as string) || '',
           weight: (meta.weight as number) || 0,
           dimensions: (meta.dimensions as string) || '',

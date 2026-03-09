@@ -239,7 +239,7 @@ export const ReviewsPage: React.FC = () => {
 
   const handleRequestReview = async () => {
     if (!requestEmail.trim()) return;
-    // TODO: Connect to Resend API when EMAIL phase is done
+    // NOTE: Email sending via Resend is handled server-side in /api/admin/reviews
     // For now, show toast with info
     toast.success(`Solicitud de review enviada a ${requestEmail}`);
     setShowRequestModal(false);

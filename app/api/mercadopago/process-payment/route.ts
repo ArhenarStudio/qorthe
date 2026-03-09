@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
     if (!mpResponse.ok || !['approved'].includes(mpResult.status)) {
       // PENDING states (in_process, pending) — payment is not final yet.
       // Do NOT complete order. Webhook will resolve this later.
-      // TODO: Phase 4.4 — implement MP webhook to handle pending → approved
+      // Pending payments are handled via MP webhook at /api/webhooks/mercadopago
       if (['in_process', 'pending'].includes(mpResult.status)) {
         logger.debug(`[MP] ⏳ Payment pending (${mpResult.status}). Order will be created via webhook.`);
         return NextResponse.json({
