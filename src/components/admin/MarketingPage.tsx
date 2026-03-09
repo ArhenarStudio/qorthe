@@ -847,7 +847,7 @@ export const MarketingPage: React.FC = () => {
           const data = await res.json();
           setPromoStats(data.stats || { total: 0, active: 0, scheduled: 0, expired: 0 });
         }
-      } catch {}
+      } catch (_err) { void _err; }
     }
     fetchStats();
   }, []);

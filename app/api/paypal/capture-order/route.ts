@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { medusaFetch, jsonError } from '../../_lib/medusa-helpers';
+import { logger } from '@/src/lib/logger';
 
 // ═══════════════════════════════════════════════════════════════
 // PayPal Capture Order — Complete cart after PayPal approval
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
       return jsonError('cartId and paypalOrderId are required');
     }
 
-    console.log(`[PayPal] Completing cart ${cartId} (PayPal order: ${paypalOrderId})...`);
+    logger.debug(`[PayPal] Completing cart ${cartId} (PayPal order: ${paypalOrderId})...`);
 
     // Complete cart → Medusa will call our provider's authorizePayment
     // which captures the PayPal order (autoCapture: true)
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     const order = completeData.order;
-    console.log(`[PayPal] ✅ Order created: ${order.id} (DSD-${order.display_id})`);
+    logger.debug(`[PayPal] ✅ Order created: ${order.id} (DSD-${order.display_id})`);
 
     return NextResponse.json({
       success: true,

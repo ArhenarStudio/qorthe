@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/src/lib/logger';
 
 // ═══════════════════════════════════════════════════════════════
 // Shared Medusa helpers for payment API routes
@@ -11,7 +12,7 @@ import { NextResponse } from 'next/server';
 // This function only: payment collection → session → complete.
 // ═══════════════════════════════════════════════════════════════
 
-const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000';
+const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? '';
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '';
 
 /**
@@ -69,7 +70,7 @@ export async function completeCartToOrder(opts: {
   const { cartId, providerLabel } = opts;
 
   // Step 1: Create payment collection
-  console.log(`[${providerLabel}] Creating payment collection...`);
+  logger.debug(`[${providerLabel}] Creating payment collection...`);
   const pcData = await medusaFetch('/payment-collections', {
     method: 'POST',
     body: JSON.stringify({ cart_id: cartId }),
@@ -77,7 +78,7 @@ export async function completeCartToOrder(opts: {
   const pcId = pcData.payment_collection.id;
 
   // Step 2: Create payment session
-  console.log(`[${providerLabel}] Creating payment session...`);
+  logger.debug(`[${providerLabel}] Creating payment session...`);
   await medusaFetch(`/payment-collections/${pcId}/payment-sessions`, {
     method: 'POST',
     body: JSON.stringify({ provider_id: 'pp_system_default' }),
@@ -88,7 +89,7 @@ export async function completeCartToOrder(opts: {
   try {
     const diagCart = await medusaFetch(`/carts/${cartId}?fields=*shipping_methods,*items`);
     const dc = diagCart.cart;
-    console.log(JSON.stringify({
+    logger.debug(JSON.stringify({
       event: 'pre_complete_diagnostic',
       provider: providerLabel,
       cart_id: cartId,
@@ -112,7 +113,7 @@ export async function completeCartToOrder(opts: {
     console.error(`[${providerLabel}] Diagnostic fetch failed:`, diagErr);
   }
 
-  console.log(`[${providerLabel}] Completing cart ${cartId}...`);
+  logger.debug(`[${providerLabel}] Completing cart ${cartId}...`);
   const completeData = await medusaFetch(`/carts/${cartId}/complete`, {
     method: 'POST',
   });
@@ -126,7 +127,7 @@ export async function completeCartToOrder(opts: {
   }
 
   const order = completeData.order;
-  console.log(`[${providerLabel}] ✅ Order created: ${order.id} (DSD-${order.display_id})`);
+  logger.debug(`[${providerLabel}] ✅ Order created: ${order.id} (DSD-${order.display_id})`);
   return { order };
 }
 

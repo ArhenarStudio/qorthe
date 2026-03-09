@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { logger } from '@/src/lib/logger';
 
 // ═══════════════════════════════════════════════════════════════
 // Server-side tier discount validation
@@ -67,7 +68,7 @@ export async function getVerifiedTierDiscount(
     // 4. Calculate discount (cartSubtotal is in centavos from Medusa)
     const discountAmount = Math.round(cartSubtotal * userTier.discount_percent / 100);
 
-    console.log(`[TierDiscount] ${userEmail} → tier=${userTier.name} (${userTier.discount_percent}%) → discount=${discountAmount} centavos on subtotal=${cartSubtotal}`);
+    logger.debug(`[TierDiscount] ${userEmail} → tier=${userTier.name} (${userTier.discount_percent}%) → discount=${discountAmount} centavos on subtotal=${cartSubtotal}`);
 
     return {
       discountAmount,

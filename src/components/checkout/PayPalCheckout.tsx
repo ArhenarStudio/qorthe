@@ -25,7 +25,7 @@ interface PayPalCheckoutProps {
   onPaymentError: (error: any) => void;
 }
 
-const MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000';
+const MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? '';
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
 
 export const PayPalCheckout: React.FC<PayPalCheckoutProps> = ({
@@ -114,7 +114,6 @@ export const PayPalCheckout: React.FC<PayPalCheckoutProps> = ({
   }, [onPaymentError]);
 
   const onCancel = useCallback(() => {
-    console.log('[PayPal] Payment cancelled by user');
     setError('');
   }, []);
 

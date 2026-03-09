@@ -30,7 +30,7 @@ export const IndigoGlassSidebar: React.FC<Props> = ({ currentPage, onNavigate, n
         const badges: Record<string, number> = {};
         if (dash?.kpis?.pending_orders > 0) badges.orders = dash.kpis.pending_orders;
         setLiveBadges(badges);
-      } catch {}
+      } catch (_err) { void _err; }
     };
     fetchBadges();
     const interval = setInterval(fetchBadges, 120_000);

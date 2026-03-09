@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { logger } from '@/src/lib/logger';
 import {
   getVerifiedCartTotal,
   completeCartToOrder,
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[Stripe] ✅ Payment verified: ${payment_intent_id} = $${verifiedTotal} MXN`);
+    logger.debug(`[Stripe] ✅ Payment verified: ${payment_intent_id} = $${verifiedTotal} MXN`);
 
     // ═══════════════════════════════════════════════════════
     // Complete the order in Medusa (shared helper)

@@ -13,6 +13,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from '@/src/lib/logger';
 
 const ENVIA_API_KEY = process.env.ENVIA_API_KEY || "";
 const ENVIA_BASE_URL = process.env.ENVIA_BASE_URL || "https://api-test.envia.com";
@@ -77,7 +78,7 @@ function toStateCode(state: string): string {
   const mapped = STATE_CODE_MAP[trimmed.toLowerCase()];
   if (mapped) return mapped;
   // Fallback: return first 2 chars uppercased (better than sending full name)
-  console.warn(`[Shipping Quote] Unknown state "${trimmed}", using first 2 chars`);
+  logger.warn(`[Shipping Quote] Unknown state "${trimmed}", using first 2 chars`);
   return trimmed.slice(0, 2).toUpperCase();
 }
 
@@ -175,7 +176,7 @@ export async function POST(request: NextRequest) {
           shipment: { carrier, type: 1 },
         };
 
-        console.log(`[Shipping Quote] Quoting ${carrier} to CP ${body.postalCode}, state=${stateCode} via ${ENVIA_BASE_URL} (key: ${ENVIA_API_KEY.slice(0, 8)}...)`);
+        logger.debug(`[Shipping Quote] Quoting ${carrier} to CP ${body.postalCode}, state=${stateCode} via ${ENVIA_BASE_URL} (key: ${ENVIA_API_KEY.slice(0, 8)}...)`);
 
         const resp = await fetch(`${ENVIA_BASE_URL}/ship/rate/`, {
           method: "POST",
@@ -197,7 +198,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (!resp.ok || !data.data || data.data.length === 0) {
-          console.warn(`[Shipping Quote] No rates for ${carrier} (${resp.status}):`, JSON.stringify(data).slice(0, 500));
+          logger.warn(`[Shipping Quote] No rates for ${carrier} (${resp.status}):`, JSON.stringify(data).slice(0, 500));
           return null;
         }
 
@@ -218,7 +219,7 @@ export async function POST(request: NextRequest) {
           deliveryEstimate: cheapest.deliveryEstimate || cheapest.delivery_estimate?.label || cheapest.deliveryDate?.date,
         };
       } catch (err: any) {
-        console.warn(`[Shipping Quote] Error quoting ${carrier}:`, err.message);
+        logger.warn(`[Shipping Quote] Error quoting ${carrier}:`, err.message);
         return null;
       }
     });

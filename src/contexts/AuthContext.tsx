@@ -86,7 +86,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = await resp.json();
         setMedusaCustomer(data.customer);
         syncedRef.current = userId;
-        console.log("[AuthContext] Medusa sync OK:", data.customer.id);
       } else {
         const err = await resp.json().catch(() => ({}));
         console.warn("[AuthContext] Medusa sync failed:", err.error || resp.status);
@@ -152,10 +151,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [supabase, syncWithMedusa]);
 
   const signOut = useCallback(async () => {
-    console.log('[AuthContext] signOut called');
     if (!supabase) return;
     const { error } = await supabase.auth.signOut();
-    console.log('[AuthContext] signOut result:', error ? error.message : 'success');
     setUser(null);
     setSession(null);
     setMedusaCustomer(null);

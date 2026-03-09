@@ -5,6 +5,7 @@ import {
   jsonError,
 } from '../../_lib/medusa-helpers';
 import { calculateDiscounts } from '../../_lib/discount-engine';
+import { logger } from '@/src/lib/logger';
 
 const MP_ACCESS_TOKEN = process.env.MERCADOPAGO_ACCESS_TOKEN || '';
 
@@ -18,7 +19,7 @@ async function attemptRefund(
   cartId: string
 ): Promise<{ success: boolean; refund_id?: string; error?: string }> {
   try {
-    console.log(`[MP] 🔄 Attempting refund for payment ${paymentId} (cart: ${cartId})`);
+    logger.debug(`[MP] 🔄 Attempting refund for payment ${paymentId} (cart: ${cartId})`);
     const res = await fetch(
       `https://api.mercadopago.com/v1/payments/${paymentId}/refunds`,
       {
@@ -33,7 +34,7 @@ async function attemptRefund(
     );
     const data = await res.json();
     if (res.ok) {
-      console.log(`[MP] ✅ Refund successful: ${data.id}`);
+      logger.debug(`[MP] ✅ Refund successful: ${data.id}`);
       return { success: true, refund_id: String(data.id) };
     }
     console.error(`[MP] ❌ Refund failed:`, data);
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     try {
       const existingCheck = await medusaFetch(`/carts/${cart_id}?fields=completed_at`);
       if (existingCheck.cart?.completed_at) {
-        console.log(`[MP] Cart ${cart_id} already completed. Returning existing.`);
+        logger.debug(`[MP] Cart ${cart_id} already completed. Returning existing.`);
         return NextResponse.json({
           status: 'already_processed',
           cart_id,
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
     // BEFORE any money moves. Checks: email, address,
     // shipping method valid, items exist, total > 0.
     // ═══════════════════════════════════════════════════════
-    console.log(`[MP] Running preflight for cart ${cart_id}...`);
+    logger.debug(`[MP] Running preflight for cart ${cart_id}...`);
     const cartData = await medusaFetch(
       `/carts/${cart_id}?fields=*shipping_methods,*items`
     );
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest) {
         { status: 422 }
       );
     }
-    console.log(`[MP] ✅ Preflight passed for cart ${cart_id}`);
+    logger.debug(`[MP] ✅ Preflight passed for cart ${cart_id}`);
 
     // ═══════════════════════════════════════════════════════
     // GUARDRAIL 2: CENTRALIZED DISCOUNT ENGINE
@@ -151,8 +152,8 @@ export async function POST(request: NextRequest) {
     });
 
     const mpAmount = discounts.finalAmountCentavos / 100; // Convert centavos → pesos for MP
-    console.log(`[MP] Discount engine: ${discounts.debug}`);
-    console.log(`[MP] Final amount: ${mpAmount} MXN`);
+    logger.debug(`[MP] Discount engine: ${discounts.debug}`);
+    logger.debug(`[MP] Final amount: ${mpAmount} MXN`);
 
     if (Math.abs(Number(transaction_amount) - mpAmount) > 0.01) {
       console.warn(
@@ -214,7 +215,7 @@ export async function POST(request: NextRequest) {
       mpBody.issuer_id = String(issuer_id);
     }
 
-    console.log(`[MP] Processing payment (key: ${idempotencyKey})...`);
+    logger.debug(`[MP] Processing payment (key: ${idempotencyKey})...`);
 
     const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
       method: 'POST',
@@ -227,7 +228,7 @@ export async function POST(request: NextRequest) {
     });
 
     const mpResult = await mpResponse.json();
-    console.log('[MP] Response:', mpResult.status, mpResult.status_detail);
+    logger.debug('[MP] Response:', mpResult.status, mpResult.status_detail);
 
     // ─── Handle non-approved states ───
     if (!mpResponse.ok || !['approved'].includes(mpResult.status)) {
@@ -235,7 +236,7 @@ export async function POST(request: NextRequest) {
       // Do NOT complete order. Webhook will resolve this later.
       // TODO: Phase 4.4 — implement MP webhook to handle pending → approved
       if (['in_process', 'pending'].includes(mpResult.status)) {
-        console.log(`[MP] ⏳ Payment pending (${mpResult.status}). Order will be created via webhook.`);
+        logger.debug(`[MP] ⏳ Payment pending (${mpResult.status}). Order will be created via webhook.`);
         return NextResponse.json({
           status: mpResult.status,
           status_detail: mpResult.status_detail,
@@ -289,7 +290,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[MP] ✅ Payment verified: ${mpResult.id} = $${mpAmount} MXN`);
+    logger.debug(`[MP] ✅ Payment verified: ${mpResult.id} = $${mpAmount} MXN`);
 
     // ═══════════════════════════════════════════════════════
     // STEP 3: Complete order in Medusa
@@ -309,7 +310,7 @@ export async function POST(request: NextRequest) {
       const refundResult = await attemptRefund(mpResult.id, cart_id);
 
       // Structured audit log
-      console.log(JSON.stringify({
+      logger.debug(JSON.stringify({
         event: 'mp_order_failed_refund',
         cart_id,
         mp_payment_id: mpResult.id,
@@ -341,7 +342,7 @@ export async function POST(request: NextRequest) {
     // SUCCESS RESPONSE
     // ═══════════════════════════════════════════════════════
     // Structured audit log
-    console.log(JSON.stringify({
+    logger.debug(JSON.stringify({
       event: 'mp_payment_success',
       cart_id,
       mp_payment_id: mpResult.id,

@@ -117,7 +117,7 @@ export const HelpDeskPage: React.FC = () => {
         const data = await res.json();
         setTicketMessages(data.messages || []);
       }
-    } catch {}
+    } catch (_err) { void _err; }
     finally { setDetailLoading(false); }
   };
 

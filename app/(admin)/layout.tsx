@@ -16,6 +16,7 @@ import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
 import { AdminThemeProvider, useAdminTheme } from "@/contexts/AdminThemeContext";
 import { adminNavigation } from "@/src/admin/navigation";
 import "@/src/styles/admin-theme.css";
+import { AdminErrorBoundary } from '@/components/ErrorBoundary';
 
 // Admin email whitelist — extend as needed
 const ADMIN_EMAILS = [
@@ -114,17 +115,19 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         />
 
         <main className="p-4 sm:p-6 lg:p-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <AdminErrorBoundary context="panel de administración">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPage}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
+          </AdminErrorBoundary>
         </main>
       </div>
     </div>

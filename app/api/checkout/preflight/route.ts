@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { medusaFetch, jsonError } from '../../_lib/medusa-helpers';
+import { logger } from '@/src/lib/logger';
 
 /**
  * POST /api/checkout/preflight
@@ -135,7 +136,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[Preflight] Cart ${cart_id} is ready ✅ (total: $${cart.total})`);
+    logger.debug(`[Preflight] Cart ${cart_id} is ready ✅ (total: $${cart.total})`);
     return NextResponse.json({
       ready: true,
       cart_id,

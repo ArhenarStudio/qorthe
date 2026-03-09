@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { logger } from '@/src/lib/logger';
 
 // ═══════════════════════════════════════════════════════════════
 // discount-engine.ts — Motor de descuentos centralizado
@@ -255,7 +256,7 @@ export async function calculateDiscounts(params: {
 
   const debug = `subtotal=${cartSubtotalCentavos} cartTotal=${cartTotalCentavos} promo=${promoDiscountCentavos} tier=${tierDiscountCentavos}(${userTierName}/${tierDiscountPercent}%) pts=${pointsDiscountCentavos}(${validatedPoints}pts) cap=${maxCombinedPercent}% maxDisc=${maxDiscountCentavos} final=${finalAmountCentavos}`;
 
-  console.log(`[DiscountEngine] ${userEmail || 'guest'}: ${debug}`);
+  logger.debug(`[DiscountEngine] ${userEmail || 'guest'}: ${debug}`);
 
   return {
     tierDiscountCentavos,

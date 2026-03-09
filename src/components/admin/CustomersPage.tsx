@@ -464,7 +464,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
       const data = await res.json();
       setDetailOrders(data.orders || []);
       setDetailTransactions(data.transactions || []);
-    } catch {}
+    } catch (_err) { void _err; }
   };
 
   // Handle points adjustment

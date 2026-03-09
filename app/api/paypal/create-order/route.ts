@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { medusaFetch, getVerifiedCartTotal, jsonError } from '../../_lib/medusa-helpers';
 import { calculateDiscounts } from '../../_lib/discount-engine';
+import { logger } from '@/src/lib/logger';
 
 // ═══════════════════════════════════════════════════════════════
 // PayPal Create Order — via Medusa Payment Collection + Session
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     const cartTotalCentavos = cart.total || 0;
     const cartSubtotalCentavos = cart.item_subtotal || cart.subtotal || cartTotalCentavos;
-    console.log(`[PayPal] Cart total: ${cartTotalCentavos} centavos, subtotal: ${cartSubtotalCentavos} centavos`);
+    logger.debug(`[PayPal] Cart total: ${cartTotalCentavos} centavos, subtotal: ${cartSubtotalCentavos} centavos`);
 
     // 2. Calculate discounts via centralized engine
     const discounts = await calculateDiscounts({
@@ -43,19 +44,19 @@ export async function POST(req: NextRequest) {
       cartTotalCentavos,
       pointsToRedeem: loyalty_points_to_redeem || 0,
     });
-    console.log(`[PayPal] Discount engine: ${discounts.debug}`);
+    logger.debug(`[PayPal] Discount engine: ${discounts.debug}`);
 
     // 3. Create payment collection for this cart
-    console.log(`[PayPal] Creating payment collection for cart ${cartId}...`);
+    logger.debug(`[PayPal] Creating payment collection for cart ${cartId}...`);
     const pcData = await medusaFetch('/payment-collections', {
       method: 'POST',
       body: JSON.stringify({ cart_id: cartId }),
     });
     const pcId = pcData.payment_collection.id;
-    console.log(`[PayPal] Payment collection created: ${pcId}`);
+    logger.debug(`[PayPal] Payment collection created: ${pcId}`);
 
     // 4. Initialize PayPal payment session
-    console.log(`[PayPal] Creating PayPal payment session...`);
+    logger.debug(`[PayPal] Creating PayPal payment session...`);
     const sessionData = await medusaFetch(
       `/payment-collections/${pcId}/payment-sessions`,
       {
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
     const paypalOrderId = paypalSession.data.id;
     const approveUrl = paypalSession.data.approve_url;
 
-    console.log(`[PayPal] ✅ PayPal order created: ${paypalOrderId}`);
+    logger.debug(`[PayPal] ✅ PayPal order created: ${paypalOrderId}`);
 
     return NextResponse.json({
       paypalOrderId,

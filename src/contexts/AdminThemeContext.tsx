@@ -119,7 +119,7 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ theme_id: id }),
       });
-    } catch {}
+    } catch (_err) { void _err; }
   };
 
   const setSetupCompleted = async (v: boolean) => {
@@ -130,7 +130,7 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ setup_completed: v }),
       });
-    } catch {}
+    } catch (_err) { void _err; }
   };
 
   return (

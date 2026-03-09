@@ -5,7 +5,6 @@ import { toast } from 'sonner';
 import { Check } from 'lucide-react';
 
 export const addToCart = (product: { name: string; image: string; price: number }) => {
-  console.log('Adding to cart:', product);
 
   toast.custom((t) => (
     <div className="w-full bg-white shadow-xl border border-wood-100 rounded-lg overflow-hidden flex ring-1 ring-black/5">

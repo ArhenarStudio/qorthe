@@ -57,7 +57,6 @@ export function fbEvent(eventName: FbEventName, params: FbEventParams = {}): str
   const fbq = getFbq();
   if (!fbq) {
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Meta Pixel] (not loaded) ${eventName}`, params);
     }
     return null;
   }
@@ -72,7 +71,6 @@ export function fbEvent(eventName: FbEventName, params: FbEventParams = {}): str
   fbq('track', eventName, cleanParams, { eventID: eventId });
 
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[Meta Pixel] ${eventName}`, { eventId, ...cleanParams });
   }
 
   return eventId;
@@ -89,7 +87,6 @@ export function fbPageView(): string | null {
   fbq('track', 'PageView', {}, { eventID: eventId });
 
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[Meta Pixel] PageView`, { eventId });
   }
 
   return eventId;

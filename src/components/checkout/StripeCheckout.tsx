@@ -124,7 +124,6 @@ function CheckoutForm({
 
         // STEP 4: Payment succeeded — create order in Medusa
         if (paymentIntent?.status === 'succeeded') {
-          console.log('[Stripe] Payment succeeded, creating order...');
           const confirmRes = await fetch('/api/stripe/confirm-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -136,7 +135,6 @@ function CheckoutForm({
             }),
           });
           const result = await confirmRes.json();
-          console.log('[Stripe] Order result:', result);
           setStatus('success');
           p.onPaymentSuccess(result);
         } else {
@@ -190,7 +188,7 @@ function CheckoutForm({
 
           <PaymentElement
             options={{ layout: 'tabs' }}
-            onReady={() => console.log('[Stripe] PaymentElement ready')}
+            onReady={() => undefined}
             onLoadError={(e) => console.error('[Stripe] PaymentElement load error:', e)}
           />
 

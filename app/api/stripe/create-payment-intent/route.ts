@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getVerifiedCartTotal, medusaFetch, jsonError } from '../../_lib/medusa-helpers';
 import { calculateDiscounts } from '../../_lib/discount-engine';
+import { logger } from '@/src/lib/logger';
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
       pointsToRedeem: Math.round((frontendLoyaltyPoints || 0) / 1),
     });
 
-    console.log(`[Stripe] Discount engine: ${discounts.debug}`);
+    logger.debug(`[Stripe] Discount engine: ${discounts.debug}`);
 
     // ═══════════════════════════════════════════════════════
     // IDEMPOTENCY: Same cart_id → same PaymentIntent

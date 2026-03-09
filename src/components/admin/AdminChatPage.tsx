@@ -121,7 +121,7 @@ export const AdminChatPage: React.FC = () => {
     try {
       const res = await fetch('/api/admin/chat/config');
       if (res.ok) { const data = await res.json(); if (data.config) setConfig(data.config); }
-    } catch {}
+    } catch (_err) { void _err; }
     finally { setConfigLoading(false); }
   }, []);
 

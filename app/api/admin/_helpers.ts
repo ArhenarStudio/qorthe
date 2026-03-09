@@ -5,7 +5,7 @@
 // Used by admin proxy API routes.
 // ═══════════════════════════════════════════════════════════════
 
-const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000";
+const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "";
 const ADMIN_EMAIL = "admin@davidsonsdesign.com";
 const ADMIN_PASSWORD = "Admin123!";
 

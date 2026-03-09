@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from '@/src/lib/logger';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = "hola@davidsonsdesign.com";
@@ -18,8 +19,8 @@ export async function POST(req: NextRequest) {
     }
 
     if (!RESEND_API_KEY) {
-      console.warn("[Contact] RESEND_API_KEY not set, logging only");
-      console.log(`[Contact] Ticket: ${subject} | ${category} | From: ${email || 'anon'}`);
+      logger.warn("[Contact] RESEND_API_KEY not set, logging only");
+      logger.debug(`[Contact] Ticket: ${subject} | ${category} | From: ${email || 'anon'}`);
       return NextResponse.json({ success: true, _note: "logged_only" });
     }
 
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json();
-    console.log(`[Contact] Ticket sent: ${data.id} — ${subject}`);
+    logger.debug(`[Contact] Ticket sent: ${data.id} — ${subject}`);
 
     return NextResponse.json({ success: true, email_id: data.id });
   } catch (err: unknown) {

@@ -83,7 +83,7 @@ export const CmsProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           return;
         }
       }
-    } catch {}
+    } catch (_err) { void _err; }
 
     // Fetch from API
     fetch("/api/public/cms")
@@ -93,7 +93,7 @@ export const CmsProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           const cmsData = { menus: d.menus || {}, sections: d.sections || [], texts: d.texts || {}, popups: d.popups || [] };
           setData({ ...cmsData, loading: false, loaded: true });
           // Cache in sessionStorage
-          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ...cmsData, _ts: Date.now() })); } catch {}
+          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ...cmsData, _ts: Date.now() })); } catch (_err) { void _err; }
         } else {
           setData((prev) => ({ ...prev, loading: false, loaded: true }));
         }

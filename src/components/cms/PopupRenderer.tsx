@@ -19,7 +19,7 @@ export const PopupRenderer: React.FC = () => {
       const matchesPath = p.show_on.some((path) => path === "/" ? pathname === "/" : pathname.startsWith(path));
       if (!matchesPath) return false;
       if (p.display_frequency === "once_per_session") {
-        try { if (sessionStorage.getItem(`popup_seen_${p.id}`)) return false; } catch {}
+        try { if (sessionStorage.getItem(`popup_seen_${p.id}`)) return false; } catch (_err) { void _err; }
       }
       return true;
     });
@@ -36,7 +36,7 @@ export const PopupRenderer: React.FC = () => {
   const handleDismiss = () => {
     if (activePopup) {
       setDismissed((prev) => new Set(prev).add(activePopup.id));
-      try { sessionStorage.setItem(`popup_seen_${activePopup.id}`, "1"); } catch {}
+      try { sessionStorage.setItem(`popup_seen_${activePopup.id}`, "1"); } catch (_err) { void _err; }
       setActivePopup(null);
     }
   };

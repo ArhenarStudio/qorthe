@@ -42,7 +42,8 @@ export async function updateSession(request: NextRequest) {
       data: { user: u },
     } = await supabase.auth.getUser();
     user = u;
-  } catch {
+  } catch (_err) {
+    void _err;
     // Si Supabase no responde (env missing, red, etc.), tratar como sin sesión
   }
 

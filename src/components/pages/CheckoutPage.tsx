@@ -248,7 +248,6 @@ export const CheckoutPage = () => {
 
   useEffect(() => {
     const zip = watchedZip?.trim() || '';
-    console.log(`[Checkout Quote] zip="${zip}" opts=${allShippingOptions.length} lastQ="${lastQuotedZipRef.current}"`);
     // Only quote when we have a 5-digit Mexican postal code
     if (zip.length !== 5 || !/^\d{5}$/.test(zip)) return;
     // Don't re-quote the same CP
@@ -407,7 +406,6 @@ export const CheckoutPage = () => {
           description: `Canje en pedido #${orderDisplayId || 'N/A'} — ${formatPrice(loyaltyDiscount, currencyCode)} de descuento`,
         }),
       });
-      console.log(`[Loyalty] Redeemed ${loyaltyPointsToRedeem} points for order #${orderDisplayId}`);
     } catch (err) {
       console.error('[Loyalty] Error redeeming points:', err);
       // Non-blocking: payment already succeeded, log but don't break flow
@@ -415,7 +413,6 @@ export const CheckoutPage = () => {
   };
 
   const onSubmit = (data: any) => {
-    console.log(data);
     // If Stripe is selected, trigger Stripe payment via ref
     if (paymentMethod === 'stripe' && stripeRef.current) {
       stripeRef.current.submit();
@@ -468,14 +465,12 @@ export const CheckoutPage = () => {
           console.warn('[Checkout] Shipping method cleanup note:', (shippingErr as Error).message);
         }
       } else if (!hasCorrectMethod) {
-        console.log('[Checkout] Adding shipping method:', selectedShippingOption);
         try {
           await commerce.addShippingMethod(cart.id, selectedShippingOption);
         } catch (shippingErr: unknown) {
           console.warn('[Checkout] Shipping method note:', (shippingErr as Error).message);
         }
       } else {
-        console.log('[Checkout] Correct shipping method already exists, skipping.');
       }
 
       setStep(2);
@@ -924,7 +919,6 @@ export const CheckoutPage = () => {
                                 phone: watchedPhone || '',
                               }}
                               onPaymentSuccess={(data) => {
-                                console.log('Payment success:', data);
                                 // Meta Pixel: Purchase event
                                 fbEvent(FB_EVENTS.PURCHASE, {
                                   content_ids: cartItems.map(item => item.merchandise.id),
@@ -968,7 +962,6 @@ export const CheckoutPage = () => {
                                   phone: watchedPhone || '',
                                 }}
                                 onPaymentSuccess={(data) => {
-                                  console.log('Stripe payment success:', data);
                                   // Meta Pixel: Purchase event
                                   fbEvent(FB_EVENTS.PURCHASE, {
                                     content_ids: cartItems.map(item => item.merchandise.id),
@@ -1019,7 +1012,6 @@ export const CheckoutPage = () => {
                                 phone: watchedPhone || '',
                               }}
                               onPaymentSuccess={(data) => {
-                                console.log('PayPal payment success:', data);
                                 // Meta Pixel: Purchase event
                                 fbEvent(FB_EVENTS.PURCHASE, {
                                   content_ids: cartItems.map(item => item.merchandise.id),

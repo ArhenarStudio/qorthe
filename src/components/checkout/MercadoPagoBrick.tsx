@@ -47,18 +47,15 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
       initMercadoPago(MP_PUBLIC_KEY, { locale: 'es-MX' });
       mpInitialized = true;
     }
-    console.log('[MP] Brick init - amount:', amount, 'cartId:', cartId, 'publicKey:', MP_PUBLIC_KEY?.substring(0, 20));
     setStatus('ready');
   }, []);
 
   const handleSubmit = useCallback(async (formData: any) => {
     setStatus('processing');
     setErrorMsg('');
-    console.log('[MP] formData from Brick:', formData);
 
     // The Payment Brick wraps data inside formData.formData
     const pd = formData.formData || formData;
-    console.log('[MP] Extracted payment data:', pd);
 
     try {
       // ─── PREFLIGHT: Validate cart is ready before payment ───
@@ -78,7 +75,6 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
         );
         return;
       }
-      console.log('[MP] Preflight passed ✅');
 
       const response = await fetch('/api/mercadopago/process-payment', {
         method: 'POST',
@@ -101,7 +97,6 @@ export const MercadoPagoBrick: React.FC<MercadoPagoBrickProps> = ({
       });
 
       const result = await response.json();
-      console.log('[MP] Payment result:', result);
 
       if (result.status === 'approved') {
         setStatus('success');
