@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
-import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard } from '@/src/theme/primitives';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
@@ -819,7 +819,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
 export const AutomationsPage: React.FC = () => {
 
   const { t } = useTheme();
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  // primitivos via src/theme/primitives — leen de useTheme() directamente
   // ── Live data from API ──
   const [liveAuto, setLiveAuto] = useState<any>(null);
   const [automationsLoading, setAutomationsLoading] = useState(true);

@@ -24,7 +24,7 @@ const tierColors: Record<string, string> = { pino: 'bg-green-100 text-green-700'
 
 export const AdminChatPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('conversations');
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);

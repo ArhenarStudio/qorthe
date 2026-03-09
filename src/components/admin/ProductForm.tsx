@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { type Product } from './products/types';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -147,7 +149,8 @@ interface ProductFormProps {
 
 export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => {
   const isEditing = !!product;
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  const { t } = useTheme();
+  // primitivos via src/theme/primitives
 
   const [form, setForm] = useState<ProductFormData>(() => {
     if (!product) return defaultFormData;

@@ -19,7 +19,7 @@ const FinanceDataContext = React.createContext<any>(null);
 const useFinanceData = () => React.useContext(FinanceDataContext);
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
-import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard } from '@/src/theme/primitives';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
@@ -1257,7 +1257,7 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
 export const FinancesPage: React.FC = () => {
 
   const { t } = useTheme();
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  // primitivos via src/theme/primitives — leen de useTheme() directamente
   // ── Live data from API ──
   const [liveFinances, setLiveFinances] = useState<any>(null);
   const [financesLoading, setFinancesLoading] = useState(true);

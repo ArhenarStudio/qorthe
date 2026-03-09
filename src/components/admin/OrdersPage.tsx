@@ -13,39 +13,36 @@ import { type Order, type OrderItem, type EngravingDesign } from '@/data/adminMo
 import { useAdminData } from '@/hooks/useAdminData';
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
-import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== CONFIG =====
-const statusConfig: Record<string, { label: string; class: string }> = {
-  paid: { label: 'Pagado', class: 'bg-green-50 text-green-600' },
-  pending: { label: 'Pendiente', class: 'bg-amber-50 text-amber-600' },
-  refunded: { label: 'Reembolsado', class: 'bg-red-50 text-red-500' },
+// Status labels — colores via useTheme() tokens, no hardcoded
+const statusLabels: Record<string, string> = {
+  paid: 'Pagado', pending: 'Pendiente', refunded: 'Reembolsado',
 };
-
-const shippingConfig: Record<string, { label: string; class: string }> = {
-  pending: { label: 'Pendiente', class: 'bg-amber-50 text-amber-600' },
-  production: { label: 'En producción', class: 'bg-blue-50 text-blue-600' },
-  shipped: { label: 'Enviado', class: 'bg-indigo-50 text-indigo-600' },
-  delivered: { label: 'Entregado', class: 'bg-green-50 text-green-600' },
-  cancelled: { label: 'Cancelado', class: 'bg-red-50 text-red-500' },
+const shippingLabels: Record<string, string> = {
+  pending: 'Pendiente', production: 'En producción', shipped: 'Enviado',
+  delivered: 'Entregado', cancelled: 'Cancelado',
 };
-
-const orderStatusConfig: Record<string, { label: string; color: string }> = {
-  new: { label: 'Nuevo', color: 'bg-blue-50 text-blue-600' },
-  payment_confirmed: { label: 'Pago confirmado', color: 'bg-green-50 text-green-600' },
-  in_production: { label: 'En producción', color: 'bg-amber-50 text-amber-600' },
-  laser_engraving: { label: 'Grabado láser', color: 'bg-amber-50 text-amber-600' },
-  quality_control: { label: 'Control de calidad', color: 'bg-amber-50 text-amber-600' },
-  packing: { label: 'Empacado', color: 'bg-amber-50 text-amber-600' },
-  ready_to_ship: { label: 'Listo para enviar', color: 'bg-orange-50 text-orange-600' },
-  shipped: { label: 'Enviado', color: 'bg-blue-50 text-blue-600' },
-  in_transit: { label: 'En tránsito', color: 'bg-blue-50 text-blue-600' },
-  out_for_delivery: { label: 'En camino', color: 'bg-blue-50 text-blue-600' },
-  delivered: { label: 'Entregado', color: 'bg-green-50 text-green-600' },
-  cancelled: { label: 'Cancelado', color: 'bg-red-50 text-red-500' },
-  refunded: { label: 'Reembolsado', color: 'bg-red-50 text-red-500' },
-  disputed: { label: 'En disputa', color: 'bg-red-50 text-red-500' },
+const orderStatusLabels: Record<string, string> = {
+  new: 'Nuevo', payment_confirmed: 'Pago confirmado', in_production: 'En producción',
+  laser_engraving: 'Grabado láser', quality_control: 'Control de calidad', packing: 'Empacado',
+  ready_to_ship: 'Listo para enviar', shipped: 'Enviado', in_transit: 'En tránsito',
+  out_for_delivery: 'En camino', delivered: 'Entregado', cancelled: 'Cancelado',
+  refunded: 'Reembolsado', disputed: 'En disputa',
+};
+type StatusVariant = 'success' | 'warning' | 'error' | 'info';
+const paymentVariant = (s: string): StatusVariant =>
+  s === 'paid' ? 'success' : s === 'refunded' ? 'error' : 'warning';
+const orderVariant = (s: string): StatusVariant =>
+  ['delivered', 'payment_confirmed'].includes(s) ? 'success' :
+  ['cancelled', 'refunded', 'disputed'].includes(s) ? 'error' :
+  ['shipped', 'in_transit', 'out_for_delivery', 'new'].includes(s) ? 'info' : 'warning';
+// shippingConfig kept for filter label lookup only
+const shippingConfig: Record<string, { label: string }> = {
+  pending: { label: 'Pendiente' }, production: { label: 'En producción' },
+  shipped: { label: 'Enviado' }, delivered: { label: 'Entregado' }, cancelled: { label: 'Cancelado' },
 };
 
 const engravingStatusConfig: Record<string, { label: string; class: string }> = {
@@ -144,7 +141,7 @@ function mapLiveOrder(o: any): Order {
 export const OrdersPage: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { t } = useTheme();
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [filterOpen, setFilterOpen] = useState(false);
@@ -207,7 +204,7 @@ export const OrdersPage: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text-secondary)] hover:border-wood-300 transition-colors"
             >
               <Filter size={14} />
-              {statusFilter === 'all' ? 'Todos' : shippingConfig[statusFilter]?.label}
+              {statusFilter === 'all' ? 'Todos' : shippingLabels[statusFilter]}
               <ChevronDown size={12} />
             </button>
             {filterOpen && (
@@ -267,14 +264,10 @@ export const OrdersPage: React.FC = () => {
                   <td className="px-5 py-3.5 text-xs text-[var(--admin-text-secondary)] hidden md:table-cell">{order.items.length} {order.items.length === 1 ? 'pza' : 'pzs'}</td>
                   <td className="px-5 py-3.5 text-xs font-medium text-[var(--admin-text)]">${order.total.toLocaleString()}</td>
                   <td className="px-5 py-3.5">
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusConfig[order.paymentStatus]?.class}`}>
-                      {statusConfig[order.paymentStatus]?.label}
-                    </span>
+                    <TBadge text={statusLabels[order.paymentStatus] || order.paymentStatus} variant={paymentVariant(order.paymentStatus)} />
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${orderStatusConfig[order.orderStatus]?.color}`}>
-                      {orderStatusConfig[order.orderStatus]?.label}
-                    </span>
+                    <TBadge text={orderStatusLabels[order.orderStatus] || order.orderStatus} variant={orderVariant(order.orderStatus)} />
                   </td>
                   <td className="px-5 py-3.5 hidden lg:table-cell">
                     {order.tracking ? (
@@ -411,12 +404,8 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
 
         {/* Status Badges */}
         <div className="flex gap-2 flex-wrap ml-11">
-          <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${statusConfig[order.paymentStatus]?.class}`}>
-            💳 {statusConfig[order.paymentStatus]?.label}
-          </span>
-          <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${orderStatusConfig[order.orderStatus]?.color}`}>
-            📦 {orderStatusConfig[order.orderStatus]?.label}
-          </span>
+          <TBadge text={"💳 " + (statusLabels[order.paymentStatus] || order.paymentStatus)} variant={paymentVariant(order.paymentStatus)} />
+          <TBadge text={"📦 " + (orderStatusLabels[order.orderStatus] || order.orderStatus)} variant={orderVariant(order.orderStatus)} />
           <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${order.tracking ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500'}`}>
             🚚 {order.tracking ? 'Guía generada' : 'Sin guía'}
           </span>
@@ -478,13 +467,13 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                     <button
                       key={s}
                       onClick={() => {
-                        toast.success(`Estado cambiado a: ${orderStatusConfig[s]?.label}`);
+                        toast.success(`Estado cambiado a: ${orderStatusLabels[s] || s}`);
                         setStatusDropdownOpen(false);
                       }}
                       className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--admin-surface2)] flex items-center gap-2 ${order.orderStatus === s ? 'text-[var(--admin-accent)] font-medium' : 'text-[var(--admin-text-secondary)]'}`}
                     >
-                      <span className={`w-2 h-2 rounded-full ${orderStatusConfig[s]?.color.split(' ')[0].replace('bg-', 'bg-')}`} />
-                      {orderStatusConfig[s]?.label}
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: ['delivered','payment_confirmed'].includes(s) ? 'var(--admin-success)' : ['cancelled','refunded','disputed'].includes(s) ? 'var(--admin-error)' : ['shipped','in_transit','new'].includes(s) ? 'var(--admin-info)' : 'var(--admin-warning)' }} />
+                      {orderStatusLabels[s] || s}
                     </button>
                   ))}
                 </div>

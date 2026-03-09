@@ -14,6 +14,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useTheme } from '@/src/theme/ThemeContext';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard } from '@/src/theme/primitives';
 import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -333,7 +334,7 @@ export const ProductsPage: React.FC = () => {
                 <button onClick={() => handleBulkAction("activate")} disabled={actionLoading === "bulk"}
                   className="px-3 py-1.5 text-[11px] bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-bold">Activar</button>
                 <button onClick={() => handleBulkAction("draft")} disabled={actionLoading === "bulk"}
-                  className="px-3 py-1.5 text-[11px] bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-bold">Borrador</button>
+                  className="px-3 py-1.5 text-[11px] rounded-lg font-bold" style={{ backgroundColor: 'var(--admin-surface2)', color: 'var(--admin-text-secondary)' }}>Borrador</button>
                 <button onClick={() => handleBulkAction("export")} disabled={actionLoading === "bulk"}
                   className="px-3 py-1.5 text-[11px] bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-bold">Exportar CSV</button>
               </div>

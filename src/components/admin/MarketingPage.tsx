@@ -19,7 +19,7 @@ import {
 } from 'recharts';
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
-import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard } from '@/src/theme/primitives';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 import { logger } from '@/src/lib/logger';
 
@@ -837,7 +837,7 @@ const AnalisisTab: React.FC = () => {
 export const MarketingPage: React.FC = () => {
   const [tab, setTab] = useState<TabId>('cupones');
   const { t } = useTheme();
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [search, setSearch] = useState('');
 
   // ── Live promotion stats ──

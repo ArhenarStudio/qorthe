@@ -19,7 +19,7 @@ import {
 } from 'recharts';
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
-import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== CONSTANTS =====
@@ -71,7 +71,7 @@ const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; s
 export const QuotesPage: React.FC = () => {
 
   const { t } = useTheme();
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  // primitivos via src/theme/primitives — leen de useTheme() directamente
   // ── Live data from API (no mock fallback) ──
   const [liveQuotes, setLiveQuotes] = useState<{ quotes: AdminQuote[]; stats: { today_revenue: number; today_count: number; pos_count: number; total_count: number } } | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(true);

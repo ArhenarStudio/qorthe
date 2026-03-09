@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
-import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ── Types ──────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ const ITEMS_PER_PAGE = 20;
 export const ReviewsPage: React.FC = () => {
   // Data state
   const { t } = useTheme();
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
+  // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [counts, setCounts] = useState<ReviewCounts>({ pending: 0, approved: 0, rejected: 0 });
   const [stats, setStats] = useState<ReviewStats>({ avgRating: 0, totalReviews: 0, ratingDistribution: [], withPhotos: 0 });
