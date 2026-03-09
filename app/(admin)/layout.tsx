@@ -1,8 +1,7 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
 // app/(admin)/layout.tsx
-// Admin Layout — Nueva arquitectura ThemeContext
-// ThemeProvider es la única fuente de verdad para tokens + layouts
+// Admin Layout — ThemeProvider único, nunca se remonta
 // ═══════════════════════════════════════════════════════════════
 
 import React, { useEffect, useState } from "react";
@@ -31,7 +30,6 @@ const ADMIN_EMAILS = [
   "studiorockstage@gmail.com",
 ];
 
-// ── Mapa de Sidebar y Header por themeId ─────────────────────
 type SidebarComponent = React.ComponentType<{
   currentPage: AdminPage;
   onNavigate: (page: AdminPage) => void;
@@ -81,10 +79,9 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const Sidebar = SIDEBARS[themeId] ?? ClassicSidebar;
   const Header  = HEADERS[themeId]  ?? ClassicHeader;
 
-  // Calcular marginLeft según tokens — sin hardcoding de IDs
   const activeSidebarWidth =
     t.sidebarStyle === "rail"
-      ? t.sidebarWidth          // rail siempre fijo
+      ? t.sidebarWidth
       : sidebarCollapsed
         ? t.sidebarCollapsedWidth
         : t.sidebarWidth;
@@ -102,7 +99,6 @@ function AdminShell({ children }: { children: React.ReactNode }) {
       className="min-h-screen"
       style={{ backgroundColor: t.bg, fontFamily: t.fontBody, fontSize: t.fontSizeBase }}
     >
-      {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar
           currentPage={currentPage}
@@ -113,7 +109,6 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         />
       </div>
 
-      {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -146,7 +141,6 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Main content */}
       <div
         className="transition-all duration-250 ease-in-out"
         style={{ marginLeft: isDesktop ? activeSidebarWidth : 0 }}
@@ -177,9 +171,11 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ── Root Layout export ────────────────────────────────────────
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, signOut } = useAuth();
+// ── AdminLayoutInner — lógica de auth con ThemeProvider ya activo ─
+// ThemeProvider vive AFUERA de la condición — nunca se remonta
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const { t } = useTheme();
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
@@ -187,71 +183,80 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       const email = user.email?.toLowerCase() || "";
       setAuthorized(ADMIN_EMAILS.includes(email));
     }
+    if (!loading && !user) {
+      setAuthorized(false);
+    }
   }, [user, loading]);
 
+  // Estado de carga
   if (loading) {
     return (
-      <ThemeProvider>
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
-          <div className="animate-spin w-8 h-8 rounded-full border-2 border-[#C5A065] border-t-transparent" />
-        </div>
-      </ThemeProvider>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: t.bg }}>
+        <div className="animate-spin w-8 h-8 rounded-full border-2 border-t-transparent"
+          style={{ borderColor: t.accent, borderTopColor: "transparent" }} />
+      </div>
     );
   }
 
+  // Sin sesión
   if (!user) {
     return (
-      <ThemeProvider>
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
-          <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
-            <Shield size={40} className="mx-auto mb-4 text-[#B09878]" />
-            <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Acceso Restringido
-            </h1>
-            <p className="text-sm text-[#7A6148] mb-6">
-              Necesitas iniciar sesión con una cuenta de administrador.
-            </p>
-            <Link
-              href="/auth"
-              className="inline-block px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
-            >
-              Iniciar Sesión
-            </Link>
-          </div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
+        <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
+          <Shield size={40} className="mx-auto mb-4 text-[#B09878]" />
+          <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Acceso Restringido
+          </h1>
+          <p className="text-sm text-[#7A6148] mb-6">
+            Necesitas iniciar sesión con una cuenta de administrador.
+          </p>
+          <Link
+            href="/auth"
+            className="inline-block px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
+          >
+            Iniciar Sesión
+          </Link>
         </div>
-      </ThemeProvider>
+      </div>
     );
   }
 
+  // Sin autorización
   if (!authorized) {
     return (
-      <ThemeProvider>
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
-          <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
-            <Shield size={40} className="mx-auto mb-4 text-[#DC2626]" />
-            <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Sin Autorización
-            </h1>
-            <p className="text-sm text-[#7A6148] mb-2">
-              Tu cuenta ({user.email}) no tiene permisos de administrador.
-            </p>
-            <Link
-              href="/"
-              className="inline-block mt-4 px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
-            >
-              Volver al Sitio
-            </Link>
-          </div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
+        <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
+          <Shield size={40} className="mx-auto mb-4 text-[#DC2626]" />
+          <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Sin Autorización
+          </h1>
+          <p className="text-sm text-[#7A6148] mb-2">
+            Tu cuenta ({user.email}) no tiene permisos de administrador.
+          </p>
+          <Link
+            href="/"
+            className="inline-block mt-4 px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
+          >
+            Volver al Sitio
+          </Link>
         </div>
-      </ThemeProvider>
+      </div>
     );
   }
 
+  // Admin autorizado — AdminShell consume useTheme() del ThemeProvider padre
+  return (
+    <AdminProvider>
+      <AdminShell>{children}</AdminShell>
+    </AdminProvider>
+  );
+}
+
+// ── Root export — ThemeProvider único que NUNCA se remonta ────
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <AdminProvider>
-        <AdminShell>{children}</AdminShell>
-      </AdminProvider>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
     </ThemeProvider>
   );
 }
