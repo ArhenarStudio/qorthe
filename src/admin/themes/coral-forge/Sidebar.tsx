@@ -30,7 +30,7 @@ export const CoralForgeSidebar: React.FC<Props> = ({ currentPage, onNavigate, na
       initial={{ x: -80, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="fixed left-4 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-1 py-3 px-2 rounded-2xl"
+      className="fixed left-4 top-4 bottom-4 z-50 flex flex-col items-center gap-1 py-3 px-2 rounded-2xl overflow-y-auto"
       style={{
         background: 'rgba(15, 17, 20, 0.85)',
         backdropFilter: 'blur(20px)',
@@ -46,7 +46,7 @@ export const CoralForgeSidebar: React.FC<Props> = ({ currentPage, onNavigate, na
       </div>
 
       {/* Nav Items */}
-      {flatItems.slice(0, 12).map((item) => {
+      {flatItems.map((item) => {
         const isActive = currentPage === item.id;
         const Icon = item.icon;
         const badge = liveBadges[item.id] || 0;
