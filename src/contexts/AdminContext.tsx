@@ -8,11 +8,9 @@
 import React, { createContext, useContext, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { AdminPage } from "@/components/admin/AdminSidebar";
-import type { Period } from "@/components/admin/AdminHeader";
-
 interface AdminContextValue {
-  period: Period;
-  setPeriod: (p: Period) => void;
+  period: string;
+  setPeriod: (p: string) => void;
   currentPage: AdminPage;
   navigate: (page: AdminPage) => void;
 }
@@ -82,7 +80,7 @@ const pageToPath: Record<AdminPage, string> = {
 };
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
-  const [period, setPeriod] = useState<Period>("7days");
+  const [period, setPeriod] = useState<string>("7days");
   const pathname = usePathname();
   const router = useRouter();
 

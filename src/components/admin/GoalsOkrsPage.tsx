@@ -7,6 +7,8 @@ import {
   AlertTriangle, Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
@@ -276,6 +278,7 @@ function RankingTab() {
 // ===== MAIN =====
 export const GoalsOkrsPage: React.FC = () => {
 
+  const { t } = useTheme();
   const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveGoals, setLiveGoals] = useState<any>(null);

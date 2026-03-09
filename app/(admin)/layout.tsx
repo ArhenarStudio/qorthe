@@ -1,8 +1,8 @@
 "use client";
-
 // ═══════════════════════════════════════════════════════════════
-// Admin Layout — Full sidebar + header layout
-// Migrated from Figma export — 2026-03-01 (Fase 12.0)
+// app/(admin)/layout.tsx
+// Admin Layout — Nueva arquitectura ThemeContext
+// ThemeProvider es la única fuente de verdad para tokens + layouts
 // ═══════════════════════════════════════════════════════════════
 
 import React, { useEffect, useState } from "react";
@@ -10,52 +10,106 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import { Shield, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminHeader } from "@/components/admin/AdminHeader";
 import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
-import { AdminThemeProvider, useAdminTheme } from "@/contexts/AdminThemeContext";
 import { adminNavigation } from "@/src/admin/navigation";
-import "@/src/styles/admin-theme.css";
-import { AdminErrorBoundary } from '@/components/ErrorBoundary';
+import { AdminErrorBoundary } from "@/components/ErrorBoundary";
+import { ThemeProvider, useTheme } from "@/src/theme/ThemeContext";
 
-// Admin email whitelist — extend as needed
+// Layouts por tema
+import { ClassicSidebar } from "@/src/theme/layouts/ClassicLayout";
+import { ClassicHeader } from "@/src/theme/layouts/ClassicHeader";
+import { GlassSidebar, GlassHeader } from "@/src/theme/layouts/GlassLayout";
+import { NoirSidebar, NoirHeader } from "@/src/theme/layouts/NoirLayout";
+import { ForgeSidebar, ForgeHeader } from "@/src/theme/layouts/ForgeLayout";
+import { ArcticSidebar, ArcticHeader } from "@/src/theme/layouts/ArcticLayout";
+
+import type { AdminPage } from "@/src/admin/navigation";
+
 const ADMIN_EMAILS = [
   "admin@davidsonsdesign.com",
   "designdavidsons@gmail.com",
   "studiorockstage@gmail.com",
 ];
 
+// ── Mapa de Sidebar y Header por themeId ─────────────────────
+type SidebarComponent = React.ComponentType<{
+  currentPage: AdminPage;
+  onNavigate: (page: AdminPage) => void;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+  navigation: typeof adminNavigation;
+}>;
+
+type HeaderComponent = React.ComponentType<{
+  period: string;
+  onPeriodChange: (p: string) => void;
+  onNavigate: (page: AdminPage) => void;
+  onMobileMenuToggle: () => void;
+}>;
+
+const SIDEBARS: Record<string, SidebarComponent> = {
+  "dsd-classic":   ClassicSidebar,
+  "indigo-glass":  GlassSidebar,
+  "teal-noir":     NoirSidebar,
+  "coral-forge":   ForgeSidebar,
+  "arctic-light":  ArcticSidebar,
+};
+
+const HEADERS: Record<string, HeaderComponent> = {
+  "dsd-classic":   ClassicHeader,
+  "indigo-glass":  GlassHeader,
+  "teal-noir":     NoirHeader,
+  "coral-forge":   ForgeHeader,
+  "arctic-light":  ArcticHeader,
+};
+
+// ── AdminShell — usa ThemeContext ─────────────────────────────
 function AdminShell({ children }: { children: React.ReactNode }) {
+  const { t, themeId } = useTheme();
   const { currentPage, navigate, period, setPeriod } = useAdmin();
-  const { theme, navigation } = useAdminTheme();
-  const ThemeSidebar = theme.Sidebar;
-  const ThemeHeader = theme.Header;
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const onResize = () => setIsDesktop(window.innerWidth >= 1024);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const handleNavigate = (page: Parameters<typeof navigate>[0]) => {
+  const Sidebar = SIDEBARS[themeId] ?? ClassicSidebar;
+  const Header  = HEADERS[themeId]  ?? ClassicHeader;
+
+  // Calcular marginLeft según tokens — sin hardcoding de IDs
+  const activeSidebarWidth =
+    t.sidebarStyle === "rail"
+      ? t.sidebarWidth          // rail siempre fijo
+      : sidebarCollapsed
+        ? t.sidebarCollapsedWidth
+        : t.sidebarWidth;
+
+  const handleNavigate = (page: AdminPage) => {
     navigate(page);
     setMobileMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--admin-bg, #F5F3F0)' }}>
-      {/* Desktop Sidebar — injected from theme */}
+    <div
+      id="admin-root"
+      data-theme={themeId}
+      data-mode={t.mode}
+      className="min-h-screen"
+      style={{ backgroundColor: t.bg, fontFamily: t.fontBody, fontSize: t.fontSizeBase }}
+    >
+      {/* Desktop Sidebar */}
       <div className="hidden lg:block">
-        <ThemeSidebar
+        <Sidebar
           currentPage={currentPage}
           onNavigate={handleNavigate}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          navigation={navigation}
+          navigation={adminNavigation}
         />
       </div>
 
@@ -64,30 +118,26 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         {mobileMenuOpen && (
           <>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             />
             <motion.div
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
+              initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="fixed left-0 top-0 h-full z-50 lg:hidden"
             >
-              <ThemeSidebar
+              <Sidebar
                 currentPage={currentPage}
                 onNavigate={handleNavigate}
                 collapsed={false}
                 onToggleCollapse={() => setMobileMenuOpen(false)}
-                navigation={navigation}
+                navigation={adminNavigation}
               />
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-3 right-3 p-1.5 rounded-full z-50 hover:opacity-80"
-                style={{ backgroundColor: "var(--admin-sidebar-bg)", color: "var(--admin-muted)" }}
+                className="absolute top-3 right-3 p-1.5 rounded-full"
+                style={{ backgroundColor: t.sidebarBg, color: t.sidebarTextMuted }}
               >
                 <X size={14} />
               </button>
@@ -96,24 +146,17 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
+      {/* Main content */}
       <div
         className="transition-all duration-250 ease-in-out"
-        style={{
-          marginLeft: isDesktop ? (
-            theme.id === 'coral-forge' ? 72 :
-            theme.id === 'indigo-glass' ? 68 :
-            sidebarCollapsed ? 72 : (parseInt(theme.tokens.sidebarWidth) || 256)
-          ) : 0,
-        }}
+        style={{ marginLeft: isDesktop ? activeSidebarWidth : 0 }}
       >
-        <ThemeHeader
+        <Header
           period={period}
           onPeriodChange={setPeriod}
           onNavigate={handleNavigate}
           onMobileMenuToggle={() => setMobileMenuOpen(true)}
         />
-
         <main className="p-4 sm:p-6 lg:p-8">
           <AdminErrorBoundary context="panel de administración">
             <AnimatePresence mode="wait">
@@ -134,11 +177,8 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// ── Root Layout export ────────────────────────────────────────
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useAuth();
   const [authorized, setAuthorized] = useState(false);
 
@@ -149,70 +189,69 @@ export default function AdminLayout({
     }
   }, [user, loading]);
 
-  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--admin-bg, #F5F3F0)" }}>
-        <div className="animate-spin w-8 h-8 rounded-full" style={{ border: "2px solid var(--admin-accent, #C5A065)", borderTopColor: "transparent" }} />
-      </div>
+      <ThemeProvider>
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
+          <div className="animate-spin w-8 h-8 rounded-full border-2 border-[#C5A065] border-t-transparent" />
+        </div>
+      </ThemeProvider>
     );
   }
 
-  // Not logged in
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--admin-bg, #F5F3F0)" }}>
-        <div className="rounded-xl p-8 max-w-md text-center" style={{ backgroundColor: "var(--admin-surface, #FFFFFF)", border: "1px solid var(--admin-border, #EFEBE9)", boxShadow: "var(--admin-shadow, 0 1px 3px rgba(0,0,0,0.06))" }}>
-          <Shield size={40} className="mx-auto mb-4" style={{ color: "var(--admin-muted, #A1887F)" }} />
-          <h1 className="text-2xl mb-2" style={{ color: "var(--admin-text, #2d2419)", fontFamily: "var(--admin-font-heading)" }}>
-            Acceso Restringido
-          </h1>
-          <p className="text-[14px] mb-6" style={{ color: "var(--admin-text-secondary, #795548)" }}>
-            Necesitas iniciar sesión con una cuenta de administrador.
-          </p>
-          <Link
-            href="/auth"
-            className="inline-block px-6 py-3 text-[13px] font-semibold rounded-lg transition-colors"
-            style={{ backgroundColor: "var(--admin-accent, #2d2419)", color: "var(--admin-accent-text, white)" }}
-          >
-            Iniciar Sesión
-          </Link>
+      <ThemeProvider>
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
+          <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
+            <Shield size={40} className="mx-auto mb-4 text-[#B09878]" />
+            <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Acceso Restringido
+            </h1>
+            <p className="text-sm text-[#7A6148] mb-6">
+              Necesitas iniciar sesión con una cuenta de administrador.
+            </p>
+            <Link
+              href="/auth"
+              className="inline-block px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
+            >
+              Iniciar Sesión
+            </Link>
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     );
   }
 
-  // Not authorized
   if (!authorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--admin-bg, #F5F3F0)" }}>
-        <div className="rounded-xl p-8 max-w-md text-center" style={{ backgroundColor: "var(--admin-surface, #FFFFFF)", border: "1px solid var(--admin-border, #EFEBE9)", boxShadow: "var(--admin-shadow, 0 1px 3px rgba(0,0,0,0.06))" }}>
-          <Shield size={40} className="mx-auto mb-4" style={{ color: "var(--admin-error, #DC2626)" }} />
-          <h1 className="text-2xl mb-2" style={{ color: "var(--admin-text, #2d2419)", fontFamily: "var(--admin-font-heading)" }}>
-            Sin Autorización
-          </h1>
-          <p className="text-[14px] mb-2" style={{ color: "var(--admin-text-secondary, #795548)" }}>
-            Tu cuenta ({user.email}) no tiene permisos de administrador.
-          </p>
-          <Link
-            href="/"
-            className="inline-block mt-4 px-6 py-3 text-[13px] font-semibold rounded-lg transition-colors"
-            style={{ backgroundColor: "var(--admin-accent, #2d2419)", color: "var(--admin-accent-text, white)" }}
-          >
-            Volver al Sitio
-          </Link>
+      <ThemeProvider>
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
+          <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
+            <Shield size={40} className="mx-auto mb-4 text-[#DC2626]" />
+            <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Sin Autorización
+            </h1>
+            <p className="text-sm text-[#7A6148] mb-2">
+              Tu cuenta ({user.email}) no tiene permisos de administrador.
+            </p>
+            <Link
+              href="/"
+              className="inline-block mt-4 px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
+            >
+              Volver al Sitio
+            </Link>
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     );
   }
 
   return (
-    <AdminThemeProvider>
-    <AdminProvider>
-      <div id="admin-root">
+    <ThemeProvider>
+      <AdminProvider>
         <AdminShell>{children}</AdminShell>
-      </div>
-    </AdminProvider>
-    </AdminThemeProvider>
+      </AdminProvider>
+    </ThemeProvider>
   );
 }

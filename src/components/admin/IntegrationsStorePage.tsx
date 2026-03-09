@@ -11,6 +11,8 @@ import {
   Activity, ChevronDown, ArrowLeft, BadgeCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
@@ -886,6 +888,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
 // ===== MAIN COMPONENT =====
 export const IntegrationsStorePage: React.FC = () => {
 
+  const { t } = useTheme();
   const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveInteg, setLiveInteg] = useState<any>(null);

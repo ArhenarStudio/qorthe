@@ -18,6 +18,8 @@
 //   - Daily stats (revenue, order count)
 // ═══════════════════════════════════════════════════════════════
 
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {

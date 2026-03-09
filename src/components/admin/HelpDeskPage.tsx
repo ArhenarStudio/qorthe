@@ -9,6 +9,8 @@ import {
   Wifi, WifiOff, BookOpen, BarChart3, ShieldCheck, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ═══ Types ═══
@@ -56,6 +58,7 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString('es-MX', { day: '2
 // ═══ MAIN COMPONENT ═══
 export const HelpDeskPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>('tickets');
+  const { t } = useTheme();
   const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   const [tickets, setTickets] = useState<any[]>([]);
   const [warrantyClaims, setWarrantyClaims] = useState<any[]>([]);

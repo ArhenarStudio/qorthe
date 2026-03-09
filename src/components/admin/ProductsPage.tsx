@@ -13,6 +13,8 @@
 //   - Zero mock data, zero emojis, typed formatters
 // ═══════════════════════════════════════════════════════════════
 
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {

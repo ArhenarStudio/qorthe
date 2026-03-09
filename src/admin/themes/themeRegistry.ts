@@ -13,12 +13,15 @@ import { CoralForgeSidebar } from './coral-forge/Sidebar';
 import { CoralForgeHeader } from './coral-forge/Header';
 import { SageCommandSidebar } from './sage-command/Sidebar';
 import { SageCommandHeader } from './sage-command/Header';
+import { ArcticLightSidebar } from './arctic-light/Sidebar';
+import { ArcticLightHeader } from './arctic-light/Header';
 
 import { DefaultCard, DefaultBadge, DefaultButton, DefaultTable, DefaultStatCard } from './default/components';
 import { IndigoGlassCard, IndigoGlassBadge, IndigoGlassButton, IndigoGlassTable, IndigoGlassStatCard } from './indigo-glass/components';
 import { TealNoirCard, TealNoirBadge, TealNoirButton, TealNoirTable, TealNoirStatCard } from './teal-noir/components';
 import { CoralForgeCard, CoralForgeBadge, CoralForgeButton, CoralForgeTable, CoralForgeStatCard } from './coral-forge/components';
 import { SageCard, SageBadge, SageButton, SageTable, SageStatCard } from './sage-command/components';
+import { ArcticCard, ArcticBadge, ArcticButton, ArcticTable, ArcticStatCard } from './arctic-light/components';
 
 // ── Shorthand helpers ──────────────────────────────────────────
 const lightFonts = { heading: "'Inter', sans-serif", body: "'Inter', sans-serif", mono: "'JetBrains Mono', monospace" };
@@ -153,24 +156,25 @@ const obsidianProTheme: AdminUITheme = {
   components: darkComps, fonts: darkFonts, animations: baseAnims,
 };
 
-// ── 7. Arctic Light — Blanco nórdico minimalista ──────────────
+// ── 7. Arctic Light — Nórdico único con Sidebar+Header propios ─
+const arcticComps = { Card: ArcticCard, Badge: ArcticBadge, Button: ArcticButton, Table: ArcticTable, StatCard: ArcticStatCard };
+const arcticFonts = { heading: "'Plus Jakarta Sans', sans-serif", body: "'Inter', sans-serif", mono: "'JetBrains Mono', monospace" };
 const arcticLightTheme: AdminUITheme = {
-  ...defaultTheme,
   id: 'arctic-light', name: 'Arctic Light', mode: 'light',
-  description: 'Blanco nórdico ultra-limpio con acentos azul hielo. Máxima claridad.',
-  preview: { sidebar: '#1E2A3A', bg: '#F8FAFC', accent: '#0EA5E9', card: '#FFFFFF' },
-  Sidebar: DefaultSidebar as any, Header: DefaultHeader as any,
+  description: 'Nórdico ultra-limpio. Barra lateral con indicador izquierdo, tipografía Plus Jakarta Sans, máxima claridad.',
+  preview: { sidebar: '#F0F4F8', bg: '#F8FAFC', accent: '#38BDF8', card: '#FFFFFF' },
+  Sidebar: ArcticLightSidebar as any, Header: ArcticLightHeader as any,
   tokens: {
-    bg: '#F8FAFC', surface: '#FFFFFF', surface2: '#F1F5F9',
-    text: '#0F172A', textSecondary: '#475569', muted: '#94A3B8',
-    border: '#E2E8F0', accent: '#0EA5E9', accentHover: '#0284C7', accentText: '#FFFFFF',
-    sidebarBg: '#1E2A3A', sidebarText: '#CBD5E1', sidebarActive: 'rgba(14,165,233,0.12)',
-    sidebarAccent: '#0EA5E9', sidebarBorder: 'rgba(255,255,255,0.07)', sidebarWidth: '260px',
+    bg: '#F8FAFC', surface: '#FFFFFF', surface2: '#F0F4F8',
+    text: '#0C1A2E', textSecondary: '#4A6080', muted: '#94A3B8',
+    border: '#DDE5EF', accent: '#38BDF8', accentHover: '#0EA5E9', accentText: '#FFFFFF',
+    sidebarBg: '#F0F4F8', sidebarText: '#0C1A2E', sidebarActive: 'rgba(56,189,248,0.1)',
+    sidebarAccent: '#38BDF8', sidebarBorder: '#DDE5EF', sidebarWidth: '248px',
     success: '#10B981', error: '#EF4444', warning: '#F59E0B', info: '#6366F1',
-    cardRadius: '10px', buttonRadius: '6px', inputRadius: '6px',
-    shadow: '0 1px 2px rgba(0,0,0,0.04)', shadowLg: '0 4px 16px rgba(0,0,0,0.07)',
+    cardRadius: '12px', buttonRadius: '8px', inputRadius: '8px',
+    shadow: '0 1px 3px rgba(12,26,46,0.06)', shadowLg: '0 4px 16px rgba(12,26,46,0.08)',
   },
-  components: defaultComps, fonts: lightFonts, animations: baseAnims,
+  components: arcticComps, fonts: arcticFonts, animations: baseAnims,
 };
 
 // ── 8. Midnight Rose — Oscuro con rosa vibrante ───────────────

@@ -13,7 +13,7 @@ import {
   Tooltip, ResponsiveContainer
 } from 'recharts';
 import { useAdminData } from '@/hooks/useAdminData';
-import type { Period } from './AdminHeader';
+// Period type handled inline
 import type { AdminPage } from './AdminSidebar';
 import { SetupWizard } from './SetupWizard';
 import { useAdminTheme } from '@/contexts/AdminThemeContext';
@@ -52,11 +52,11 @@ const typeColorMap: Record<string, string> = {
 };
 
 interface Props {
-  period: Period;
+  period: string;
   onNavigate: (page: AdminPage) => void;
 }
 
-const periodQueryMap: Record<Period, string> = {
+const periodQueryMap: Record<string, string> = {
   today: 'today',
   '7days': '7days',
   '30days': '30days',
