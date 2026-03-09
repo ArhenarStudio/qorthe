@@ -844,18 +844,37 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
 // ===== MAIN COMPONENT =====
 export const ThemeEditorPage: React.FC = () => {
 
-  // ── Live data from API ──
-  const [liveTheme, setLiveTheme] = useState<any>(null);
-  const [themeLoading, setThemeLoading] = useState(true);
-  useEffect(() => {
-    fetch('/api/admin/theme').then(r => r.ok ? r.json() : null).then(d => { if (d) setLiveTheme(d); }).catch(() => {}).finally(() => setThemeLoading(false));
-  }, []);
-
+  // ── Theme state — loaded from API ──
   const [theme, setTheme] = useState<ThemeConfig>(themePresets[0].config);
+  const [themeLoading, setThemeLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<EditorSection | null>('branding');
   const [previewPage, setPreviewPage] = useState<PreviewPage>('home');
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
   const [showPresets, setShowPresets] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/admin/theme')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.theme) {
+          const saved = d.theme as Partial<ThemeConfig>;
+          setTheme(prev => ({
+            ...prev,
+            ...saved,
+            colors: { ...prev.colors, ...(saved.colors || {}) },
+            fonts: { ...prev.fonts, ...(saved.fonts || {}) },
+            layout: { ...prev.layout, ...(saved.layout || {}) },
+            components: { ...prev.components, ...(saved.components || {}) },
+            homepageSections: saved.homepageSections?.length ? saved.homepageSections : prev.homepageSections,
+          }));
+          if (d.updated_at) setSavedAt(d.updated_at);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setThemeLoading(false));
+  }, []);
 
   const updateColors = (key: keyof ThemeColors, value: string) => {
     setTheme(prev => ({ ...prev, colors: { ...prev.colors, [key]: value } }));
@@ -941,17 +960,43 @@ export const ThemeEditorPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => { setTheme(themePresets[0].config); toast.success('Tema restaurado a valores predeterminados'); }}
+            onClick={() => { setTheme(themePresets[0].config); setSavedAt(null); toast.success('Tema restaurado a valores predeterminados'); }}
             className="px-3 py-2 text-xs border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5"
           >
             <RotateCcw size={12} /> Restaurar
           </button>
           <button
-            onClick={() => toast.success('Tema publicado exitosamente')}
-            className="px-3 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5"
+            onClick={async () => {
+              setSaving(true);
+              try {
+                const res = await fetch('/api/admin/theme', {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ theme }),
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data.updated_at) setSavedAt(data.updated_at);
+                  toast.success('Tema publicado correctamente');
+                } else {
+                  toast.error('Error al publicar el tema');
+                }
+              } catch {
+                toast.error('Error de conexión');
+              } finally {
+                setSaving(false);
+              }
+            }}
+            disabled={saving}
+            className="px-3 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <Save size={12} /> Publicar tema
+            {saving ? <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block" /> Guardando...</> : <><Save size={12} /> Publicar tema</>}
           </button>
+          {savedAt && !saving && (
+            <span className="text-[9px] text-[var(--admin-muted)]">
+              Guardado {new Date(savedAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
         </div>
       </div>
 
