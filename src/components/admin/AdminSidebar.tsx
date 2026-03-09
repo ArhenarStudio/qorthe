@@ -17,7 +17,7 @@ export type AdminPage =
   | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
   | 'integrations' | 'theme' | 'appearance' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
-  | 'pos' | 'users';
+  | 'pos' | 'users' | 'loyalty';
 
 interface NavItem {
   id: AdminPage;
@@ -66,6 +66,7 @@ const navGroups: NavGroup[] = [
     items: [
       { id: 'customers', label: 'Clientes', icon: Users },
       { id: 'reviews', label: 'Reviews', icon: Star },
+      { id: 'loyalty', label: 'Membresías', icon: Star },
       { id: 'chat', label: 'Chat en Vivo', icon: MessageSquare },
       { id: 'helpdesk', label: 'Soporte', icon: Headphones },
     ],

@@ -8,7 +8,7 @@ import {
   Users, Star, FileText, Megaphone, DollarSign,
   BarChart3, FileEdit, Bell, Settings,
   Zap, Plug, Palette, RotateCcw, Headphones, ArrowUpDown,
-  Target, MessageSquare, Monitor,
+  Target, MessageSquare, Monitor, Crown,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export type AdminPage =
   | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
   | 'integrations' | 'theme' | 'appearance' | 'returns' | 'helpdesk'
-  | 'importexport' | 'goals' | 'settings' | 'pos' | 'users';
+  | 'importexport' | 'goals' | 'settings' | 'pos' | 'users' | 'loyalty';
 
 export interface NavItem {
   id: AdminPage;
@@ -60,6 +60,7 @@ export const adminIcons: Record<AdminPage, LucideIcon> = {
   notifications: Bell,
   users: Users,
   settings: Settings,
+  loyalty: Crown,
 };
 
 export const adminNavigation: NavGroup[] = [
@@ -96,6 +97,7 @@ export const adminNavigation: NavGroup[] = [
     items: [
       { id: 'customers', label: 'Clientes', icon: adminIcons.customers },
       { id: 'reviews', label: 'Reviews', icon: adminIcons.reviews },
+      { id: 'loyalty', label: 'Membresías', icon: adminIcons.loyalty },
       { id: 'chat', label: 'Chat en Vivo', icon: adminIcons.chat },
       { id: 'helpdesk', label: 'Soporte', icon: adminIcons.helpdesk },
     ],
