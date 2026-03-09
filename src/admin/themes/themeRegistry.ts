@@ -14,6 +14,13 @@ import { CoralForgeHeader } from './coral-forge/Header';
 import { SageCommandSidebar } from './sage-command/Sidebar';
 import { SageCommandHeader } from './sage-command/Header';
 
+// Theme component imports
+import { DefaultCard, DefaultBadge, DefaultButton, DefaultTable, DefaultStatCard } from './default/components';
+import { IndigoGlassCard, IndigoGlassBadge, IndigoGlassButton, IndigoGlassTable, IndigoGlassStatCard } from './indigo-glass/components';
+import { TealNoirCard, TealNoirBadge, TealNoirButton, TealNoirTable, TealNoirStatCard } from './teal-noir/components';
+import { CoralForgeCard, CoralForgeBadge, CoralForgeButton, CoralForgeTable, CoralForgeStatCard } from './coral-forge/components';
+import { SageCard, SageBadge, SageButton, SageTable, SageStatCard } from './sage-command/components';
+
 // Default theme — current DSD Classic
 const defaultTheme: AdminUITheme = {
   id: 'dsd-classic',
@@ -33,6 +40,7 @@ const defaultTheme: AdminUITheme = {
     cardRadius: '12px', buttonRadius: '8px', inputRadius: '8px',
     shadow: '0 1px 3px rgba(0,0,0,0.06)', shadowLg: '0 4px 12px rgba(0,0,0,0.08)',
   },
+  components: { Card: DefaultCard, Badge: DefaultBadge, Button: DefaultButton, Table: DefaultTable, StatCard: DefaultStatCard },
   fonts: { heading: "'Playfair Display', serif", body: "'Inter', sans-serif", mono: "'JetBrains Mono', monospace" },
   animations: {
     pageTransition: {
@@ -67,6 +75,7 @@ const indigoGlassTheme: AdminUITheme = {
     cardRadius: '12px', buttonRadius: '8px', inputRadius: '8px',
     shadow: '0 1px 3px rgba(0,0,0,0.04)', shadowLg: '0 8px 24px rgba(0,0,0,0.06)',
   },
+  components: { Card: IndigoGlassCard, Badge: IndigoGlassBadge, Button: IndigoGlassButton, Table: IndigoGlassTable, StatCard: IndigoGlassStatCard },
   fonts: { heading: "'Inter', sans-serif", body: "'Inter', sans-serif", mono: "'JetBrains Mono', monospace" },
 };
 
@@ -90,6 +99,7 @@ const tealNoirTheme: AdminUITheme = {
     cardRadius: '10px', buttonRadius: '8px', inputRadius: '8px',
     shadow: '0 1px 3px rgba(0,0,0,0.3)', shadowLg: '0 8px 24px rgba(0,0,0,0.4)',
   },
+  components: { Card: TealNoirCard, Badge: TealNoirBadge, Button: TealNoirButton, Table: TealNoirTable, StatCard: TealNoirStatCard },
   fonts: { heading: "'Sora', sans-serif", body: "'DM Sans', sans-serif", mono: "'JetBrains Mono', monospace" },
 };
 
@@ -113,6 +123,7 @@ const coralForgeTheme: AdminUITheme = {
     cardRadius: '10px', buttonRadius: '8px', inputRadius: '8px',
     shadow: '0 1px 3px rgba(0,0,0,0.3)', shadowLg: '0 8px 24px rgba(0,0,0,0.4)',
   },
+  components: { Card: CoralForgeCard, Badge: CoralForgeBadge, Button: CoralForgeButton, Table: CoralForgeTable, StatCard: CoralForgeStatCard },
   fonts: { heading: "'Sora', sans-serif", body: "'DM Sans', sans-serif", mono: "'JetBrains Mono', monospace" },
 };
 
@@ -136,6 +147,7 @@ const sageCommandTheme: AdminUITheme = {
     cardRadius: '10px', buttonRadius: '8px', inputRadius: '8px',
     shadow: '0 1px 3px rgba(0,0,0,0.3)', shadowLg: '0 8px 24px rgba(0,0,0,0.4)',
   },
+  components: { Card: SageCard, Badge: SageBadge, Button: SageButton, Table: SageTable, StatCard: SageStatCard },
   fonts: { heading: "'Sora', sans-serif", body: "'DM Sans', sans-serif", mono: "'JetBrains Mono', monospace" },
 };
 

@@ -17,6 +17,7 @@ import type { Period } from './AdminHeader';
 import type { AdminPage } from './AdminSidebar';
 import { SetupWizard } from './SetupWizard';
 import { useAdminTheme } from '@/contexts/AdminThemeContext';
+import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // Setup Wizard wrapper — shows only if setup not completed
 const SetupWizardWrapper: React.FC = () => {
@@ -67,6 +68,7 @@ const fmtMXN = (n: number) =>
 
 export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
   const [chartView, setChartView] = React.useState<'revenue' | 'orders'>('revenue');
+  const { Card, StatCard } = useThemeComponents();
 
   const periodQ = periodQueryMap[period] || '7days';
   const { data: liveData, loading: liveLoading, error: liveError } = useAdminData<{
@@ -151,21 +153,14 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.08 }}
-            className="bg-[var(--admin-surface)] p-5 rounded-xl border border-[var(--admin-border)] shadow-sm"
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${kpi.color}`}>
-                <kpi.icon size={20} />
-              </div>
-              <span className={`text-xs font-medium px-2 py-0.5 rounded-full flex items-center gap-0.5 ${
-                kpi.highlight ? 'bg-amber-50 text-amber-600' : kpi.up ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'
-              }`}>
-                {!kpi.highlight && (kpi.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}
-                {kpi.change}
-              </span>
-            </div>
-            <h3 className="text-2xl font-bold text-[var(--admin-text)] font-sans">{kpi.value}</h3>
-            <p className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mt-1">{kpi.label}</p>
+            <StatCard
+              label={kpi.label}
+              value={kpi.value}
+              change={kpi.change}
+              changeType={kpi.up ? 'positive' : 'negative'}
+              icon={<kpi.icon size={20} />}
+            />
           </motion.div>
         ))}
       </div>
@@ -177,8 +172,9 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="lg:col-span-2 bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-5"
+          className="lg:col-span-2"
         >
+          <Card className="p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-[var(--admin-text)] text-sm">Ventas del periodo</h3>
             <div className="flex bg-[var(--admin-surface2)] rounded-lg p-0.5">
@@ -226,6 +222,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
               </ResponsiveContainer>
             )}
           </div>
+          </Card>
         </motion.div>
 
         {/* Activity Feed — REAL events */}
@@ -271,8 +268,9 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="lg:col-span-2 bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden"
+          className="lg:col-span-2"
         >
+          <Card className="overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--admin-border)] flex items-center justify-between">
             <h3 className="font-medium text-[var(--admin-text)] text-sm">Pedidos que requieren acción</h3>
             <button onClick={() => onNavigate('orders')} className="text-[10px] text-[var(--admin-accent)] font-bold uppercase tracking-widest hover:underline">
@@ -320,6 +318,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
               </table>
             </div>
           )}
+          </Card>
         </motion.div>
 
         {/* Right Column: Top Products + Pending Actions */}
