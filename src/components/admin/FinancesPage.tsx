@@ -23,8 +23,8 @@ import { toast } from 'sonner';
 type TabId = 'general' | 'ingresos' | 'costos' | 'inventario' | 'pagos' | 'flujo' | 'reportes';
 
 // ===== CONSTANTS =====
-const COLORS = ['#C5A065', '#5D4037', '#A1887F', '#D7CCC8', '#8D6E63', '#BCAAA4'];
-const DONUT_COLORS = ['#C5A065', '#5D4037', '#A1887F', '#D7CCC8', '#8D6E63'];
+const COLORS = ['var(--admin-accent)', 'var(--admin-text-secondary)', 'var(--admin-muted)', 'var(--admin-border)', 'var(--admin-text-secondary)', 'var(--admin-muted)'];
+const DONUT_COLORS = ['var(--admin-accent)', 'var(--admin-text-secondary)', 'var(--admin-muted)', 'var(--admin-border)', 'var(--admin-text-secondary)'];
 
 const tabItems: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'general', label: 'Panel General', icon: BarChart3 },
@@ -71,7 +71,7 @@ const DonutChart: React.FC<{ data: { name: string; value: number; pct: number }[
           <Pie data={data} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={2} dataKey="value">
             {data.map((_: any, i: number) => <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />)}
           </Pie>
-          <RTooltip contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 11 }} formatter={(v: any) => [fmt(v), '']} />
+          <RTooltip contentStyle={{ background: 'var(--admin-text)', border: 'none', borderRadius: 8, color: 'var(--admin-surface2)', fontSize: 11 }} formatter={(v: any) => [fmt(v), '']} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -89,7 +89,7 @@ const DonutChart: React.FC<{ data: { name: string; value: number; pct: number }[
   </Card>
 );
 
-const chartTooltipStyle = { background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 11 };
+const chartTooltipStyle = { background: 'var(--admin-text)', border: 'none', borderRadius: 8, color: 'var(--admin-surface2)', fontSize: 11 };
 
 // ===== TAB: PANEL GENERAL =====
 const PanelGeneral: React.FC = () => {
@@ -166,9 +166,9 @@ const PanelGeneral: React.FC = () => {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={waterfallBars} barCategoryGap="15%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any) => [fmt(Math.abs(v)), '']} />
               <Bar dataKey="start" stackId="a" fill="transparent" />
               <Bar dataKey="height" stackId="a" radius={[4, 4, 0, 0]}>
@@ -187,13 +187,13 @@ const PanelGeneral: React.FC = () => {
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={d.monthlyRevenue}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any, name: any) => [fmt(v), name]} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="revenue" name="Ingresos" fill="#C5A065" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="costs" name="COGS" fill="#D7CCC8" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" name="Ingresos" fill="var(--admin-accent)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="costs" name="COGS" fill="var(--admin-border)" radius={[4, 4, 0, 0]} />
               <Line dataKey="netProfit" name="Ganancia neta" stroke="#22c55e" strokeWidth={2} dot={{ r: 3, fill: '#22c55e' }} />
             </ComposedChart>
           </ResponsiveContainer>
@@ -239,13 +239,13 @@ const PanelGeneral: React.FC = () => {
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={d.projection}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any) => [fmt(v), '']} />
-              <Area dataKey="max" stackId="band" stroke="none" fill="#C5A065" fillOpacity={0.15} />
-              <Area dataKey="min" stackId="band" stroke="none" fill="#FFFFFF" fillOpacity={1} />
-              <Line dataKey="central" stroke="#C5A065" strokeWidth={2} dot={{ r: 4, fill: '#C5A065' }} />
+              <Area dataKey="max" stackId="band" stroke="none" fill="var(--admin-accent)" fillOpacity={0.15} />
+              <Area dataKey="min" stackId="band" stroke="none" fill="var(--admin-surface)" fillOpacity={1} />
+              <Line dataKey="central" stroke="var(--admin-accent)" strokeWidth={2} dot={{ r: 4, fill: 'var(--admin-accent)' }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -275,12 +275,12 @@ const IngresosTab: React.FC = () => {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={d.dailyRevenue}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="day" tick={{ fontSize: 9, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="day" tick={{ fontSize: 9, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any, name: any) => [name === 'revenue' ? fmt(v) : v, name === 'revenue' ? 'Ingresos' : 'Pedidos']} />
-              <ReferenceLine y={avgRevenue} stroke="#C5A065" strokeDasharray="5 5" label={{ value: `Prom: ${fmt(Math.round(avgRevenue))}`, position: 'right', fontSize: 10, fill: '#C5A065' }} />
-              <Bar dataKey="revenue" fill="#C5A065" radius={[3, 3, 0, 0]} />
+              <ReferenceLine y={avgRevenue} stroke="var(--admin-accent)" strokeDasharray="5 5" label={{ value: `Prom: ${fmt(Math.round(avgRevenue))}`, position: 'right', fontSize: 10, fill: 'var(--admin-accent)' }} />
+              <Bar dataKey="revenue" fill="var(--admin-accent)" radius={[3, 3, 0, 0]} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -758,12 +758,12 @@ const InventarioTab: React.FC = () => {
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={d.inventoryHistory}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any) => [fmt(v), '']} />
-              <Area dataKey="saleValue" name="Valor venta" stroke="#C5A065" fill="#C5A065" fillOpacity={0.15} strokeWidth={2} />
-              <Area dataKey="costValue" name="Valor costo" stroke="#5D4037" fill="#5D4037" fillOpacity={0.1} strokeWidth={2} />
+              <Area dataKey="saleValue" name="Valor venta" stroke="var(--admin-accent)" fill="var(--admin-accent)" fillOpacity={0.15} strokeWidth={2} />
+              <Area dataKey="costValue" name="Valor costo" stroke="var(--admin-text-secondary)" fill="var(--admin-text-secondary)" fillOpacity={0.1} strokeWidth={2} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
             </AreaChart>
           </ResponsiveContainer>
@@ -980,13 +980,13 @@ const FlujoTab: React.FC = () => {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={d.cashFlowWeekly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="week" tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="week" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any, name: any) => [fmt(v), name]} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="entries" name="Entradas" fill="#C5A065" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="exits" name="Salidas" fill="#5D4037" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="entries" name="Entradas" fill="var(--admin-accent)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="exits" name="Salidas" fill="var(--admin-text-secondary)" radius={[4, 4, 0, 0]} />
               <Line dataKey="netCumulative" name="Neto acumulado" stroke="#22c55e" strokeWidth={2} dot={{ r: 4, fill: '#22c55e' }} />
             </ComposedChart>
           </ResponsiveContainer>
@@ -1064,9 +1064,9 @@ const FlujoTab: React.FC = () => {
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={d.cashFlowProjection}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="day" tick={{ fontSize: 9, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="day" tick={{ fontSize: 9, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => fmtK(v)} />
               <RTooltip contentStyle={chartTooltipStyle} formatter={(v: any) => [fmt(v), 'Saldo']} />
               <defs>
                 <linearGradient id="flowGrad" x1="0" y1="0" x2="0" y2="1">
@@ -1282,9 +1282,9 @@ export const FinancesPage: React.FC = () => {
         { name: 'Descuentos', value: s.totalDiscounts || 0, pct: totalRevenue > 0 ? Math.round((s.totalDiscounts || 0) / totalRevenue * 100) : 0 },
       ],
       waterfallData: [
-        { name: 'Ingresos', value: totalRevenue, fill: '#C5A065', type: 'income' },
-        { name: 'Envío', value: -(s.totalShipping || 0), fill: '#795548', type: 'cost' },
-        { name: 'Descuentos', value: -(s.totalDiscounts || 0), fill: '#A1887F', type: 'cost' },
+        { name: 'Ingresos', value: totalRevenue, fill: 'var(--admin-accent)', type: 'income' },
+        { name: 'Envío', value: -(s.totalShipping || 0), fill: 'var(--admin-text-secondary)', type: 'cost' },
+        { name: 'Descuentos', value: -(s.totalDiscounts || 0), fill: 'var(--admin-muted)', type: 'cost' },
         { name: 'Neto', value: totalRevenue - (s.totalShipping || 0) - (s.totalDiscounts || 0), fill: '#22c55e', type: 'profit' },
       ],
       monthlyRevenue: (liveFinances?.monthlyData || []).map((m: any) => ({ month: m.month, revenue: m.revenue, orders: m.orders, costs: 0, grossProfit: m.revenue, netProfit: m.revenue, marginPct: 100 })),

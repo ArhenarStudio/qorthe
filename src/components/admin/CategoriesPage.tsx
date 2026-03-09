@@ -54,7 +54,7 @@ const mockCategories: Category[] = [
     metaDescription: 'Tablas artesanales de madera mexicana para cortar, picar y presentar. Hechas a mano con parota, cedro rojo y rosa morada.',
     layout: 'grid', productsPerPage: 12, sortDefault: 'manual',
     filters: { wood: true, price: true, finish: true, size: false },
-    banner: { text: 'Envio gratis en pedidos de $2,500+', bgColor: '#C5A065', textColor: '#FFFFFF', link: '/shop?promo=envio-gratis', active: true },
+    banner: { text: 'Envio gratis en pedidos de $2,500+', bgColor: 'var(--admin-accent)', textColor: 'var(--admin-surface)', link: '/shop?promo=envio-gratis', active: true },
     showInMenu: true, showInFooter: true, showInSidebar: true, showInHomepage: true,
     createdAt: '23 Feb 2026', updatedAt: '28 Feb 2026',
   },
@@ -701,8 +701,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
     sortDefault: category?.sortDefault || 'manual',
     filters: category?.filters || { wood: true, price: true, finish: true, size: false },
     bannerText: category?.banner?.text || '',
-    bannerBg: category?.banner?.bgColor || '#C5A065',
-    bannerTextColor: category?.banner?.textColor || '#FFFFFF',
+    bannerBg: category?.banner?.bgColor || 'var(--admin-accent)',
+    bannerTextColor: category?.banner?.textColor || 'var(--admin-surface)',
     bannerLink: category?.banner?.link || '',
     bannerActive: category?.banner?.active || false,
     showInMenu: category?.showInMenu ?? true,
@@ -1137,8 +1137,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                   <AreaChart data={legacySalesChart}>
                     <defs>
                       <linearGradient id="catAreaGold" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#C5A065" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#C5A065" stopOpacity={0.02} />
+                        <stop offset="0%" stopColor="var(--admin-accent)" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="var(--admin-accent)" stopOpacity={0.02} />
                       </linearGradient>
                     </defs>
                     <XAxis dataKey="day" hide />
@@ -1146,7 +1146,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                       contentStyle={{ fontSize: '10px', borderRadius: '8px', border: '1px solid #e5e0d8' }}
                       formatter={(v: any) => [`$${v.toLocaleString()}`, 'Ventas']}
                     />
-                    <Area type="monotone" dataKey="ventas" stroke="#C5A065" fill="url(#catAreaGold)" strokeWidth={1.5} />
+                    <Area type="monotone" dataKey="ventas" stroke="var(--admin-accent)" fill="url(#catAreaGold)" strokeWidth={1.5} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>

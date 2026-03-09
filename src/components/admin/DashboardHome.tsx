@@ -205,22 +205,22 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
               <ResponsiveContainer width="100%" height="100%">
                 {chartView === 'revenue' ? (
                   <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
-                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v / 1000).toFixed(1)}k`} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v / 1000).toFixed(1)}k`} />
                     <Tooltip
-                      contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 12 }}
+                      contentStyle={{ background: 'var(--admin-text)', border: 'none', borderRadius: 8, color: 'var(--admin-surface2)', fontSize: 12 }}
                       formatter={(value: any) => [`$${value.toLocaleString()} MXN`, 'Ingresos']}
                     />
-                    <Line type="monotone" dataKey="revenue" name="Ingresos" stroke="#C5A065" strokeWidth={2.5} dot={{ fill: '#C5A065', r: 3 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="revenue" name="Ingresos" stroke="var(--admin-accent)" strokeWidth={2.5} dot={{ fill: 'var(--admin-accent)', r: 3 }} activeDot={{ r: 6 }} />
                   </LineChart>
                 ) : (
                   <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
-                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#A1887F' }} axisLine={false} tickLine={false} allowDecimals={false} />
-                    <Tooltip contentStyle={{ background: '#2d2419', border: 'none', borderRadius: 8, color: '#f5f0e8', fontSize: 12 }} />
-                    <Bar dataKey="orders" name="Pedidos" fill="#C5A065" radius={[4, 4, 0, 0]} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                    <Tooltip contentStyle={{ background: 'var(--admin-text)', border: 'none', borderRadius: 8, color: 'var(--admin-surface2)', fontSize: 12 }} />
+                    <Bar dataKey="orders" name="Pedidos" fill="var(--admin-accent)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 )}
               </ResponsiveContainer>

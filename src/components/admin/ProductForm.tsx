@@ -1171,10 +1171,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={salesChartData}>
-                      <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="#BCAAA4" />
-                      <YAxis tick={{ fontSize: 10 }} stroke="#BCAAA4" />
+                      <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="var(--admin-muted)" />
+                      <YAxis tick={{ fontSize: 10 }} stroke="var(--admin-muted)" />
                       <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #EFEBE9' }} />
-                      <Line type="monotone" dataKey="ventas" stroke="#C5A065" strokeWidth={2} dot={{ r: 3, fill: '#C5A065' }} />
+                      <Line type="monotone" dataKey="ventas" stroke="var(--admin-accent)" strokeWidth={2} dot={{ r: 3, fill: 'var(--admin-accent)' }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>

@@ -472,12 +472,12 @@ function TemplatesTab() {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: 'Fondo header', value: '#2d2419', name: 'wood-900' },
-                { label: 'Fondo body', value: '#F5F3F0', name: 'sand' },
-                { label: 'Color texto', value: '#2d2419', name: 'wood-900' },
-                { label: 'Color links', value: '#C5A065', name: 'gold' },
-                { label: 'Fondo botones', value: '#2d2419', name: 'wood-900' },
-                { label: 'Texto botones', value: '#F5F3F0', name: 'sand' },
+                { label: 'Fondo header', value: 'var(--admin-text)', name: 'wood-900' },
+                { label: 'Fondo body', value: 'var(--admin-bg)', name: 'sand' },
+                { label: 'Color texto', value: 'var(--admin-text)', name: 'wood-900' },
+                { label: 'Color links', value: 'var(--admin-accent)', name: 'gold' },
+                { label: 'Fondo botones', value: 'var(--admin-text)', name: 'wood-900' },
+                { label: 'Texto botones', value: 'var(--admin-bg)', name: 'sand' },
               ].map((c) => (
                 <div key={c.label}>
                   <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">{c.label}</label>
@@ -535,31 +535,31 @@ function TemplatesTab() {
           <div>
             <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-2">Preview</label>
             <div className="border border-[var(--admin-border)] rounded-lg overflow-hidden shadow-sm">
-              <div className="bg-[#2d2419] p-5 text-center">
+              <div className="bg-[var(--admin-text)] p-5 text-center">
                 <div className="text-[var(--admin-accent)] font-serif">DavidSon's Design</div>
               </div>
-              <div className="bg-[#F5F3F0] p-6">
+              <div className="bg-[var(--admin-bg)] p-6">
                 <div className="bg-[var(--admin-surface)] rounded-lg p-5 max-w-xs mx-auto space-y-3">
-                  <h3 className="text-sm font-serif text-[#2d2419] text-center">[Titulo del email]</h3>
-                  <p className="text-[11px] text-[#2d2419]/70 text-center">
+                  <h3 className="text-sm font-serif text-[var(--admin-text)] text-center">[Titulo del email]</h3>
+                  <p className="text-[11px] text-[var(--admin-text)]/70 text-center">
                     Contenido del email con <span className="text-[var(--admin-accent)]">links dorados</span> y tipografia Inter para el body.
                   </p>
                   <div className="text-center">
-                    <span className="inline-block bg-[#2d2419] text-[#F5F3F0] px-5 py-1.5 rounded text-[10px]">
+                    <span className="inline-block bg-[var(--admin-text)] text-[var(--admin-bg)] px-5 py-1.5 rounded text-[10px]">
                       Boton CTA
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="bg-[#2d2419] p-3 text-center space-y-1">
+              <div className="bg-[var(--admin-text)] p-3 text-center space-y-1">
                 <div className="flex items-center justify-center gap-3 mb-1">
                   {['FB', 'IG', 'X'].map((s) => (
-                    <span key={s} className="w-5 h-5 rounded-full bg-[#F5F3F0]/10 flex items-center justify-center text-[8px] text-[#F5F3F0]/50">{s}</span>
+                    <span key={s} className="w-5 h-5 rounded-full bg-[var(--admin-bg)]/10 flex items-center justify-center text-[8px] text-[var(--admin-bg)]/50">{s}</span>
                   ))}
                 </div>
-                <p className="text-[8px] text-[#F5F3F0]/40">DavidSon's Design | Hermosillo, Sonora, Mexico</p>
+                <p className="text-[8px] text-[var(--admin-bg)]/40">DavidSon's Design | Hermosillo, Sonora, Mexico</p>
                 <p className="text-[8px] text-[var(--admin-accent)]/40">Gestionar preferencias | Darse de baja</p>
-                <p className="text-[8px] text-[#F5F3F0]/30">Recibiste este email porque eres cliente de DavidSon's Design</p>
+                <p className="text-[8px] text-[var(--admin-bg)]/30">Recibiste este email porque eres cliente de DavidSon's Design</p>
               </div>
             </div>
           </div>

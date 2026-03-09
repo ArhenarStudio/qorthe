@@ -32,7 +32,7 @@ const Badge: React.FC<{ text: string; variant?: string }> = ({ text, variant = '
 type TabId = 'cupones' | 'campanas' | 'banners' | 'flash' | 'referidos' | 'analisis';
 
 // ===== CONSTANTS =====
-const COLORS = ['#C5A065', '#5D4037', '#A1887F', '#D7CCC8', '#8D6E63'];
+const COLORS = ['var(--admin-accent)', 'var(--admin-text-secondary)', 'var(--admin-muted)', 'var(--admin-border)', 'var(--admin-text-secondary)'];
 
 const tabItems: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'cupones', label: 'Cupones y Descuentos', icon: Tag },
@@ -184,10 +184,10 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
                 <label className="text-xs text-[var(--admin-text-secondary)] mb-2 block">Tipo de aplicación</label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                    <input type="radio" checked={!isAutomatic} onChange={() => setIsAutomatic(false)} className="accent-[#C5A065]" /> Manual (cliente ingresa código)
+                    <input type="radio" checked={!isAutomatic} onChange={() => setIsAutomatic(false)} className="accent-[var(--admin-accent)]" /> Manual (cliente ingresa código)
                   </label>
                   <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                    <input type="radio" checked={isAutomatic} onChange={() => setIsAutomatic(true)} className="accent-[#C5A065]" /> Automático (sin código)
+                    <input type="radio" checked={isAutomatic} onChange={() => setIsAutomatic(true)} className="accent-[var(--admin-accent)]" /> Automático (sin código)
                   </label>
                 </div>
               </div>
@@ -232,7 +232,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
                 { v: 'shipping' as CouponTarget, l: 'Solo envío' },
               ]).map(t => (
                 <label key={t.v} className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                  <input type="radio" checked={target === t.v} onChange={() => setTarget(t.v)} className="accent-[#C5A065]" /> {t.l}
+                  <input type="radio" checked={target === t.v} onChange={() => setTarget(t.v)} className="accent-[var(--admin-accent)]" /> {t.l}
                 </label>
               ))}
             </div>
@@ -268,10 +268,10 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
             <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">Vigencia</h4>
             <div className="flex gap-4 mb-3">
               <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                <input type="radio" checked={vigencia === 'permanent'} onChange={() => setVigencia('permanent')} className="accent-[#C5A065]" /> Permanente
+                <input type="radio" checked={vigencia === 'permanent'} onChange={() => setVigencia('permanent')} className="accent-[var(--admin-accent)]" /> Permanente
               </label>
               <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                <input type="radio" checked={vigencia === 'range'} onChange={() => setVigencia('range')} className="accent-[#C5A065]" /> Rango de fechas
+                <input type="radio" checked={vigencia === 'range'} onChange={() => setVigencia('range')} className="accent-[var(--admin-accent)]" /> Rango de fechas
               </label>
             </div>
             {vigencia === 'range' && (
@@ -804,8 +804,8 @@ const AnalisisTab: React.FC = () => {
             <YAxis tick={{ fontSize: 10, fill: '#8a7a6a' }} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
             <RTooltip formatter={(v: any) => fmt(v)} />
             <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-            <Line type="monotone" dataKey="marketing" stroke="#C5A065" strokeWidth={2} name="Marketing" dot={{ r: 3 }} />
-            <Line type="monotone" dataKey="organic" stroke="#5D4037" strokeWidth={2} name="Orgánico" dot={{ r: 3 }} />
+            <Line type="monotone" dataKey="marketing" stroke="var(--admin-accent)" strokeWidth={2} name="Marketing" dot={{ r: 3 }} />
+            <Line type="monotone" dataKey="organic" stroke="var(--admin-text-secondary)" strokeWidth={2} name="Orgánico" dot={{ r: 3 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>

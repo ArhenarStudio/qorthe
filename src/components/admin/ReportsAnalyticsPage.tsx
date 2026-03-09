@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 type TabId = 'resumen' | 'ventas' | 'clientes' | 'productos' | 'operaciones' | 'custom';
 
 // ===== CONSTANTS =====
-const COLORS = ['#C5A065', '#5D4037', '#A1887F', '#D7CCC8', '#8D6E63', '#BCAAA4'];
+const COLORS = ['var(--admin-accent)', 'var(--admin-text-secondary)', 'var(--admin-muted)', 'var(--admin-border)', 'var(--admin-text-secondary)', 'var(--admin-muted)'];
 
 const tabItems: Array<{ id: TabId; label: string; icon: React.ElementType }> = [
   { id: 'resumen', label: 'Resumen Ejecutivo', icon: BarChart3 },
@@ -38,10 +38,10 @@ const periods = ['Hoy', 'Esta semana', 'Este mes', 'Este trimestre', 'Este ano',
 const fmt = (n: number) => '$' + n.toLocaleString('es-MX');
 
 const chartStyle = {
-  background: '#2d2419',
+  background: 'var(--admin-text)',
   border: 'none',
   borderRadius: 8,
-  color: '#f5f0e8',
+  color: 'var(--admin-surface2)',
   fontSize: 11,
 };
 
@@ -86,11 +86,11 @@ const comparisonTable = [
 ];
 
 const funnelData = [
-  { name: 'Visitantes unicos', value: 5800, pct: 100, fill: '#C5A065' },
-  { name: 'Vieron producto', value: 3480, pct: 60.0, fill: '#8D6E63' },
-  { name: 'Agregaron al carrito', value: 680, pct: 11.7, fill: '#A1887F' },
-  { name: 'Iniciaron checkout', value: 348, pct: 6.0, fill: '#BCAAA4' },
-  { name: 'Completaron compra', value: 162, pct: 2.8, fill: '#5D4037' },
+  { name: 'Visitantes unicos', value: 5800, pct: 100, fill: 'var(--admin-accent)' },
+  { name: 'Vieron producto', value: 3480, pct: 60.0, fill: 'var(--admin-text-secondary)' },
+  { name: 'Agregaron al carrito', value: 680, pct: 11.7, fill: 'var(--admin-muted)' },
+  { name: 'Iniciaron checkout', value: 348, pct: 6.0, fill: 'var(--admin-muted)' },
+  { name: 'Completaron compra', value: 162, pct: 2.8, fill: 'var(--admin-text-secondary)' },
 ];
 
 const salesByDayHour = [
@@ -142,7 +142,7 @@ const cohortData = [
 
 const rfmSegments = [
   { segment: 'Campeones', desc: 'R+ F+ M+', clients: 15, pct: 6, revenue: 67100, revPct: 47, color: '#22c55e', action: 'Programa embajadores, acceso anticipado' },
-  { segment: 'Leales', desc: 'R= F+ M=', clients: 28, pct: 11, revenue: 42000, revPct: 29, color: '#C5A065', action: 'Upsell a sets, referidos' },
+  { segment: 'Leales', desc: 'R= F+ M=', clients: 28, pct: 11, revenue: 42000, revPct: 29, color: 'var(--admin-accent)', action: 'Upsell a sets, referidos' },
   { segment: 'Potenciales', desc: 'R+ F- M-', clients: 45, pct: 18, revenue: 18400, revPct: 13, color: '#3b82f6', action: 'Nurturing + incentivo segunda compra' },
   { segment: 'En riesgo', desc: 'R- F= M=', clients: 22, pct: 9, revenue: 8800, revPct: 6, color: '#f59e0b', action: 'Campana "te extranamos" + cupon' },
   { segment: 'Perdidos', desc: 'R- F- M-', clients: 48, pct: 19, revenue: 2400, revPct: 2, color: '#ef4444', action: 'Reactivacion agresiva o aceptar perdida' },
@@ -337,7 +337,7 @@ function ResumenTab() {
                   <LineChart data={s.data.map((v, j) => ({ v, i: j }))}>
                     <Line
                       dataKey="v"
-                      stroke={s.trend === 'up' ? '#22c55e' : (['down'] as string[]).includes(s.trend) ? '#ef4444' : '#C5A065'}
+                      stroke={s.trend === 'up' ? '#22c55e' : (['down'] as string[]).includes(s.trend) ? '#ef4444' : 'var(--admin-accent)'}
                       strokeWidth={1.5}
                       dot={false}
                     />
@@ -444,15 +444,15 @@ function VentasTab() {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={salesByDayHour}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
               <RTooltip contentStyle={chartStyle} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-              <Bar dataKey="8-12h" stackId="a" fill="#D7CCC8" />
-              <Bar dataKey="12-16h" stackId="a" fill="#A1887F" />
-              <Bar dataKey="16-20h" stackId="a" fill="#C5A065" />
-              <Bar dataKey="20-24h" stackId="a" fill="#5D4037" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="8-12h" stackId="a" fill="var(--admin-border)" />
+              <Bar dataKey="12-16h" stackId="a" fill="var(--admin-muted)" />
+              <Bar dataKey="16-20h" stackId="a" fill="var(--admin-accent)" />
+              <Bar dataKey="20-24h" stackId="a" fill="var(--admin-text-secondary)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -573,11 +573,11 @@ function ClientesTab() {
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={newCustomersWeekly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="week" tick={{ fontSize: 8, fill: '#A1887F' }} axisLine={false} tickLine={false} interval={3} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="week" tick={{ fontSize: 8, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} interval={3} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
               <RTooltip contentStyle={chartStyle} />
-              <Bar dataKey="count" name="Nuevos clientes" fill="#C5A065" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="count" name="Nuevos clientes" fill="var(--admin-accent)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -691,7 +691,7 @@ function ClientesTab() {
 
 // ===== TAB 4: PRODUCTOS =====
 function ProductosTab() {
-  const catColors: Record<string, string> = { star: '#22c55e', cow: '#C5A065', question: '#3b82f6', dog: '#ef4444' };
+  const catColors: Record<string, string> = { star: '#22c55e', cow: 'var(--admin-accent)', question: '#3b82f6', dog: '#ef4444' };
   const catLabels: Record<string, string> = { star: 'Estrella', cow: 'Vaca', question: 'Interrogante', dog: 'Perro' };
 
   return (
@@ -702,25 +702,25 @@ function ProductosTab() {
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
               <XAxis
                 type="number"
                 dataKey="share"
                 name="Participacion %"
-                tick={{ fontSize: 10, fill: '#A1887F' }}
-                label={{ value: 'Participacion %', position: 'bottom', fontSize: 10, fill: '#A1887F' }}
+                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
+                label={{ value: 'Participacion %', position: 'bottom', fontSize: 10, fill: 'var(--admin-muted)' }}
               />
               <YAxis
                 type="number"
                 dataKey="growth"
                 name="Crecimiento %"
-                tick={{ fontSize: 10, fill: '#A1887F' }}
-                label={{ value: 'Crecimiento %', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#A1887F' }}
+                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
+                label={{ value: 'Crecimiento %', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'var(--admin-muted)' }}
               />
               <ZAxis type="number" dataKey="revenue" range={[100, 600]} />
               <RTooltip contentStyle={chartStyle} />
-              <ReferenceLine y={10} stroke="#A1887F" strokeDasharray="3 3" />
-              <ReferenceLine x={10} stroke="#A1887F" strokeDasharray="3 3" />
+              <ReferenceLine y={10} stroke="var(--admin-muted)" strokeDasharray="3 3" />
+              <ReferenceLine x={10} stroke="var(--admin-muted)" strokeDasharray="3 3" />
               <Scatter data={bcgProducts}>
                 {bcgProducts.map((p, i) => (
                   <Cell key={i} fill={catColors[p.category]} />
@@ -751,19 +751,19 @@ function ProductosTab() {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
               <XAxis
                 type="number"
                 dataKey="price"
-                tick={{ fontSize: 10, fill: '#A1887F' }}
-                label={{ value: 'Precio (MXN)', position: 'bottom', fontSize: 10, fill: '#A1887F' }}
+                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
+                label={{ value: 'Precio (MXN)', position: 'bottom', fontSize: 10, fill: 'var(--admin-muted)' }}
                 tickFormatter={(v) => fmt(v)}
               />
               <YAxis
                 type="number"
                 dataKey="units"
-                tick={{ fontSize: 10, fill: '#A1887F' }}
-                label={{ value: 'Unidades vendidas', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#A1887F' }}
+                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
+                label={{ value: 'Unidades vendidas', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'var(--admin-muted)' }}
               />
               <ZAxis type="number" dataKey="margin" range={[80, 300]} />
               <RTooltip
@@ -772,7 +772,7 @@ function ProductosTab() {
                   if (active && payload && payload.length) {
                     const d = payload[0].payload;
                     return (
-                      <div className="bg-[#2d2419] text-[#f5f0e8] p-2 rounded-lg text-[10px]">
+                      <div className="bg-[var(--admin-text)] text-[var(--admin-surface2)] p-2 rounded-lg text-[10px]">
                         <p className="font-medium">{d.name}</p>
                         <p>Precio: {fmt(d.price)}</p>
                         <p>Uds: {d.units}</p>
@@ -783,7 +783,7 @@ function ProductosTab() {
                   return null;
                 }}
               />
-              <Scatter data={priceVsDemand} fill="#C5A065" />
+              <Scatter data={priceVsDemand} fill="var(--admin-accent)" />
             </ScatterChart>
           </ResponsiveContainer>
         </div>
@@ -877,13 +877,13 @@ function OperacionesTab() {
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={deliveryDistribution}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EFEBE9" vertical={false} />
-              <XAxis dataKey="range" tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#A1887F' }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
+              <XAxis dataKey="range" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
               <RTooltip contentStyle={chartStyle} />
-              <Bar dataKey="count" name="Envios" fill="#C5A065" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="count" name="Envios" fill="var(--admin-accent)" radius={[4, 4, 0, 0]}>
                 {deliveryDistribution.map((_, i) => (
-                  <Cell key={i} fill={i <= 1 ? '#22c55e' : i === 2 ? '#C5A065' : i === 3 ? '#f59e0b' : '#ef4444'} />
+                  <Cell key={i} fill={i <= 1 ? '#22c55e' : i === 2 ? 'var(--admin-accent)' : i === 3 ? '#f59e0b' : '#ef4444'} />
                 ))}
               </Bar>
             </BarChart>

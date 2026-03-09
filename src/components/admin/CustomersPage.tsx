@@ -668,7 +668,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                       <XAxis dataKey="mes" tick={{ fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 10 }} />
                       <RTooltip contentStyle={{ fontSize: '10px', borderRadius: '8px' }} formatter={(v: any) => [`$${v.toLocaleString()}`, 'Gasto']} />
-                      <Bar dataKey="gasto" fill="#C5A065" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="gasto" fill="var(--admin-accent)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

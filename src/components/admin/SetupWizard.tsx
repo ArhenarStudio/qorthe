@@ -105,7 +105,7 @@ const WIZARD_STEPS: WizardStep[] = [
     linkTo: "theme",
     fields: [
       { key: "branding_info", label: "", type: "info", description: "Personaliza los colores, tipografía y logo de tu tienda desde el Editor de Tema. También puedes cambiar el diseño del panel admin desde Apariencia." },
-      { key: "brand_primary_color", label: "Color primario", type: "text", placeholder: "#C5A065" },
+      { key: "brand_primary_color", label: "Color primario", type: "text", placeholder: "var(--admin-accent)" },
       { key: "brand_font", label: "Fuente de headings", type: "select", options: [{ label: "Playfair Display (serif)", value: "playfair" }, { label: "Sora (sans-serif)", value: "sora" }, { label: "Inter (sans-serif)", value: "inter" }] },
     ],
     helpText: "Los colores y fuentes se aplican en todo el sitio público.",

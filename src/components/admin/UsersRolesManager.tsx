@@ -256,7 +256,7 @@ function buildPerms(config: Record<string, { access: AccessLevel; enabledActions
 
 const defaultRoles: Role[] = [
   {
-    id: 'super_admin', name: 'Super Admin', description: 'Acceso completo a todas las pestanas y configuracion', color: '#C5A065',
+    id: 'super_admin', name: 'Super Admin', description: 'Acceso completo a todas las pestanas y configuracion', color: 'var(--admin-accent)',
     isDefault: true, userCount: 1, scope: 'all',
     permissions: buildPerms(Object.fromEntries(moduleTemplates.map(m => [m.id, { access: 'full' as AccessLevel }]))),
   },
@@ -355,7 +355,7 @@ const defaultRoles: Role[] = [
 
 // Initial seed data — used as fallback only when API fails
 const seedUsers: AdminUser[] = [
-  { id: 'u1', name: 'David Perez', email: 'rocksagecapital@gmail.com', role: 'Super Admin', roleColor: '#C5A065', status: 'active', lastAccess: 'Ahora', createdAt: '15 Ene 2025', scope: 'Todos' },
+  { id: 'u1', name: 'David Perez', email: 'rocksagecapital@gmail.com', role: 'Super Admin', roleColor: 'var(--admin-accent)', status: 'active', lastAccess: 'Ahora', createdAt: '15 Ene 2025', scope: 'Todos' },
 ];
 
 // ===== SHARED COMPONENTS =====

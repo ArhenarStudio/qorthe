@@ -36,7 +36,7 @@ function getQuoteTierBadge(tierId: string) {
   return { name: tier.name, styles: getTierInlineStyles(tier), tierId: normalized };
 }
 
-const CHART_COLORS = ['#C5A065', '#5D4037', '#A1887F', '#D7CCC8', '#8D6E63'];
+const CHART_COLORS = ['var(--admin-accent)', 'var(--admin-text-secondary)', 'var(--admin-muted)', 'var(--admin-border)', 'var(--admin-text-secondary)'];
 
 // ===== HELPERS (getQuoteTotal, fmt, etc. imported from ./quotes/types) =====
 
@@ -649,7 +649,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
                   initial={{ width: 0 }} animate={{ width: `${d.pct}%` }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
                   className="h-full rounded-md"
-                  style={{ background: `linear-gradient(90deg, #C5A065, ${['#C5A065', '#D4B07A', '#A1887F', '#8D6E63', '#5D4037'][i]})` }}
+                  style={{ background: `linear-gradient(90deg, #C5A065, ${['var(--admin-accent)', '#D4B07A', 'var(--admin-muted)', 'var(--admin-text-secondary)', 'var(--admin-text-secondary)'][i]})` }}
                 />
               </div>
             </div>
@@ -709,11 +709,11 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={productData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e0db" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
                 <XAxis type="number" tick={{ fontSize: 10 }} domain={[0, 50]} unit="%" />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={110} />
                 <RTooltip formatter={(v: number | string | undefined) => [`${v}%`, '']} contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #e5e0db' }} />
-                <Bar dataKey="pct" fill="#C5A065" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="pct" fill="var(--admin-accent)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
