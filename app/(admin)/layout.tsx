@@ -17,10 +17,6 @@ import { ThemeProvider, useTheme } from "@/src/theme/ThemeContext";
 // Layouts por tema
 import { ClassicSidebar } from "@/src/theme/layouts/ClassicLayout";
 import { ClassicHeader } from "@/src/theme/layouts/ClassicHeader";
-import { GlassSidebar, GlassHeader } from "@/src/theme/layouts/GlassLayout";
-import { NoirSidebar, NoirHeader } from "@/src/theme/layouts/NoirLayout";
-import { ForgeSidebar, ForgeHeader } from "@/src/theme/layouts/ForgeLayout";
-import { ArcticSidebar, ArcticHeader } from "@/src/theme/layouts/ArcticLayout";
 
 import type { AdminPage } from "@/src/admin/navigation";
 
@@ -46,19 +42,11 @@ type HeaderComponent = React.ComponentType<{
 }>;
 
 const SIDEBARS: Record<string, SidebarComponent> = {
-  "dsd-classic":   ClassicSidebar,
-  "indigo-glass":  GlassSidebar,
-  "teal-noir":     NoirSidebar,
-  "coral-forge":   ForgeSidebar,
-  "arctic-light":  ArcticSidebar,
+  "dsd-classic": ClassicSidebar,
 };
 
 const HEADERS: Record<string, HeaderComponent> = {
-  "dsd-classic":   ClassicHeader,
-  "indigo-glass":  GlassHeader,
-  "teal-noir":     NoirHeader,
-  "coral-forge":   ForgeHeader,
-  "arctic-light":  ArcticHeader,
+  "dsd-classic": ClassicHeader,
 };
 
 // ── AdminShell — usa ThemeContext ─────────────────────────────
