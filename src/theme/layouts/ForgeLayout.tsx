@@ -198,6 +198,7 @@ export const ForgeHeader: React.FC<HeaderProps> = ({
           ))}
         </div>
 
+                <ThemeSelector compact />
         <button
           className="relative p-2 rounded-lg"
           style={{ color: t.textMuted }}

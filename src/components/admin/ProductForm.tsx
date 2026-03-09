@@ -8,12 +8,9 @@ import {
   Settings, BarChart3, Image as ImageIcon, DollarSign, FileText
 } from 'lucide-react';
 import { type Product } from './products/types';
-import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 import { useTheme } from '@/src/theme/ThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
-import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 /* ---------- Types ---------- */
 

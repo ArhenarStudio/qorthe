@@ -221,6 +221,7 @@ export const ArcticHeader: React.FC<HeaderProps> = ({
           ))}
         </div>
 
+                <ThemeSelector compact />
         <button
           className="relative p-2 rounded-lg transition-colors"
           style={{ color: t.textMuted }}

@@ -28,6 +28,8 @@ interface ThemeContextType {
   themes: ThemeTokens[];
   /** Estado de carga inicial */
   loading: boolean;
+  /** true si el tema activo es dark */
+  isDark: boolean;
 }
 
 // ── Context con defaults del DSD Classic ──────────────────────
@@ -37,6 +39,7 @@ const ThemeContext = createContext<ThemeContextType>({
   setThemeId: () => {},
   themes: THEME_LIST,
   loading: true,
+  isDark: false,
 });
 
 // ── Hook público ───────────────────────────────────────────────
@@ -113,6 +116,42 @@ function applyTokensToDOM(tokens: ThemeTokens) {
   if (tokens.glassBorder) r.style.setProperty("--t-glass-border", tokens.glassBorder);
   if (tokens.gradientAccent) r.style.setProperty("--t-gradient-accent", tokens.gradientAccent);
 
+  // ── Aliases --admin-* → compatibilidad con módulos admin ─────
+  // Módulos usan var(--admin-*); este bloque los sincroniza con los tokens activos
+  r.style.setProperty("--admin-bg",              tokens.bg);
+  r.style.setProperty("--admin-surface",         tokens.surface);
+  r.style.setProperty("--admin-surface2",        tokens.surface2);
+  r.style.setProperty("--admin-text",            tokens.text);
+  r.style.setProperty("--admin-text-secondary",  tokens.textSecondary);
+  r.style.setProperty("--admin-muted",           tokens.textMuted);
+  r.style.setProperty("--admin-border",          tokens.border);
+  r.style.setProperty("--admin-accent",          tokens.accent);
+  r.style.setProperty("--admin-accent-hover",    tokens.accentHover);
+  r.style.setProperty("--admin-accent-text",     tokens.accentText);
+  r.style.setProperty("--admin-accent-subtle",   tokens.accentSubtle);
+  r.style.setProperty("--admin-sidebar-bg",      tokens.sidebarBg);
+  r.style.setProperty("--admin-sidebar-text",    tokens.sidebarText);
+  r.style.setProperty("--admin-sidebar-active",  tokens.sidebarActive);
+  r.style.setProperty("--admin-sidebar-accent",  tokens.sidebarAccent);
+  r.style.setProperty("--admin-sidebar-border",  tokens.sidebarBorder);
+  r.style.setProperty("--admin-sidebar-width",   `${tokens.sidebarWidth}px`);
+  r.style.setProperty("--admin-success",         tokens.success);
+  r.style.setProperty("--admin-success-subtle",  tokens.successSubtle);
+  r.style.setProperty("--admin-error",           tokens.error);
+  r.style.setProperty("--admin-error-subtle",    tokens.errorSubtle);
+  r.style.setProperty("--admin-warning",         tokens.warning);
+  r.style.setProperty("--admin-warning-subtle",  tokens.warningSubtle);
+  r.style.setProperty("--admin-info",            tokens.info);
+  r.style.setProperty("--admin-info-subtle",     tokens.infoSubtle);
+  r.style.setProperty("--admin-card-radius",     tokens.radiusCard);
+  r.style.setProperty("--admin-button-radius",   tokens.radiusButton);
+  r.style.setProperty("--admin-input-radius",    tokens.radiusInput);
+  r.style.setProperty("--admin-shadow",          tokens.shadow);
+  r.style.setProperty("--admin-shadow-lg",       tokens.shadowLg);
+  r.style.setProperty("--admin-font-heading",    tokens.fontHeading);
+  r.style.setProperty("--admin-font-body",       tokens.fontBody);
+  r.style.setProperty("--admin-font-mono",       tokens.fontMono);
+
   // Data attributes en admin-root para CSS targeting
   const root = document.getElementById("admin-root");
   if (root) {
@@ -166,6 +205,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         t: tokens,
         themeId,
         setThemeId,
+        isDark: tokens.mode === "dark",
         themes: THEME_LIST,
         loading,
       }}

@@ -280,6 +280,7 @@ export const NoirHeader: React.FC<HeaderProps> = ({
           {periodLabels[period] || "7 días"}
           <ChevronDown size={10} />
         </div>
+        <ThemeSelector compact />
         <button
           className="relative p-2 rounded-lg transition-colors"
           style={{ color: t.textMuted }}

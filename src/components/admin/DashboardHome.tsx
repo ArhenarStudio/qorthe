@@ -17,7 +17,8 @@ import { useAdminData } from '@/hooks/useAdminData';
 import type { AdminPage } from './AdminSidebar';
 import { SetupWizard } from './SetupWizard';
 import { useAdminTheme } from '@/contexts/AdminThemeContext';
-import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // Setup Wizard wrapper — shows only if setup not completed
 const SetupWizardWrapper: React.FC = () => {
@@ -68,7 +69,6 @@ const fmtMXN = (n: number) =>
 
 export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
   const [chartView, setChartView] = React.useState<'revenue' | 'orders'>('revenue');
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
 
   const periodQ = periodQueryMap[period] || '7days';
   const { data: liveData, loading: liveLoading, error: liveError } = useAdminData<{

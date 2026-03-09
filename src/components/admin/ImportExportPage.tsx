@@ -8,7 +8,8 @@ import {
   Package, Users, ShoppingBag, Star, FolderTree, Clock, CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ===== TYPES =====
 type IETab = 'import' | 'export' | 'migrate' | 'history';
@@ -428,7 +429,6 @@ function HistoryTab() {
 // ===== MAIN =====
 export const ImportExportPage: React.FC = () => {
 
-  const { Card: TCard, Badge: TBadge, Button: TButton, Table: TTable, StatCard: TStatCard } = useThemeComponents();
   // ── Live data from API ──
   const [liveExport, setLiveExport] = useState<any>(null);
   const [exportLoading, setExportLoading] = useState(true);

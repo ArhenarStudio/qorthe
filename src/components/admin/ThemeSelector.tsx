@@ -8,9 +8,10 @@ import React, { useState } from "react";
 import { Check, Palette } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "@/src/theme/ThemeContext";
+import { Moon, Sun } from "lucide-react";
 
 export const ThemeSelector: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
-  const { t, themeId, setThemeId, themes } = useTheme();
+  const { t, themeId, setThemeId, themes, isDark } = useTheme();
   const [open, setOpen] = useState(false);
 
   return (
@@ -18,7 +19,8 @@ export const ThemeSelector: React.FC<{ compact?: boolean }> = ({ compact = false
       {/* Trigger */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all"
+        title={`Tema: ${t.name}`}
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all"
         style={{
           backgroundColor: t.surface2,
           border: `1px solid ${t.border}`,
@@ -26,9 +28,12 @@ export const ThemeSelector: React.FC<{ compact?: boolean }> = ({ compact = false
           fontFamily: t.fontBody,
         }}
       >
-        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: t.accent }} />
-        {!compact && <span>{t.name}</span>}
-        <Palette size={12} style={{ color: t.textMuted }} />
+        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: t.accent }} />
+        {!compact && <span className="max-w-[80px] truncate">{t.name}</span>}
+        {isDark
+          ? <Moon size={12} style={{ color: t.textMuted }} />
+          : <Sun size={12} style={{ color: t.textMuted }} />
+        }
       </button>
 
       <AnimatePresence>

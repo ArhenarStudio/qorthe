@@ -11,7 +11,8 @@ import {
   RotateCcw, Headphones, ArrowUpDown, Target
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
+import { useTheme } from '@/src/theme/ThemeContext';
+import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ===== TYPES =====
 type SubTab = 'users' | 'roles' | 'audit';

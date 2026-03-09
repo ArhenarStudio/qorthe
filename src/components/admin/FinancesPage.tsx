@@ -20,7 +20,6 @@ const useFinanceData = () => React.useContext(FinanceDataContext);
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
-import { useThemeComponents } from '@/src/admin/hooks/useThemeComponents';
 
 // ===== TYPES =====
 type TabId = 'general' | 'ingresos' | 'costos' | 'inventario' | 'pagos' | 'flujo' | 'reportes';
