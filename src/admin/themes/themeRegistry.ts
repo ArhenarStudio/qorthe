@@ -5,6 +5,14 @@
 import type { AdminUITheme } from '@/src/admin/types';
 import { DefaultSidebar } from './default/Sidebar';
 import { AdminHeader as DefaultHeader } from './default/Header';
+import { IndigoGlassSidebar } from './indigo-glass/Sidebar';
+import { IndigoGlassHeader } from './indigo-glass/Header';
+import { TealNoirSidebar } from './teal-noir/Sidebar';
+import { TealNoirHeader } from './teal-noir/Header';
+import { CoralForgeSidebar } from './coral-forge/Sidebar';
+import { CoralForgeHeader } from './coral-forge/Header';
+import { SageCommandSidebar } from './sage-command/Sidebar';
+import { SageCommandHeader } from './sage-command/Header';
 
 // Default theme — current DSD Classic
 const defaultTheme: AdminUITheme = {
@@ -43,6 +51,8 @@ const defaultTheme: AdminUITheme = {
 const indigoGlassTheme: AdminUITheme = {
   ...defaultTheme,
   id: 'indigo-glass',
+  Sidebar: IndigoGlassSidebar as any,
+  Header: IndigoGlassHeader as any,
   name: 'Indigo Glass',
   description: 'Diseño luminoso con glassmorphism, sidebar rail compacto y acentos índigo.',
   mode: 'light',
@@ -64,6 +74,8 @@ const indigoGlassTheme: AdminUITheme = {
 const tealNoirTheme: AdminUITheme = {
   ...defaultTheme,
   id: 'teal-noir',
+  Sidebar: TealNoirSidebar as any,
+  Header: TealNoirHeader as any,
   name: 'Teal Noir',
   description: 'Modo oscuro elegante con acentos teal. Orientado a analytics y datos.',
   mode: 'dark',
@@ -85,6 +97,8 @@ const tealNoirTheme: AdminUITheme = {
 const coralForgeTheme: AdminUITheme = {
   ...defaultTheme,
   id: 'coral-forge',
+  Sidebar: CoralForgeSidebar as any,
+  Header: CoralForgeHeader as any,
   name: 'Coral Forge',
   description: 'Modo oscuro con toques cálidos de coral y naranja. Escala de color completa.',
   mode: 'dark',
@@ -106,6 +120,8 @@ const coralForgeTheme: AdminUITheme = {
 const sageCommandTheme: AdminUITheme = {
   ...defaultTheme,
   id: 'sage-command',
+  Sidebar: SageCommandSidebar as any,
+  Header: SageCommandHeader as any,
   name: 'Sage Command',
   description: 'Diseño oscuro limpio con keyboard shortcuts, spotlight search y paneles modulares.',
   mode: 'dark',

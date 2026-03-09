@@ -99,7 +99,11 @@ function AdminShell({ children }: { children: React.ReactNode }) {
       <div
         className="transition-all duration-250 ease-in-out"
         style={{
-          marginLeft: isDesktop ? (sidebarCollapsed ? 68 : 256) : 0,
+          marginLeft: isDesktop ? (
+            theme.id === 'coral-forge' ? 72 :
+            theme.id === 'indigo-glass' ? 68 :
+            sidebarCollapsed ? 72 : (parseInt(theme.tokens.sidebarWidth) || 256)
+          ) : 0,
         }}
       >
         <ThemeHeader
