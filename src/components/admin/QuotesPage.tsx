@@ -649,7 +649,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
                   initial={{ width: 0 }} animate={{ width: `${d.pct}%` }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
                   className="h-full rounded-md"
-                  style={{ background: `linear-gradient(90deg, #C5A065, ${['var(--admin-accent)', '#D4B07A', 'var(--admin-muted)', 'var(--admin-text-secondary)', 'var(--admin-text-secondary)'][i]})` }}
+                  style={{ background: `linear-gradient(90deg, var(--admin-accent), ${['var(--admin-accent)', '#D4B07A', 'var(--admin-muted)', 'var(--admin-text-secondary)', 'var(--admin-text-secondary)'][i]})` }}
                 />
               </div>
             </div>
@@ -689,7 +689,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
                 <Pie data={rejectionData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value">
                   {rejectionData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
                 </Pie>
-                <RTooltip formatter={(v: number | string | undefined) => [`${v}%`, '']} contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #e5e0db' }} />
+                <RTooltip formatter={(v: number | string | undefined) => [`${v}%`, '']} contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--admin-border)' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -712,7 +712,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
                 <XAxis type="number" tick={{ fontSize: 10 }} domain={[0, 50]} unit="%" />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={110} />
-                <RTooltip formatter={(v: number | string | undefined) => [`${v}%`, '']} contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #e5e0db' }} />
+                <RTooltip formatter={(v: number | string | undefined) => [`${v}%`, '']} contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--admin-border)' }} />
                 <Bar dataKey="pct" fill="var(--admin-accent)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>

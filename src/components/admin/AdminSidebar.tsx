@@ -214,8 +214,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             layoutId="sidebar-pill"
             className="absolute inset-0 rounded-lg"
             style={{
-              background: 'linear-gradient(135deg, #C5A065 0%, #b8914e 100%)',
-              boxShadow: '0 1px 3px rgba(197,160,101,0.3), 0 4px 12px rgba(197,160,101,0.15)',
+              background: 'linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-hover) 100%)',
+              boxShadow: 'var(--admin-shadow-lg)',
             }}
             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
           />
@@ -461,8 +461,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden"
                 style={{
-                  background: 'linear-gradient(145deg, #C5A065 0%, #a88545 100%)',
-                  boxShadow: '0 1px 4px rgba(197,160,101,0.3)',
+                  background: 'linear-gradient(145deg, var(--admin-accent) 0%, var(--admin-accent-hover) 100%)',
+                  boxShadow: 'var(--admin-shadow)',
                 }}
               >
                 <span className="text-[11px] font-bold text-[var(--admin-sidebar-text)]">DA</span>

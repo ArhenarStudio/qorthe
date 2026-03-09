@@ -1173,7 +1173,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     <LineChart data={salesChartData}>
                       <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="var(--admin-muted)" />
                       <YAxis tick={{ fontSize: 10 }} stroke="var(--admin-muted)" />
-                      <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #EFEBE9' }} />
+                      <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid var(--admin-border)' }} />
                       <Line type="monotone" dataKey="ventas" stroke="var(--admin-accent)" strokeWidth={2} dot={{ r: 3, fill: 'var(--admin-accent)' }} />
                     </LineChart>
                   </ResponsiveContainer>
