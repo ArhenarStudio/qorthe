@@ -5,7 +5,7 @@
 // Un solo sistema. Un solo hook: useAdminTheme()
 // ═══════════════════════════════════════════════════════════════
 
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback, ReactNode } from 'react';
 import type { AdminUITheme, AdminThemeComponents } from '@/src/admin/types';
 import { DefaultCard, DefaultBadge, DefaultButton, DefaultTable, DefaultStatCard } from '@/src/admin/themes/default/components';
 import { getTheme, allThemes } from '@/src/admin/themes/themeRegistry';
@@ -51,71 +51,97 @@ const AdminThemeContext = createContext<AdminThemeContextType>({
 
 export const useAdminTheme = () => useContext(AdminThemeContext);
 
+// ── Token defaults — fallback si un tema parcial omite tokens ──
+const DEFAULT_TOKENS = getTheme('dsd-classic').tokens;
+
+// ── Helper: aplica un token con fallback y warn en dev ─────────
+function applyToken(r: HTMLElement, cssVar: string, value: string | undefined, fallback: string) {
+  const resolved = value ?? fallback;
+  if (process.env.NODE_ENV === 'development' && !value) {
+    console.warn('[RockSage] Token \'' + cssVar + '\' undefined en tema activo — fallback: ' + fallback);
+  }
+  r.style.setProperty(cssVar, resolved);
+}
+
+// ── Helper: convierte hex #RRGGBB → "R, G, B" para rgba() ─────
+function hexToRgbComponents(hex: string): string {
+  const clean = hex.replace('#', '');
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+  return isNaN(r) ? '255, 255, 255' : r + ', ' + g + ', ' + b;
+}
+
 // ── Aplica tokens como CSS vars en :root ───────────────────────
 function applyTokensToDOM(theme: AdminUITheme) {
   const t = theme.tokens;
+  const d = DEFAULT_TOKENS;
   const r = document.documentElement;
 
   // Fondos
-  r.style.setProperty('--bg',       t.bg);
-  r.style.setProperty('--surface',  t.surface);
-  r.style.setProperty('--surface2', t.surface2);
-  r.style.setProperty('--surface3', t.surface3);
+  applyToken(r, '--bg',       t.bg,       d.bg);
+  applyToken(r, '--surface',  t.surface,  d.surface);
+  applyToken(r, '--surface2', t.surface2, d.surface2);
+  applyToken(r, '--surface3', t.surface3, d.surface3);
+
+  // --surface-rgb para rgba(var(--surface-rgb), opacity) en módulos
+  const surfaceRgb = hexToRgbComponents(t.surface ?? d.surface);
+  r.style.setProperty('--surface-rgb', surfaceRgb);
 
   // Texto
-  r.style.setProperty('--text',           t.text);
-  r.style.setProperty('--text-secondary', t.textSecondary);
-  r.style.setProperty('--text-muted',     t.muted);
+  applyToken(r, '--text',           t.text,          d.text);
+  applyToken(r, '--text-secondary', t.textSecondary, d.textSecondary);
+  applyToken(r, '--text-muted',     t.muted,         d.muted);
 
   // Bordes y sombras
-  r.style.setProperty('--border',        t.border);
-  r.style.setProperty('--border-strong', t.borderStrong);
-  r.style.setProperty('--shadow',        t.shadow);
-  r.style.setProperty('--shadow-lg',     t.shadowLg);
+  applyToken(r, '--border',        t.border,      d.border);
+  applyToken(r, '--border-strong', t.borderStrong, d.borderStrong);
+  applyToken(r, '--shadow',        t.shadow,      d.shadow);
+  applyToken(r, '--shadow-lg',     t.shadowLg,    d.shadowLg);
 
   // Acento
-  r.style.setProperty('--accent',        t.accent);
-  r.style.setProperty('--accent-hover',  t.accentHover);
-  r.style.setProperty('--accent-subtle', t.accentSubtle);
-  r.style.setProperty('--accent-text',   t.accentText);
+  applyToken(r, '--accent',        t.accent,       d.accent);
+  applyToken(r, '--accent-hover',  t.accentHover,  d.accentHover);
+  applyToken(r, '--accent-subtle', t.accentSubtle, d.accentSubtle);
+  applyToken(r, '--accent-text',   t.accentText,   d.accentText);
 
   // Sidebar
-  r.style.setProperty('--sidebar-bg',          t.sidebarBg);
-  r.style.setProperty('--sidebar-text',        t.sidebarText);
-  r.style.setProperty('--sidebar-text-muted',  t.sidebarTextMuted);
-  r.style.setProperty('--sidebar-active',      t.sidebarActive);
-  r.style.setProperty('--sidebar-active-text', t.sidebarActiveText);
-  r.style.setProperty('--sidebar-hover',       t.sidebarHover);
-  r.style.setProperty('--sidebar-accent',      t.sidebarAccent);
-  r.style.setProperty('--sidebar-border',      t.sidebarBorder);
-  r.style.setProperty('--sidebar-width',       t.sidebarWidth);
+  applyToken(r, '--sidebar-bg',          t.sidebarBg,         d.sidebarBg);
+  applyToken(r, '--sidebar-text',        t.sidebarText,       d.sidebarText);
+  applyToken(r, '--sidebar-text-muted',  t.sidebarTextMuted,  d.sidebarTextMuted);
+  applyToken(r, '--sidebar-active',      t.sidebarActive,     d.sidebarActive);
+  applyToken(r, '--sidebar-active-text', t.sidebarActiveText, d.sidebarActiveText);
+  applyToken(r, '--sidebar-hover',       t.sidebarHover,      d.sidebarHover);
+  applyToken(r, '--sidebar-accent',      t.sidebarAccent,     d.sidebarAccent);
+  applyToken(r, '--sidebar-border',      t.sidebarBorder,     d.sidebarBorder);
+  applyToken(r, '--sidebar-width',       t.sidebarWidth,      d.sidebarWidth);
 
   // Header
-  r.style.setProperty('--header-bg',     t.headerBg);
-  r.style.setProperty('--header-border', t.headerBorder);
-  r.style.setProperty('--header-text',   t.headerText);
+  applyToken(r, '--header-bg',     t.headerBg,     d.headerBg);
+  applyToken(r, '--header-border', t.headerBorder, d.headerBorder);
+  applyToken(r, '--header-text',   t.headerText,   d.headerText);
 
   // Estados semánticos
-  r.style.setProperty('--success',        t.success);
-  r.style.setProperty('--success-subtle', t.successSubtle);
-  r.style.setProperty('--error',          t.error);
-  r.style.setProperty('--error-subtle',   t.errorSubtle);
-  r.style.setProperty('--warning',        t.warning);
-  r.style.setProperty('--warning-subtle', t.warningSubtle);
-  r.style.setProperty('--info',           t.info);
-  r.style.setProperty('--info-subtle',    t.infoSubtle);
+  applyToken(r, '--success',        t.success,       d.success);
+  applyToken(r, '--success-subtle', t.successSubtle, d.successSubtle);
+  applyToken(r, '--error',          t.error,         d.error);
+  applyToken(r, '--error-subtle',   t.errorSubtle,   d.errorSubtle);
+  applyToken(r, '--warning',        t.warning,       d.warning);
+  applyToken(r, '--warning-subtle', t.warningSubtle, d.warningSubtle);
+  applyToken(r, '--info',           t.info,          d.info);
+  applyToken(r, '--info-subtle',    t.infoSubtle,    d.infoSubtle);
 
   // Radios
-  r.style.setProperty('--radius-card',   t.cardRadius);
-  r.style.setProperty('--radius-button', t.buttonRadius);
-  r.style.setProperty('--radius-input',  t.inputRadius);
-  r.style.setProperty('--radius-badge',  t.badgeRadius);
+  applyToken(r, '--radius-card',   t.cardRadius,   d.cardRadius);
+  applyToken(r, '--radius-button', t.buttonRadius, d.buttonRadius);
+  applyToken(r, '--radius-input',  t.inputRadius,  d.inputRadius);
+  applyToken(r, '--radius-badge',  t.badgeRadius,  d.badgeRadius);
 
   // Tipografía
-  r.style.setProperty('--font-heading',   t.fontHeading);
-  r.style.setProperty('--font-body',      t.fontBody);
-  r.style.setProperty('--font-mono',      t.fontMono);
-  r.style.setProperty('--font-size-base', t.fontSizeBase);
+  applyToken(r, '--font-heading',   t.fontHeading,   d.fontHeading);
+  applyToken(r, '--font-body',      t.fontBody,      d.fontBody);
+  applyToken(r, '--font-mono',      t.fontMono,      d.fontMono);
+  applyToken(r, '--font-size-base', t.fontSizeBase,  d.fontSizeBase);
 
   // Data attributes en admin-root
   const adminRoot = document.getElementById('admin-root');
@@ -131,10 +157,10 @@ export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const theme = getTheme(themeId);
 
-  const resolvedComponents: Required<AdminThemeComponents> = {
+  const resolvedComponents: Required<AdminThemeComponents> = useMemo(() => ({
     ...defaultComponents,
     ...(theme.components ?? {}),
-  };
+  }), [theme]);
 
   // Cargar tema persistido
   useEffect(() => {

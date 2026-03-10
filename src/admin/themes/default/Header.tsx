@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, Bell, Calendar, ChevronDown, X, Menu, ShoppingCart, Star, FileText, Package, DollarSign, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import type { AdminPage } from '@/src/admin/navigation';
+import type { AdminHeaderProps } from '@/src/admin/types';
 
 type Period = 'today' | '7days' | '30days' | 'custom';
 const periodLabels: Record<Period, string> = {
@@ -68,14 +69,10 @@ const headerNotifs = [
   },
 ];
 
-interface AdminHeaderProps {
-  period: Period;
-  onPeriodChange: (p: Period) => void;
-  onNavigate: (page: AdminPage) => void;
-  onMobileMenuToggle?: () => void;
-}
+// AdminHeaderProps importado desde @/src/admin/types (period: string)
 
-export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange, onNavigate, onMobileMenuToggle }) => {
+export const AdminHeader: React.FC<AdminHeaderProps> = ({ period: periodRaw, onPeriodChange, onNavigate, onMobileMenuToggle }) => {
+  const period = (periodRaw as Period) in periodLabels ? (periodRaw as Period) : 'today';
   const { user, medusaCustomer } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

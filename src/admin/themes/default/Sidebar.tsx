@@ -8,6 +8,7 @@ import {
   PanelLeftClose, PanelLeft,
 } from 'lucide-react';
 import type { AdminPage, NavItem, NavGroup } from '@/src/admin/navigation';
+import type { AdminSidebarProps } from '@/src/admin/types';
 import { allNavItems } from '@/src/admin/navigation';
 
 // AdminPage type imported from @/src/admin/navigation
@@ -15,15 +16,7 @@ import { allNavItems } from '@/src/admin/navigation';
 // NavItem and NavGroup types imported from @/src/admin/navigation
 
 
-interface DefaultSidebarProps {
-  currentPage: AdminPage;
-  onNavigate: (page: AdminPage) => void;
-  collapsed: boolean;
-  onToggleCollapse: () => void;
-  navigation: NavGroup[];
-}
-
-export const DefaultSidebar: React.FC<DefaultSidebarProps> = ({
+export const DefaultSidebar: React.FC<AdminSidebarProps> = ({
   currentPage, onNavigate, collapsed, onToggleCollapse, navigation
 }) => {
   const { user, medusaCustomer } = useAuth();

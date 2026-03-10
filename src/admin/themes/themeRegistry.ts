@@ -16,8 +16,8 @@ const dsdClassicTheme: AdminUITheme = {
   mode: 'light',
   description: "Tonos cálidos de madera artesanal con acentos dorados. Tema oficial de DavidSon's Design.",
   preview: { sidebar: '#2D2419', bg: '#FAF8F5', accent: '#C5A065', card: '#FFFFFF' },
-  Sidebar: DefaultSidebar as any,
-  Header: DefaultHeader as any,
+  Sidebar: DefaultSidebar,
+  Header: DefaultHeader,
   tokens: {
     bg: '#FAF8F5',
     surface: '#FFFFFF',

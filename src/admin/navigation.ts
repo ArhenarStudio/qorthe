@@ -24,6 +24,8 @@ export interface NavItem {
   label: string;
   icon: LucideIcon;
   badge?: number;
+  /** Ruta explícita — si se omite se deriva como /admin/{id} */
+  route?: string;
 }
 
 export interface NavGroup {
