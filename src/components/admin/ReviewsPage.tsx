@@ -302,8 +302,8 @@ export const ReviewsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-serif text-lg text-[var(--text)] dark:text-sand-100">Reviews</h3>
-          <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{totalReviews} reseñas totales</p>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Reviews</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">{totalReviews} reseñas totales</p>
         </div>
         <div className="flex items-center gap-2">
           {isLive ? (
@@ -324,18 +324,18 @@ export const ReviewsPage: React.FC = () => {
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         {/* Avg Rating */}
-        <div className="bg-[var(--surface)] dark:bg-wood-900 rounded-[var(--radius-card)] border border-[var(--border)] dark:border-wood-800 shadow-sm p-5 text-center">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5 text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
             {[...Array(5)].map((_, i) => (
               <Star key={i} size={16} className={i < Math.round(stats.avgRating) ? 'fill-accent-gold text-[var(--accent)]' : 'text-[var(--text-muted)] dark:text-[var(--text)]'} />
             ))}
           </div>
-          <p className="text-2xl font-bold text-[var(--text)] dark:text-sand-100 font-sans">{stats.avgRating > 0 ? stats.avgRating : '—'}</p>
+          <p className="text-[28px] font-bold font-mono text-[var(--text)]">{stats.avgRating > 0 ? stats.avgRating : '—'}</p>
           <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Rating promedio</p>
         </div>
 
         {/* Distribution */}
-        <div className="bg-[var(--surface)] dark:bg-wood-900 rounded-[var(--radius-card)] border border-[var(--border)] dark:border-wood-800 shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
           <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-2">Distribución</p>
           {distribution.map(d => {
             const pct = totalReviews > 0 ? Math.round((d.count / totalReviews) * 100) : 0;
@@ -343,7 +343,7 @@ export const ReviewsPage: React.FC = () => {
               <button key={d.star} onClick={() => setRatingFilter(ratingFilter === d.star ? null : d.star)} className={`flex items-center gap-2 mb-1 w-full rounded px-1 -mx-1 transition-colors ${ratingFilter === d.star ? 'bg-[var(--accent)]/10' : 'hover:bg-[var(--surface2)] dark:hover:bg-wood-800'}`}>
                 <span className="text-[10px] text-[var(--text-secondary)] w-3">{d.star}</span>
                 <Star size={10} className="text-[var(--accent)] fill-accent-gold" />
-                <div className="flex-1 h-2 bg-[var(--surface2)] dark:bg-wood-800 rounded-[var(--radius-badge)] overflow-hidden">
+                <div className="flex-1 h-2 bg-[var(--surface2)] rounded-[var(--radius-badge)] overflow-hidden">
                   <div className="h-full bg-[var(--accent)] rounded-[var(--radius-badge)] transition-all" style={{ width: `${pct}%` }} />
                 </div>
                 <span className="text-[10px] text-[var(--text-muted)] w-8 text-right">{d.count}</span>
@@ -353,7 +353,7 @@ export const ReviewsPage: React.FC = () => {
         </div>
 
         {/* Pending */}
-        <div className="bg-[var(--surface)] dark:bg-wood-900 rounded-[var(--radius-card)] border border-[var(--border)] dark:border-wood-800 shadow-sm p-5 flex flex-col items-center justify-center">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5 flex flex-col items-center justify-center">
           <p className="text-3xl font-bold text-amber-600 font-sans">{counts.pending}</p>
           <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Pendientes</p>
           <div className="flex gap-3 mt-2 text-[10px]">
@@ -363,16 +363,16 @@ export const ReviewsPage: React.FC = () => {
         </div>
 
         {/* Photos + Actions */}
-        <div className="bg-[var(--surface)] dark:bg-wood-900 rounded-[var(--radius-card)] border border-[var(--border)] dark:border-wood-800 shadow-sm p-5 flex flex-col items-center justify-center gap-3">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5 flex flex-col items-center justify-center gap-3">
           <div className="text-center">
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <Camera size={14} className="text-[var(--text-muted)]" />
-              <p className="text-xl font-bold text-[var(--text)] dark:text-sand-100 font-sans">{stats.withPhotos}</p>
+              <p className="text-xl font-bold text-[var(--text)] font-sans">{stats.withPhotos}</p>
             </div>
             <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Con fotos</p>
           </div>
           <div className="flex gap-2 w-full">
-            <button onClick={handleExportCsv} disabled={exporting} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-[var(--surface2)] dark:bg-wood-800 text-[var(--text-secondary)] dark:text-sand-300 rounded-[var(--radius-card)] text-[10px] font-medium hover:bg-[var(--surface2)] dark:hover:bg-wood-700 transition-colors disabled:opacity-50">
+            <button onClick={handleExportCsv} disabled={exporting} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-[var(--surface2)] text-[var(--text-secondary)] rounded-[var(--radius-card)] text-[10px] font-medium hover:bg-[var(--surface2)] dark:hover:bg-wood-700 transition-colors disabled:opacity-50">
               <Download size={11} /> {exporting ? 'Exportando...' : 'CSV'}
             </button>
             <button onClick={() => setShowRequestModal(true)} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-wood-900 dark:bg-[var(--accent)] text-white dark:text-[var(--text)] rounded-[var(--radius-card)] text-[10px] font-medium hover:bg-wood-800 dark:hover:bg-[var(--accent)]/90 transition-colors">
@@ -385,7 +385,7 @@ export const ReviewsPage: React.FC = () => {
       {/* Toolbar: Search + Filters + Bulk */}
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search */}
-        <div className="flex-1 flex items-center gap-2 bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-700 rounded-[var(--radius-card)] px-3 py-2">
+        <div className="flex-1 flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2">
           <Search size={14} className="text-[var(--text-muted)]" />
           <input
             type="text"
@@ -393,7 +393,7 @@ export const ReviewsPage: React.FC = () => {
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            className="flex-1 bg-transparent text-xs text-[var(--text)] dark:text-sand-200 placeholder:text-[var(--text-muted)] dark:placeholder:text-[var(--text-secondary)] outline-none"
+            className="flex-1 bg-transparent text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] dark:placeholder:text-[var(--text-secondary)] outline-none"
           />
           {searchQuery && (
             <button onClick={() => { setSearchInput(''); setSearchQuery(''); }} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
@@ -407,22 +407,22 @@ export const ReviewsPage: React.FC = () => {
 
         {/* Status Filter */}
         <div className="relative">
-          <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-700 rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] dark:text-sand-300 h-full">
+          <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] h-full">
             <Filter size={14} /> {statusFilter === 'all' ? 'Todos' : statusConfig[statusFilter]?.label}
             {statusFilter === 'all' && counts.pending > 0 && (
-              <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded-[var(--radius-badge)]">{counts.pending}</span>
+              <span className="bg-amber-100/30 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-[var(--radius-badge)]">{counts.pending}</span>
             )}
             <ChevronDown size={12} />
           </button>
           {filterOpen && (
-            <div className="absolute right-0 mt-1 bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-700 rounded-[var(--radius-card)] shadow-lg py-1 z-20 min-w-[180px]">
+            <div className="absolute right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-lg py-1 z-20 min-w-[180px]">
               {[
                 { key: 'all', label: 'Todos', count: totalReviews },
                 { key: 'pending', label: 'Pendientes', count: counts.pending },
                 { key: 'approved', label: 'Aprobados', count: counts.approved },
                 { key: 'rejected', label: 'Rechazados', count: counts.rejected },
               ].map(s => (
-                <button key={s.key} onClick={() => { setStatusFilter(s.key); setFilterOpen(false); }} className={`w-full text-left px-3 py-2 text-xs hover:bg-[var(--surface2)] dark:hover:bg-wood-800 flex justify-between ${s.key === statusFilter ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-secondary)] dark:text-sand-300'}`}>
+                <button key={s.key} onClick={() => { setStatusFilter(s.key); setFilterOpen(false); }} className={`w-full text-left px-3 py-2 text-xs hover:bg-[var(--surface2)] dark:hover:bg-wood-800 flex justify-between ${s.key === statusFilter ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-secondary)]'}`}>
                   <span>{s.label}</span>
                   <span className="text-[var(--text-muted)] dark:text-[var(--text-secondary)]">{s.count}</span>
                 </button>
@@ -432,7 +432,7 @@ export const ReviewsPage: React.FC = () => {
         </div>
 
         {/* Sort */}
-        <button onClick={() => toggleSort(sortBy === 'created_at' ? 'rating' : sortBy === 'rating' ? 'helpful_count' : 'created_at')} className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-700 rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] dark:text-sand-300">
+        <button onClick={() => toggleSort(sortBy === 'created_at' ? 'rating' : sortBy === 'rating' ? 'helpful_count' : 'created_at')} className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)]">
           <ArrowUpDown size={14} />
           {sortBy === 'created_at' ? 'Fecha' : sortBy === 'rating' ? 'Rating' : 'Útil'}
           <span className="text-[10px] text-[var(--text-muted)]">{sortDir === 'desc' ? '↓' : '↑'}</span>
@@ -470,7 +470,7 @@ export const ReviewsPage: React.FC = () => {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center gap-3 bg-wood-900 dark:bg-[var(--accent)]/10 text-white dark:text-sand-100 rounded-[var(--radius-card)] px-5 py-3">
+            <div className="flex items-center gap-3 bg-wood-900 dark:bg-[var(--accent)]/10 text-white rounded-[var(--radius-card)] px-5 py-3">
               <span className="text-xs font-medium">{selectedIds.size} seleccionado{selectedIds.size > 1 ? 's' : ''}</span>
               <div className="flex-1" />
               <button
@@ -533,7 +533,7 @@ export const ReviewsPage: React.FC = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.02 }}
-              className={`bg-[var(--surface)] dark:bg-wood-900 rounded-[var(--radius-card)] border shadow-sm p-5 transition-colors ${selectedIds.has(review.id) ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]/30' : 'border-[var(--border)] dark:border-wood-800'}`}
+              className={`bg-[var(--surface)] rounded-[var(--radius-card)] border shadow-sm p-5 transition-colors ${selectedIds.has(review.id) ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]/30' : 'border-[var(--border)]'}`}
             >
               <div className="flex gap-4">
                 {/* Checkbox */}
@@ -545,7 +545,7 @@ export const ReviewsPage: React.FC = () => {
                 {review.product_thumbnail ? (
                   <img src={review.product_thumbnail} alt={review.product_title || ''} className="w-14 h-14 rounded-[var(--radius-card)] object-cover flex-shrink-0" />
                 ) : (
-                  <div className="w-14 h-14 rounded-[var(--radius-card)] bg-[var(--surface2)] dark:bg-wood-800 flex-shrink-0 flex items-center justify-center text-[var(--text-muted)] dark:text-[var(--text-secondary)]">
+                  <div className="w-14 h-14 rounded-[var(--radius-card)] bg-[var(--surface2)] flex-shrink-0 flex items-center justify-center text-[var(--text-muted)] dark:text-[var(--text-secondary)]">
                     <Star size={18} />
                   </div>
                 )}
@@ -554,7 +554,7 @@ export const ReviewsPage: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <p className="text-sm font-medium text-[var(--text)] dark:text-sand-100">{review.product_title || 'Producto'}</p>
+                      <p className="text-sm font-medium text-[var(--text)]">{review.product_title || 'Producto'}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (
@@ -565,7 +565,7 @@ export const ReviewsPage: React.FC = () => {
                           {statusConfig[review.status]?.label}
                         </span>
                         {review.order_id && (
-                          <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">Compra verificada</span>
+                          <span className="text-[10px] font-medium text-emerald-600">Compra verificada</span>
                         )}
                         {review.photos && review.photos.length > 0 && (
                           <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-0.5">
@@ -585,17 +585,17 @@ export const ReviewsPage: React.FC = () => {
                   </div>
 
                   {review.title && (
-                    <p className="text-xs font-semibold text-[var(--text)] dark:text-sand-200 mb-1">{review.title}</p>
+                    <p className="text-xs font-semibold text-[var(--text)] mb-1">{review.title}</p>
                   )}
                   {review.body && (
-                    <p className="text-xs text-[var(--text-secondary)] dark:text-sand-400 leading-relaxed mb-3">&ldquo;{review.body}&rdquo;</p>
+                    <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-3">&ldquo;{review.body}&rdquo;</p>
                   )}
 
                   {/* Photos */}
                   {review.photos && review.photos.length > 0 && (
                     <div className="flex gap-2 mb-3 flex-wrap">
                       {review.photos.map((photo, i) => (
-                        <button key={i} onClick={() => setLightboxPhoto(photo)} className="group relative w-16 h-16 rounded-[var(--radius-card)] overflow-hidden border border-[var(--border)] dark:border-wood-700 hover:border-[var(--accent)] transition-colors">
+                        <button key={i} onClick={() => setLightboxPhoto(photo)} className="group relative w-16 h-16 rounded-[var(--radius-card)] overflow-hidden border border-[var(--border)] hover:border-[var(--accent)] transition-colors">
                           <img src={photo} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                             <Eye size={14} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -607,9 +607,9 @@ export const ReviewsPage: React.FC = () => {
 
                   {/* Admin Reply */}
                   {review.admin_reply && (
-                    <div className="mb-3 bg-[var(--surface2)] dark:bg-wood-800 rounded-[var(--radius-card)] p-3 border border-[var(--border)] dark:border-wood-700">
+                    <div className="mb-3 bg-[var(--surface2)] rounded-[var(--radius-card)] p-3 border border-[var(--border)]">
                       <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-1">Tu respuesta:</p>
-                      <p className="text-xs text-[var(--text-secondary)] dark:text-sand-400 italic">{review.admin_reply}</p>
+                      <p className="text-xs text-[var(--text-secondary)] italic">{review.admin_reply}</p>
                       {review.admin_reply_at && (
                         <p className="text-[9px] text-[var(--text-muted)] mt-1">{new Date(review.admin_reply_at).toLocaleDateString('es-MX')}</p>
                       )}
@@ -625,12 +625,12 @@ export const ReviewsPage: React.FC = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="mb-3 overflow-hidden"
                       >
-                        <div className="bg-[var(--surface2)] dark:bg-wood-800 rounded-[var(--radius-card)] p-3 border border-[var(--border)] dark:border-wood-700">
+                        <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-3 border border-[var(--border)]">
                           <textarea
                             value={replyText}
                             onChange={e => setReplyText(e.target.value)}
                             placeholder="Escribe tu respuesta al cliente..."
-                            className="w-full text-xs text-[var(--text)] dark:text-sand-200 bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-600 rounded-[var(--radius-card)] p-2 min-h-[60px] resize-none focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full text-xs text-[var(--text)] bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] p-2 min-h-[60px] resize-none focus:outline-none focus:border-[var(--accent)]"
                             autoFocus
                           />
                           <div className="flex justify-end gap-2 mt-2">
@@ -653,40 +653,40 @@ export const ReviewsPage: React.FC = () => {
                   {/* Footer: User + Actions */}
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-[var(--radius-badge)] bg-[var(--surface2)] dark:bg-wood-800 flex items-center justify-center text-[9px] font-bold text-[var(--text-secondary)] dark:text-sand-400 overflow-hidden">
+                      <div className="w-6 h-6 rounded-[var(--radius-badge)] bg-[var(--surface2)] flex items-center justify-center text-[9px] font-bold text-[var(--text-secondary)] overflow-hidden">
                         {review.user_avatar ? (
                           <img src={review.user_avatar} alt="" className="w-full h-full object-cover" />
                         ) : (
                           (review.user_name || '?').charAt(0).toUpperCase()
                         )}
                       </div>
-                      <span className="text-[11px] text-[var(--text-secondary)] dark:text-sand-400">{review.user_name || 'Cliente'}</span>
+                      <span className="text-[11px] text-[var(--text-secondary)]">{review.user_name || 'Cliente'}</span>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       {review.status === 'pending' && (
                         <>
-                          <button onClick={() => handleAction(review.id, 'approve')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--success-subtle)] dark:bg-green-900/20 text-[var(--success)] dark:text-[var(--success)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--success-subtle)] dark:hover:bg-green-900/30 transition-colors">
+                          <button onClick={() => handleAction(review.id, 'approve')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--success-subtle)]/20 text-[var(--success)] dark:text-[var(--success)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--success-subtle)] dark:hover:bg-green-900/30 transition-colors">
                             <CheckCircle size={12} /> Aprobar
                           </button>
-                          <button onClick={() => handleAction(review.id, 'reject')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--error-subtle)] dark:bg-red-900/20 text-[var(--error)] dark:text-[var(--error)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--error-subtle)] dark:hover:bg-red-900/30 transition-colors">
+                          <button onClick={() => handleAction(review.id, 'reject')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--error-subtle)]/20 text-[var(--error)] dark:text-[var(--error)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--error-subtle)] dark:hover:bg-red-900/30 transition-colors">
                             <XCircle size={12} /> Rechazar
                           </button>
                         </>
                       )}
                       {review.status === 'rejected' && (
-                        <button onClick={() => handleAction(review.id, 'approve')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--success-subtle)] dark:bg-green-900/20 text-[var(--success)] dark:text-[var(--success)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--success-subtle)] dark:hover:bg-green-900/30 transition-colors">
+                        <button onClick={() => handleAction(review.id, 'approve')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--success-subtle)]/20 text-[var(--success)] dark:text-[var(--success)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--success-subtle)] dark:hover:bg-green-900/30 transition-colors">
                           <CheckCircle size={12} /> Re-aprobar
                         </button>
                       )}
                       {review.status === 'approved' && (
-                        <button onClick={() => handleAction(review.id, 'reject')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--error-subtle)] dark:bg-red-900/20 text-[var(--error)] dark:text-[var(--error)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--error-subtle)] dark:hover:bg-red-900/30 transition-colors">
+                        <button onClick={() => handleAction(review.id, 'reject')} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--error-subtle)]/20 text-[var(--error)] dark:text-[var(--error)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--error-subtle)] dark:hover:bg-red-900/30 transition-colors">
                           <XCircle size={12} /> Revocar
                         </button>
                       )}
                       {replyingTo !== review.id && (
                         <button
                           onClick={() => { setReplyingTo(review.id); setReplyText(review.admin_reply || ''); }}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-[var(--surface2)] dark:bg-wood-800 text-[var(--text-secondary)] dark:text-sand-300 rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--surface2)] dark:hover:bg-wood-700 transition-colors"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-[var(--surface2)] text-[var(--text-secondary)] rounded-[var(--radius-card)] text-[11px] font-medium hover:bg-[var(--surface2)] dark:hover:bg-wood-700 transition-colors"
                         >
                           <MessageSquare size={12} /> {review.admin_reply ? 'Editar respuesta' : 'Responder'}
                         </button>
@@ -706,7 +706,7 @@ export const ReviewsPage: React.FC = () => {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="flex items-center gap-1 px-3 py-2 bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-700 rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] dark:text-sand-300 hover:bg-[var(--surface2)] dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronLeft size={14} /> Anterior
           </button>
@@ -726,7 +726,7 @@ export const ReviewsPage: React.FC = () => {
                 <button
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
-                  className={`w-8 h-8 rounded-[var(--radius-card)] text-xs font-medium transition-colors ${page === pageNum ? 'bg-wood-900 dark:bg-[var(--accent)] text-white dark:text-[var(--text)]' : 'bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-700 text-[var(--text-secondary)] dark:text-sand-400 hover:bg-[var(--surface2)] dark:hover:bg-wood-800'}`}
+                  className={`w-8 h-8 rounded-[var(--radius-card)] text-xs font-medium transition-colors ${page === pageNum ? 'bg-wood-900 dark:bg-[var(--accent)] text-white dark:text-[var(--text)]' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] dark:hover:bg-wood-800'}`}
                 >
                   {pageNum}
                 </button>
@@ -736,7 +736,7 @@ export const ReviewsPage: React.FC = () => {
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="flex items-center gap-1 px-3 py-2 bg-[var(--surface)] dark:bg-wood-900 border border-[var(--border)] dark:border-wood-700 rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] dark:text-sand-300 hover:bg-[var(--surface2)] dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] dark:hover:bg-wood-800 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Siguiente <ChevronRight size={14} />
           </button>
@@ -786,16 +786,16 @@ export const ReviewsPage: React.FC = () => {
               initial={{ scale: 0.95, y: 10 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 10 }}
-              className="bg-[var(--surface)] dark:bg-wood-900 rounded-2xl shadow-2xl p-6 max-w-md w-full"
+              className="bg-[var(--surface)] rounded-2xl shadow-2xl p-6 max-w-md w-full"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-serif text-lg text-[var(--text)] dark:text-sand-100">Solicitar Review</h4>
+                <h4 className="font-serif text-lg text-[var(--text)]">Solicitar Review</h4>
                 <button onClick={() => setShowRequestModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
                   <X size={18} />
                 </button>
               </div>
-              <p className="text-xs text-[var(--text-secondary)] dark:text-sand-400 mb-4">
+              <p className="text-xs text-[var(--text-secondary)] mb-4">
                 Envía un email al cliente invitándolo a dejar una reseña sobre su compra.
               </p>
               <div className="space-y-3">
@@ -806,7 +806,7 @@ export const ReviewsPage: React.FC = () => {
                     value={requestEmail}
                     onChange={e => setRequestEmail(e.target.value)}
                     placeholder="cliente@ejemplo.com"
-                    className="w-full text-xs text-[var(--text)] dark:text-sand-200 bg-[var(--surface2)] dark:bg-wood-800 border border-[var(--border)] dark:border-wood-600 rounded-[var(--radius-card)] px-3 py-2 focus:outline-none focus:border-[var(--accent)]"
+                    className="w-full text-xs text-[var(--text)] bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 focus:outline-none focus:border-[var(--accent)]"
                   />
                 </div>
                 <div>
@@ -816,7 +816,7 @@ export const ReviewsPage: React.FC = () => {
                     value={requestOrderId}
                     onChange={e => setRequestOrderId(e.target.value)}
                     placeholder="order_01ABC..."
-                    className="w-full text-xs text-[var(--text)] dark:text-sand-200 bg-[var(--surface2)] dark:bg-wood-800 border border-[var(--border)] dark:border-wood-600 rounded-[var(--radius-card)] px-3 py-2 focus:outline-none focus:border-[var(--accent)]"
+                    className="w-full text-xs text-[var(--text)] bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 focus:outline-none focus:border-[var(--accent)]"
                   />
                 </div>
               </div>

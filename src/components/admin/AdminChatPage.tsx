@@ -151,7 +151,7 @@ export const AdminChatPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <MessageSquare size={18} className="text-[var(--accent)]" />
-          <h3 className="font-serif text-lg text-[var(--text)]">Chat en Vivo</h3>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Chat en Vivo</h1>
           {totalUnread > 0 && <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-[var(--radius-badge)] animate-pulse">{totalUnread}</span>}
         </div>
         <div className="flex items-center gap-2">

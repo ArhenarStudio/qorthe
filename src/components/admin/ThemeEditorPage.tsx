@@ -953,10 +953,8 @@ export const ThemeEditorPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
-            <Palette size={20} className="text-[var(--accent)]" /> Editor de Tema
-          </h1>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">Personaliza la apariencia de tu tienda sin codigo</p>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Editor de Tema</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Personaliza la apariencia de tu tienda sin código</p>
         </div>
         <div className="flex items-center gap-2">
           <button

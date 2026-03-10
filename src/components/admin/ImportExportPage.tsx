@@ -251,15 +251,15 @@ function ImportTab() {
         <p className="text-sm font-serif text-[var(--text)]">Importacion completada</p>
         <div className="flex justify-center gap-6 mt-4 text-center">
           <div>
-            <p className="text-lg font-serif text-[var(--success)]">48</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--success)]">48</p>
             <p className="text-[10px] text-[var(--text-muted)]">Importados</p>
           </div>
           <div>
-            <p className="text-lg font-serif text-amber-500">3</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--warning)]">3</p>
             <p className="text-[10px] text-[var(--text-muted)]">Advertencias</p>
           </div>
           <div>
-            <p className="text-lg font-serif text-[var(--error)]">1</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--error)]">1</p>
             <p className="text-[10px] text-[var(--text-muted)]">Errores</p>
           </div>
         </div>
@@ -448,10 +448,8 @@ export const ImportExportPage: React.FC = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
-          <ArrowUpDown size={20} className="text-[var(--accent)]" /> Importar / Exportar
-        </h1>
-        <p className="text-xs text-[var(--text-muted)] mt-0.5">Importa datos, exporta backups o migra desde otra plataforma</p>
+        <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Importar / Exportar</h1>
+        <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Importa datos, exporta backups o migra desde otra plataforma</p>
       </div>
 
       <div className="flex gap-1 border-b border-[var(--border)]">

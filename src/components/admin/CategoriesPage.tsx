@@ -449,12 +449,12 @@ export const CategoriesPage: React.FC = () => {
     <div className="space-y-4" onClick={() => setContextMenu(null)}>
       {/* ===== HEADER ===== */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-2">
-          <FolderTree size={18} className="text-[var(--accent)]" />
-          <h3 className="font-serif text-lg text-[var(--text)]">Categorias y Colecciones</h3>
+        <div>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Categorías</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Organiza productos por categorías y colecciones</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setEditing('new')} className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors">
+          <button onClick={() => setEditing('new')} className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-[var(--radius-button)] hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}>
             <Plus size={14} /> Nueva Categoria
           </button>
           <button onClick={() => setEditingCollection('new')} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)] text-xs hover:bg-[var(--surface2)] transition-colors">

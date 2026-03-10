@@ -106,11 +106,10 @@ export const UsersPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
-          <Users size={20} className="text-[var(--accent)]" /> Gestión de Equipo
-        </h3>
+        <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Equipo</h1>
+        <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Gestiona usuarios y accesos del panel de administración</p>
         <button onClick={() => { setEditingUser(null); setShowForm(true); }}
-          className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800">
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-[var(--radius-button)] hover:opacity-90 transition-opacity" style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}>
           <UserPlus size={14} /> Agregar Usuario
         </button>
       </div>

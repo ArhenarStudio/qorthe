@@ -530,7 +530,7 @@ function InstalledView({ onSelect, onToggle }: { onSelect: (app: IntegrationApp)
           { label: 'By RockStage', value: installed.filter(a => a.isRockStage).length.toString() },
         ].map(k => (
           <Card key={k.label} className="p-3 text-center">
-            <p className="text-lg font-serif text-[var(--text)]">{k.value}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--text)]">{k.value}</p>
             <p className="text-[10px] text-[var(--text-muted)]">{k.label}</p>
           </Card>
         ))}
@@ -925,10 +925,8 @@ export const IntegrationsStorePage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
-            <Plug size={20} className="text-[var(--accent)]" /> Centro de Integraciones
-          </h1>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">Descubre, instala y configura apps para potenciar tu tienda</p>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Integraciones</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Descubre, instala y configura apps para potenciar tu tienda</p>
         </div>
       </div>
 

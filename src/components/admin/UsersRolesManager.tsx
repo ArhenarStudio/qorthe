@@ -404,7 +404,7 @@ function UsersPanel() {
             name: u.full_name || u.email?.split('@')[0] || 'Usuario',
             email: u.email || '',
             role: u.role_name || 'Sin rol',
-            roleColor: u.role_color || '#94a3b8',
+            roleColor: u.role_color || 'var(--text-muted)',
             status: u.status || 'active',
             lastAccess: u.last_access ? new Date(u.last_access).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Nunca',
             createdAt: u.created_at ? new Date(u.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '',
@@ -542,7 +542,7 @@ function UsersPanel() {
           { label: 'Roles en uso', value: new Set(users.map(u => u.role)).size.toString() },
         ].map(s => (
           <Card key={s.label} className="p-3 text-center">
-            <p className="text-lg font-serif text-[var(--text)]">{s.value}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--text)]">{s.value}</p>
             <p className="text-[10px] text-[var(--text-muted)]">{s.label}</p>
           </Card>
         ))}
@@ -597,7 +597,7 @@ function RolesPanel() {
                     key={p.moduleId}
                     className="h-1.5 flex-1 rounded-[var(--radius-badge)]"
                     style={{
-                      backgroundColor: p.access === 'full' ? '#10B981' : p.access === 'edit' ? '#F59E0B' : p.access === 'read' ? '#3B82F6' : '#E5E7EB',
+                      backgroundColor: p.access === 'full' ? 'var(--success)' : p.access === 'edit' ? 'var(--warning)' : p.access === 'read' ? 'var(--info)' : 'var(--surface3)',
                     }}
                     title={`${p.moduleName}: ${accessLabels[p.access].label}`}
                   />
@@ -970,7 +970,7 @@ function AuditPanel() {
           { label: 'Modulos con actividad', value: new Set(auditData.map(a => a.module)).size.toString() },
         ].map(s => (
           <Card key={s.label} className="p-3 text-center">
-            <p className="text-lg font-serif text-[var(--text)]">{s.value}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--text)]">{s.value}</p>
             <p className="text-[10px] text-[var(--text-muted)]">{s.label}</p>
           </Card>
         ))}
