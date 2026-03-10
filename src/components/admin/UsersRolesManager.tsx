@@ -982,8 +982,7 @@ function AuditPanel() {
 // ===== MAIN COMPONENT =====
 export const UsersRolesManager: React.FC = () => {
   const [subTab, setSubTab] = useState<SubTab>('users');
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-
+  
   const subTabs: Array<{ id: SubTab; label: string; icon: React.ElementType; count?: number }> = [
     { id: 'users', label: 'Usuarios', icon: Users, count: seedUsers.length },
     { id: 'roles', label: 'Roles y Permisos', icon: Shield, count: defaultRoles.length },

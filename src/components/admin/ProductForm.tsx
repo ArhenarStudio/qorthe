@@ -147,8 +147,7 @@ interface ProductFormProps {
 export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => {
   const isEditing = !!product;
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives
-
+  
   const [form, setForm] = useState<ProductFormData>(() => {
     if (!product) return defaultFormData;
     return {

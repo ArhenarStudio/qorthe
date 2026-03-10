@@ -888,8 +888,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
 export const IntegrationsStorePage: React.FC = () => {
 
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  // ── Live data from API ──
+    // ── Live data from API ──
   const [liveInteg, setLiveInteg] = useState<any>(null);
   const [integrationsLoading, setIntegrationsLoading] = useState(true);
   useEffect(() => {

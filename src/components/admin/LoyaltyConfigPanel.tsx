@@ -85,8 +85,7 @@ const MetricCard: React.FC<{ label: string; value: string; sub?: string; highlig
 
 export const LoyaltyConfigPanel: React.FC = () => {
   const { session } = useAuth();
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  const [config, setConfig] = useState<LoyaltyConfig>(DEFAULT_LOYALTY_CONFIG);
+    const [config, setConfig] = useState<LoyaltyConfig>(DEFAULT_LOYALTY_CONFIG);
   const [originalConfig, setOriginalConfig] = useState<LoyaltyConfig>(DEFAULT_LOYALTY_CONFIG);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -25,8 +25,7 @@ const tierColors: Record<string, string> = { pino: 'bg-[var(--success-subtle)] t
 
 export const AdminChatPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('conversations');
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+    const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);

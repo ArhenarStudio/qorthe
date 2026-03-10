@@ -836,8 +836,7 @@ const AnalisisTab: React.FC = () => {
 export const MarketingPage: React.FC = () => {
   const [tab, setTab] = useState<TabId>('cupones');
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  const [search, setSearch] = useState('');
+    const [search, setSearch] = useState('');
 
   // ── Live promotion stats ──
   const [promoStats, setPromoStats] = useState<{ total: number; active: number; scheduled: number; expired: number }>({ total: 0, active: 0, scheduled: 0, expired: 0 });

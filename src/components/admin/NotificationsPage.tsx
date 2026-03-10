@@ -805,8 +805,7 @@ function ConfigTab() {
 export const NotificationsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NTab>('center');
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-
+  
   const tabContent: Record<NTab, React.ReactNode> = {
     center: <CenterTab />,
     emails: <EmailsTab />,

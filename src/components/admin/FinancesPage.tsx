@@ -1256,8 +1256,7 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
 export const FinancesPage: React.FC = () => {
 
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  // ── Live data from API ──
+    // ── Live data from API ──
   const [liveFinances, setLiveFinances] = useState<any>(null);
   const [financesLoading, setFinancesLoading] = useState(true);
   const [period, setPeriod] = useState('30d');

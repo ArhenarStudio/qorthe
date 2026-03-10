@@ -330,8 +330,7 @@ function MetricsTab() {
 export const ReturnsRmaPage: React.FC = () => {
 
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  // ── Live data from API ──
+    // ── Live data from API ──
   const [liveReturns, setLiveReturns] = useState<any>(null);
   const [returnsLoading, setReturnsLoading] = useState(true);
   useEffect(() => {

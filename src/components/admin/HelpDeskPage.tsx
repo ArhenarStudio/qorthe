@@ -58,8 +58,7 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString('es-MX', { day: '2
 export const HelpDeskPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>('tickets');
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  const [tickets, setTickets] = useState<any[]>([]);
+    const [tickets, setTickets] = useState<any[]>([]);
   const [warrantyClaims, setWarrantyClaims] = useState<any[]>([]);
   const [warrantyPolicy, setWarrantyPolicy] = useState<any>(null);
   const [loading, setLoading] = useState(true);

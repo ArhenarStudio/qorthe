@@ -1095,8 +1095,7 @@ function CustomTab() {
 export const ReportsAnalyticsPage: React.FC = () => {
 
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  // ── Live data from API ──
+    // ── Live data from API ──
   const [liveReports, setLiveReports] = useState<any>(null);
   const [reportsLoading, setReportsLoading] = useState(true);
   useEffect(() => {

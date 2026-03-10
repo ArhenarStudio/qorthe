@@ -69,8 +69,7 @@ const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; s
 export const QuotesPage: React.FC = () => {
 
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  // ── Live data from API (no mock fallback) ──
+    // ── Live data from API (no mock fallback) ──
   const [liveQuotes, setLiveQuotes] = useState<{ quotes: AdminQuote[]; stats: { today_revenue: number; today_count: number; pos_count: number; total_count: number } } | null>(null);
   const [quotesLoading, setQuotesLoading] = useState(true);
   useEffect(() => {

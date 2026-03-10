@@ -128,8 +128,7 @@ const daysSince = (d: string) => d ? Math.floor((Date.now() - new Date(d).getTim
 export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNavigate }) => {
   const [tab, setTab] = useState<'all' | 'membership' | 'segments' | 'config'>('all');
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  const [searchQ, setSearchQ] = useState('');
+    const [searchQ, setSearchQ] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerFull | null>(null);
   const [filterTier, setFilterTier] = useState<string>('all');
   const [filterActivity, setFilterActivity] = useState<string>('all');

@@ -81,8 +81,7 @@ const ITEMS_PER_PAGE = 20;
 export const ReviewsPage: React.FC = () => {
   // Data state
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  const [reviews, setReviews] = useState<ReviewData[]>([]);
+    const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [counts, setCounts] = useState<ReviewCounts>({ pending: 0, approved: 0, rejected: 0 });
   const [stats, setStats] = useState<ReviewStats>({ avgRating: 0, totalReviews: 0, ratingDistribution: [], withPhotos: 0 });
   const [total, setTotal] = useState(0);

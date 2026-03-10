@@ -818,8 +818,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
 export const AutomationsPage: React.FC = () => {
 
   const { theme } = useAdminTheme(); const t = theme.tokens;
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-  // ── Live data from API ──
+    // ── Live data from API ──
   const [liveAuto, setLiveAuto] = useState<any>(null);
   const [automationsLoading, setAutomationsLoading] = useState(true);
   const fetchAutomations = () => {

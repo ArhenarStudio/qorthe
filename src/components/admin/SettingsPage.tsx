@@ -995,8 +995,7 @@ function DeveloperTab() {
 // ===== MAIN =====
 export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<STab>('general');
-  // primitivos via src/theme/primitives — leen de useTheme() directamente
-
+  
   const tabContent: Record<STab, React.ReactNode> = {
     general: <GeneralTab />,
     store: <StoreTab />,
