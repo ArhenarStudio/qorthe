@@ -20,7 +20,6 @@
 import { useTheme } from '@/src/theme/ThemeContext';
 import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import {
   Package, Search, Filter, ArrowUpDown, AlertTriangle, CheckCircle,
   TrendingUp, TrendingDown, Boxes, DollarSign, Clock, Plus, Minus,
@@ -201,14 +200,14 @@ export const InventoryPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
+        <h3 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", margin: 0, fontFamily: "var(--font-heading)" }} className="flex items-center gap-2">
           <Warehouse size={20} className="text-[var(--accent)]" /> Control de Inventario
         </h3>
         <div className="flex items-center gap-2">
-          <button onClick={fetchAll} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)] transition-colors">
+          <button onClick={fetchAll} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border-2 border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-none hover:bg-[var(--surface2)] transition-colors">
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Actualizar
           </button>
-          <button onClick={exportCSV} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)] transition-colors">
+          <button onClick={exportCSV} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border-2 border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-none hover:bg-[var(--surface2)] transition-colors">
             <Download size={14} /> Exportar
           </button>
         </div>
@@ -233,12 +232,12 @@ export const InventoryPage: React.FC = () => {
           const badgeCount = t.id === "alerts" ? alerts.length : 0;
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs rounded-lg whitespace-nowrap transition-colors ${
-                tab === t.id ? 'bg-wood-900 text-sand-100' : 'bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] border border-[var(--border)]'
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs rounded-none whitespace-nowrap transition-colors ${
+                tab === t.id ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] border-2 border-[var(--border)]'
               }`}>
               <Icon size={14} /> {t.label}
               {badgeCount > 0 && (
-                <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${tab === t.id ? 'bg-red-500 text-white' : 'bg-red-50 text-red-500'}`}>
+                <span className={`ml-1 px-1.5 py-0.5 rounded-none text-[10px] ${tab === t.id ? 'bg-red-500 text-white' : 'bg-red-50 text-red-500'}`}>
                   {badgeCount}
                 </span>
               )}
@@ -269,12 +268,12 @@ export const InventoryPage: React.FC = () => {
       {tab === "config" && <ConfigTab config={config} onChange={setConfig} onSave={saveConfig} />}
 
       {/* Quick Action Modal */}
-      <AnimatePresence>
+      
         {quickAction && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => !submitting && setQuickAction(null)}>
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <div
+              className="bg-[var(--surface)] rounded-none shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-bold text-[var(--text)] flex items-center gap-2">
                   {getMovementIcon(quickAction.type, 16, MOVEMENT_TYPE_CONFIG[quickAction.type].color)}
@@ -282,7 +281,7 @@ export const InventoryPage: React.FC = () => {
                 </h4>
                 <button onClick={() => setQuickAction(null)} className="text-[var(--text-muted)] hover:text-[var(--text)]"><X size={18} /></button>
               </div>
-              <div className="bg-[var(--surface2)] rounded-lg p-3 text-xs space-y-1">
+              <div className="bg-[var(--surface2)] rounded-none p-3 text-xs space-y-1">
                 <div className="flex justify-between"><span className="text-[var(--text-secondary)]">Producto</span><span className="text-[var(--text)] font-bold">{quickAction.item.title}</span></div>
                 <div className="flex justify-between"><span className="text-[var(--text-secondary)]">SKU</span><span className="text-[var(--text)]">{quickAction.item.sku}</span></div>
                 <div className="flex justify-between"><span className="text-[var(--text-secondary)]">Stock actual</span><span className="text-[var(--text)] font-bold">{quickAction.item.current_stock}</span></div>
@@ -294,48 +293,48 @@ export const InventoryPage: React.FC = () => {
                 <div>
                   <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Cantidad *</label>
                   <input type="number" min={1} value={quickQty} onChange={e => setQuickQty(e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" autoFocus />
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" autoFocus />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Costo unitario</label>
                   <input type="number" value={quickCost} onChange={e => setQuickCost(e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
                 </div>
               </div>
               <div>
                 <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Referencia</label>
                 <input value={quickRef} onChange={e => setQuickRef(e.target.value)} placeholder="# factura, orden, etc."
-                  className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+                  className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
               </div>
               <div>
                 <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Notas</label>
                 <input value={quickNotes} onChange={e => setQuickNotes(e.target.value)} placeholder="Observaciones..."
-                  className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+                  className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
               </div>
               {quickQty && (
-                <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
+                <div className="bg-blue-50 rounded-none p-3 text-xs text-blue-700">
                   Stock resultante: <strong>{quickAction.item.current_stock} → {Math.max(0, quickAction.item.current_stock + (["purchase", "return", "production"].includes(quickAction.type) ? parseInt(quickQty) || 0 : -(parseInt(quickQty) || 0)))}</strong>
                 </div>
               )}
               <div className="flex justify-end gap-2 pt-2">
                 <button onClick={() => setQuickAction(null)} className="px-4 py-2 text-xs text-[var(--text-secondary)]">Cancelar</button>
                 <button onClick={handleQuickAction} disabled={submitting || !quickQty}
-                  className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50">
+                  className="px-4 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)] disabled:opacity-50">
                   {submitting ? "Registrando..." : "Confirmar"}
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      
     </div>
   );
 };
 
 // ═══════ KPI CARD ═══════
 const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; sub: string; accent?: boolean }> = ({ icon, value, label, sub, accent }) => (
-  <div className={`bg-[var(--surface)] rounded-xl border shadow-sm p-4 ${accent ? 'border-[var(--accent)]/30' : 'border-[var(--border)]'}`}>
-    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-[var(--accent)]/15' : 'bg-[var(--surface2)]'} mb-2`}>{icon}</div>
+  <div className={`bg-[var(--surface)] rounded-none border  p-4 ${accent ? 'border-[var(--accent)]/30' : 'border-[var(--border)]'}`}>
+    <div className={`w-8 h-8 rounded-none flex items-center justify-center ${accent ? 'bg-[var(--accent)]/15' : 'bg-[var(--surface2)]'} mb-2`}>{icon}</div>
     <p className="text-xl font-sans text-[var(--text)]">{value}</p>
     <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-0.5">{label}</p>
     <p className="text-[11px] text-[var(--text-secondary)] mt-1">{sub}</p>
@@ -380,13 +379,13 @@ const OverviewTab: React.FC<{
         <div className="relative flex-1 min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input value={search} onChange={e => onSearch(e.target.value)} placeholder="Buscar por producto, SKU..."
-            className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs outline-none focus:border-wood-400" />
+            className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border-2 border-[var(--border)] rounded-none text-xs outline-none focus:border-[var(--border)]" />
         </div>
         <div className="flex gap-1.5">
           {(["all", "out_of_stock", "low_stock", "in_stock", "overstock"] as const).map(s => (
             <button key={s} onClick={() => onStatusFilter(s)}
-              className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all ${
-                statusFilter === s ? 'bg-wood-900 text-sand-100 border-wood-900' : 'bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:border-wood-300'
+              className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded-none border transition-all ${
+                statusFilter === s ? 'bg-[var(--accent)] text-[var(--accent-text)] border-[var(--border)]' : 'bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--border)]'
               }`}>
               {s === "all" ? "Todos" : STOCK_STATUS_CONFIG[s].label}
             </button>
@@ -395,7 +394,7 @@ const OverviewTab: React.FC<{
       </div>
 
       {/* Table */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[800px]">
             <thead>
@@ -419,7 +418,7 @@ const OverviewTab: React.FC<{
                 <th className="px-4 py-3">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-wood-50">
+            <tbody className="divide-y divide-[var(--border)]">
               {loading ? (
                 <tr><td colSpan={9} className="px-4 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-[var(--text-muted)]" /></td></tr>
               ) : items.length === 0 ? (
@@ -440,9 +439,9 @@ const OverviewTab: React.FC<{
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {item.thumbnail ? (
-                            <img src={item.thumbnail} alt="" className="w-9 h-9 rounded-lg object-cover" />
+                            <img src={item.thumbnail} alt="" className="w-9 h-9 rounded-none object-cover" />
                           ) : (
-                            <div className="w-9 h-9 rounded-lg bg-[var(--surface2)] flex items-center justify-center"><Package size={14} className="text-[var(--text-muted)]" /></div>
+                            <div className="w-9 h-9 rounded-none bg-[var(--surface2)] flex items-center justify-center"><Package size={14} className="text-[var(--text-muted)]" /></div>
                           )}
                           <div>
                             <span className="text-xs font-medium text-[var(--text)] block">{item.title}</span>
@@ -459,8 +458,8 @@ const OverviewTab: React.FC<{
                               R:{item.reserved_stock}
                             </span>
                           )}
-                          <div className="w-16 h-1.5 bg-[var(--surface2)] rounded-full overflow-hidden">
-                            <div className="h-full rounded-full transition-all" style={{
+                          <div className="w-16 h-1.5 bg-[var(--surface2)] rounded-none overflow-hidden">
+                            <div className="h-full rounded-none transition-all" style={{
                               width: `${stockPct}%`,
                               backgroundColor: item.status === 'out_of_stock' ? '#ef4444' : item.status === 'low_stock' ? '#f59e0b' : item.status === 'overstock' ? '#3b82f6' : '#22c55e',
                             }} />
@@ -486,19 +485,19 @@ const OverviewTab: React.FC<{
                       </td>
                       <td className="px-4 py-3 text-xs text-[var(--text)]">{fmt(item.unit_price * item.current_stock)}</td>
                       <td className="px-4 py-3">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${statusCfg.cls}`}>{statusCfg.label}</span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-none font-bold ${statusCfg.cls}`}>{statusCfg.label}</span>
                       </td>
                       <td className="px-4 py-3 text-[10px] text-[var(--text-secondary)]">{item.location}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1">
                           <button onClick={() => onQuickAction(item, "purchase")} title="Entrada (compra)"
-                            className="p-1.5 rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors"><Plus size={12} /></button>
+                            className="p-1.5 rounded-none bg-green-50 text-green-600 hover:bg-green-100 transition-colors"><Plus size={12} /></button>
                           <button onClick={() => onQuickAction(item, "sale")} title="Salida (venta)"
-                            className="p-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"><Minus size={12} /></button>
+                            className="p-1.5 rounded-none bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"><Minus size={12} /></button>
                           <button onClick={() => onQuickAction(item, "adjustment")} title="Ajuste"
-                            className="p-1.5 rounded-md bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"><ArrowUpDown size={12} /></button>
+                            className="p-1.5 rounded-none bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"><ArrowUpDown size={12} /></button>
                           <button onClick={() => onQuickAction(item, "damage")} title="Daño/Merma"
-                            className="p-1.5 rounded-md bg-red-50 text-red-500 hover:bg-red-100 transition-colors"><AlertTriangle size={12} /></button>
+                            className="p-1.5 rounded-none bg-red-50 text-red-500 hover:bg-red-100 transition-colors"><AlertTriangle size={12} /></button>
                         </div>
                       </td>
                     </tr>
@@ -522,7 +521,7 @@ const OverviewTab: React.FC<{
                               const cfg = MOVEMENT_TYPE_CONFIG[type];
                               return (
                                 <button key={type} onClick={() => onQuickAction(item, type)}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[10px] font-bold text-[var(--text-secondary)] hover:border-wood-400 transition-colors">
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--surface)] border-2 border-[var(--border)] rounded-none text-[10px] font-bold text-[var(--text-secondary)] hover:border-[var(--border)] transition-colors">
                                   {getMovementIcon(type, 12, cfg.color)} {cfg.label}
                                 </button>
                               );
@@ -573,10 +572,10 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
         <div className="relative flex-1 min-w-[180px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input value={movSearch} onChange={e => setMovSearch(e.target.value)} placeholder="Buscar producto, SKU, referencia..."
-            className="w-full pl-9 pr-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs outline-none focus:border-wood-400" />
+            className="w-full pl-9 pr-4 py-2 bg-[var(--surface)] border-2 border-[var(--border)] rounded-none text-xs outline-none focus:border-[var(--border)]" />
         </div>
         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as MovementType | 'all')}
-          className="px-3 py-2 text-xs bg-[var(--surface)] border border-[var(--border)] rounded-lg outline-none min-w-[150px]">
+          className="px-3 py-2 text-xs bg-[var(--surface)] border-2 border-[var(--border)] rounded-none outline-none min-w-[150px]">
           <option value="all">Todos los tipos</option>
           {Object.entries(MOVEMENT_TYPE_CONFIG).map(([key, cfg]) => (
             <option key={key} value={key}>{cfg.label}</option>
@@ -586,7 +585,7 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
       </div>
 
       {/* Table */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[700px]">
             <thead>
@@ -601,7 +600,7 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
                 <th className="px-4 py-3">Por</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-wood-50">
+            <tbody className="divide-y divide-[var(--border)]">
               {paged.length === 0 ? (
                 <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-[var(--text-muted)]">Sin movimientos registrados</td></tr>
               ) : paged.map((m, i) => {
@@ -632,9 +631,9 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
             </span>
             <div className="flex items-center gap-1">
               <button onClick={() => setPage(0)} disabled={page === 0}
-                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">«</button>
+                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border-2 border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">«</button>
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">‹</button>
+                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border-2 border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">‹</button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 const start = Math.max(0, Math.min(page - 2, totalPages - 5));
                 const idx = start + i;
@@ -642,14 +641,14 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
                 return (
                   <button key={idx} onClick={() => setPage(idx)}
                     className={`px-2.5 py-1 text-[10px] rounded border transition-colors ${
-                      page === idx ? 'bg-wood-900 text-sand-100 border-wood-900' : 'text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface2)]'
+                      page === idx ? 'bg-[var(--accent)] text-[var(--accent-text)] border-[var(--border)]' : 'text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface2)]'
                     }`}>{idx + 1}</button>
                 );
               })}
               <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">›</button>
+                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border-2 border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">›</button>
               <button onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}
-                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">»</button>
+                className="px-2 py-1 text-[10px] text-[var(--text-secondary)] border-2 border-[var(--border)] rounded disabled:opacity-30 hover:bg-[var(--surface2)]">»</button>
             </div>
           </div>
         )}
@@ -662,29 +661,29 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
 const AlertsTab: React.FC<{ alerts: InventoryAlert[]; onResolve: (id: string) => void }> = ({ alerts, onResolve }) => (
   <div className="space-y-3">
     {alerts.length === 0 ? (
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-12 text-center">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-12 text-center">
         <CheckCircle size={32} className="text-green-400 mx-auto mb-3" />
         <p className="text-sm text-[var(--text-secondary)]">Sin alertas pendientes</p>
       </div>
     ) : alerts.map(a => (
-      <div key={a.id} className={`bg-[var(--surface)] rounded-xl border shadow-sm p-4 flex items-start gap-4 ${
+      <div key={a.id} className={`bg-[var(--surface)] rounded-none border  p-4 flex items-start gap-4 ${
         a.severity === 'critical' ? 'border-red-200' : a.severity === 'warning' ? 'border-amber-200' : 'border-blue-200'
       }`}>
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+        <div className={`w-10 h-10 rounded-none flex items-center justify-center shrink-0 ${
           a.severity === 'critical' ? 'bg-red-50 text-red-500' : a.severity === 'warning' ? 'bg-amber-50 text-amber-500' : 'bg-blue-50 text-blue-500'
         }`}><AlertTriangle size={18} /></div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold text-[var(--text)]">{a.product_title}</span>
             <span className="text-[10px] text-[var(--text-muted)] font-mono">{a.sku}</span>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
+            <span className={`text-[9px] px-1.5 py-0.5 rounded-none font-bold uppercase ${
               a.severity === 'critical' ? 'bg-red-50 text-red-500' : a.severity === 'warning' ? 'bg-amber-50 text-amber-500' : 'bg-blue-50 text-blue-500'
             }`}>{a.severity}</span>
           </div>
           <p className="text-xs text-[var(--text-secondary)] mt-1">{a.message}</p>
           <p className="text-[10px] text-[var(--text-muted)] mt-1">{fmtDateTime(a.created_at)}</p>
         </div>
-        <button onClick={() => onResolve(a.id)} className="px-3 py-1.5 text-[10px] font-bold text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors shrink-0">
+        <button onClick={() => onResolve(a.id)} className="px-3 py-1.5 text-[10px] font-bold text-green-600 bg-green-50 rounded-none hover:bg-green-100 transition-colors shrink-0">
           Resolver
         </button>
       </div>
@@ -697,33 +696,33 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
   const [newLocation, setNewLocation] = useState("");
   return (
     <div className="space-y-6">
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5 space-y-5">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-5 space-y-5">
         <h4 className="text-sm font-bold text-[var(--text)]">Umbrales y Alertas</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Umbral stock bajo</label>
             <input type="number" value={config.low_stock_threshold} onChange={e => onChange({ ...config, low_stock_threshold: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
           </div>
           <div>
             <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Multiplicador sobrestock</label>
             <input type="number" step={0.5} value={config.overstock_multiplier} onChange={e => onChange({ ...config, overstock_multiplier: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
           </div>
           <div>
             <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Cantidad reorden default</label>
             <input type="number" value={config.default_reorder_qty} onChange={e => onChange({ ...config, default_reorder_qty: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
           </div>
           <div>
             <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Email alertas</label>
             <input value={config.alert_email} onChange={e => onChange({ ...config, alert_email: e.target.value })}
-              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
           </div>
           <div>
             <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Método de valoración</label>
             <select value={config.valuation_method} onChange={e => onChange({ ...config, valuation_method: e.target.value as InventoryConfig['valuation_method'] })}
-              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none">
+              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none outline-none">
               <option value="weighted_average">Costo promedio ponderado</option>
               <option value="fifo">FIFO (primeras entradas, primeras salidas)</option>
               <option value="lifo">LIFO (últimas entradas, primeras salidas)</option>
@@ -732,12 +731,12 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
           <div>
             <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Frecuencia conteo cíclico (días)</label>
             <input type="number" value={config.cyclic_count_frequency_days} onChange={e => onChange({ ...config, cyclic_count_frequency_days: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
           </div>
           <div>
             <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Expiración reservas (horas)</label>
             <input type="number" value={config.reserve_expiry_hours} onChange={e => onChange({ ...config, reserve_expiry_hours: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+              className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
           </div>
         </div>
         <div className="flex flex-wrap gap-4">
@@ -757,11 +756,11 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
         </div>
       </div>
 
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5 space-y-4">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-5 space-y-4">
         <h4 className="text-sm font-bold text-[var(--text)]">Ubicaciones / Almacenes</h4>
         <div className="space-y-2">
           {config.locations.map((loc, i) => (
-            <div key={i} className="flex items-center gap-3 px-4 py-2 bg-[var(--surface2)] rounded-lg">
+            <div key={i} className="flex items-center gap-3 px-4 py-2 bg-[var(--surface2)] rounded-none">
               <Warehouse size={14} className="text-[var(--text-muted)]" />
               <span className="flex-1 text-sm text-[var(--text)]">{loc}</span>
               <button onClick={() => onChange({ ...config, locations: config.locations.filter((_, j) => j !== i) })}
@@ -772,13 +771,13 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
         <div className="flex items-center gap-2">
           <input value={newLocation} onChange={e => setNewLocation(e.target.value)} placeholder="Nueva ubicación..."
             onKeyDown={e => { if (e.key === 'Enter' && newLocation.trim()) { onChange({ ...config, locations: [...config.locations, newLocation.trim()] }); setNewLocation(""); } }}
-            className="flex-1 px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg focus:border-[var(--accent)] outline-none" />
+            className="flex-1 px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
           <button onClick={() => { if (newLocation.trim()) { onChange({ ...config, locations: [...config.locations, newLocation.trim()] }); setNewLocation(""); } }}
-            className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">Agregar</button>
+            className="px-4 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)]">Agregar</button>
         </div>
       </div>
 
-      <button onClick={onSave} className="px-6 py-3 bg-[var(--accent)] text-[var(--text)] rounded-xl text-xs font-bold uppercase tracking-widest hover:shadow-lg transition-all">
+      <button onClick={onSave} className="px-6 py-3 bg-[var(--accent)] text-[var(--text)] rounded-none text-xs font-bold uppercase tracking-widest hover: transition-all">
         Guardar Configuración
       </button>
     </div>

@@ -1,29 +1,20 @@
 "use client";
 
 // ═══════════════════════════════════════════════════════════════
-// ProductsPage — Production-ready product management
-//
-// Features:
-//   - Live data from Medusa + Supabase enrichment
-//   - Grid/Table views with search, filters, sort
-//   - KPIs: revenue, margin, stock, reviews
-//   - Context menu: edit, duplicate, view in store, delete
-//   - Bulk actions: status change, export
-//   - Integration: inventory module, reviews, quotes
-//   - Zero mock data, zero emojis, typed formatters
+// ProductsPage — Production-ready · Estándar Plantilla 01
+// ─ UI adopta tema via CSS vars sin prefijo
+// ─ Datos reales desde Medusa (useAdminData)
+// ─ Grid / Table · Filtros · Bulk actions · Export CSV
+// ─ Zero mock data · Zero rounded · Zero motion · Zero emojis
 // ═══════════════════════════════════════════════════════════════
 
-import { useTheme } from '@/src/theme/ThemeContext';
-import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard } from '@/src/theme/primitives';
-import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import {
   Search, Grid3X3, List, Plus, Filter, MoreVertical,
-  Package, AlertTriangle, ChevronDown, Pencil, Trash2, Eye,
-  Download, Upload, Star, Copy, Archive, ExternalLink,
+  Package, AlertTriangle, Pencil, Trash2, Eye,
+  Download, Star, Copy, Archive, ExternalLink,
   X, ArrowUpDown, TrendingUp, DollarSign, ShoppingBag, Check,
-  Zap, RefreshCw, Loader2, BarChart3,
+  Zap, RefreshCw, Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminData } from "@/hooks/useAdminData";
@@ -32,6 +23,260 @@ import {
   SortKey, SortDir, ViewMode,
   STATUS_CONFIG, fmt, fmtPct, getMargin, getStockColor, DEFAULT_FILTERS,
 } from "./products/types";
+
+// ─── Badge de estado ────────────────────────────────────────
+function StatusBadge({ status }: { status: ProductStatus }) {
+  const cfg = STATUS_CONFIG[status];
+  const colors: Record<string, { bg: string; color: string; border: string }> = {
+    active:     { bg: "var(--success-subtle)",  color: "var(--success)", border: "var(--success)" },
+    draft:      { bg: "var(--warning-subtle)",  color: "var(--warning)", border: "var(--warning)" },
+    outOfStock: { bg: "var(--error-subtle)",    color: "var(--error)",   border: "var(--error)"   },
+    proposed:   { bg: "var(--info-subtle)",     color: "var(--info)",    border: "var(--info)"    },
+  };
+  const c = colors[status] ?? colors.draft;
+  return (
+    <span style={{
+      display: "inline-block", fontSize: 11, fontWeight: 700,
+      padding: "2px 8px",
+      backgroundColor: c.bg, color: c.color,
+      border: `1px solid ${c.border}`,
+    }}>
+      {cfg.label}
+    </span>
+  );
+}
+
+// ─── KPI Card ───────────────────────────────────────────────
+const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; sub: string }> =
+  ({ icon, value, label, sub }) => (
+    <div style={{ backgroundColor: "var(--surface)", border: "2px solid var(--border)", padding: 16 }}>
+      <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+        {icon}{label}
+      </div>
+      <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--text)" }}>{value}</div>
+      <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>{sub}</div>
+    </div>
+  );
+
+// ─── FilterSelect ────────────────────────────────────────────
+const FilterSelect: React.FC<{ label: string; value: string; onChange: (v: string) => void; options: [string, string][] }> =
+  ({ label, value, onChange, options }) => (
+    <div>
+      <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 6 }}>{label}</label>
+      <select value={value} onChange={e => onChange(e.target.value)}
+        style={{ width: "100%", padding: "6px 10px", fontSize: 13, border: "1px solid var(--border)", backgroundColor: "var(--surface2)", color: "var(--text)", outline: "none" }}>
+        {options.map(([val, lbl]) => <option key={val} value={val}>{lbl}</option>)}
+      </select>
+    </div>
+  );
+
+// ─── ContextMenu ─────────────────────────────────────────────
+const ContextMenu: React.FC<{ product: Product; onAction: (a: string, id: string) => void }> =
+  ({ product: p, onAction }) => (
+    <div style={{
+      position: "absolute", right: 0, top: "100%", marginTop: 4, zIndex: 30,
+      backgroundColor: "var(--surface)", border: "2px solid var(--border)",
+      minWidth: 180, boxShadow: "var(--shadow-lg)",
+    }} onClick={e => e.stopPropagation()}>
+      {[
+        { action: "view", icon: <ExternalLink size={12} />, label: "Ver en tienda" },
+        { action: "duplicate", icon: <Copy size={12} />, label: "Duplicar" },
+        {
+          action: p.status === "active" ? "draft" : "activate",
+          icon: p.status === "active" ? <Archive size={12} /> : <Check size={12} />,
+          label: p.status === "active" ? "Pasar a borrador" : "Activar",
+        },
+      ].map(item => (
+        <button key={item.action} onClick={() => onAction(item.action, p.id)}
+          style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", fontSize: 13, color: "var(--text-secondary)", backgroundColor: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--surface2)")}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+          {item.icon}{item.label}
+        </button>
+      ))}
+      <div style={{ borderTop: "1px solid var(--border)", margin: "4px 0" }} />
+      <button onClick={() => onAction("delete", p.id)}
+        style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", fontSize: 13, color: "var(--error)", backgroundColor: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
+        onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--error-subtle)")}
+        onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+        <Trash2 size={12} /> Eliminar
+      </button>
+    </div>
+  );
+
+// ─── ProductCard (Grid) ──────────────────────────────────────
+const ProductCard: React.FC<{
+  product: Product;
+  onAction: (a: string, id: string) => void;
+  contextMenuId: string | null;
+  onContextMenu: (id: string | null) => void;
+  actionLoading: string | null;
+}> = ({ product: p, onAction, contextMenuId, onContextMenu, actionLoading }) => {
+  const margin = getMargin(p);
+  const isLoading = actionLoading === p.id;
+  return (
+    <div style={{ backgroundColor: "var(--surface)", border: "2px solid var(--border)", position: "relative" }}>
+      {isLoading && (
+        <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(var(--surface-rgb),0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 20 }}>
+          <Loader2 size={20} style={{ color: "var(--accent)", animation: "spin 1s linear infinite" }} />
+        </div>
+      )}
+      {/* Imagen */}
+      <div style={{ position: "relative", aspectRatio: "1/1", backgroundColor: "var(--surface2)" }}>
+        {p.thumbnail
+          ? <img src={p.thumbnail} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+          : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Package size={32} style={{ color: "var(--text-muted)" }} /></div>}
+        <div style={{ position: "absolute", top: 8, left: 8 }}><StatusBadge status={p.status} /></div>
+        {p.stock === 0 && (
+          <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: "#fff", fontSize: 11, fontWeight: 700, backgroundColor: "var(--error)", padding: "4px 10px" }}>AGOTADO</span>
+          </div>
+        )}
+      </div>
+      {/* Info */}
+      <div style={{ padding: 16 }}>
+        <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>{p.sku}</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title}</div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 8 }}>
+          <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--text)" }}>{fmt(p.price)}</span>
+          {p.compare_price != null && p.compare_price > 0 && <span style={{ fontSize: 11, color: "var(--text-muted)", textDecoration: "line-through" }}>{fmt(p.compare_price)}</span>}
+        </div>
+        {p.unit_cost > 0 && (
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+            Costo: {fmt(p.unit_cost)} · Margen: <span style={{ color: margin >= 40 ? "var(--success)" : "var(--warning)", fontWeight: 700 }}>{fmtPct(margin)}</span>
+          </div>
+        )}
+        {/* Stock + reviews */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
+          <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: p.stock <= 0 ? "var(--error)" : p.stock_level === "low_stock" ? "var(--warning)" : "var(--text-secondary)" }}>
+            Stock: {p.stock}
+          </span>
+          {p.review_count > 0 && (
+            <span style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 11, color: "var(--accent)" }}>
+              <Star size={10} fill="currentColor" /> {p.avg_rating} ({p.review_count})
+            </span>
+          )}
+        </div>
+        {/* Ventas 30d */}
+        {p.sold_units_30d > 0 && (
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+            <TrendingUp size={10} /> {p.sold_units_30d} vendidos (30d) · {fmt(p.revenue_30d)}
+          </div>
+        )}
+        {/* Acciones */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 12 }}>
+          {p.laser_available && (
+            <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "var(--error)", backgroundColor: "var(--error-subtle)", padding: "2px 8px", border: "1px solid var(--error)" }}>
+              <Zap size={9} /> Grabado
+            </span>
+          )}
+          <div style={{ marginLeft: "auto", position: "relative" }}>
+            <button onClick={e => { e.stopPropagation(); onContextMenu(contextMenuId === p.id ? null : p.id); }}
+              style={{ padding: "4px 6px", backgroundColor: "transparent", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
+              <MoreVertical size={14} />
+            </button>
+            {contextMenuId === p.id && <ContextMenu product={p} onAction={onAction} />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── ProductTable (List view) ─────────────────────────────────
+const ProductTable: React.FC<{
+  products: Product[]; sortKey: SortKey; sortDir: SortDir; onSort: (k: SortKey) => void;
+  selectedIds: Set<string>; onToggleSelect: (id: string) => void; onToggleSelectAll: () => void;
+  onAction: (a: string, id: string) => void;
+  contextMenuId: string | null; onContextMenu: (id: string | null) => void; actionLoading: string | null;
+}> = ({ products, sortKey, sortDir, onSort, selectedIds, onToggleSelect, onToggleSelectAll, onAction, contextMenuId, onContextMenu, actionLoading }) => {
+  const SortTh: React.FC<{ label: string; k: SortKey }> = ({ label, k }) => (
+    <th onClick={() => onSort(k)} style={{ padding: "10px 12px", fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", cursor: "pointer", whiteSpace: "nowrap", userSelect: "none" }}>
+      <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        {label} <ArrowUpDown size={10} style={{ color: sortKey === k ? "var(--accent)" : "var(--text-muted)" }} />
+        {sortKey === k && <span style={{ fontSize: 9 }}>{sortDir === "asc" ? "↑" : "↓"}</span>}
+      </span>
+    </th>
+  );
+  return (
+    <div style={{ backgroundColor: "var(--surface)", border: "2px solid var(--border)", overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
+        <thead>
+          <tr style={{ borderBottom: "2px solid var(--border)" }}>
+            <th style={{ padding: "10px 12px", width: 32 }}>
+              <input type="checkbox" checked={selectedIds.size === products.length && products.length > 0} onChange={onToggleSelectAll} />
+            </th>
+            <th style={{ padding: "10px 12px", width: 48 }} />
+            <SortTh label="PRODUCTO" k="name" />
+            <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 700, color: "var(--text-secondary)" }}>SKU</th>
+            <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 700, color: "var(--text-secondary)" }}>CATEGORÍA</th>
+            <SortTh label="PRECIO" k="price" />
+            <SortTh label="MARGEN" k="margin" />
+            <SortTh label="STOCK" k="stock" />
+            <SortTh label="VENDIDOS 30D" k="soldUnits" />
+            <SortTh label="RATING" k="rating" />
+            <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 700, color: "var(--text-secondary)" }}>ESTADO</th>
+            <th style={{ padding: "10px 12px", width: 40 }} />
+          </tr>
+        </thead>
+        <tbody>
+          {products.length === 0
+            ? <tr><td colSpan={12} style={{ padding: "48px 16px", textAlign: "center", fontSize: 13, color: "var(--text-muted)" }}>Sin productos</td></tr>
+            : products.map((p, idx) => {
+              const margin = getMargin(p);
+              return (
+                <tr key={p.id} style={{ borderBottom: idx < products.length - 1 ? "1px solid var(--border)" : "none", backgroundColor: selectedIds.has(p.id) ? "var(--accent-subtle)" : "transparent" }}>
+                  <td style={{ padding: "10px 12px" }}><input type="checkbox" checked={selectedIds.has(p.id)} onChange={() => onToggleSelect(p.id)} /></td>
+                  <td style={{ padding: "10px 12px" }}>
+                    {p.thumbnail
+                      ? <img src={p.thumbnail} alt="" style={{ width: 40, height: 40, objectFit: "cover" }} loading="lazy" />
+                      : <div style={{ width: 40, height: 40, backgroundColor: "var(--surface2)", display: "flex", alignItems: "center", justifyContent: "center" }}><Package size={14} style={{ color: "var(--text-muted)" }} /></div>}
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    <div style={{ fontSize: 13, color: "var(--text)", fontWeight: 600, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</div>
+                    {p.variants_count > 1 && <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{p.variants_count} variantes</div>}
+                  </td>
+                  <td style={{ padding: "10px 12px", fontSize: 13, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{p.sku}</td>
+                  <td style={{ padding: "10px 12px", fontSize: 13, color: "var(--text-secondary)" }}>{p.category}</td>
+                  <td style={{ padding: "10px 12px" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--text)" }}>{fmt(p.price)}</div>
+                    {p.unit_cost > 0 && <div style={{ fontSize: 11, color: "var(--text-muted)" }}>C: {fmt(p.unit_cost)}</div>}
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    {p.unit_cost > 0
+                      ? <span style={{ fontSize: 13, fontWeight: 700, color: margin >= 40 ? "var(--success)" : margin >= 20 ? "var(--warning)" : "var(--error)" }}>{fmtPct(margin)}</span>
+                      : <span style={{ fontSize: 11, color: "var(--text-muted)" }}>—</span>}
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    <span style={{ fontSize: 13, fontFamily: "var(--font-mono)", fontWeight: 700, color: p.stock <= 0 ? "var(--error)" : p.stock_level === "low_stock" ? "var(--warning)" : "var(--text)" }}>{p.stock}</span>
+                    {p.reserved_stock > 0 && <span style={{ fontSize: 10, color: "var(--warning)", marginLeft: 4 }}>R:{p.reserved_stock}</span>}
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    {p.sold_units_30d > 0
+                      ? <div><span style={{ fontSize: 13, color: "var(--text)" }}>{p.sold_units_30d}</span><div style={{ fontSize: 11, color: "var(--text-muted)" }}>{fmt(p.revenue_30d)}</div></div>
+                      : <span style={{ fontSize: 11, color: "var(--text-muted)" }}>—</span>}
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    {p.review_count > 0
+                      ? <span style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 13, color: "var(--accent)" }}><Star size={10} fill="currentColor" /> {p.avg_rating} <span style={{ fontSize: 11, color: "var(--text-muted)" }}>({p.review_count})</span></span>
+                      : <span style={{ fontSize: 11, color: "var(--text-muted)" }}>—</span>}
+                  </td>
+                  <td style={{ padding: "10px 12px" }}><StatusBadge status={p.status} /></td>
+                  <td style={{ padding: "10px 12px", position: "relative" }}>
+                    <button onClick={e => { e.stopPropagation(); onContextMenu(contextMenuId === p.id ? null : p.id); }}
+                      style={{ padding: "4px 6px", backgroundColor: "transparent", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
+                      <MoreVertical size={14} />
+                    </button>
+                    {contextMenuId === p.id && <ContextMenu product={p} onAction={onAction} />}
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 // ═══════ MAIN COMPONENT ═══════
 export const ProductsPage: React.FC = () => {
@@ -45,43 +290,21 @@ export const ProductsPage: React.FC = () => {
   const [contextMenuId, setContextMenuId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  // ── Live data ──
-  const { data, loading, refetch } = useAdminData<{
-    products: Product[];
-    stats: ProductStats;
-    count: number;
-  }>("/api/admin/products?limit=100", { refreshInterval: 60_000 });
+  const { data, loading, refetch } = useAdminData<{ products: Product[]; stats: ProductStats; count: number }>(
+    "/api/admin/products?limit=100", { refreshInterval: 60_000 }
+  );
+  const products = data?.products ?? [];
+  const stats = data?.stats ?? null;
 
-  const products = data?.products || [];
-  const stats = data?.stats || null;
-
-  // ── Derived ──
-  const categories = useMemo(() =>
-    [...new Set(products.map(p => p.category))].sort(),
-  [products]);
+  const categories = useMemo(() => [...new Set(products.map(p => p.category))].sort(), [products]);
 
   const filtered = useMemo(() => {
     let list = products;
-
-    // Search
-    if (search) {
-      const q = search.toLowerCase();
-      list = list.filter(p =>
-        p.title.toLowerCase().includes(q) ||
-        p.sku.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-      );
-    }
-
-    // Filters
+    if (search) { const q = search.toLowerCase(); list = list.filter(p => p.title.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)); }
     if (filters.status !== "all") list = list.filter(p => p.status === filters.status);
     if (filters.category !== "all") list = list.filter(p => p.category === filters.category);
     if (filters.stock !== "all") list = list.filter(p => p.stock_level === filters.stock);
-    if (filters.laser !== "all") list = list.filter(p =>
-      filters.laser === "yes" ? p.laser_available : !p.laser_available
-    );
-
-    // Sort
+    if (filters.laser !== "all") list = list.filter(p => filters.laser === "yes" ? p.laser_available : !p.laser_available);
     return [...list].sort((a, b) => {
       let cmp = 0;
       switch (sortKey) {
@@ -97,75 +320,29 @@ export const ProductsPage: React.FC = () => {
     });
   }, [products, search, filters, sortKey, sortDir]);
 
-  const activeFilterCount = Object.entries(filters).filter(([, v]) => v !== "all").length;
-
-  // ── Handlers ──
-  const toggleSort = (key: SortKey) => {
-    if (sortKey === key) setSortDir(d => d === "asc" ? "desc" : "asc");
-    else { setSortKey(key); setSortDir("asc"); }
-  };
-
-  const toggleSelect = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  const toggleSelectAll = () => {
-    setSelectedIds(prev =>
-      prev.size === filtered.length ? new Set() : new Set(filtered.map(p => p.id))
-    );
-  };
+  const activeFilterCount = Object.values(filters).filter(v => v !== "all").length;
+  const toggleSort = (key: SortKey) => { if (sortKey === key) setSortDir(d => d === "asc" ? "desc" : "asc"); else { setSortKey(key); setSortDir("asc"); } };
+  const toggleSelect = (id: string) => { setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; }); };
+  const toggleSelectAll = () => setSelectedIds(prev => prev.size === filtered.length ? new Set() : new Set(filtered.map(p => p.id)));
 
   const handleAction = useCallback(async (action: string, productId: string) => {
     setContextMenuId(null);
     setActionLoading(productId);
     try {
-      if (action === "view") {
-        const p = products.find(p => p.id === productId);
-        if (p?.handle) window.open(`/shop/${p.handle}`, "_blank");
-        return;
-      }
-
+      if (action === "view") { const p = products.find(p => p.id === productId); if (p?.handle) window.open(`/shop/${p.handle}`, "_blank"); return; }
       if (action === "duplicate") {
-        const res = await fetch("/api/admin/products", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "duplicate", product_id: productId }),
-        });
-        const data = await res.json();
-        if (data.success) { toast.success("Producto duplicado"); refetch(); }
-        else toast.error(data.error || "Error al duplicar");
-        return;
+        const res = await fetch("/api/admin/products", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "duplicate", product_id: productId }) });
+        const d = await res.json(); if (d.success) { toast.success("Producto duplicado"); refetch(); } else toast.error(d.error || "Error al duplicar"); return;
       }
-
       if (action === "activate" || action === "draft") {
-        const res = await fetch("/api/admin/products", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "update_status",
-            product_id: productId,
-            status: action === "activate" ? "active" : "draft",
-          }),
-        });
-        const data = await res.json();
-        if (data.success) { toast.success(`Estado cambiado a ${action === "activate" ? "activo" : "borrador"}`); refetch(); }
-        else toast.error(data.error || "Error");
-        return;
+        const res = await fetch("/api/admin/products", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "update_status", product_id: productId, status: action === "activate" ? "active" : "draft" }) });
+        const d = await res.json(); if (d.success) { toast.success(`Estado actualizado`); refetch(); } else toast.error(d.error || "Error"); return;
       }
-
       if (action === "delete") {
         const res = await fetch(`/api/admin/products?id=${productId}`, { method: "DELETE" });
-        const data = await res.json();
-        if (data.success) { toast.success("Producto eliminado"); refetch(); }
-        else toast.error(data.error || "Error al eliminar");
-        return;
+        const d = await res.json(); if (d.success) { toast.success("Producto eliminado"); refetch(); } else toast.error(d.error || "Error al eliminar"); return;
       }
-    } catch { toast.error("Error de conexión"); }
-    finally { setActionLoading(null); }
+    } catch { toast.error("Error de conexión"); } finally { setActionLoading(null); }
   }, [products, refetch]);
 
   const handleBulkAction = useCallback(async (action: string) => {
@@ -173,483 +350,126 @@ export const ProductsPage: React.FC = () => {
     setActionLoading("bulk");
     try {
       if (action === "activate" || action === "draft") {
-        const res = await fetch("/api/admin/products", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "bulk_status",
-            product_ids: [...selectedIds],
-            status: action === "activate" ? "active" : "draft",
-          }),
-        });
-        const data = await res.json();
-        if (data.success) {
-          toast.success(`${data.updated} productos actualizados`);
-          setSelectedIds(new Set());
-          refetch();
-        }
+        const res = await fetch("/api/admin/products", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "bulk_status", product_ids: [...selectedIds], status: action === "activate" ? "active" : "draft" }) });
+        const d = await res.json(); if (d.success) { toast.success(`${d.updated} productos actualizados`); setSelectedIds(new Set()); refetch(); }
       }
       if (action === "export") {
-        const selected = products.filter(p => selectedIds.has(p.id));
-        const csv = [
-          "SKU,Producto,Categoría,Precio,Costo,Stock,Vendidos 30d,Rating,Estado",
-          ...selected.map(p => `${p.sku},"${p.title}",${p.category},${p.price},${p.unit_cost},${p.stock},${p.sold_units_30d},${p.avg_rating},${p.status}`)
-        ].join("\n");
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = `productos-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
-        URL.revokeObjectURL(url);
-        toast.success(`${selected.length} productos exportados`);
+        const sel = products.filter(p => selectedIds.has(p.id));
+        const csv = ["SKU,Producto,Categoría,Precio,Costo,Stock,Vendidos 30d,Rating,Estado", ...sel.map(p => `${p.sku},"${p.title}",${p.category},${p.price},${p.unit_cost},${p.stock},${p.sold_units_30d},${p.avg_rating},${p.status}`)].join("\n");
+        const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = `productos-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+        toast.success(`${sel.length} productos exportados`);
       }
-    } catch { toast.error("Error"); }
-    finally { setActionLoading(null); }
+    } catch { toast.error("Error"); } finally { setActionLoading(null); }
   }, [selectedIds, products, refetch]);
 
   const exportAll = () => {
-    const csv = [
-      "SKU,Producto,Categoría,Precio,Costo,Stock,Reservado,Vendidos 30d,Revenue 30d,Rating,Reviews,Estado",
-      ...products.map(p => `${p.sku},"${p.title}",${p.category},${p.price},${p.unit_cost},${p.stock},${p.reserved_stock},${p.sold_units_30d},${p.revenue_30d},${p.avg_rating},${p.review_count},${p.status}`)
-    ].join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `productos-completo-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
-    URL.revokeObjectURL(url);
+    const csv = ["SKU,Producto,Categoría,Precio,Costo,Stock,Vendidos 30d,Revenue 30d,Rating,Estado", ...products.map(p => `${p.sku},"${p.title}",${p.category},${p.price},${p.unit_cost},${p.stock},${p.sold_units_30d},${p.revenue_30d},${p.avg_rating},${p.status}`)].join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = `productos-${new Date().toISOString().slice(0,10)}.csv`; a.click();
     toast.success("CSV exportado");
   };
 
-  // ═══════ RENDER ═══════
+  // ═══ RENDER ═══
   return (
-    <div className="space-y-4" onClick={() => setContextMenuId(null)}>
+    <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }} onClick={() => setContextMenuId(null)}>
+
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
-          <ShoppingBag size={18} className="text-[var(--accent)]" /> Productos
-        </h3>
-        <div className="flex items-center gap-2">
-          <button onClick={() => refetch()} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)]">
-            <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Actualizar
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", margin: 0 }}>Productos</h1>
+          <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 4 }}>Catálogo de productos · Medusa</div>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => refetch()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", backgroundColor: "var(--surface)", border: "2px solid var(--border)", color: "var(--text)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <RefreshCw size={13} style={{ animation: loading ? "spin 1s linear infinite" : undefined }} /> Actualizar
           </button>
-          <button onClick={exportAll} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)]">
-            <Download size={13} /> Exportar
+          <button onClick={exportAll} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", backgroundColor: "var(--surface)", border: "2px solid var(--border)", color: "var(--text)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <Download size={13} /> Exportar CSV
           </button>
         </div>
       </div>
 
       {/* KPIs */}
       {stats && (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <KpiCard icon={<ShoppingBag size={14} />} iconCls="text-[var(--accent)] bg-[var(--accent)]/10"
-            value={String(stats.total_products)} label="Productos"
-            sub={`${stats.total_variants} variantes · ${stats.active_count} activos`} />
-          <KpiCard icon={<DollarSign size={14} />} iconCls="text-green-600 bg-green-50"
-            value={fmt(stats.inventory_retail)} label="Valor inventario"
-            sub={`Costo: ${fmt(stats.inventory_cost)} · Margen: ${fmtPct(stats.margin_percent)}`} />
-          <KpiCard icon={<TrendingUp size={14} />} iconCls="text-blue-600 bg-blue-50"
-            value={fmt(stats.total_revenue_30d)} label="Revenue 30d"
-            sub={`${stats.total_sold_30d} unidades vendidas`} />
-          <KpiCard icon={<AlertTriangle size={14} />} iconCls={stats.out_of_stock_count > 0 ? "text-red-500 bg-red-50" : "text-amber-500 bg-amber-50"}
-            value={String(stats.low_stock_count + stats.out_of_stock_count)} label="Alertas stock"
-            sub={`${stats.low_stock_count} bajo · ${stats.out_of_stock_count} agotados`} />
-          <KpiCard icon={<Star size={14} />} iconCls="text-[var(--accent)] bg-[var(--accent)]/10"
-            value={stats.avg_rating > 0 ? String(stats.avg_rating) : "—"} label="Rating promedio"
-            sub={`${products.reduce((s, p) => s + p.review_count, 0)} reviews totales`} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+          <KpiCard icon={<ShoppingBag size={13} />} value={String(stats.total_products)} label="Total Productos" sub={`${stats.active_count} activos · ${stats.total_variants} variantes`} />
+          <KpiCard icon={<DollarSign size={13} />} value={fmt(stats.inventory_retail)} label="Valor Inventario" sub={`Costo: ${fmt(stats.inventory_cost)} · Margen: ${fmtPct(stats.margin_percent)}`} />
+          <KpiCard icon={<TrendingUp size={13} />} value={fmt(stats.total_revenue_30d)} label="Revenue 30 Días" sub={`${stats.total_sold_30d} unidades vendidas`} />
+          <KpiCard icon={<AlertTriangle size={13} />} value={String(stats.low_stock_count + stats.out_of_stock_count)} label="Alertas de Stock" sub={`${stats.low_stock_count} stock bajo · ${stats.out_of_stock_count} agotados`} />
+          <KpiCard icon={<Star size={13} />} value={stats.avg_rating > 0 ? String(stats.avg_rating) : "—"} label="Rating Promedio" sub={`${products.reduce((s, p) => s + p.review_count, 0)} reviews totales`} />
         </div>
       )}
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden">
-            <Search size={16} className="ml-3 text-[var(--text-muted)]" />
-            <input value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Buscar por nombre, SKU, categoría..."
-              className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none text-[var(--text)] placeholder:text-[var(--text-muted)]" />
-            {search && <button onClick={() => setSearch("")} className="mr-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"><X size={14} /></button>}
-          </div>
-          <div className="flex gap-2 items-center">
-            <div className="flex bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden">
-              <button onClick={() => setViewMode("grid")} className={`p-2.5 transition-colors ${viewMode === "grid" ? "bg-wood-900 text-sand-100" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"}`}>
-                <Grid3X3 size={14} />
-              </button>
-              <button onClick={() => setViewMode("table")} className={`p-2.5 transition-colors ${viewMode === "table" ? "bg-wood-900 text-sand-100" : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"}`}>
-                <List size={14} />
-              </button>
-            </div>
-            <button onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs transition-colors ${
-                showFilters || activeFilterCount > 0
-                  ? "bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/30"
-                  : "bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:border-wood-300"
-              }`}>
-              <Filter size={13} /> Filtros
-              {activeFilterCount > 0 && (
-                <span className="bg-[var(--accent)] text-white text-[9px] px-1.5 py-0.5 rounded-full">{activeFilterCount}</span>
-              )}
-            </button>
-          </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 240, display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", backgroundColor: "var(--surface2)", border: "1px solid var(--border)" }}>
+          <Search size={16} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nombre, SKU, categoría..."
+            style={{ flex: 1, backgroundColor: "transparent", border: "none", outline: "none", fontSize: 13, color: "var(--text)" }} />
+          {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}><X size={14} /></button>}
         </div>
-
-        {/* Filter pills */}
-        {activeFilterCount > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] text-[var(--text-muted)]">Filtros:</span>
-            {Object.entries(filters).map(([key, val]) => val !== "all" ? (
-              <span key={key} className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] text-[11px] rounded-full">
-                {val}
-                <button onClick={() => setFilters(f => ({ ...f, [key]: "all" }))} className="hover:text-red-500"><X size={10} /></button>
-              </span>
-            ) : null)}
-            <button onClick={() => setFilters(DEFAULT_FILTERS)} className="text-[10px] text-[var(--text-muted)] hover:text-red-500 underline">Limpiar</button>
-          </div>
-        )}
-
-        {/* Expanded filters */}
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <FilterSelect label="Estado" value={filters.status} onChange={v => setFilters(f => ({ ...f, status: v as ProductStatus | "all" }))}
-                  options={[["all", "Todos"], ["active", "Activo"], ["draft", "Borrador"], ["outOfStock", "Agotado"]]} />
-                <FilterSelect label="Categoría" value={filters.category} onChange={v => setFilters(f => ({ ...f, category: v }))}
-                  options={[["all", "Todas"], ...categories.map(c => [c, c] as [string, string])]} />
-                <FilterSelect label="Stock" value={filters.stock} onChange={v => setFilters(f => ({ ...f, stock: v as ProductFilters["stock"] }))}
-                  options={[["all", "Todos"], ["in_stock", "En stock"], ["low_stock", "Stock bajo"], ["out_of_stock", "Agotado"]]} />
-                <FilterSelect label="Grabado" value={filters.laser} onChange={v => setFilters(f => ({ ...f, laser: v as ProductFilters["laser"] }))}
-                  options={[["all", "Todos"], ["yes", "Con grabado"], ["no", "Sin grabado"]]} />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <button onClick={() => setShowFilters(!showFilters)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", backgroundColor: showFilters || activeFilterCount > 0 ? "var(--accent-subtle)" : "var(--surface)", border: `2px solid ${showFilters || activeFilterCount > 0 ? "var(--accent)" : "var(--border)"}`, color: showFilters || activeFilterCount > 0 ? "var(--accent)" : "var(--text)" }}>
+          <Filter size={13} /> Filtros {activeFilterCount > 0 && `(${activeFilterCount})`}
+        </button>
+        <div style={{ display: "flex", border: "2px solid var(--border)" }}>
+          {(["grid", "table"] as ViewMode[]).map((mode, i) => (
+            <button key={mode} onClick={() => setViewMode(mode)} style={{ padding: "8px 12px", backgroundColor: viewMode === mode ? "var(--accent)" : "var(--surface)", color: viewMode === mode ? "var(--accent-text)" : "var(--text)", border: "none", cursor: "pointer", borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}>
+              {mode === "grid" ? <Grid3X3 size={14} /> : <List size={14} />}
+            </button>
+          ))}
+        </div>
       </div>
 
+      {/* Expanded filters */}
+      {showFilters && (
+        <div style={{ backgroundColor: "var(--surface)", border: "2px solid var(--border)", padding: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+          <FilterSelect label="Estado" value={filters.status} onChange={v => setFilters(f => ({ ...f, status: v as ProductStatus | "all" }))} options={[["all","Todos"],["active","Activo"],["draft","Borrador"],["outOfStock","Agotado"]]} />
+          <FilterSelect label="Categoría" value={filters.category} onChange={v => setFilters(f => ({ ...f, category: v }))} options={[["all","Todas"], ...categories.map(c => [c,c] as [string,string])]} />
+          <FilterSelect label="Stock" value={filters.stock} onChange={v => setFilters(f => ({ ...f, stock: v as ProductFilters["stock"] }))} options={[["all","Todos"],["in_stock","En stock"],["low_stock","Stock bajo"],["out_of_stock","Agotado"]]} />
+          <FilterSelect label="Grabado" value={filters.laser} onChange={v => setFilters(f => ({ ...f, laser: v as ProductFilters["laser"] }))} options={[["all","Todos"],["yes","Con grabado"],["no","Sin grabado"]]} />
+          <div style={{ display: "flex", alignItems: "flex-end" }}>
+            <button onClick={() => setFilters(DEFAULT_FILTERS)} style={{ padding: "6px 12px", backgroundColor: "var(--surface2)", border: "1px solid var(--border)", fontSize: 12, color: "var(--text-secondary)", cursor: "pointer", fontWeight: 600 }}>Limpiar filtros</button>
+          </div>
+        </div>
+      )}
+
       {/* Bulk actions */}
-      <AnimatePresence>
-        {selectedIds.size > 0 && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="bg-[var(--accent)]/5 border border-[var(--accent)]/20 rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap">
-              <span className="text-xs text-[var(--accent)] font-bold">{selectedIds.size} seleccionado{selectedIds.size > 1 ? "s" : ""}</span>
-              <div className="flex items-center gap-2">
-                <button onClick={() => handleBulkAction("activate")} disabled={actionLoading === "bulk"}
-                  className="px-3 py-1.5 text-[11px] bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-bold">Activar</button>
-                <button onClick={() => handleBulkAction("draft")} disabled={actionLoading === "bulk"}
-                  className="px-3 py-1.5 text-[11px] rounded-lg font-bold" style={{ backgroundColor: 'var(--surface2)', color: 'var(--text-secondary)' }}>Borrador</button>
-                <button onClick={() => handleBulkAction("export")} disabled={actionLoading === "bulk"}
-                  className="px-3 py-1.5 text-[11px] bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-bold">Exportar CSV</button>
-              </div>
-              <button onClick={() => setSelectedIds(new Set())} className="ml-auto text-[10px] text-[var(--text-muted)] hover:text-red-500">Deseleccionar</button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {selectedIds.size > 0 && (
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", backgroundColor: "var(--accent-subtle)", border: "2px solid var(--accent)", flexWrap: "wrap" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}>{selectedIds.size} seleccionado{selectedIds.size > 1 ? "s" : ""}</span>
+          <button onClick={() => handleBulkAction("activate")} disabled={actionLoading === "bulk"} style={{ padding: "6px 12px", fontSize: 12, fontWeight: 700, backgroundColor: "var(--success-subtle)", color: "var(--success)", border: "1px solid var(--success)", cursor: "pointer" }}>Activar</button>
+          <button onClick={() => handleBulkAction("draft")} disabled={actionLoading === "bulk"} style={{ padding: "6px 12px", fontSize: 12, fontWeight: 700, backgroundColor: "var(--surface2)", color: "var(--text-secondary)", border: "1px solid var(--border)", cursor: "pointer" }}>Borrador</button>
+          <button onClick={() => handleBulkAction("export")} disabled={actionLoading === "bulk"} style={{ padding: "6px 12px", fontSize: 12, fontWeight: 700, backgroundColor: "var(--info-subtle)", color: "var(--info)", border: "1px solid var(--info)", cursor: "pointer" }}>Exportar CSV</button>
+          <button onClick={() => setSelectedIds(new Set())} style={{ marginLeft: "auto", fontSize: 12, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>Deseleccionar</button>
+        </div>
+      )}
 
       {/* Content */}
       {loading && products.length === 0 ? (
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-12 text-center">
-          <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--text-muted)] mb-3" />
-          <p className="text-xs text-[var(--text-muted)]">Cargando productos...</p>
+        <div style={{ backgroundColor: "var(--surface)", border: "2px solid var(--border)", padding: "64px 16px", textAlign: "center" }}>
+          <Loader2 size={24} style={{ color: "var(--text-muted)", margin: "0 auto 12px", display: "block", animation: "spin 1s linear infinite" }} />
+          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Cargando productos...</p>
         </div>
       ) : products.length === 0 ? (
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-12 text-center">
-          <Package size={32} className="text-[var(--text-muted)] mx-auto mb-3" />
-          <p className="text-sm text-[var(--text-secondary)]">Sin productos encontrados</p>
+        <div style={{ backgroundColor: "var(--surface)", border: "2px solid var(--border)", padding: "64px 16px", textAlign: "center" }}>
+          <Package size={32} style={{ color: "var(--text-muted)", margin: "0 auto 12px", display: "block" }} />
+          <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>Sin productos. Crea tu primer producto para comenzar.</p>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
           {filtered.map(product => (
-            <ProductCard key={product.id} product={product}
-              onAction={handleAction} contextMenuId={contextMenuId}
-              onContextMenu={setContextMenuId} actionLoading={actionLoading} />
+            <ProductCard key={product.id} product={product} onAction={handleAction}
+              contextMenuId={contextMenuId} onContextMenu={setContextMenuId} actionLoading={actionLoading} />
           ))}
         </div>
       ) : (
-        <ProductTable products={filtered} sortKey={sortKey} sortDir={sortDir}
-          onSort={toggleSort} selectedIds={selectedIds} onToggleSelect={toggleSelect}
-          onToggleSelectAll={toggleSelectAll} onAction={handleAction}
-          contextMenuId={contextMenuId} onContextMenu={setContextMenuId}
-          actionLoading={actionLoading} />
+        <ProductTable products={filtered} sortKey={sortKey} sortDir={sortDir} onSort={toggleSort}
+          selectedIds={selectedIds} onToggleSelect={toggleSelect} onToggleSelectAll={toggleSelectAll}
+          onAction={handleAction} contextMenuId={contextMenuId} onContextMenu={setContextMenuId} actionLoading={actionLoading} />
       )}
 
       {/* Footer */}
-      <div className="text-[10px] text-[var(--text-muted)] pt-1">
+      <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
         Mostrando {filtered.length} de {products.length} productos
-      </div>
-    </div>
-  );
-};
-
-// ═══════ KPI CARD ═══════
-const KpiCard: React.FC<{
-  icon: React.ReactNode; iconCls: string; value: string; label: string; sub: string;
-}> = ({ icon, iconCls, value, label, sub }) => (
-  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-4">
-    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconCls} mb-2`}>{icon}</div>
-    <p className="text-lg font-sans text-[var(--text)]">{value}</p>
-    <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-0.5">{label}</p>
-    <p className="text-[10px] text-[var(--text-secondary)] mt-1">{sub}</p>
-  </div>
-);
-
-// ═══════ FILTER SELECT ═══════
-const FilterSelect: React.FC<{
-  label: string; value: string; onChange: (v: string) => void; options: [string, string][];
-}> = ({ label, value, onChange, options }) => (
-  <div>
-    <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-1.5 block">{label}</label>
-    <select value={value} onChange={e => onChange(e.target.value)}
-      className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
-      {options.map(([val, lbl]) => <option key={val} value={val}>{lbl}</option>)}
-    </select>
-  </div>
-);
-
-// ═══════ PRODUCT CARD (Grid) ═══════
-const ProductCard: React.FC<{
-  product: Product;
-  onAction: (action: string, id: string) => void;
-  contextMenuId: string | null;
-  onContextMenu: (id: string | null) => void;
-  actionLoading: string | null;
-}> = ({ product: p, onAction, contextMenuId, onContextMenu, actionLoading }) => {
-  const statusCfg = STATUS_CONFIG[p.status];
-  const margin = getMargin(p);
-  const stockCls = getStockColor(p);
-  const isLoading = actionLoading === p.id;
-
-  return (
-    <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden group hover:shadow-md transition-shadow relative">
-      {isLoading && (
-        <div className="absolute inset-0 bg-[var(--surface)]/70 flex items-center justify-center z-20">
-          <Loader2 className="w-5 h-5 animate-spin text-[var(--accent)]" />
-        </div>
-      )}
-      {/* Image */}
-      <div className="relative aspect-square bg-[var(--surface2)]">
-        {p.thumbnail ? (
-          <img src={p.thumbnail} alt={p.title} className="w-full h-full object-cover" loading="lazy" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center"><Package size={32} className="text-[var(--text-muted)]" /></div>
-        )}
-        <div className="absolute top-2 left-2">
-          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 ${statusCfg.cls}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} /> {statusCfg.label}
-          </span>
-        </div>
-        {p.stock_level === "low_stock" && (
-          <div className="absolute top-2 right-2">
-            <span className="bg-amber-50 text-amber-600 text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-              <AlertTriangle size={9} /> Bajo
-            </span>
-          </div>
-        )}
-        {p.stock === 0 && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white text-xs font-medium uppercase bg-red-500/80 px-3 py-1 rounded-full">Agotado</span>
-          </div>
-        )}
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-wood-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-          <button onClick={() => onAction("view", p.id)} className="p-2 bg-[var(--surface)] rounded-lg text-[var(--text)] hover:bg-[var(--surface2)]"><Eye size={16} /></button>
-          <button onClick={() => onAction("duplicate", p.id)} className="p-2 bg-[var(--surface)] rounded-lg text-[var(--text)] hover:bg-[var(--surface2)]"><Copy size={16} /></button>
-        </div>
-      </div>
-
-      {/* Info */}
-      <div className="p-4">
-        <p className="text-[10px] text-[var(--text-muted)] font-mono">{p.sku}</p>
-        <h4 className="text-sm text-[var(--text)] truncate mt-0.5">{p.title}</h4>
-
-        {/* Price + margin */}
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-sm font-bold text-[var(--text)]">{fmt(p.price)}</span>
-          {p.compare_price && <span className="text-[10px] text-[var(--text-muted)] line-through">{fmt(p.compare_price)}</span>}
-        </div>
-        {p.unit_cost > 0 && (
-          <p className="text-[10px] text-[var(--text-muted)] mt-0.5">
-            Costo: {fmt(p.unit_cost)} · Margen: <span className={margin >= 40 ? "text-green-600" : "text-amber-500"}>{fmtPct(margin)}</span>
-          </p>
-        )}
-
-        {/* Stock + reviews */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border)]">
-          <div className="flex items-center gap-1.5">
-            <Package size={11} className={stockCls} />
-            <span className={`text-[11px] ${stockCls}`}>Stock: {p.stock}</span>
-            {p.reserved_stock > 0 && (
-              <span className="text-[9px] px-1 py-0.5 bg-orange-50 text-orange-600 rounded font-bold">R:{p.reserved_stock}</span>
-            )}
-          </div>
-          {p.review_count > 0 && (
-            <span className="flex items-center gap-0.5 text-[10px] text-[var(--accent)]">
-              <Star size={10} fill="currentColor" /> {p.avg_rating} ({p.review_count})
-            </span>
-          )}
-        </div>
-
-        {/* Sales info */}
-        {p.sold_units_30d > 0 && (
-          <p className="text-[10px] text-[var(--text-muted)] mt-1.5">
-            <TrendingUp size={9} className="inline mr-0.5" /> {p.sold_units_30d} vendidos (30d) · {fmt(p.revenue_30d)}
-          </p>
-        )}
-
-        {/* Actions */}
-        <div className="flex items-center justify-between mt-3">
-          {p.laser_available && (
-            <span className="flex items-center gap-1 text-[10px] text-red-500 bg-red-50 px-1.5 py-0.5 rounded-full">
-              <Zap size={9} /> Grabado
-            </span>
-          )}
-          <div className="ml-auto relative">
-            <button onClick={e => { e.stopPropagation(); onContextMenu(contextMenuId === p.id ? null : p.id); }}
-              className="p-1.5 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
-              <MoreVertical size={14} />
-            </button>
-            {contextMenuId === p.id && <ContextMenu product={p} onAction={onAction} />}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ═══════ CONTEXT MENU ═══════
-const ContextMenu: React.FC<{ product: Product; onAction: (a: string, id: string) => void }> = ({ product: p, onAction }) => (
-  <div className="absolute right-0 top-full mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-xl py-1 z-30 min-w-[180px]"
-    onClick={e => e.stopPropagation()}>
-    <button onClick={() => onAction("view", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)]">
-      <ExternalLink size={12} /> Ver en tienda
-    </button>
-    <button onClick={() => onAction("duplicate", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)]">
-      <Copy size={12} /> Duplicar
-    </button>
-    <button onClick={() => onAction(p.status === "active" ? "draft" : "activate", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)]">
-      {p.status === "active" ? <Archive size={12} /> : <Check size={12} />}
-      {p.status === "active" ? "Pasar a borrador" : "Activar"}
-    </button>
-    <div className="border-t border-[var(--border)] my-1" />
-    <button onClick={() => onAction("delete", p.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50">
-      <Trash2 size={12} /> Eliminar
-    </button>
-  </div>
-);
-
-// ═══════ PRODUCT TABLE ═══════
-const ProductTable: React.FC<{
-  products: Product[];
-  sortKey: SortKey; sortDir: SortDir; onSort: (k: SortKey) => void;
-  selectedIds: Set<string>; onToggleSelect: (id: string) => void; onToggleSelectAll: () => void;
-  onAction: (a: string, id: string) => void;
-  contextMenuId: string | null; onContextMenu: (id: string | null) => void;
-  actionLoading: string | null;
-}> = ({ products, sortKey, sortDir, onSort, selectedIds, onToggleSelect, onToggleSelectAll, onAction, contextMenuId, onContextMenu, actionLoading }) => {
-  const SortHeader: React.FC<{ label: string; k: SortKey; className?: string }> = ({ label, k, className = "" }) => (
-    <th className={`px-3 py-3 cursor-pointer select-none ${className}`} onClick={() => onSort(k)}>
-      <span className="flex items-center gap-1">
-        {label} <ArrowUpDown size={10} className={sortKey === k ? "text-[var(--accent)]" : ""} />
-        {sortKey === k && <span className="text-[8px]">{sortDir === "asc" ? "↑" : "↓"}</span>}
-      </span>
-    </th>
-  );
-
-  return (
-    <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left min-w-[900px]">
-          <thead>
-            <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)] bg-[var(--surface2)]/50">
-              <th className="pl-4 py-3 w-8">
-                <input type="checkbox" checked={selectedIds.size === products.length && products.length > 0}
-                  onChange={onToggleSelectAll} className="accent-accent-gold rounded" />
-              </th>
-              <th className="px-3 py-3 w-12" />
-              <SortHeader label="Producto" k="name" />
-              <th className="px-3 py-3">SKU</th>
-              <th className="px-3 py-3">Categoría</th>
-              <SortHeader label="Precio" k="price" />
-              <SortHeader label="Margen" k="margin" className="hidden md:table-cell" />
-              <SortHeader label="Stock" k="stock" />
-              <SortHeader label="Vendidos" k="soldUnits" className="hidden lg:table-cell" />
-              <SortHeader label="Rating" k="rating" className="hidden lg:table-cell" />
-              <th className="px-3 py-3">Estado</th>
-              <th className="px-3 py-3 w-8" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-wood-50">
-            {products.length === 0 ? (
-              <tr><td colSpan={12} className="px-4 py-12 text-center text-xs text-[var(--text-muted)]">Sin productos</td></tr>
-            ) : products.map(p => {
-              const statusCfg = STATUS_CONFIG[p.status];
-              const margin = getMargin(p);
-              const stockCls = getStockColor(p);
-              return (
-                <tr key={p.id} className={`hover:bg-[var(--surface2)]/50 transition-colors ${selectedIds.has(p.id) ? "bg-[var(--accent)]/5" : ""}`}>
-                  <td className="pl-4 py-3">
-                    <input type="checkbox" checked={selectedIds.has(p.id)} onChange={() => onToggleSelect(p.id)} className="accent-accent-gold rounded" />
-                  </td>
-                  <td className="px-3 py-3">
-                    {p.thumbnail ? (
-                      <img src={p.thumbnail} alt="" className="w-10 h-10 rounded-lg object-cover" loading="lazy" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg bg-[var(--surface2)] flex items-center justify-center"><Package size={14} className="text-[var(--text-muted)]" /></div>
-                    )}
-                  </td>
-                  <td className="px-3 py-3">
-                    <p className="text-xs text-[var(--text)] truncate max-w-[200px]">{p.title}</p>
-                    {p.variants_count > 1 && <p className="text-[10px] text-[var(--text-muted)]">{p.variants_count} variantes</p>}
-                  </td>
-                  <td className="px-3 py-3 text-xs text-[var(--text-secondary)] font-mono">{p.sku}</td>
-                  <td className="px-3 py-3 text-xs text-[var(--text-secondary)]">{p.category}</td>
-                  <td className="px-3 py-3">
-                    <span className="text-xs font-bold text-[var(--text)]">{fmt(p.price)}</span>
-                    {p.unit_cost > 0 && <p className="text-[10px] text-[var(--text-muted)]">C: {fmt(p.unit_cost)}</p>}
-                  </td>
-                  <td className="px-3 py-3 hidden md:table-cell">
-                    {p.unit_cost > 0 ? (
-                      <span className={`text-xs font-bold ${margin >= 40 ? "text-green-600" : margin >= 20 ? "text-amber-500" : "text-red-500"}`}>{fmtPct(margin)}</span>
-                    ) : <span className="text-[10px] text-[var(--text-muted)]">—</span>}
-                  </td>
-                  <td className="px-3 py-3">
-                    <span className={`text-xs font-bold ${stockCls}`}>{p.stock}</span>
-                    {p.reserved_stock > 0 && <span className="text-[9px] text-orange-500 ml-1">R:{p.reserved_stock}</span>}
-                    {p.stock_level === "low_stock" && <AlertTriangle size={10} className="inline ml-1 text-amber-400" />}
-                  </td>
-                  <td className="px-3 py-3 hidden lg:table-cell">
-                    {p.sold_units_30d > 0 ? (
-                      <div>
-                        <span className="text-xs text-[var(--text)]">{p.sold_units_30d}</span>
-                        <p className="text-[10px] text-[var(--text-muted)]">{fmt(p.revenue_30d)}</p>
-                      </div>
-                    ) : <span className="text-[10px] text-[var(--text-muted)]">—</span>}
-                  </td>
-                  <td className="px-3 py-3 hidden lg:table-cell">
-                    {p.review_count > 0 ? (
-                      <span className="flex items-center gap-0.5 text-xs text-[var(--accent)]">
-                        <Star size={10} fill="currentColor" /> {p.avg_rating}
-                        <span className="text-[10px] text-[var(--text-muted)]">({p.review_count})</span>
-                      </span>
-                    ) : <span className="text-[10px] text-[var(--text-muted)]">—</span>}
-                  </td>
-                  <td className="px-3 py-3">
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 w-fit ${statusCfg.cls}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} /> {statusCfg.label}
-                    </span>
-                  </td>
-                  <td className="px-3 py-3">
-                    <div className="relative">
-                      <button onClick={e => { e.stopPropagation(); onContextMenu(contextMenuId === p.id ? null : p.id); }}
-                        className="p-1.5 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
-                        <MoreVertical size={14} />
-                      </button>
-                      {contextMenuId === p.id && <ContextMenu product={p} onAction={onAction} />}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </div>
     </div>
   );

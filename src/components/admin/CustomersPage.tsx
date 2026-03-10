@@ -4,7 +4,6 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useTheme } from '@/src/theme/ThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
-import { motion, AnimatePresence } from 'motion/react';
 import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
 import { TierIcon, getTierSymbol } from '@/components/ui/TierIcons';
@@ -112,7 +111,7 @@ const TierBadge: React.FC<{ tier: Tier; size?: 'sm' | 'md' }> = ({ tier, size = 
   const iconSize = size === 'sm' ? 12 : 16;
   return (
     <span
-      className={`inline-flex items-center gap-1 font-medium rounded-full text-white ${size === 'sm' ? 'text-[10px] px-2 py-0.5' : 'text-xs px-3 py-1'}`}
+      className={`inline-flex items-center gap-1 font-medium rounded-none text-white ${size === 'sm' ? 'text-[10px] px-2 py-0.5' : 'text-xs px-3 py-1'}`}
       style={s.card}
     >
       <TierIcon tierId={tier} size={iconSize} /> {getTierLabel(tier)}
@@ -207,13 +206,13 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
           <Users size={18} className="text-[var(--accent)]" />
-          <h3 className="font-serif text-lg text-[var(--text)]">Clientes y Membresías</h3>
+          <h3 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", margin: 0, fontFamily: "var(--font-heading)" }}>Clientes y Membresías</h3>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors">
+          <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-[var(--accent-text)] rounded-none text-xs hover:bg-[var(--accent-hover)] transition-colors">
             <UserPlus size={14} /> Agregar cliente
           </button>
-          <button className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg text-xs hover:bg-[var(--surface2)] transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border-2 border-[var(--border)] text-[var(--text-secondary)] rounded-none text-xs hover:bg-[var(--surface2)] transition-colors">
             <Download size={13} /> Exportar
           </button>
         </div>
@@ -248,9 +247,9 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
           { icon: ShoppingBag, color: 'bg-purple-50 text-purple-600', val: `${kpis.repurchase}%`, label: 'Tasa de recompra', sub: '+3% vs prev' },
           { icon: Crown, color: 'bg-amber-50 text-amber-700', val: kpis.vips, label: 'Clientes VIP', sub: `${kpis.vipPct}% del total` },
         ].map((k, i) => (
-          <div key={i} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+          <div key={i} className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className={`p-1.5 rounded-lg ${k.color}`}><k.icon size={14} /></div>
+              <div className={`p-1.5 rounded-none ${k.color}`}><k.icon size={14} /></div>
               <span className="text-lg text-[var(--text)]">{k.val}</span>
             </div>
             <p className="text-[11px] text-[var(--text-secondary)]">{k.label}</p>
@@ -264,7 +263,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
         <div className="space-y-3">
           {/* Search + Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden">
+            <div className="flex-1 flex items-center bg-[var(--surface)] border-2 border-[var(--border)] rounded-none overflow-hidden">
               <Search size={16} className="ml-3 text-[var(--text-muted)]" />
               <input
                 value={searchQ} onChange={e => setSearchQ(e.target.value)}
@@ -273,19 +272,19 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
               />
             </div>
             <div className="flex gap-2 items-center">
-              <select value={filterTier} onChange={e => setFilterTier(e.target.value)} className="px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+              <select value={filterTier} onChange={e => setFilterTier(e.target.value)} className="px-3 py-2.5 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                 <option value="all">Todos los tiers</option>
                 <option value="bronze">Bronce</option>
                 <option value="silver">Plata</option>
                 <option value="gold">Oro</option>
                 <option value="platinum">Platino</option>
               </select>
-              <select value={filterActivity} onChange={e => setFilterActivity(e.target.value)} className="px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+              <select value={filterActivity} onChange={e => setFilterActivity(e.target.value)} className="px-3 py-2.5 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                 <option value="all">Toda actividad</option>
                 <option value="recent">Ultimos 30d</option>
                 <option value="inactive">Inactivos +90d</option>
               </select>
-              <button onClick={() => setShowFilters(!showFilters)} className={`p-2.5 rounded-lg border transition-colors ${showFilters ? 'bg-[var(--accent)]/10 border-[var(--accent)]/30 text-[var(--accent)]' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)]'}`}>
+              <button onClick={() => setShowFilters(!showFilters)} className={`p-2.5 rounded-none border transition-colors ${showFilters ? 'bg-[var(--accent)]/10 border-[var(--accent)]/30 text-[var(--accent)]' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)]'}`}>
                 <Filter size={14} />
               </button>
             </div>
@@ -293,7 +292,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
 
           {/* Bulk actions */}
           {selected.size > 0 && (
-            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3 bg-[var(--accent)]/5 border border-[var(--accent)]/20 rounded-xl px-4 py-2.5">
+            <div className="flex items-center gap-3 bg-[var(--accent)]/5 border border-[var(--accent)]/20 rounded-none px-4 py-2.5">
               <span className="text-xs text-[var(--accent)]">{selected.size} seleccionado{selected.size > 1 ? 's' : ''}</span>
               <div className="w-px h-4 bg-[var(--accent)]/20" />
               <button className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--accent)] flex items-center gap-1"><Mail size={11} /> Email</button>
@@ -302,11 +301,11 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
               <button className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--accent)] flex items-center gap-1"><Tag size={11} /> Agregar tag</button>
               <button className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--accent)] flex items-center gap-1"><Download size={11} /> Exportar</button>
               <button onClick={() => setSelected(new Set())} className="ml-auto text-[var(--text-muted)] hover:text-[var(--text-secondary)]"><X size={14} /></button>
-            </motion.div>
+            </div>
           )}
 
           {/* Customer Table */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+          <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
@@ -323,7 +322,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
                     <th className="px-3 py-3 w-10"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-wood-50">
+                <tbody className="divide-y divide-[var(--border)]">
                   {filtered.map(c => {
                     const inactiveRisk = c.orders > 0 && daysSince(c.lastOrder) > 90;
                     return (
@@ -331,7 +330,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
                         <td className="px-3 py-3"><input type="checkbox" checked={selected.has(c.id)} onChange={() => toggleSelect(c.id)} className="accent-accent-gold rounded" /></td>
                         <td className="px-3 py-3">
                           <button onClick={() => setSelectedCustomer(c)} className="flex items-center gap-2.5 hover:text-[var(--accent)] transition-colors">
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-medium flex-shrink-0 text-white" style={getTierStyles(c.tier).avatar}>
+                            <div className="w-8 h-8 rounded-none flex items-center justify-center text-[10px] font-medium flex-shrink-0 text-white" style={getTierStyles(c.tier).avatar}>
                               {c.avatar}
                             </div>
                             <span className="text-xs text-[var(--text)] truncate max-w-[140px]">{c.name}</span>
@@ -349,11 +348,11 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
                         </td>
                         <td className="px-3 py-3">
                           <div className="relative">
-                            <button onClick={e => { e.stopPropagation(); setContextMenu(contextMenu === c.id ? null : c.id); }} className="p-1.5 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
+                            <button onClick={e => { e.stopPropagation(); setContextMenu(contextMenu === c.id ? null : c.id); }} className="p-1.5 hover:bg-[var(--surface2)] rounded-none text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
                               <MoreVertical size={14} />
                             </button>
                             {contextMenu === c.id && (
-                              <div className="absolute right-0 top-full mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-xl py-1 z-30 min-w-[180px]" onClick={e => e.stopPropagation()}>
+                              <div className="absolute right-0 top-full mt-1 bg-[var(--surface)] border-2 border-[var(--border)] rounded-none  py-1 z-30 min-w-[180px]" onClick={e => e.stopPropagation()}>
                                 <button onClick={() => { setSelectedCustomer(c); setContextMenu(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)]"><Eye size={12} /> Ver perfil</button>
                                 <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)]"><Mail size={12} /> Enviar email</button>
                                 <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)]"><Star size={12} /> Ajustar puntos</button>
@@ -562,7 +561,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
     <div className="space-y-4">
       {/* Back + breadcrumb */}
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"><ArrowLeft size={18} /></button>
+        <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-none text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"><ArrowLeft size={18} /></button>
         <div>
           <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Clientes</p>
           <h3 className="font-serif text-[var(--text)]">Perfil de cliente</h3>
@@ -570,10 +569,10 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
       </div>
 
       {/* Header card */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-6">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-6">
         <div className="flex flex-col lg:flex-row items-start gap-5">
           {/* Avatar */}
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-medium text-white flex-shrink-0" style={ts.avatar}>
+          <div className="w-16 h-16 rounded-none flex items-center justify-center text-xl font-medium text-white flex-shrink-0" style={ts.avatar}>
             {customer.avatar}
           </div>
 
@@ -596,8 +595,8 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <span className="inline-flex items-center gap-1"><TierIcon tierId={customer.tier} size={12} /> {getTierLabel(customer.tier)} — {customer.points.toLocaleString()} puntos (${(customer.points * 0.01).toFixed(2)} MXN)</span>
                 {nextTierConfig && <span className="inline-flex items-center gap-1"><TierIcon tierId={nextTierConfig.id} size={12} /> {nextTierConfig.name}</span>}
               </div>
-              <div className="h-2 bg-[var(--surface2)] rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, ...ts.card }} />
+              <div className="h-2 bg-[var(--surface2)] rounded-none overflow-hidden">
+                <div className="h-full rounded-none transition-all" style={{ width: `${progressPct}%`, ...ts.card }} />
               </div>
               {nextTierConfig && <p className="text-[10px] text-[var(--text-muted)] mt-1">Le faltan ${remaining.toLocaleString()} para subir a {nextTierConfig.name}</p>}
             </div>
@@ -605,17 +604,17 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
             {/* Tags */}
             {customer.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
-                {customer.tags.map(t => <span key={t} className="text-[10px] px-2 py-0.5 bg-[var(--surface2)] text-[var(--text-secondary)] rounded-full">{t}</span>)}
-                <button className="text-[10px] px-2 py-0.5 border border-dashed border-[var(--border)] text-[var(--text-muted)] rounded-full hover:border-[var(--accent)] hover:text-[var(--accent)]">+ Tag</button>
+                {customer.tags.map(t => <span key={t} className="text-[10px] px-2 py-0.5 bg-[var(--surface2)] text-[var(--text-secondary)] rounded-none">{t}</span>)}
+                <button className="text-[10px] px-2 py-0.5 border border-dashed border-[var(--border)] text-[var(--text-muted)] rounded-none hover:border-[var(--accent)] hover:text-[var(--accent)]">+ Tag</button>
               </div>
             )}
           </div>
 
           {/* Action buttons */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] flex items-center gap-1"><Mail size={12} /> Email</button>
-            <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] flex items-center gap-1"><FileText size={12} /> Nota</button>
-            <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] flex items-center gap-1"><Star size={12} /> Puntos</button>
+            <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border-2 border-[var(--border)] rounded-none hover:bg-[var(--surface2)] flex items-center gap-1"><Mail size={12} /> Email</button>
+            <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border-2 border-[var(--border)] rounded-none hover:bg-[var(--surface2)] flex items-center gap-1"><FileText size={12} /> Nota</button>
+            <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border-2 border-[var(--border)] rounded-none hover:bg-[var(--surface2)] flex items-center gap-1"><Star size={12} /> Puntos</button>
           </div>
         </div>
 
@@ -660,12 +659,12 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
       </div>
 
       {/* Tab content */}
-      <AnimatePresence mode="wait">
-        <motion.div key={profileTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+      
+        <div key={profileTab}>
           {profileTab === 'summary' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Spend chart */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+              <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5">
                 <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3">Gasto por mes (ultimos 12 meses)</h4>
                 <div className="h-44">
                   <ResponsiveContainer width="100%" height="100%">
@@ -681,7 +680,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
 
               {/* Favorites + Patterns */}
               <div className="space-y-4">
-                <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+                <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5">
                   <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3">Productos favoritos</h4>
                   <div className="space-y-2">
                     {[
@@ -691,7 +690,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                     ].map((p, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <span className="text-xs text-[var(--text-muted)] w-4">{i + 1}.</span>
-                        <div className="w-8 h-8 rounded-lg bg-[var(--surface2)] flex items-center justify-center flex-shrink-0"><ShoppingBag size={12} className="text-[var(--text-muted)]" /></div>
+                        <div className="w-8 h-8 rounded-none bg-[var(--surface2)] flex items-center justify-center flex-shrink-0"><ShoppingBag size={12} className="text-[var(--text-muted)]" /></div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-[var(--text)] truncate">{p.name}</p>
                           <p className="text-[10px] text-[var(--text-muted)]">{p.buys} compras (${p.total.toLocaleString()})</p>
@@ -700,7 +699,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                     ))}
                   </div>
                 </div>
-                <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+                <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5">
                   <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3">Patrones de compra</h4>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
                     {[
@@ -721,7 +720,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
               </div>
 
               {/* Predictions */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 lg:col-span-2">
+              <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 lg:col-span-2">
                 <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3 flex items-center gap-1"><Zap size={12} /> Predicciones</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="text-center">
@@ -746,7 +745,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
           )}
 
           {profileTab === 'orders' && (
-            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
+            <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] ">
               <div className="px-5 py-3 border-b border-[var(--border)] flex items-center justify-between">
                 <p className="text-xs text-[var(--text-secondary)]">{detailOrders.length} pedidos | Total: ${customer.totalSpent.toLocaleString()} | Promedio: ${customer.avgTicket.toLocaleString()}</p>
                 <button className="text-[11px] text-[var(--accent)] hover:underline flex items-center gap-1"><Plus size={11} /> Crear pedido manual</button>
@@ -766,7 +765,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                     <th className="px-5 py-2.5">Estado</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-wood-50">
+                <tbody className="divide-y divide-[var(--border)]">
                   {detailOrders.map((o: any) => {
                     const statusMap: Record<string, { label: string; cls: string }> = {
                       fulfilled: { label: 'Entregado', cls: 'bg-green-50 text-green-600' },
@@ -782,7 +781,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                       <td className="px-5 py-3 text-xs text-[var(--text-secondary)]">{new Date(o.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                       <td className="px-5 py-3 text-xs text-[var(--text)] max-w-[250px] truncate">{itemsSummary}</td>
                       <td className="px-5 py-3 text-xs text-[var(--text)]">${o.total.toLocaleString()}</td>
-                      <td className="px-5 py-3"><span className={`text-[10px] px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span></td>
+                      <td className="px-5 py-3"><span className={`text-[10px] px-2 py-0.5 rounded-none ${st.cls}`}>{st.label}</span></td>
                     </tr>
                     );
                   })}
@@ -795,7 +794,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
           {profileTab === 'points' && (
             <div className="space-y-4">
               {/* Current status */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+              <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5">
                 <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-4">Estado actual</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                   {[
@@ -816,37 +815,37 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
 
               {/* Admin actions */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 space-y-3">
+                <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 space-y-3">
                   <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Ajustar puntos</h4>
                   <div className="flex gap-2">
-                    <select value={pointsAction} onChange={e => setPointsAction(e.target.value as 'add' | 'remove')} className="px-2 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                    <select value={pointsAction} onChange={e => setPointsAction(e.target.value as 'add' | 'remove')} className="px-2 py-2 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                       <option value="add">Agregar</option>
                       <option value="remove">Quitar</option>
                     </select>
-                    <input type="number" value={pointsAmount} onChange={e => setPointsAmount(e.target.value)} placeholder="Cantidad" min="1" className="flex-1 px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text)] outline-none" />
+                    <input type="number" value={pointsAmount} onChange={e => setPointsAmount(e.target.value)} placeholder="Cantidad" min="1" className="flex-1 px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none text-[var(--text)] outline-none" />
                   </div>
-                  <select value={pointsReason} onChange={e => setPointsReason(e.target.value)} className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                  <select value={pointsReason} onChange={e => setPointsReason(e.target.value)} className="w-full px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                     <option value="">Motivo...</option>
                     <option value="Cortesia">Cortes\u00eda</option>
                     <option value="Correccion">Correcci\u00f3n</option>
                     <option value="Bonificacion">Bonificaci\u00f3n</option>
                     <option value="Promocion">Promoci\u00f3n</option>
                   </select>
-                  <textarea value={pointsNote} onChange={e => setPointsNote(e.target.value)} placeholder="Nota (opcional)" rows={2} className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text)] outline-none resize-none" />
-                  <button onClick={handleAdjustPoints} disabled={pointsSaving || !pointsAmount} className="w-full px-3 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed">{pointsSaving ? 'Aplicando...' : 'Aplicar ajuste'}</button>
+                  <textarea value={pointsNote} onChange={e => setPointsNote(e.target.value)} placeholder="Nota (opcional)" rows={2} className="w-full px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none text-[var(--text)] outline-none resize-none" />
+                  <button onClick={handleAdjustPoints} disabled={pointsSaving || !pointsAmount} className="w-full px-3 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed">{pointsSaving ? 'Aplicando...' : 'Aplicar ajuste'}</button>
                 </div>
-                <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 space-y-3">
+                <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 space-y-3">
                   <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Cambiar tier manualmente</h4>
-                  <select value={newTier} onChange={e => setNewTier(e.target.value)} className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                  <select value={newTier} onChange={e => setNewTier(e.target.value)} className="w-full px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                     {DEFAULT_LOYALTY_CONFIG.tiers.map(t => <option key={t.id} value={t.id}>{getTierSymbol(t.id)} {t.name}</option>)}
                   </select>
-                  <input value={tierReason} onChange={e => setTierReason(e.target.value)} placeholder="Motivo del cambio" className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text)] outline-none" />
-                  <button onClick={handleChangeTier} disabled={tierSaving} className="w-full px-3 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50 disabled:cursor-not-allowed">{tierSaving ? 'Cambiando...' : 'Cambiar tier'}</button>
+                  <input value={tierReason} onChange={e => setTierReason(e.target.value)} placeholder="Motivo del cambio" className="w-full px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none text-[var(--text)] outline-none" />
+                  <button onClick={handleChangeTier} disabled={tierSaving} className="w-full px-3 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed">{tierSaving ? 'Cambiando...' : 'Cambiar tier'}</button>
                 </div>
               </div>
 
               {/* Points history */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
+              <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] ">
                 <div className="px-5 py-3 border-b border-[var(--border)]"><h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Historial de puntos</h4></div>
                 {detailLoading ? (
                   <div className="p-8 text-center text-[var(--text-muted)] text-xs">Cargando historial...</div>
@@ -859,12 +858,12 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                       <th className="px-5 py-2.5">Fecha</th><th className="px-5 py-2.5">Concepto</th><th className="px-5 py-2.5">Tipo</th><th className="px-5 py-2.5">Puntos</th><th className="px-5 py-2.5">Balance</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-wood-50">
+                  <tbody className="divide-y divide-[var(--border)]">
                     {detailTransactions.map((tx: any, i: number) => (
                       <tr key={tx.id || i} className="hover:bg-[var(--surface2)]/30">
                         <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)]">{new Date(tx.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                         <td className="px-5 py-2.5 text-xs text-[var(--text)]">{tx.description || tx.order_id || 'Transacción'}</td>
-                        <td className="px-5 py-2.5"><span className={`text-[10px] px-2 py-0.5 rounded-full ${tx.type === 'earn' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{tx.type === 'earn' ? 'Ganados' : 'Canjeados'}</span></td>
+                        <td className="px-5 py-2.5"><span className={`text-[10px] px-2 py-0.5 rounded-none ${tx.type === 'earn' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{tx.type === 'earn' ? 'Ganados' : 'Canjeados'}</span></td>
                         <td className={`px-5 py-2.5 text-xs font-medium ${tx.type === 'earn' ? 'text-green-600' : 'text-red-500'}`}>{tx.type === 'earn' ? '+' : '-'}{tx.points.toLocaleString()}</td>
                         <td className="px-5 py-2.5 text-xs text-[var(--text)]">{(tx.balance_after ?? 0).toLocaleString()}</td>
                       </tr>
@@ -887,10 +886,10 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                   const fullAddress = [a.address_1, a.address_2, a.city, a.province, a.postal_code].filter(Boolean).join(', ');
                   const fullName = [a.first_name, a.last_name].filter(Boolean).join(' ') || customer.name;
                   return (
-                    <div key={a.id || i} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+                    <div key={a.id || i} className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-xs text-[var(--text)] font-medium">{a.company || (i === 0 ? 'Principal' : `Dirección ${i + 1}`)}</p>
-                        {i === 0 && <span className="text-[9px] px-1.5 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-full">Predeterminada</span>}
+                        {i === 0 && <span className="text-[9px] px-1.5 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-none">Predeterminada</span>}
                       </div>
                       <p className="text-xs text-[var(--text)] mb-1">{fullName}</p>
                       <p className="text-xs text-[var(--text-secondary)] mb-1">{fullAddress}</p>
@@ -924,7 +923,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
             timeline.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
             return (
-            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+            <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5">
               <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-4">Timeline de actividad</h4>
               {detailLoading ? (
                 <div className="p-8 text-center text-[var(--text-muted)] text-xs">Cargando actividad...</div>
@@ -935,7 +934,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 {timeline.slice(0, 20).map((a, i) => (
                   <div key={i} className="flex gap-3 pb-4 last:pb-0">
                     <div className="flex flex-col items-center">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      <div className={`w-7 h-7 rounded-none flex items-center justify-center flex-shrink-0 ${
                         a.type === 'order' ? 'bg-blue-50 text-blue-600' :
                         a.type === 'points' ? 'bg-[var(--accent)]/10 text-[var(--accent)]' :
                         a.type === 'tier' ? 'bg-purple-50 text-purple-600' :
@@ -958,14 +957,14 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
           })()}
 
           {profileTab === 'notes' && (
-            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 space-y-4">
+            <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Notas internas</h4>
                 <p className="text-[10px] text-[var(--text-muted)]">El cliente NO ve estas notas</p>
               </div>
               <div className="flex gap-2">
-                <textarea value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="Agregar nota..." className="flex-1 px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text)] outline-none resize-none" rows={2} />
-                <button onClick={handleAddNote} disabled={notesSaving || !newNote.trim()} className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 self-end disabled:opacity-50">{notesSaving ? 'Guardando...' : 'Guardar'}</button>
+                <textarea value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="Agregar nota..." className="flex-1 px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none text-[var(--text)] outline-none resize-none" rows={2} />
+                <button onClick={handleAddNote} disabled={notesSaving || !newNote.trim()} className="px-4 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)] self-end disabled:opacity-50">{notesSaving ? 'Guardando...' : 'Guardar'}</button>
               </div>
               {notesLoading ? (
                 <div className="p-4 text-center text-[var(--text-muted)] text-xs">Cargando notas...</div>
@@ -974,7 +973,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
               ) : (
               <div className="space-y-3">
                 {notes.map((n: any, i: number) => (
-                  <div key={n.id || i} className="p-3 rounded-xl bg-[var(--surface2)]">
+                  <div key={n.id || i} className="p-3 rounded-none bg-[var(--surface2)]">
                     <p className="text-xs text-[var(--text)]">{n.text}</p>
                     <p className="text-[10px] text-[var(--text-muted)] mt-1">{n.author || 'Admin'} — {new Date(n.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
@@ -986,12 +985,12 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
 
           {profileTab === 'comms' && (
             <div className="space-y-4">
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 space-y-3">
+              <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Enviar nuevo mensaje</h4>
                   <div className="text-[10px] text-[var(--text-muted)]">Tasa apertura: <span className="text-green-600">72%</span> | Clics: <span className="text-[var(--accent)]">45%</span></div>
                 </div>
-                <select className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                <select className="w-full px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                   <option value="">Seleccionar plantilla...</option>
                   <option>Tenemos novedades para ti</option>
                   <option>Tus puntos estan por vencer</option>
@@ -1001,16 +1000,16 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                   <option>Te extranamos</option>
                   <option>Mensaje personalizado</option>
                 </select>
-                <textarea placeholder="Contenido del mensaje... Variables: {nombre}, {tier}, {puntos}, {producto_favorito}" rows={3} className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text)] outline-none resize-none" />
+                <textarea placeholder="Contenido del mensaje... Variables: {nombre}, {tier}, {puntos}, {producto_favorito}" rows={3} className="w-full px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none text-[var(--text)] outline-none resize-none" />
                 <div className="flex items-center gap-3">
-                  <button className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 flex items-center gap-1"><Send size={12} /> Enviar ahora</button>
-                  <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] flex items-center gap-1"><Clock size={12} /> Programar</button>
-                  <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] flex items-center gap-1"><Eye size={12} /> Preview</button>
+                  <button className="px-4 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)] flex items-center gap-1"><Send size={12} /> Enviar ahora</button>
+                  <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border-2 border-[var(--border)] rounded-none hover:bg-[var(--surface2)] flex items-center gap-1"><Clock size={12} /> Programar</button>
+                  <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border-2 border-[var(--border)] rounded-none hover:bg-[var(--surface2)] flex items-center gap-1"><Eye size={12} /> Preview</button>
                 </div>
               </div>
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
+              <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] ">
                 <div className="px-5 py-3 border-b border-[var(--border)]"><h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Historial de emails</h4></div>
-                <div className="divide-y divide-wood-50">
+                <div className="divide-y divide-[var(--border)]">
                   {[
                     { subject: 'Tu pedido #DSD-0014 ha sido entregado', date: '28 Feb 2026', status: 'opened', clicks: 2 },
                     { subject: 'Felicidades! Subiste a Oro', date: '25 Feb 2026', status: 'opened', clicks: 1 },
@@ -1023,7 +1022,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                         <p className="text-[10px] text-[var(--text-muted)]">{e.date}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${e.status === 'opened' ? 'bg-green-50 text-green-600' : 'bg-[var(--surface2)] text-[var(--text-muted)]'}`}>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-none ${e.status === 'opened' ? 'bg-green-50 text-green-600' : 'bg-[var(--surface2)] text-[var(--text-muted)]'}`}>
                           {e.status === 'opened' ? `Abierto${e.clicks > 0 ? ` (${e.clicks} clics)` : ''}` : 'No abierto'}
                         </span>
                       </div>
@@ -1033,8 +1032,8 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
               </div>
             </div>
           )}
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      
     </div>
   );
 };
@@ -1056,7 +1055,7 @@ const MembershipTab: React.FC<{ customers: CustomerFull[] }> = ({ customers }) =
         {tiers.map(t => {
           const ts = getTierStyles(t.key);
           return (
-            <div key={t.key} className="bg-[var(--surface)] rounded-xl border shadow-sm overflow-hidden" style={ts.border}>
+            <div key={t.key} className="bg-[var(--surface)] rounded-none border  overflow-hidden" style={ts.border}>
               <div className="h-1.5" style={ts.card} />
               <div className="p-5">
                 <div className="flex items-center justify-between mb-3">
@@ -1080,7 +1079,7 @@ const MembershipTab: React.FC<{ customers: CustomerFull[] }> = ({ customers }) =
       </div>
 
       {/* Insights */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 space-y-3">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 space-y-3">
         <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1"><Zap size={12} className="text-[var(--accent)]" /> Insights accionables</h4>
         {[
           { text: 'El 6% de tus clientes (Oro+Platino) genera el 47% de tus ingresos', type: 'info' },
@@ -1088,7 +1087,7 @@ const MembershipTab: React.FC<{ customers: CustomerFull[] }> = ({ customers }) =
           { text: 'La tasa de recompra sube de 15% (Bronce) a 100% (Platino)', type: 'info' },
           { text: '45 clientes Bronce no han comprado en +90 dias (riesgo de perdida)', type: 'action', btn: 'Enviar campana a Bronce inactivos' },
         ].map((ins, i) => (
-          <div key={i} className="flex items-start gap-3 p-3 bg-[var(--surface2)] rounded-xl">
+          <div key={i} className="flex items-start gap-3 p-3 bg-[var(--surface2)] rounded-none">
             <Zap size={14} className={ins.type === 'action' ? 'text-[var(--accent)] mt-0.5' : 'text-[var(--text-muted)] mt-0.5'} />
             <div className="flex-1">
               <p className="text-xs text-[var(--text)]">{ins.text}</p>
@@ -1123,17 +1122,17 @@ const SegmentsTab: React.FC = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-[var(--text-secondary)]">{segments.length} segmentos definidos</p>
-        <button onClick={() => setShowCreate(!showCreate)} className="flex items-center gap-1 px-3 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">
+        <button onClick={() => setShowCreate(!showCreate)} className="flex items-center gap-1 px-3 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)]">
           <Plus size={13} /> Crear segmento
         </button>
       </div>
 
       {showCreate && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 space-y-4">
+        <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 space-y-4">
           <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Nuevo segmento</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input placeholder="Nombre del segmento" className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none" />
-            <select className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] bg-[var(--surface)] outline-none">
+            <input placeholder="Nombre del segmento" className="px-3 py-2.5 border-2 border-[var(--border)] rounded-none text-sm text-[var(--text)] outline-none" />
+            <select className="px-3 py-2.5 border-2 border-[var(--border)] rounded-none text-sm text-[var(--text)] bg-[var(--surface)] outline-none">
               <option>Automatico (con reglas)</option>
               <option>Manual (seleccionar clientes)</option>
             </select>
@@ -1141,35 +1140,35 @@ const SegmentsTab: React.FC = () => {
           <div className="space-y-2">
             <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Reglas</p>
             <div className="flex items-center gap-2">
-              <select className="px-2 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+              <select className="px-2 py-2 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                 <option>Tier</option><option>Gasto total</option><option>Pedidos</option><option>Ultima compra</option><option>Ubicacion</option><option>Tag</option><option>Puntos</option><option>Usa grabado</option>
               </select>
-              <select className="px-2 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+              <select className="px-2 py-2 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                 <option>es igual a</option><option>no es igual a</option><option>mayor que</option><option>menor que</option>
               </select>
-              <input placeholder="Valor" className="flex-1 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text)] outline-none" />
+              <input placeholder="Valor" className="flex-1 px-2 py-2 text-xs border-2 border-[var(--border)] rounded-none text-[var(--text)] outline-none" />
               <button className="p-1 text-[var(--text-muted)] hover:text-red-500"><X size={14} /></button>
             </div>
             <button className="text-[11px] text-[var(--accent)] hover:underline flex items-center gap-1"><Plus size={11} /> Agregar regla</button>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-none">
             <Users size={14} className="text-[var(--accent)]" />
             <span className="text-xs text-[var(--text)]">15 clientes coinciden con estas reglas</span>
             <button className="text-[11px] text-[var(--accent)] hover:underline ml-auto">Ver lista preview</button>
           </div>
           <div className="flex gap-2 justify-end">
             <button onClick={() => setShowCreate(false)} className="px-3 py-2 text-xs text-[var(--text-secondary)]">Cancelar</button>
-            <button className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800">Crear segmento</button>
+            <button className="px-4 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)]">Crear segmento</button>
           </div>
-        </motion.div>
+        </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {segments.map((s, i) => (
-          <div key={i} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 hover:shadow-sm transition-shadow">
+          <div key={i} className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 hover: transition-">
             <div className="flex items-center justify-between mb-2">
               <h5 className="text-sm text-[var(--text)]">{s.name}</h5>
-              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${s.color}`}>{s.type}</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-none ${s.color}`}>{s.type}</span>
             </div>
             <p className="text-2xl text-[var(--text)] mb-0.5">{s.clients}</p>
             <p className="text-[10px] text-[var(--text-secondary)] mb-2">{s.metric}</p>

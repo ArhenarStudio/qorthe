@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'motion/react';
 import {
   Search, FileText, Plus, Download, ArrowLeft, Eye, Zap, MoreHorizontal,
   Send, Paperclip, Mail, Clock, Package, CheckCircle, DollarSign,
@@ -54,9 +53,9 @@ function getClientBadge(q: AdminQuote) {
 
 // ===== KPI CARD =====
 const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; sub: string; accent?: boolean }> = ({ icon, value, label, sub, accent }) => (
-  <div className={`bg-[var(--surface)] rounded-xl border shadow-sm p-4 ${accent ? 'border-[var(--accent)]/30' : 'border-[var(--border)]'}`}>
+  <div className={`bg-[var(--surface)] rounded-none border  p-4 ${accent ? 'border-[var(--accent)]/30' : 'border-[var(--border)]'}`}>
     <div className="flex items-center gap-2 mb-2">
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-[var(--accent)]/15' : 'bg-[var(--surface2)]'}`}>
+      <div className={`w-8 h-8 rounded-none flex items-center justify-center ${accent ? 'bg-[var(--accent)]/15' : 'bg-[var(--surface2)]'}`}>
         {icon}
       </div>
     </div>
@@ -181,14 +180,14 @@ export const QuotesPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
+        <h3 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", margin: 0, fontFamily: "var(--font-heading)" }} className="flex items-center gap-2">
           <FileText size={20} className="text-[var(--accent)]" /> Cotizaciones
         </h3>
         <div className="flex items-center gap-2">
-          <button onClick={() => setShowCreateForm(true)} className="flex items-center gap-1.5 px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors">
+          <button onClick={() => setShowCreateForm(true)} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--accent)] text-[var(--accent-text)] text-xs rounded-none hover:bg-[var(--accent-hover)] transition-colors">
             <Plus size={14} /> Crear Cotización Manual
           </button>
-          <button onClick={() => { fetch('/api/admin/importexport?type=quotes').then(r => r.json()).then(d => { const rows = d.data || []; if (!rows.length) { toast.error('No hay datos para exportar'); return; } const csv = [Object.keys(rows[0]).join(','), ...rows.map((r: Record<string, unknown>) => Object.values(r).map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))].join('\n'); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cotizaciones.csv'; a.click(); URL.revokeObjectURL(url); toast.success('CSV descargado'); }).catch(() => toast.error('Error al exportar')); }} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] text-xs rounded-lg hover:bg-[var(--surface2)] transition-colors">
+          <button onClick={() => { fetch('/api/admin/importexport?type=quotes').then(r => r.json()).then(d => { const rows = d.data || []; if (!rows.length) { toast.error('No hay datos para exportar'); return; } const csv = [Object.keys(rows[0]).join(','), ...rows.map((r: Record<string, unknown>) => Object.values(r).map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))].join('\n'); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cotizaciones.csv'; a.click(); URL.revokeObjectURL(url); toast.success('CSV descargado'); }).catch(() => toast.error('Error al exportar')); }} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border-2 border-[var(--border)] text-[var(--text)] text-xs rounded-none hover:bg-[var(--surface2)] transition-colors">
             <Download size={14} /> Exportar
           </button>
         </div>
@@ -196,22 +195,22 @@ export const QuotesPage: React.FC = () => {
 
       {/* Create Quote Form */}
       {showCreateForm && (
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--accent)]/30 shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-none border border-[var(--accent)]/30  p-5">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-sm font-medium text-[var(--text)]">Nueva Cotización</h4>
             <button onClick={() => setShowCreateForm(false)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]"><span className="text-lg">&times;</span></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Nombre del cliente *</label><input value={newQuoteForm.customer_name} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_name: e.target.value }))} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="María López" /></div>
-            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Email *</label><input type="email" value={newQuoteForm.customer_email} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_email: e.target.value }))} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="maria@email.com" /></div>
-            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Teléfono</label><input value={newQuoteForm.customer_phone} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_phone: e.target.value }))} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="662-123-4567" /></div>
-            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Nombre del proyecto</label><input value={newQuoteForm.project_name} onChange={e => setNewQuoteForm(prev => ({ ...prev, project_name: e.target.value }))} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="Regalos corporativos" /></div>
-            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Timeline estimado</label><select value={newQuoteForm.timeline} onChange={e => setNewQuoteForm(prev => ({ ...prev, timeline: e.target.value }))} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]"><option>2-3 semanas</option><option>3-4 semanas</option><option>4-6 semanas</option><option>6-8 semanas</option></select></div>
+            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Nombre del cliente *</label><input value={newQuoteForm.customer_name} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_name: e.target.value }))} className="w-full border-2 border-[var(--border)] rounded-none px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="María López" /></div>
+            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Email *</label><input type="email" value={newQuoteForm.customer_email} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_email: e.target.value }))} className="w-full border-2 border-[var(--border)] rounded-none px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="maria@email.com" /></div>
+            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Teléfono</label><input value={newQuoteForm.customer_phone} onChange={e => setNewQuoteForm(prev => ({ ...prev, customer_phone: e.target.value }))} className="w-full border-2 border-[var(--border)] rounded-none px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="662-123-4567" /></div>
+            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Nombre del proyecto</label><input value={newQuoteForm.project_name} onChange={e => setNewQuoteForm(prev => ({ ...prev, project_name: e.target.value }))} className="w-full border-2 border-[var(--border)] rounded-none px-3 py-2 text-xs outline-none focus:border-[var(--accent)]/40" placeholder="Regalos corporativos" /></div>
+            <div><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Timeline estimado</label><select value={newQuoteForm.timeline} onChange={e => setNewQuoteForm(prev => ({ ...prev, timeline: e.target.value }))} className="w-full border-2 border-[var(--border)] rounded-none px-3 py-2 text-xs bg-[var(--surface)]"><option>2-3 semanas</option><option>3-4 semanas</option><option>4-6 semanas</option><option>6-8 semanas</option></select></div>
           </div>
-          <div className="mt-3"><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Descripción / Solicitud del cliente</label><textarea value={newQuoteForm.description} onChange={e => setNewQuoteForm(prev => ({ ...prev, description: e.target.value }))} rows={3} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs outline-none resize-none focus:border-[var(--accent)]/40" placeholder="Describe lo que el cliente necesita..." /></div>
+          <div className="mt-3"><label className="text-[10px] text-[var(--text-muted)] uppercase block mb-1">Descripción / Solicitud del cliente</label><textarea value={newQuoteForm.description} onChange={e => setNewQuoteForm(prev => ({ ...prev, description: e.target.value }))} rows={3} className="w-full border-2 border-[var(--border)] rounded-none px-3 py-2 text-xs outline-none resize-none focus:border-[var(--accent)]/40" placeholder="Describe lo que el cliente necesita..." /></div>
           <div className="flex justify-end gap-2 mt-4">
             <button onClick={() => setShowCreateForm(false)} className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text)]">Cancelar</button>
-            <button onClick={handleCreateQuote} disabled={creating} className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50">{creating ? 'Creando...' : 'Crear Cotización'}</button>
+            <button onClick={handleCreateQuote} disabled={creating} className="px-4 py-2 text-xs bg-[var(--accent)] text-[var(--accent-text)] rounded-none hover:bg-[var(--accent-hover)] disabled:opacity-50">{creating ? 'Creando...' : 'Crear Cotización'}</button>
           </div>
         </div>
       )}
@@ -231,13 +230,13 @@ export const QuotesPage: React.FC = () => {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-3 py-2 text-xs rounded-lg whitespace-nowrap transition-colors ${
-              tab === t.id ? 'bg-wood-900 text-sand-100' : 'bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] border border-[var(--border)]'
+            className={`px-3 py-2 text-xs rounded-none whitespace-nowrap transition-colors ${
+              tab === t.id ? 'bg-[var(--accent)] text-[var(--accent-text)]' : 'bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] border-2 border-[var(--border)]'
             }`}
           >
             {t.label}
             {tabCounts[t.id] > 0 && (
-              <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] ${
+              <span className={`ml-1.5 px-1.5 py-0.5 rounded-none text-[10px] ${
                 tab === t.id ? 'bg-[var(--accent)]/30 text-[var(--accent)]' : 'bg-[var(--surface2)] text-[var(--text-secondary)]'
               }`}>{tabCounts[t.id]}</span>
             )}
@@ -252,7 +251,7 @@ export const QuotesPage: React.FC = () => {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Buscar por # cotización, cliente o producto..."
-          className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none focus:border-wood-400 transition-colors"
+          className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border-2 border-[var(--border)] rounded-none text-xs text-[var(--text)] outline-none focus:border-[var(--border)] transition-colors"
         />
       </div>
 
@@ -284,26 +283,26 @@ const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
       const badges = getClientBadge(q);
       const isUrgent = hoursAgo(q.date) > 48;
       return (
-        <motion.div
+        <div
           key={q.id}
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className={`bg-[var(--surface)] rounded-xl border shadow-sm overflow-hidden transition-colors ${isUrgent ? 'border-amber-300 bg-amber-50/30' : 'border-[var(--border)]'}`}
+         
+          className={`bg-[var(--surface)] rounded-none border  overflow-hidden transition-colors ${isUrgent ? 'border-amber-300 bg-amber-50/30' : 'border-[var(--border)]'}`}
         >
           <div className="p-4 sm:p-5">
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`w-2 h-2 rounded-full ${statusConfig[q.status].dot}`} />
+                  <span className={`w-2 h-2 rounded-none ${statusConfig[q.status].dot}`} />
                   <span className="text-xs text-[var(--text)]">{q.number}</span>
                   {badges.map((b, i) => (
-                    <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded-full ${b.cls}`}>{b.text}</span>
+                    <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded-none ${b.cls}`}>{b.text}</span>
                   ))}
-                  {isUrgent && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">⚠️ +48h sin responder</span>}
+                  {isUrgent && <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-amber-100 text-amber-700">⚠️ +48h sin responder</span>}
                 </div>
                 <p className="text-xs text-[var(--text)] mt-1">
                   {q.customer.name}
-                  {q.customer.tier && (() => { const tb = getQuoteTierBadge(q.customer.tier); return <span className="ml-2 inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full" style={tb.styles.badge}><TierIcon tierId={tb.tierId} size={10} /> {tb.name}</span>; })()}
+                  {q.customer.tier && (() => { const tb = getQuoteTierBadge(q.customer.tier); return <span className="ml-2 inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-none" style={tb.styles.badge}><TierIcon tierId={tb.tierId} size={10} /> {tb.name}</span>; })()}
                   {q.customer.orders > 0 && <span className="text-[var(--text-muted)] ml-2">— {q.customer.orders} pedidos previos</span>}
                 </p>
                 <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{q.customer.email}{q.customer.phone ? ` | ${q.customer.phone}` : ''}</p>
@@ -339,10 +338,10 @@ const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
 
             {/* Actions */}
             <div className="flex items-center gap-2 mt-3">
-              <button onClick={() => onSelect(q)} className="flex items-center gap-1 px-3 py-1.5 bg-wood-900 text-sand-100 text-[11px] rounded-lg hover:bg-wood-800 transition-colors">
+              <button onClick={() => onSelect(q)} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--accent)] text-[var(--accent-text)] text-[11px] rounded-none hover:bg-[var(--accent-hover)] transition-colors">
                 <Eye size={12} /> Revisar completa
               </button>
-              <button onClick={() => onSelect(q)} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--accent)]/15 text-[var(--accent)] text-[11px] rounded-lg hover:bg-[var(--accent)]/25 transition-colors">
+              <button onClick={() => onSelect(q)} className="flex items-center gap-1 px-3 py-1.5 bg-[var(--accent)]/15 text-[var(--accent)] text-[11px] rounded-none hover:bg-[var(--accent)]/25 transition-colors">
                 <Zap size={12} /> Responder rápido
               </button>
               <button className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
@@ -350,7 +349,7 @@ const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
       );
     })}
     {quotes.length === 0 && <EmptyState text="No hay cotizaciones nuevas" />}
@@ -359,7 +358,7 @@ const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
 
 // ===== NEGOTIATION TABLE =====
 const NegotiationTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
-  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+  <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[700px]">
         <thead>
@@ -374,7 +373,7 @@ const NegotiationTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuot
             <th className="px-4 py-3">Acciones</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-wood-50">
+        <tbody className="divide-y divide-[var(--border)]">
           {quotes.map(q => {
             const lastMsg = q.messages[q.messages.length - 1];
             const isStale = lastMsg && hoursAgo(lastMsg.date) > 48;
@@ -384,7 +383,7 @@ const NegotiationTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuot
                 <td className="px-4 py-3 text-xs text-[var(--text)]">{q.customer.name}</td>
                 <td className="px-4 py-3">
                   {q.customer.tier ? (
-                    (() => { const tb = getQuoteTierBadge(q.customer.tier); return <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full" style={tb.styles.badge}><TierIcon tierId={tb.tierId} size={10} /> {tb.name}</span>; })()
+                    (() => { const tb = getQuoteTierBadge(q.customer.tier); return <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-none" style={tb.styles.badge}><TierIcon tierId={tb.tierId} size={10} /> {tb.name}</span>; })()
                   ) : <span className="text-[10px] text-[var(--text-muted)]">—</span>}
                 </td>
                 <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{q.pieces.length}</td>
@@ -416,7 +415,7 @@ const NegotiationTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuot
 
 // ===== APPROVED TABLE =====
 const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
-  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+  <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[700px]">
         <thead>
@@ -430,7 +429,7 @@ const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
             <th className="px-4 py-3">Acciones</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-wood-50">
+        <tbody className="divide-y divide-[var(--border)]">
           {quotes.map(q => {
             const total = getQuoteTotal(q) * 1.16;
             const deposit = total * (q.depositPercent / 100);
@@ -441,18 +440,18 @@ const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
                 <td className="px-4 py-3 text-xs text-[var(--text)]">{fmt(total)}</td>
                 <td className="px-4 py-3">
                   {q.depositPaid ? (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-50 text-green-600">✅ {fmt(q.depositPaid.amount)}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-green-50 text-green-600">✅ {fmt(q.depositPaid.amount)}</span>
                   ) : (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">Pendiente {fmt(deposit)}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-amber-50 text-amber-600">Pendiente {fmt(deposit)}</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${statusConfig[q.status].cls}`}>{statusConfig[q.status].label}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-none ${statusConfig[q.status].cls}`}>{statusConfig[q.status].label}</span>
                 </td>
                 <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{fmtDate(q.date)}</td>
                 <td className="px-4 py-3 flex items-center gap-1">
                   {!q.depositPaid && (
-                    <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors">
+                    <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-none hover:bg-green-100 transition-colors">
                       💰 Registrar anticipo
                     </button>
                   )}
@@ -470,7 +469,7 @@ const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
 
 // ===== PRODUCTION TABLE =====
 const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
-  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+  <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[750px]">
         <thead>
@@ -485,7 +484,7 @@ const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote
             <th className="px-4 py-3">Acciones</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-wood-50">
+        <tbody className="divide-y divide-[var(--border)]">
           {quotes.map(q => {
             const prog = q.productionProgress;
             const pct = prog ? Math.round((prog.completed / prog.total) * 100) : 0;
@@ -502,15 +501,15 @@ const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote
                 <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{prog ? `${prog.completed}/${prog.total}` : q.pieces.length}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-24 h-2 bg-[var(--surface2)] rounded-full overflow-hidden">
-                      <div className="h-full bg-[var(--accent)] rounded-full transition-all" style={{ width: `${pct}%` }} />
+                    <div className="w-24 h-2 bg-[var(--surface2)] rounded-none overflow-hidden">
+                      <div className="h-full bg-[var(--accent)] rounded-none transition-all" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="text-[10px] text-[var(--text-secondary)]">{pct}%</span>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{q.timeline || '—'}</td>
                 <td className="px-4 py-3 flex items-center gap-1">
-                  <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
+                  <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-none hover:bg-blue-100 transition-colors">
                     📸 Actualizar
                   </button>
                   <button onClick={() => onSelect(q)} className="text-[11px] text-[var(--accent)] hover:underline ml-1">Ver</button>
@@ -527,7 +526,7 @@ const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote
 
 // ===== HISTORY TABLE =====
 const HistoryTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) => void }> = ({ quotes, onSelect }) => (
-  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+  <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left min-w-[750px]">
         <thead>
@@ -542,7 +541,7 @@ const HistoryTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) =
             <th className="px-4 py-3">Acciones</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-wood-50">
+        <tbody className="divide-y divide-[var(--border)]">
           {quotes.map(q => (
             <tr key={q.id} className="hover:bg-[var(--surface2)]/50 transition-colors">
               <td className="px-4 py-3 text-xs text-[var(--text)]">{q.number}</td>
@@ -550,7 +549,7 @@ const HistoryTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) =
               <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{getPieceCount(q)}</td>
               <td className="px-4 py-3 text-xs text-[var(--text)]">{fmt(getQuoteTotal(q))}</td>
               <td className="px-4 py-3">
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${statusConfig[q.status].cls}`}>{statusConfig[q.status].label}</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-none ${statusConfig[q.status].cls}`}>{statusConfig[q.status].label}</span>
               </td>
               <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{q.closedDate ? fmtDate(q.closedDate) : '—'}</td>
               <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{q.rejectionReason || '—'}</td>
@@ -631,7 +630,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
         <h4 className="text-sm text-[var(--text)] flex items-center gap-2">
           <BarChart3 size={16} className="text-[var(--accent)]" /> Análisis de Cotizaciones
         </h4>
-        <select className="text-xs bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[var(--text)] outline-none">
+        <select className="text-xs bg-[var(--surface)] border-2 border-[var(--border)] rounded-none px-3 py-1.5 text-[var(--text)] outline-none">
           <option>Últimos 90 días</option>
           <option>Últimos 30 días</option>
           <option>Último año</option>
@@ -639,7 +638,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
       </div>
 
       {/* Funnel */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+      <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-5">
         <h5 className="text-xs text-[var(--text)] mb-4">Funnel de Conversión</h5>
         <div className="space-y-3">
           {funnelData.map((d, i) => (
@@ -648,18 +647,16 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
                 <span className="text-[var(--text)]">{d.stage}: {d.count} cotizaciones</span>
                 <span className="text-[var(--text-secondary)]">{d.pct}%</span>
               </div>
-              <div className="h-6 bg-[var(--surface2)] rounded-md overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }} animate={{ width: `${d.pct}%` }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="h-full rounded-md"
+              <div className="h-6 bg-[var(--surface2)] rounded-none overflow-hidden">
+                <div
+                                    className="h-full rounded-none"
                   style={{ background: `linear-gradient(90deg, var(--accent), ${['var(--accent)', '#D4B07A', 'var(--text-muted)', 'var(--text-secondary)', 'var(--text-secondary)'][i]})` }}
                 />
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+        <div className="mt-4 p-3 bg-blue-50 rounded-none">
           {hasData ? (
             <p className="text-xs text-blue-700">💡 {funnelData[4].pct > 30 ? `Buena tasa de conversión (${funnelData[4].pct}%). ` : `Tasa de conversión: ${funnelData[4].pct}%. `}{rejected.length > 0 ? `Principal motivo de rechazo: ${rejectionData[0]?.name || 'N/A'}.` : 'Aún sin rechazos registrados.'}</p>
           ) : (
@@ -676,7 +673,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
           { label: 'Valor completadas', value: completedValue ? fmt(completedValue) : '—' },
           { label: 'Tasa conversión', value: total ? `${funnelData[4].pct}%` : '—' },
         ].map(m => (
-          <div key={m.label} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-4">
+          <div key={m.label} className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-4">
             <p className="text-lg text-[var(--text)]">{m.value}</p>
             <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-1">{m.label}</p>
           </div>
@@ -685,7 +682,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Rejection Reasons */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-5">
           <h5 className="text-xs text-[var(--text)] mb-4">Motivos de Rechazo</h5>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
@@ -700,7 +697,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
           <div className="flex flex-wrap gap-2 mt-2">
             {rejectionData.map((d, i) => (
               <span key={d.name} className="text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ background: CHART_COLORS[i] }} />
+                <span className="w-2 h-2 rounded-none" style={{ background: CHART_COLORS[i] }} />
                 {d.name} ({d.value}%)
               </span>
             ))}
@@ -708,7 +705,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
         </div>
 
         {/* Most Quoted Products */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-5">
           <h5 className="text-xs text-[var(--text)] mb-4">Productos Más Cotizados</h5>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
@@ -724,7 +721,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
         </div>
 
         {/* Most Requested Woods */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-5">
           <h5 className="text-xs text-[var(--text)] mb-4">Maderas Más Solicitadas</h5>
           {woodData.length === 0 ? (
             <p className="text-xs text-[var(--text-muted)] text-center py-8">Sin datos aún</p>
@@ -736,8 +733,8 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
                   <span className="text-[var(--text)]">{i + 1}. {w.name}</span>
                   <span className="text-[var(--text-secondary)]">{w.pct}%</span>
                 </div>
-                <div className="h-2 bg-[var(--surface2)] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${w.pct}%`, background: CHART_COLORS[i] }} />
+                <div className="h-2 bg-[var(--surface2)] rounded-none overflow-hidden">
+                  <div className="h-full rounded-none" style={{ width: `${w.pct}%`, background: CHART_COLORS[i] }} />
                 </div>
               </div>
             ))}
@@ -746,7 +743,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
         </div>
 
         {/* Summary */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-5">
           <h5 className="text-xs text-[var(--text)] mb-4">Resumen</h5>
           {!hasData ? (
             <p className="text-xs text-[var(--text-muted)] text-center py-8">Aún no hay suficientes cotizaciones para generar análisis detallado. Los datos se poblarán conforme se reciban cotizaciones.</p>
@@ -775,7 +772,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
 
       {/* Export */}
       <div className="flex justify-end">
-        <button onClick={() => window.print()} className="flex items-center gap-1.5 px-4 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] text-xs rounded-lg hover:bg-[var(--surface2)] transition-colors">
+        <button onClick={() => window.print()} className="flex items-center gap-1.5 px-4 py-2 bg-[var(--surface)] border-2 border-[var(--border)] text-[var(--text)] text-xs rounded-none hover:bg-[var(--surface2)] transition-colors">
           <Download size={14} /> Exportar reporte (PDF)
         </button>
       </div>
