@@ -1124,7 +1124,7 @@ function PopupsTabLive() {
           {builderTab === 'preview' && (
             <div>
               <FieldLabel>Preview del pop-up</FieldLabel>
-              <div className="relative mt-2 rounded-[var(--radius-card)] bg-gray-800 h-64 flex items-center justify-center overflow-hidden" style={{colorScheme:'dark'}}>
+              <div className="relative mt-2 rounded-[var(--radius-card)] h-64 flex items-center justify-center overflow-hidden" style={{ background: "#1e1e1e" , colorScheme: 'dark' }}>
                 <div className="absolute inset-0 bg-black/50"/>
                 <div className="relative bg-[var(--surface)] rounded-2xl p-6 shadow-2xl w-72" style={{color:'#1a1a1a',colorScheme:'light'}}>
                   {Boolean(form.title) && <h3 className="text-base font-bold text-[var(--text)] mb-2">{String(form.title)}</h3>}
@@ -1538,10 +1538,10 @@ export const CmsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
-        <FileText size={20} className="text-[var(--accent)]" />
-        CMS — Contenido del Sitio
-      </h3>
+      <div>
+        <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>CMS</h1>
+        <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Gestiona páginas, secciones, menús y bloques de contenido del sitio</p>
+      </div>
       <div className="overflow-x-auto -mx-1 px-1">
         <div className="flex gap-1 min-w-max border-b border-[var(--border)]">
           {tabItems.map(t => (

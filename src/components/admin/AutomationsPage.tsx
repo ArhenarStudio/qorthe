@@ -322,7 +322,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
           { label: 'Impacto estimado', value: '$27,620', sub: 'Ingresos atribuidos' },
         ].map(k => (
           <Card key={k.label} className="p-3">
-            <p className="text-lg font-serif text-[var(--text)]">{k.value}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--text)]">{k.value}</p>
             <p className="text-[10px] text-[var(--text-muted)]">{k.label}</p>
             <p className="text-[9px] text-[var(--accent)] mt-0.5">{k.sub}</p>
           </Card>
@@ -903,10 +903,8 @@ export const AutomationsPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
-            <Zap size={20} className="text-[var(--accent)]" /> Automatizaciones
-          </h1>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">Workflows automaticos tipo Zapier/Shopify Flow — sin codigo</p>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Automatizaciones</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Workflows automáticos tipo Zapier / Shopify Flow — sin código</p>
         </div>
         <button
           onClick={handleNewAuto}

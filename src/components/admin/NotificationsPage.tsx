@@ -678,7 +678,7 @@ function HistoryTab() {
             { label: 'Unsubscribes', value: '1 (0.3%)' },
           ].map((m) => (
             <div key={m.label} className="text-center">
-              <p className="text-lg font-serif text-[var(--text)]">{m.value}</p>
+              <p className="text-[28px] font-bold font-mono text-[var(--text)]">{m.value}</p>
               <p className="text-[10px] text-[var(--text-muted)]">{m.label}</p>
             </div>
           ))}
@@ -818,9 +818,10 @@ export const NotificationsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
-          <Bell size={20} className="text-[var(--accent)]" /> Notificaciones
-        </h3>
+        <div>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Notificaciones</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Alertas en tiempo real, historial de emails y configuración</p>
+        </div>
         <button
           onClick={() => setActiveTab('config')}
           className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"

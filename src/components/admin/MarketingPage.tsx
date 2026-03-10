@@ -51,7 +51,7 @@ const couponStatusConfig: Record<CouponStatus, { label: string; cls: string; dot
   auto:      { label: 'Auto',        cls: 'bg-[var(--info-subtle)] text-[var(--info)]',     dot: 'bg-blue-500' },
   scheduled: { label: 'Programado',  cls: 'bg-[var(--accent-subtle)] text-[var(--accent)]', dot: 'bg-purple-500' },
   paused:    { label: 'Pausado',     cls: 'bg-amber-50 text-amber-600',   dot: 'bg-amber-500' },
-  expired:   { label: 'Vencido',     cls: 'bg-[var(--surface2)] text-[var(--text-muted)]',    dot: 'bg-gray-400' },
+  expired:   { label: 'Vencido',     cls: 'bg-[var(--surface2)] text-[var(--text-muted)]',    dot: 'bg-[var(--text-muted)]' },
   disabled:  { label: 'Desactivado', cls: 'bg-[var(--error-subtle)] text-[var(--error)]',       dot: 'bg-red-500' },
 };
 
@@ -108,7 +108,7 @@ const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; s
         {icon}
       </div>
     </div>
-    <p className="text-2xl font-sans text-[var(--text)]">{value}</p>
+    <p className="text-[28px] font-bold font-mono text-[var(--text)]">{value}</p>
     <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-0.5">{label}</p>
     <p className="text-[11px] text-[var(--text-secondary)] mt-1">{sub}</p>
   </div>
@@ -572,7 +572,7 @@ const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
           <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-green-500 mr-1" /> Activo = en uso</span>
           <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-blue-500 mr-1" /> Auto = se aplica automáticamente</span>
           <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-purple-500 mr-1" /> Prog. = programado</span>
-          <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-gray-400 mr-1" /> Venc. = vencido</span>
+          <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-[var(--text-muted)] mr-1" /> Venc. = vencido</span>
         </div>
       </div>
 
@@ -802,9 +802,9 @@ const AnalisisTab: React.FC = () => {
         <h4 className="text-xs font-medium text-[var(--text)] mb-4">Tendencia mensual</h4>
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={marketingMonthlyTrend}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e8e2da" />
-            <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#8a7a6a' }} />
-            <YAxis tick={{ fontSize: 10, fill: '#8a7a6a' }} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} />
+            <YAxis tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
             <RTooltip formatter={(v: any) => fmt(v)} />
             <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
             <Line type="monotone" dataKey="marketing" stroke="var(--accent)" strokeWidth={2} name="Marketing" dot={{ r: 3 }} />
@@ -862,11 +862,11 @@ export const MarketingPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Megaphone size={20} className="text-[var(--accent)]" />
-          <h2 className="font-serif text-lg text-[var(--text)]">Marketing</h2>
+        <div>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Marketing</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Cupones, campañas, promociones y referidos</p>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-xs hover:bg-[var(--accent)]/90 transition-colors self-start sm:self-auto">
+        <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-sm font-semibold hover:opacity-90 transition-opacity self-start sm:self-auto">
           <Plus size={14} /> Nueva Campaña
         </button>
       </div>

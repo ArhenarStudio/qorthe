@@ -78,7 +78,7 @@ function GoalCard({ goal }: { goal: Goal }) {
   const st = statusConfig[goal.status];
   const StIcon = st.icon;
   const pct = Math.min(Math.round((goal.current / goal.target) * 100), 100);
-  const progressColor = pct >= 80 ? '#16A34A' : pct >= 50 ? '#F59E0B' : '#DC2626';
+  const progressColor = pct >= 80 ? 'var(--success)' : pct >= 50 ? 'var(--warning)' : 'var(--error)';
 
   // Calculate days remaining (mock)
   const daysLeft = Math.max(1, 30 - new Date().getDate());
@@ -108,7 +108,7 @@ function GoalCard({ goal }: { goal: Goal }) {
         </div>
         <div className="flex-1">
           <div className="flex items-baseline gap-1">
-            <span className="text-lg font-serif text-[var(--text)]">{goal.prefix}{goal.current.toLocaleString()}</span>
+            <span className="text-[28px] font-bold font-mono text-[var(--text)]">{goal.prefix}{goal.current.toLocaleString()}</span>
             <span className="text-xs text-[var(--text-muted)]">/ {goal.prefix}{goal.target.toLocaleString()}{goal.unit}</span>
           </div>
           <div className="flex items-center gap-2 mt-1">
@@ -327,10 +327,8 @@ export const GoalsOkrsPage: React.FC = () => {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
-            <Target size={20} className="text-[var(--accent)]" /> Metas y OKRs
-          </h1>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">Define objetivos, mide progreso y gestiona el desempeno del equipo</p>
+          <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Metas y OKRs</h1>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">Define objetivos, mide progreso y gestiona el desempeño del equipo</p>
         </div>
         <button onClick={() => setTab('create')} className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
           <Plus size={12} /> Nueva meta
@@ -342,28 +340,28 @@ export const GoalsOkrsPage: React.FC = () => {
         <Card className="p-3 flex items-center gap-3">
           <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--accent)]/10 flex items-center justify-center"><Target size={14} className="text-[var(--accent)]" /></div>
           <div>
-            <p className="text-lg font-serif text-[var(--text)]">{total}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--text)]">{total}</p>
             <p className="text-[10px] text-[var(--text-muted)]">Total activas</p>
           </div>
         </Card>
         <Card className="p-3 flex items-center gap-3">
           <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--success-subtle)] flex items-center justify-center"><TrendingUp size={14} className="text-[var(--success)]" /></div>
           <div>
-            <p className="text-lg font-serif text-[var(--success)]">{onTrack}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--success)]">{onTrack}</p>
             <p className="text-[10px] text-[var(--text-muted)]">En camino</p>
           </div>
         </Card>
         <Card className="p-3 flex items-center gap-3">
           <div className="w-8 h-8 rounded-[var(--radius-card)] bg-amber-50 flex items-center justify-center"><AlertTriangle size={14} className="text-amber-600" /></div>
           <div>
-            <p className="text-lg font-serif text-amber-600">{atRisk}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--warning)]">{atRisk}</p>
             <p className="text-[10px] text-[var(--text-muted)]">En riesgo</p>
           </div>
         </Card>
         <Card className="p-3 flex items-center gap-3">
           <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--error-subtle)] flex items-center justify-center"><TrendingDown size={14} className="text-[var(--error)]" /></div>
           <div>
-            <p className="text-lg font-serif text-[var(--error)]">{behind}</p>
+            <p className="text-[28px] font-bold font-mono text-[var(--error)]">{behind}</p>
             <p className="text-[10px] text-[var(--text-muted)]">Atrasadas</p>
           </div>
         </Card>

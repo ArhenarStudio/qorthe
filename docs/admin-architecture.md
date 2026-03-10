@@ -226,3 +226,21 @@ que cualquier tenant futuro de RockSage Commerce.
 
 Para escalar a multi-tenant, el `themeRegistry` se migrará a una fuente
 dinámica (DB por tenant) sin modificar ningún módulo existente.
+
+---
+
+## 10. Checklist pre-commit (architecture guardrails)
+
+Antes de cada commit que modifique el panel admin, verificar:
+
+- [ ] **Sin colores fijos** — cero `bg-white`, `text-gray-*`, `#hex`, `bg-[#...]`
+- [ ] **Sin lógica de tema en módulos** — los módulos solo consumen `useAdminTheme()`
+- [ ] **Sin nuevos contextos globales** sin justificación (ya existen: Theme, Auth, Admin)
+- [ ] **Sin imports cruzados entre módulos** — la lógica compartida va en `src/lib/`
+- [ ] **Sin segundos sistemas de temas** — todo pasa por `AdminThemeContext`
+- [ ] **AdminShell intacto** — cambios al shell son excepcionales y justificados
+- [ ] **Módulos < 400 líneas** — si supera, considerar split en sub-componentes
+- [ ] **Rutas `/admin/*` no renombradas** sin actualizar navegación y docs
+- [ ] **Tema nuevo = solo themeRegistry.ts** — si requiere tocar módulos, hay un bug de arquitectura
+- [ ] **`/docs/admin-architecture.md` actualizado** si hubo cambio estructural
+- [ ] **`npx tsc --noEmit` → 0 errores** antes del push
