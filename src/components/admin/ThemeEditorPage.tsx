@@ -8,8 +8,7 @@ import {
   Star, ShoppingCart, Heart, Search, Menu, Upload, GripVertical,
   Sparkles, Sun, Gem, Briefcase, Leaf, Plus, Trash2, ArrowUp,
   ArrowDown, CreditCard, Lock, Truck as TruckIcon, Home,
-  Store, Download, Zap, Coffee, Globe, Paintbrush, Grid3x3,
-  Package, FlameKindling, Layers, Feather, Crown
+  Store, Download, Paintbrush, Crown
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -842,208 +841,47 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
 
 
 // ===== THEME CATALOG =====
+// Los temas se agregan aquí cuando llegan de Figma → conversión → registro.
+// Flujo: Figma export → /Plantillas Admin RockSage Commerce/{n}/ → yo convierto → CatalogTheme aquí.
+
 type ThemeView = 'editor' | 'catalog';
-type CatalogFilter = 'all' | 'artesanal' | 'minimalista' | 'lujo' | 'bold' | 'corporativo' | 'instalado';
 
 interface CatalogTheme {
   id: string;
   name: string;
   desc: string;
-  category: CatalogFilter;
   author: string;
-  rating: number;
-  installs: number;
-  isNew?: boolean;
-  isFeatured?: boolean;
-  isPro?: boolean;
-  colors: { bg: string; surface: string; primary: string; accent: string; text: string };
+  tags: string[];
+  mode: 'light' | 'dark';
+  colors: { bg: string; surface: string; accent: string; text: string };
   config: ThemeConfig;
 }
 
-const buildConfig = (id: string, name: string, colors: ThemeColors, fonts: { heading: string; body: string }, overrides: Partial<ThemeLayout & ThemeComponents> = {}): ThemeConfig => ({
-  id,
-  name,
-  colors,
-  fonts: { heading: fonts.heading, body: fonts.body, sizeBase: 14, sizeHeading: 28, sizeButton: 13 },
-  layout: { ...baseLayout, ...overrides as Partial<ThemeLayout> },
-  components: { ...baseComponents, ...overrides as Partial<ThemeComponents> },
-  homepageSections: [...defaultHomepageSections],
-});
+// ── Registro de temas — vacío hasta primer diseño de Figma ──────────────
+const CATALOG_THEMES: CatalogTheme[] = [];
 
-const CATALOG_THEMES: CatalogTheme[] = [
-  // ── Artesanales ──────────────────────────────────────────────────────────
-  {
-    id: 'artesanal', name: 'Artesanal', desc: 'Cálido, madera, serif — el clásico de DSD',
-    category: 'artesanal', author: 'RockSage', rating: 4.9, installs: 1, isFeatured: true,
-    colors: { bg: '#F5F3F0', surface: '#FFFFFF', primary: '#2d2419', accent: '#C5A065', text: '#2d2419' },
-    config: themePresets[0].config,
-  },
-  {
-    id: 'roble', name: 'Roble', desc: 'Tonos tierra, tablas de madera vista, rústico',
-    category: 'artesanal', author: 'RockSage', rating: 4.7, installs: 0, isNew: true,
-    colors: { bg: '#F2EBE0', surface: '#FDFAF5', primary: '#4A2C1A', accent: '#A0522D', text: '#3D2010' },
-    config: buildConfig('roble', 'Roble',
-      { primary: '#4A2C1A', secondary: '#A0522D', accent: '#A0522D', background: '#F2EBE0', surface: '#FDFAF5', text: '#3D2010', textMuted: '#8B6347', success: '#16A34A', error: '#DC2626', warning: '#D97706' },
-      { heading: 'Playfair Display', body: 'Lato' }
-    ),
-  },
-  {
-    id: 'bambu', name: 'Bambú', desc: 'Verde oliva suave, natural, sustentable',
-    category: 'artesanal', author: 'RockSage', rating: 4.6, installs: 0, isNew: true,
-    colors: { bg: '#F4F7F0', surface: '#FFFFFF', primary: '#2D4A1E', accent: '#6B8F4A', text: '#1E3312' },
-    config: buildConfig('bambu', 'Bambú',
-      { primary: '#2D4A1E', secondary: '#6B8F4A', accent: '#6B8F4A', background: '#F4F7F0', surface: '#FFFFFF', text: '#1E3312', textMuted: '#6B7C5A', success: '#16A34A', error: '#DC2626', warning: '#D97706' },
-      { heading: 'Merriweather', body: 'Source Sans 3' }
-    ),
-  },
-  {
-    id: 'terracota', name: 'Terracota', desc: 'Barro, arcilla, texturas mexicanas',
-    category: 'artesanal', author: 'RockSage', rating: 4.8, installs: 0,
-    colors: { bg: '#FAF0E8', surface: '#FFFFFF', primary: '#8B3A1E', accent: '#C4622D', text: '#5C2510' },
-    config: buildConfig('terracota', 'Terracota',
-      { primary: '#8B3A1E', secondary: '#C4622D', accent: '#C4622D', background: '#FAF0E8', surface: '#FFFFFF', text: '#5C2510', textMuted: '#996650', success: '#16A34A', error: '#DC2626', warning: '#D97706' },
-      { heading: 'Lora', body: 'Nunito' }
-    ),
-  },
-
-  // ── Minimalistas ─────────────────────────────────────────────────────────
-  {
-    id: 'moderno', name: 'Moderno', desc: 'Minimalista, sans-serif, blanco y negro',
-    category: 'minimalista', author: 'RockSage', rating: 4.8, installs: 0, isFeatured: true,
-    colors: { bg: '#FFFFFF', surface: '#FAFAFA', primary: '#111111', accent: '#111111', text: '#111111' },
-    config: themePresets[1].config,
-  },
-  {
-    id: 'aire', name: 'Aire', desc: 'Ultra-limpio, mucho espacio, tipografía fina',
-    category: 'minimalista', author: 'RockSage', rating: 4.7, installs: 0, isNew: true,
-    colors: { bg: '#FAFAFA', surface: '#FFFFFF', primary: '#1A1A1A', accent: '#4A4A4A', text: '#1A1A1A' },
-    config: buildConfig('aire', 'Aire',
-      { primary: '#1A1A1A', secondary: '#4A4A4A', accent: '#4A4A4A', background: '#FAFAFA', surface: '#FFFFFF', text: '#1A1A1A', textMuted: '#9A9A9A', success: '#22C55E', error: '#EF4444', warning: '#EAB308' },
-      { heading: 'DM Sans', body: 'DM Sans' }
-    ),
-  },
-  {
-    id: 'arena', name: 'Arena', desc: 'Beis cálido, sans-serif, minimalismo con calidez',
-    category: 'minimalista', author: 'RockSage', rating: 4.5, installs: 0,
-    colors: { bg: '#F9F6F2', surface: '#FFFFFF', primary: '#2A2018', accent: '#8B7355', text: '#2A2018' },
-    config: buildConfig('arena', 'Arena',
-      { primary: '#2A2018', secondary: '#8B7355', accent: '#8B7355', background: '#F9F6F2', surface: '#FFFFFF', text: '#2A2018', textMuted: '#9A8A7A', success: '#22C55E', error: '#EF4444', warning: '#EAB308' },
-      { heading: 'Poppins', body: 'Inter' }
-    ),
-  },
-
-  // ── Lujo ─────────────────────────────────────────────────────────────────
-  {
-    id: 'lujo', name: 'Lujo', desc: 'Oscuro, dorado, elegante — premium',
-    category: 'lujo', author: 'RockSage', rating: 4.9, installs: 0, isFeatured: true, isPro: true,
-    colors: { bg: '#0F0F0F', surface: '#1A1A1A', primary: '#0A0A0A', accent: '#D4AF37', text: '#F0E6D3' },
-    config: themePresets[2].config,
-  },
-  {
-    id: 'onix', name: 'Ónix', desc: 'Negro profundo, plata, ultra-premium',
-    category: 'lujo', author: 'RockSage', rating: 4.8, installs: 0, isPro: true, isNew: true,
-    colors: { bg: '#0A0A0A', surface: '#141414', primary: '#050505', accent: '#C0C0C0', text: '#E8E8E8' },
-    config: buildConfig('onix', 'Ónix',
-      { primary: '#050505', secondary: '#C0C0C0', accent: '#C0C0C0', background: '#0A0A0A', surface: '#141414', text: '#E8E8E8', textMuted: '#7A7A7A', success: '#4ADE80', error: '#F87171', warning: '#FBBF24' },
-      { heading: 'Cormorant Garamond', body: 'Lato' }
-    ),
-  },
-  {
-    id: 'champagne', name: 'Champagne', desc: 'Crema, dorado suave, lujo accesible',
-    category: 'lujo', author: 'RockSage', rating: 4.7, installs: 0, isPro: true,
-    colors: { bg: '#FBF8F3', surface: '#FFFFFF', primary: '#1C1408', accent: '#C9A84C', text: '#1C1408' },
-    config: buildConfig('champagne', 'Champagne',
-      { primary: '#1C1408', secondary: '#C9A84C', accent: '#C9A84C', background: '#FBF8F3', surface: '#FFFFFF', text: '#1C1408', textMuted: '#8A7A5A', success: '#16A34A', error: '#DC2626', warning: '#D97706' },
-      { heading: 'Cormorant Garamond', body: 'Nunito' }
-    ),
-  },
-
-  // ── Bold ─────────────────────────────────────────────────────────────────
-  {
-    id: 'fresco', name: 'Fresco', desc: 'Colores vivos, juvenil, redondeado',
-    category: 'bold', author: 'RockSage', rating: 4.6, installs: 0, isFeatured: true,
-    colors: { bg: '#FEFCE8', surface: '#FFFFFF', primary: '#6366F1', accent: '#F97316', text: '#1E1B4B' },
-    config: themePresets[3].config,
-  },
-  {
-    id: 'coral', name: 'Coral', desc: 'Vibrante, enérgico, e-commerce moderno',
-    category: 'bold', author: 'RockSage', rating: 4.5, installs: 0, isNew: true,
-    colors: { bg: '#FFF8F7', surface: '#FFFFFF', primary: '#C0392B', accent: '#E74C3C', text: '#1A0A0A' },
-    config: buildConfig('coral', 'Coral',
-      { primary: '#C0392B', secondary: '#E74C3C', accent: '#E74C3C', background: '#FFF8F7', surface: '#FFFFFF', text: '#1A0A0A', textMuted: '#888080', success: '#27AE60', error: '#E74C3C', warning: '#F39C12' },
-      { heading: 'Poppins', body: 'Nunito' }
-    ),
-  },
-  {
-    id: 'violeta', name: 'Violeta', desc: 'Morado intenso, creativo, D2C atrevido',
-    category: 'bold', author: 'RockSage', rating: 4.4, installs: 0,
-    colors: { bg: '#F9F5FF', surface: '#FFFFFF', primary: '#5B21B6', accent: '#7C3AED', text: '#1A0A3C' },
-    config: buildConfig('violeta', 'Violeta',
-      { primary: '#5B21B6', secondary: '#7C3AED', accent: '#7C3AED', background: '#F9F5FF', surface: '#FFFFFF', text: '#1A0A3C', textMuted: '#8B5CF6', success: '#10B981', error: '#EF4444', warning: '#F59E0B' },
-      { heading: 'Poppins', body: 'Inter' }
-    ),
-  },
-
-  // ── Corporativos ─────────────────────────────────────────────────────────
-  {
-    id: 'corporativo', name: 'Corporativo', desc: 'Sobrio, profesional, azul empresa',
-    category: 'corporativo', author: 'RockSage', rating: 4.7, installs: 0, isFeatured: true,
-    colors: { bg: '#F1F5F9', surface: '#FFFFFF', primary: '#1E3A5F', accent: '#2563EB', text: '#0F172A' },
-    config: themePresets[4].config,
-  },
-  {
-    id: 'verde_corp', name: 'Verde Corp', desc: 'Verde profesional, sustentabilidad corporativa',
-    category: 'corporativo', author: 'RockSage', rating: 4.5, installs: 0,
-    colors: { bg: '#F0FDF4', surface: '#FFFFFF', primary: '#14532D', accent: '#16A34A', text: '#052E16' },
-    config: buildConfig('verde_corp', 'Verde Corp',
-      { primary: '#14532D', secondary: '#16A34A', accent: '#16A34A', background: '#F0FDF4', surface: '#FFFFFF', text: '#052E16', textMuted: '#4B7A5E', success: '#16A34A', error: '#DC2626', warning: '#D97706' },
-      { heading: 'Source Sans 3', body: 'Source Sans 3' }
-    ),
-  },
-  {
-    id: 'titanio', name: 'Titanio', desc: 'Gris acero, tech, B2B premium',
-    category: 'corporativo', author: 'RockSage', rating: 4.6, installs: 0, isNew: true,
-    colors: { bg: '#F8FAFC', surface: '#FFFFFF', primary: '#334155', accent: '#475569', text: '#0F172A' },
-    config: buildConfig('titanio', 'Titanio',
-      { primary: '#334155', secondary: '#475569', accent: '#475569', background: '#F8FAFC', surface: '#FFFFFF', text: '#0F172A', textMuted: '#94A3B8', success: '#059669', error: '#DC2626', warning: '#D97706' },
-      { heading: 'Inter', body: 'Inter' }
-    ),
-  },
-];
-
-const CATALOG_FILTERS: Array<{ id: CatalogFilter; label: string }> = [
-  { id: 'all', label: 'Todos' },
-  { id: 'instalado', label: 'Activo' },
-  { id: 'artesanal', label: 'Artesanal' },
-  { id: 'minimalista', label: 'Minimalista' },
-  { id: 'lujo', label: 'Lujo' },
-  { id: 'bold', label: 'Bold' },
-  { id: 'corporativo', label: 'Corporativo' },
-];
-
-// Mini-thumbnail de un tema — swatch visual
+// Mini-thumbnail de un tema
 function ThemeThumbnail({ colors }: { colors: CatalogTheme['colors'] }) {
   return (
-    <div className="w-full aspect-[4/3] rounded-[var(--radius-card)] overflow-hidden" style={{ backgroundColor: colors.bg, border: '1px solid rgba(0,0,0,0.06)' }}>
-      {/* Fake header */}
-      <div className="flex items-center justify-between px-2 py-1.5" style={{ backgroundColor: colors.surface, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-        <div className="w-10 h-1.5 rounded" style={{ backgroundColor: colors.primary + '80' }} />
-        <div className="flex gap-1">
-          <div className="w-3 h-1.5 rounded" style={{ backgroundColor: colors.text + '30' }} />
-          <div className="w-3 h-1.5 rounded" style={{ backgroundColor: colors.text + '30' }} />
-          <div className="w-4 h-1.5 rounded" style={{ backgroundColor: colors.accent + 'AA' }} />
-        </div>
+    <div
+      className="w-full aspect-[4/3] rounded-[var(--radius-card)] overflow-hidden"
+      style={{ backgroundColor: colors.bg, border: '1px solid rgba(0,0,0,0.08)' }}
+    >
+      <div
+        className="flex items-center justify-between px-2 py-1.5"
+        style={{ backgroundColor: colors.surface, borderBottom: '1px solid rgba(0,0,0,0.06)' }}
+      >
+        <div className="w-10 h-1.5 rounded-sm" style={{ backgroundColor: colors.text + '60' }} />
+        <div className="w-5 h-1.5 rounded-sm" style={{ backgroundColor: colors.accent }} />
       </div>
-      {/* Fake hero */}
-      <div className="px-2 py-2" style={{ backgroundColor: colors.primary + '12' }}>
-        <div className="w-16 h-1.5 rounded mb-1" style={{ backgroundColor: colors.text + '60' }} />
-        <div className="w-10 h-1 rounded mb-2" style={{ backgroundColor: colors.text + '30' }} />
-        <div className="w-8 h-2.5 rounded" style={{ backgroundColor: colors.accent }} />
+      <div className="px-2 py-2 space-y-1.5">
+        <div className="w-3/4 h-1.5 rounded-sm" style={{ backgroundColor: colors.text + '30' }} />
+        <div className="w-1/2 h-1 rounded-sm" style={{ backgroundColor: colors.text + '18' }} />
+        <div className="w-10 h-3 rounded-sm mt-1" style={{ backgroundColor: colors.accent }} />
       </div>
-      {/* Fake product grid */}
-      <div className="grid grid-cols-3 gap-1 px-2 py-1.5">
+      <div className="grid grid-cols-3 gap-1 px-2 pt-1">
         {[0,1,2].map(i => (
-          <div key={i} style={{ backgroundColor: colors.surface, borderRadius: '3px', border: '1px solid rgba(0,0,0,0.05)' }} className="aspect-square" />
+          <div key={i} className="aspect-square rounded-sm" style={{ backgroundColor: colors.surface, border: '1px solid rgba(0,0,0,0.06)' }} />
         ))}
       </div>
     </div>
@@ -1063,7 +901,6 @@ export const ThemeEditorPage: React.FC = () => {
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
   const [showPresets, setShowPresets] = useState(false);
   const [view, setView] = useState<ThemeView>('editor');
-  const [catalogFilter, setCatalogFilter] = useState<CatalogFilter>('all');
   const [installingId, setInstallingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -1265,98 +1102,42 @@ export const ThemeEditorPage: React.FC = () => {
       {/* ══ CATÁLOGO VIEW ══════════════════════════════════════════════════ */}
       {view === 'catalog' && (
         <div className="space-y-4">
-          {/* Filtros */}
-          <div className="flex gap-1.5 flex-wrap">
-            {CATALOG_FILTERS.map(f => (
-              <button
-                key={f.id}
-                onClick={() => setCatalogFilter(f.id)}
-                className={
-                  'px-3 py-1.5 text-xs rounded-full border transition-colors ' +
-                  (catalogFilter === f.id
-                    ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium'
-                    : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
-                }
-              >
-                {f.label}
-                {f.id === 'instalado' && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[var(--success)] inline-block" />}
-              </button>
-            ))}
-          </div>
-
           {/* Grid de temas */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {CATALOG_THEMES
-              .filter(t => {
-                if (catalogFilter === 'all') return true;
-                if (catalogFilter === 'instalado') return t.id === theme.id;
-                return t.category === catalogFilter;
-              })
-              .map(catalogTheme => {
+          {CATALOG_THEMES.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {CATALOG_THEMES.map(catalogTheme => {
                 const isActive = theme.id === catalogTheme.id;
                 const isInstalling = installingId === catalogTheme.id;
                 return (
                   <div
                     key={catalogTheme.id}
                     className={
-                      'group rounded-[var(--radius-card)] border overflow-hidden transition-all hover:shadow-md ' +
+                      'rounded-[var(--radius-card)] border overflow-hidden transition-all hover:shadow-md ' +
                       (isActive ? 'border-[var(--accent)] ring-2 ring-[var(--accent)]/20' : 'border-[var(--border)] hover:border-[var(--accent)]/40')
                     }
                     style={{ backgroundColor: 'var(--surface)' }}
                   >
-                    {/* Thumbnail */}
                     <div className="p-2">
                       <ThemeThumbnail colors={catalogTheme.colors} />
                     </div>
-
-                    {/* Info */}
                     <div className="px-3 pb-3 space-y-2">
-                      <div className="flex items-start justify-between gap-1">
-                        <div className="min-w-0">
+                      <div>
+                        <div className="flex items-center justify-between gap-1">
                           <p className="text-[12px] font-semibold text-[var(--text)] truncate">{catalogTheme.name}</p>
-                          <p className="text-[10px] text-[var(--text-secondary)] mt-0.5 leading-tight" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                            {catalogTheme.desc}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1 shrink-0">
-                          {catalogTheme.isNew && (
-                            <span className="text-[8px] bg-[var(--info)]/10 text-[var(--info)] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wide">Nuevo</span>
-                          )}
-                          {catalogTheme.isPro && (
-                            <span className="text-[8px] bg-[var(--warning)]/10 text-[var(--warning)] px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5">
-                              <Crown size={7} /> Pro
-                            </span>
-                          )}
                           {isActive && (
-                            <span className="text-[8px] bg-[var(--success)]/10 text-[var(--success)] px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5">
+                            <span className="text-[8px] bg-[var(--success)]/10 text-[var(--success)] px-1.5 py-0.5 rounded-[var(--radius-badge)] font-semibold flex items-center gap-0.5 shrink-0">
                               <Check size={7} /> Activo
                             </span>
                           )}
                         </div>
+                        <p className="text-[10px] text-[var(--text-secondary)] mt-0.5 leading-tight">{catalogTheme.desc}</p>
                       </div>
-
-                      {/* Color swatches */}
-                      <div className="flex gap-0.5">
-                        {[catalogTheme.colors.primary, catalogTheme.colors.accent, catalogTheme.colors.bg, catalogTheme.colors.surface].map((color, i) => (
-                          <div key={i} className="w-4 h-4 rounded-full border-2 border-white shadow-sm" style={{ backgroundColor: color }} />
+                      <div className="flex gap-0.5 items-center">
+                        {[catalogTheme.colors.bg, catalogTheme.colors.surface, catalogTheme.colors.accent, catalogTheme.colors.text].map((color, i) => (
+                          <div key={i} className="w-3.5 h-3.5 rounded-full border border-[var(--border)] shadow-sm" style={{ backgroundColor: color }} />
                         ))}
-                        <span className="ml-1 text-[9px] text-[var(--text-muted)] self-center">{catalogTheme.category}</span>
+                        <span className="ml-1 text-[9px] text-[var(--text-muted)]">{catalogTheme.mode}</span>
                       </div>
-
-                      {/* Rating + installs */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-0.5">
-                          {[1,2,3,4,5].map(s => (
-                            <Star key={s} size={8} style={{ color: s <= Math.round(catalogTheme.rating) ? 'var(--warning)' : 'var(--border)' }} fill={s <= Math.round(catalogTheme.rating) ? 'var(--warning)' : 'none'} />
-                          ))}
-                          <span className="text-[9px] text-[var(--text-muted)] ml-0.5">{catalogTheme.rating}</span>
-                        </div>
-                        <span className="text-[9px] text-[var(--text-muted)] flex items-center gap-0.5">
-                          <Download size={8} /> {catalogTheme.installs.toLocaleString()}
-                        </span>
-                      </div>
-
-                      {/* Action button */}
                       {isActive ? (
                         <button
                           onClick={() => setView('editor')}
@@ -1371,28 +1152,24 @@ export const ThemeEditorPage: React.FC = () => {
                           className="w-full py-1.5 text-[10px] font-semibold rounded-[var(--radius-button)] transition-colors flex items-center justify-center gap-1 disabled:opacity-60"
                           style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
                         >
-                          {isInstalling ? (
-                            <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Instalando...</>
-                          ) : (
-                            <><Zap size={10} /> Instalar tema</>
-                          )}
+                          {isInstalling
+                            ? <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Instalando...</>
+                            : <><Download size={10} /> Instalar</>
+                          }
                         </button>
                       )}
                     </div>
                   </div>
                 );
               })}
-          </div>
-
-          {/* Empty state filtro */}
-          {CATALOG_THEMES.filter(t => {
-            if (catalogFilter === 'all') return true;
-            if (catalogFilter === 'instalado') return t.id === theme.id;
-            return t.category === catalogFilter;
-          }).length === 0 && (
-            <div className="text-center py-16">
-              <Store size={32} className="text-[var(--text-muted)] mx-auto mb-3 opacity-40" />
-              <p className="text-sm text-[var(--text-secondary)]">No hay temas en esta categoría</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <Store size={40} className="text-[var(--text-muted)] mb-4 opacity-30" />
+              <p className="text-sm font-medium text-[var(--text-secondary)]">No hay temas disponibles aún</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 max-w-xs">
+                Los temas aparecerán aquí cuando sean diseñados en Figma y convertidos al ecosistema.
+              </p>
             </div>
           )}
         </div>
