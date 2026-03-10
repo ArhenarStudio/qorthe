@@ -133,14 +133,14 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
       <div className="flex items-center gap-2 flex-wrap">
         {viewButtons.map(v => (
           <button key={v.id} onClick={() => setReportView(v.id)}
-            className={`px-4 py-2 text-xs rounded-lg transition-colors ${
-              reportView === v.id ? 'bg-wood-900 text-sand-100' : 'bg-white text-wood-600 border border-wood-100 hover:border-wood-300'
+            className={`px-4 py-2 text-xs rounded-[var(--radius-card)] transition-colors ${
+              reportView === v.id ? 'bg-wood-900 text-sand-100' : 'bg-[var(--surface)] text-wood-600 border border-wood-100 hover:border-wood-300'
             }`}>
             {v.label}
           </button>
         ))}
         <button onClick={exportCSV}
-          className="px-4 py-2 text-xs rounded-lg bg-white text-wood-600 border border-wood-100 hover:border-wood-300 flex items-center gap-1.5 ml-auto">
+          className="px-4 py-2 text-xs rounded-[var(--radius-card)] bg-[var(--surface)] text-wood-600 border border-wood-100 hover:border-wood-300 flex items-center gap-1.5 ml-auto">
           <Download size={12} /> Exportar CSV
         </button>
       </div>
@@ -155,7 +155,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
               const count = cat === 'A' ? abcData.summary.a_count : cat === 'B' ? abcData.summary.b_count : abcData.summary.c_count;
               const pct = cat === 'A' ? abcData.summary.a_revenue_pct : cat === 'B' ? abcData.summary.b_revenue_pct : abcData.summary.c_revenue_pct;
               return (
-                <div key={cat} className={`rounded-xl border p-4 ${cfg.cls}`}>
+                <div key={cat} className={`rounded-[var(--radius-card)] border p-4 ${cfg.cls}`}>
                   <p className="text-2xl font-bold">{count}</p>
                   <p className="text-xs font-bold mt-1">{cfg.label}</p>
                   <p className="text-[10px] mt-0.5">{fmtPct(pct)} del ingreso</p>
@@ -167,7 +167,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
 
           {/* Pie chart */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+            <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
               <h4 className="text-sm font-bold text-wood-900 mb-4">Distribución de Ingreso ABC</h4>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
@@ -185,19 +185,19 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
             </div>
 
             {/* Top A products */}
-            <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+            <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
               <h4 className="text-sm font-bold text-wood-900 mb-3">Top Productos A</h4>
               <div className="space-y-2">
                 {abcData.items.filter(i => i.category === 'A').slice(0, 8).map((item, idx) => (
                   <div key={idx} className="flex items-center gap-3 py-2 border-b border-wood-50 last:border-0">
-                    <span className="w-5 h-5 rounded-full bg-green-100 text-green-600 text-[10px] flex items-center justify-center font-bold">{idx + 1}</span>
+                    <span className="w-5 h-5 rounded-[var(--radius-badge)] bg-[var(--success-subtle)] text-[var(--success)] text-[10px] flex items-center justify-center font-bold">{idx + 1}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-wood-900 truncate">{item.product_title}</p>
                       <p className="text-[10px] text-wood-400">{item.total_sold_90d} vendidos · {item.days_of_inventory} días inv.</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-bold text-wood-900">{fmt(item.revenue_90d)}</p>
-                      <p className="text-[10px] text-green-600">{fmtPct(item.revenue_pct)}</p>
+                      <p className="text-[10px] text-[var(--success)]">{fmtPct(item.revenue_pct)}</p>
                     </div>
                   </div>
                 ))}
@@ -206,7 +206,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
           </div>
 
           {/* Full ABC table */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-wood-100">
               <h4 className="text-sm font-bold text-wood-900">Clasificación ABC Completa</h4>
             </div>
@@ -240,7 +240,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
                       <td className="px-4 py-2.5 text-xs text-right text-wood-600">{fmtPct(item.revenue_pct)}</td>
                       <td className="px-4 py-2.5 text-xs text-right text-wood-400">{fmtPct(item.cumulative_pct)}</td>
                       <td className="px-4 py-2.5 text-xs text-right">
-                        <span className={`font-bold ${item.days_of_inventory > 90 ? 'text-red-500' : item.days_of_inventory > 30 ? 'text-amber-600' : 'text-green-600'}`}>
+                        <span className={`font-bold ${item.days_of_inventory > 90 ? 'text-[var(--error)]' : item.days_of_inventory > 30 ? 'text-amber-600' : 'text-[var(--success)]'}`}>
                           {item.days_of_inventory >= 999 ? '∞' : item.days_of_inventory}
                         </span>
                       </td>
@@ -258,7 +258,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
 
       {/* Stagnant view */}
       {reportView === "stagnant" && (
-        <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-wood-100 flex items-center gap-2">
             <AlertTriangle size={16} className="text-amber-500" />
             <h4 className="text-sm font-bold text-wood-900">Productos Estancados (0 ventas en 90 días)</h4>
@@ -290,7 +290,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
                         <td className="px-4 py-3 text-xs text-right font-bold text-wood-900">{matchingItem?.current_stock || 0}</td>
                         <td className="px-4 py-3 text-xs text-right text-wood-600">{fmt(cost)}</td>
                         <td className="px-4 py-3 text-xs text-right text-wood-900">{fmt(retail)}</td>
-                        <td className="px-4 py-3 text-xs text-right text-red-500 font-bold">{fmt(cost)}</td>
+                        <td className="px-4 py-3 text-xs text-right text-[var(--error)] font-bold">{fmt(cost)}</td>
                       </tr>
                     );
                   })}
@@ -315,7 +315,7 @@ export const ReportsTab: React.FC<Props> = ({ items, movements }) => {
 
       {/* Rotation view */}
       {reportView === "rotation" && (
-        <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
           <h4 className="text-sm font-bold text-wood-900 mb-4 flex items-center gap-2">
             <TrendingUp size={16} className="text-accent-gold" /> Días de Inventario por Producto
           </h4>

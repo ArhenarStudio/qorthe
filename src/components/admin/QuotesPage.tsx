@@ -45,9 +45,9 @@ function getClientBadge(q: AdminQuote) {
   const { tier, orders } = q.customer;
   const badges: { text: string; cls: string }[] = [];
   if (tier === 'parota' || tier === 'ebano' || tier === 'oro' || tier === 'platino') badges.push({ text: '⚡ Cliente VIP', cls: 'bg-[var(--accent)]/15 text-[var(--accent)]' });
-  if (orders === 0) badges.push({ text: 'Cliente nuevo', cls: 'bg-blue-50 text-blue-600' });
+  if (orders === 0) badges.push({ text: 'Cliente nuevo', cls: 'bg-[var(--info-subtle)] text-[var(--info)]' });
   const usage = q.pieces[0]?.usage;
-  if (usage === 'Evento / regalo corporativo' || usage === 'Restaurante / volumen alto') badges.push({ text: 'Corporativo', cls: 'bg-purple-50 text-purple-600' });
+  if (usage === 'Evento / regalo corporativo' || usage === 'Restaurante / volumen alto') badges.push({ text: 'Corporativo', cls: 'bg-[var(--accent-subtle)] text-[var(--accent)]' });
   return badges;
 }
 
@@ -219,9 +219,9 @@ export const QuotesPage: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <KpiCard icon={<FileText size={16} className="text-[var(--accent)]" />} value={String(activeQuotes.length)} label="Cotizaciones activas" sub={`${expiringThisWeek} vencen esta semana`} accent />
         <KpiCard icon={<Clock size={16} className="text-amber-600" />} value={String(newQuotes.length)} label="Nuevas sin responder" sub={`${urgentNew.length} hace +48h`} />
-        <KpiCard icon={<DollarSign size={16} className="text-green-600" />} value={fmt(pipelineValue)} label="Valor en pipeline" sub="+15% vs prev" />
-        <KpiCard icon={<BarChart3 size={16} className="text-blue-600" />} value={`${conversionRate}%`} label="Tasa de conversión" sub="Cot → Pedido" />
-        <KpiCard icon={<Target size={16} className="text-purple-600" />} value={fmt(avgTicket)} label="Ticket promedio" sub="vs $881 catálogo" />
+        <KpiCard icon={<DollarSign size={16} className="text-[var(--success)]" />} value={fmt(pipelineValue)} label="Valor en pipeline" sub="+15% vs prev" />
+        <KpiCard icon={<BarChart3 size={16} className="text-[var(--info)]" />} value={`${conversionRate}%`} label="Tasa de conversión" sub="Cot → Pedido" />
+        <KpiCard icon={<Target size={16} className="text-[var(--accent)]" />} value={fmt(avgTicket)} label="Ticket promedio" sub="vs $881 catálogo" />
       </div>
 
       {/* Tabs */}
@@ -451,7 +451,7 @@ const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
                 <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{fmtDate(q.date)}</td>
                 <td className="px-4 py-3 flex items-center gap-1">
                   {!q.depositPaid && (
-                    <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-none hover:bg-green-100 transition-colors">
+                    <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-[var(--success-subtle)] text-[var(--success)] rounded-none hover:bg-[var(--success-subtle)] transition-colors">
                       Registrar anticipo
                     </button>
                   )}
@@ -509,7 +509,7 @@ const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote
                 </td>
                 <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{q.timeline || '—'}</td>
                 <td className="px-4 py-3 flex items-center gap-1">
-                  <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 rounded-none hover:bg-blue-100 transition-colors">
+                  <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-[var(--info-subtle)] text-[var(--info)] rounded-none hover:bg-[var(--info-subtle)] transition-colors">
                     📸 Actualizar
                   </button>
                   <button onClick={() => onSelect(q)} className="text-[11px] text-[var(--accent)] hover:underline ml-1">Ver</button>
@@ -656,7 +656,7 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
             </div>
           ))}
         </div>
-        <div className="mt-4 p-3 bg-blue-50 rounded-none">
+        <div className="mt-4 p-3 bg-[var(--info-subtle)] rounded-none">
           {hasData ? (
             <p className="text-xs" style={{color:'var(--info)'}}>Análisis: {funnelData[4].pct > 30 ? `Buena tasa de conversión (${funnelData[4].pct}%). ` : `Tasa de conversión: ${funnelData[4].pct}%. `}{rejected.length > 0 ? `Principal motivo de rechazo: ${rejectionData[0]?.name || 'N/A'}.` : 'Aún sin rechazos registrados.'}</p>
           ) : (

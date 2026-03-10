@@ -265,7 +265,7 @@ function STitle({ children }: { children: React.ReactNode }) {
 
 function Insight({ text, type = 'info' }: { text: string; type?: 'info' | 'warning' | 'success' }) {
   const styles: Record<string, string> = {
-    info: 'bg-[var(--info-subtle)] border-[var(--info)] text-blue-800',
+    info: 'bg-[var(--info-subtle)] border-[var(--info)] text-[var(--info)]',
     warning: 'bg-[var(--warning-subtle)] border-[var(--warning)] text-amber-800',
     success: 'bg-[var(--success-subtle)] border-[var(--success)] text-[var(--success)]',
   };
@@ -857,7 +857,7 @@ function OperacionesTab() {
                 <span className="text-xs font-mono font-medium text-[var(--text)]">{s.actual}</span>
                 <span className="text-[10px] text-[var(--text-muted)]">Meta: {s.target}</span>
                 {s.met ? (
-                  <CheckCircle size={14} className="text-green-500" />
+                  <CheckCircle size={14} className="text-[var(--success)]" />
                 ) : (
                   <AlertTriangle size={14} className="text-[var(--warning)]" />
                 )}
@@ -949,7 +949,7 @@ function OperacionesTab() {
                 <span className="font-mono font-medium text-[var(--text)]">{p.actual}</span>
                 <span className="text-[10px] text-[var(--text-muted)]">Meta: {p.target}</span>
                 {p.met ? (
-                  <CheckCircle size={14} className="text-green-500" />
+                  <CheckCircle size={14} className="text-[var(--success)]" />
                 ) : (
                   <AlertTriangle size={14} className="text-[var(--error)]" />
                 )}

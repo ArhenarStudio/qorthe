@@ -310,7 +310,7 @@ function MetricsTab() {
               { type: 'Reembolso completo', count: 15, pct: 50, color: 'bg-[var(--success-subtle)]0' },
               { type: 'Cambio de producto', count: 9, pct: 30, color: 'bg-[var(--info-subtle)]0' },
               { type: 'Credito en tienda', count: 4, pct: 13, color: 'bg-[var(--accent-subtle)]0' },
-              { type: 'Rechazadas', count: 2, pct: 7, color: 'bg-red-400' },
+              { type: 'Rechazadas', count: 2, pct: 7, color: 'bg-[var(--error-subtle)]' },
             ].map(r => (
               <div key={r.type} className="flex items-center gap-3">
                 <div className={'w-2 h-2 rounded-none ' + r.color} />

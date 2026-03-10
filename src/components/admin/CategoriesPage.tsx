@@ -230,11 +230,11 @@ const legacySalesChart = Array.from({ length: 30 }, (_, i) => ({
 
 const statusBadge = (status: string) => {
   switch (status) {
-    case 'active': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-600">● Activa</span>;
-    case 'hidden': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[var(--surface2)] text-[var(--text-secondary)]">○ Oculta</span>;
-    case 'disabled': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">○ Desactivada</span>;
-    case 'expired': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-500">○ Expirada</span>;
-    case 'scheduled': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">◷ Programada</span>;
+    case 'active': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] bg-[var(--success-subtle)] text-[var(--success)]">● Activa</span>;
+    case 'hidden': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] bg-[var(--surface2)] text-[var(--text-secondary)]">○ Oculta</span>;
+    case 'disabled': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] bg-[var(--surface2)] text-[var(--text-muted)]">○ Desactivada</span>;
+    case 'expired': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] bg-[var(--error-subtle)] text-[var(--error)]">○ Expirada</span>;
+    case 'scheduled': return <span className="text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] bg-[var(--info-subtle)] text-[var(--info)]">◷ Programada</span>;
     default: return null;
   }
 };
@@ -330,7 +330,7 @@ export const CategoriesPage: React.FC = () => {
 
   /* --- Context menu --- */
   const CatContextMenu: React.FC<{ cat: Category }> = ({ cat }) => (
-    <div className="absolute right-0 top-full mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-xl py-1 z-30 min-w-[200px]" onClick={e => e.stopPropagation()}>
+    <div className="absolute right-0 top-full mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-xl py-1 z-30 min-w-[200px]" onClick={e => e.stopPropagation()}>
       <button onClick={() => { setEditing(cat); setContextMenu(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)]">
         <Pencil size={12} /> Editar categoria
       </button>
@@ -351,7 +351,7 @@ export const CategoriesPage: React.FC = () => {
         <ExternalLink size={12} /> Ver en tienda
       </button>
       <div className="border-t border-[var(--border)] my-1" />
-      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50">
+      <button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--error)] hover:bg-[var(--error-subtle)]">
         <Trash2 size={12} /> Eliminar
       </button>
     </div>
@@ -454,10 +454,10 @@ export const CategoriesPage: React.FC = () => {
           <h3 className="font-serif text-lg text-[var(--text)]">Categorias y Colecciones</h3>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setEditing('new')} className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors">
+          <button onClick={() => setEditing('new')} className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors">
             <Plus size={14} /> Nueva Categoria
           </button>
-          <button onClick={() => setEditingCollection('new')} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg text-xs hover:bg-[var(--surface2)] transition-colors">
+          <button onClick={() => setEditingCollection('new')} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)] text-xs hover:bg-[var(--surface2)] transition-colors">
             <Plus size={13} /> Nueva Coleccion
           </button>
         </div>
@@ -483,34 +483,34 @@ export const CategoriesPage: React.FC = () => {
 
       {/* ===== KPIs ===== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-[var(--accent)]/10 rounded-lg"><FolderTree size={14} className="text-[var(--accent)]" /></div>
+            <div className="p-1.5 bg-[var(--accent)]/10 rounded-[var(--radius-card)]"><FolderTree size={14} className="text-[var(--accent)]" /></div>
             <span className="text-lg text-[var(--text)]">{kpis.totalCats}</span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)]">Categorias activas</p>
           <p className="text-[10px] text-[var(--text-muted)]">{kpis.subCats} con sub-categorias</p>
         </div>
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-green-50 rounded-lg"><ShoppingBag size={14} className="text-green-600" /></div>
+            <div className="p-1.5 bg-[var(--success-subtle)] rounded-[var(--radius-card)]"><ShoppingBag size={14} className="text-[var(--success)]" /></div>
             <span className="text-lg text-[var(--text)]">{kpis.totalProducts}</span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)]">Productos categorizados</p>
           <p className="text-[10px] text-[var(--text-muted)]">{kpis.uncategorized} sin categoria</p>
         </div>
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className={`p-1.5 rounded-lg ${kpis.empty > 0 ? 'bg-amber-50' : 'bg-green-50'}`}>
-              <AlertTriangle size={14} className={kpis.empty > 0 ? 'text-amber-500' : 'text-green-600'} />
+            <div className={`p-1.5 rounded-[var(--radius-card)] ${kpis.empty > 0 ? 'bg-amber-50' : 'bg-[var(--success-subtle)]'}`}>
+              <AlertTriangle size={14} className={kpis.empty > 0 ? 'text-amber-500' : 'text-[var(--success)]'} />
             </div>
             <span className="text-lg text-[var(--text)]">{kpis.empty}</span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)]">Categorias vacias</p>
         </div>
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-[var(--accent)]/10 rounded-lg"><Tag size={14} className="text-[var(--accent)]" /></div>
+            <div className="p-1.5 bg-[var(--accent)]/10 rounded-[var(--radius-card)]"><Tag size={14} className="text-[var(--accent)]" /></div>
             <span className="text-lg text-[var(--text)]">{kpis.activeCols}</span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)]">Colecciones activas</p>
@@ -523,7 +523,7 @@ export const CategoriesPage: React.FC = () => {
         <div className="space-y-4">
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden">
+            <div className="flex-1 flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden">
               <Search size={16} className="ml-3 text-[var(--text-muted)]" />
               <input
                 value={searchQ}
@@ -534,7 +534,7 @@ export const CategoriesPage: React.FC = () => {
             </div>
             <div className="flex gap-2 items-center">
               <div className="flex items-center gap-0.5 text-[10px] text-[var(--text-muted)] mr-1">Vista:</div>
-              <div className="flex bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden">
+              <div className="flex bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden">
                 <button onClick={() => setCatView('tree')} className={`p-2.5 transition-colors ${catView === 'tree' ? 'bg-wood-900 text-sand-100' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}>
                   <TreePine size={14} />
                 </button>
@@ -545,7 +545,7 @@ export const CategoriesPage: React.FC = () => {
               <div className="w-px h-6 bg-wood-200 mx-1" />
               <button
                 onClick={() => setReorderMode(!reorderMode)}
-                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs transition-colors ${reorderMode ? 'bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/30' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:border-wood-300'}`}
+                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-[var(--radius-card)] text-xs transition-colors ${reorderMode ? 'bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/30' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:border-wood-300'}`}
               >
                 <GripVertical size={12} /> {reorderMode ? 'Guardar orden' : 'Reordenar'}
               </button>
@@ -554,7 +554,7 @@ export const CategoriesPage: React.FC = () => {
 
           {/* Tree view */}
           {catView === 'tree' ? (
-            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+            <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
               <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50 flex items-center justify-between">
                 <p className="text-[11px] text-[var(--text-muted)]">
                   Arrastra las categorias para reordenar. El orden define como aparecen en el menu de la tienda.
@@ -576,7 +576,7 @@ export const CategoriesPage: React.FC = () => {
             </div>
           ) : (
             /* List view (table) */
-            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+            <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
@@ -616,18 +616,18 @@ export const CategoriesPage: React.FC = () => {
                             <span className={`text-xs ${cat.products === 0 ? 'text-amber-500' : 'text-[var(--text)]'}`}>{cat.products}</span>
                           </td>
                           <td className="px-3 py-3 text-xs text-[var(--text-secondary)] hidden lg:table-cell">${cat.salesMonth.toLocaleString()}</td>
-                          <td className="px-3 py-3">{cat.products === 0 ? <span className="text-[10px] text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">⚠ Vacia</span> : statusBadge(cat.status)}</td>
+                          <td className="px-3 py-3">{cat.products === 0 ? <span className="text-[10px] text-amber-500 bg-amber-50 px-2 py-0.5 rounded-[var(--radius-badge)]">⚠ Vacia</span> : statusBadge(cat.status)}</td>
                           <td className="px-3 py-3 text-center hidden md:table-cell">
-                            {cat.hasImage ? <Check size={12} className="mx-auto text-green-500" /> : <X size={12} className="mx-auto text-red-400" />}
+                            {cat.hasImage ? <Check size={12} className="mx-auto text-[var(--success)]" /> : <X size={12} className="mx-auto text-[var(--error)]" />}
                           </td>
                           <td className="px-3 py-3 text-center hidden lg:table-cell">
-                            {cat.hasSeo ? <Check size={12} className="mx-auto text-green-500" /> : <X size={12} className="mx-auto text-red-400" />}
+                            {cat.hasSeo ? <Check size={12} className="mx-auto text-[var(--success)]" /> : <X size={12} className="mx-auto text-[var(--error)]" />}
                           </td>
                           <td className="px-3 py-3">
                             <div className="relative">
                               <button
                                 onClick={e => { e.stopPropagation(); setContextMenu(contextMenu === cat.id ? null : cat.id); }}
-                                className="p-1.5 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+                                className="p-1.5 hover:bg-[var(--surface2)] rounded-[var(--radius-card)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
                               >
                                 <MoreVertical size={14} />
                               </button>
@@ -648,7 +648,7 @@ export const CategoriesPage: React.FC = () => {
       {/* ===== TAB: COLLECTIONS ===== */}
       {tab === 'collections' && (
         <div className="space-y-4">
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm divide-y divide-wood-50">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm divide-y divide-wood-50">
             {liveCollections.length === 0 ? (
               <div className="p-12 text-center">
                 <Tag size={32} className="mx-auto mb-3 text-[var(--text-muted)]" />
@@ -657,13 +657,13 @@ export const CategoriesPage: React.FC = () => {
               </div>
             ) : liveCollections.map(col => (
               <div key={col.id} className="p-5 flex items-start gap-4 hover:bg-[var(--surface2)]/30 transition-colors group">
-                <div className="w-16 h-16 rounded-xl bg-[var(--surface2)] flex-shrink-0 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-[var(--radius-card)] bg-[var(--surface2)] flex-shrink-0 flex items-center justify-center">
                   <Tag size={20} className="text-[var(--accent)]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm text-[var(--text)] truncate">{col.title}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-50 text-green-600">Activa</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-[var(--radius-badge)] bg-[var(--success-subtle)] text-[var(--success)]">Activa</span>
                   </div>
                   <p className="text-[11px] text-[var(--text-secondary)]">{col.productCount} productos | Handle: {col.handle}</p>
                 </div>
@@ -738,7 +738,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
+          <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-[var(--radius-card)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
             <ArrowLeft size={18} />
           </button>
           <div>
@@ -767,7 +767,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               toast.success('Borrador guardado');
               onBack();
             } catch { toast.error('Error al guardar'); }
-          }} className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors">Guardar borrador</button>
+          }} className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors">Guardar borrador</button>
           <button onClick={async () => {
             if (!form.name.trim()) { toast.error('El nombre es obligatorio'); return; }
             try {
@@ -788,7 +788,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               toast.success(isEditing ? 'Categor\u00eda actualizada' : 'Categor\u00eda creada');
               onBack();
             } catch (e: any) { toast.error(e.message || 'Error al publicar'); }
-          }} className="px-4 py-2 text-xs text-sand-100 bg-wood-900 rounded-lg hover:bg-wood-800 transition-colors">Publicar</button>
+          }} className="px-4 py-2 text-xs text-sand-100 bg-wood-900 rounded-[var(--radius-card)] hover:bg-wood-800 transition-colors">Publicar</button>
         </div>
       </div>
 
@@ -800,7 +800,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               <button
                 key={s.id}
                 onClick={() => { setActiveSection(s.id); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-colors ${
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-card)] text-xs transition-colors ${
                   activeSection === s.id ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface2)]'
                 }`}
               >
@@ -813,7 +813,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
         {/* Form content */}
         <div className="flex-1 space-y-6 min-w-0">
           {/* ===== BASIC INFO ===== */}
-          <div id="basic" className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+          <div id="basic" className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
             <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Informacion basica</h4>
 
             <div>
@@ -821,7 +821,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               <input
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40"
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40"
                 placeholder="Ej: Tablas para Cortar"
               />
             </div>
@@ -831,7 +831,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               <select
                 value={form.parentId}
                 onChange={e => setForm(f => ({ ...f, parentId: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none bg-[var(--surface)] focus:border-[var(--accent)]/40"
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none bg-[var(--surface)] focus:border-[var(--accent)]/40"
               >
                 <option value="">— Ninguna (categoria raiz) —</option>
                 {allCategories.filter(c => c.parentId === null && c.id !== category?.id).map(c => (
@@ -843,7 +843,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
 
             <div>
               <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Descripcion</label>
-              <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+              <div className="border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden">
                 <div className="flex items-center gap-1 px-3 py-1.5 bg-[var(--surface2)]/50 border-b border-[var(--border)]">
                   {['B', 'I', 'U', 'Link', 'Lista'].map(b => (
                     <button key={b} className="px-2 py-1 text-[10px] text-[var(--text-secondary)] hover:bg-[var(--surface)] rounded transition-colors">{b}</button>
@@ -878,11 +878,11 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           </div>
 
           {/* ===== IMAGE ===== */}
-          <div id="image" className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+          <div id="image" className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
             <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Imagen de portada</h4>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <div className="w-48 h-24 bg-[var(--surface2)] rounded-xl flex items-center justify-center flex-shrink-0">
+              <div className="w-48 h-24 bg-[var(--surface2)] rounded-[var(--radius-card)] flex items-center justify-center flex-shrink-0">
                 {category?.hasImage ? (
                   <div className="text-center">
                     <ImageIcon size={24} className="text-[var(--accent)] mx-auto mb-1" />
@@ -905,7 +905,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                 <p className="text-[10px] text-[var(--text-muted)] mb-2">Recomendado: 1200x600px | JPG, PNG, WebP</p>
                 <div className="flex gap-2">
                   <button className="text-[11px] text-[var(--accent)] hover:underline flex items-center gap-1"><Upload size={11} /> Cambiar imagen</button>
-                  {category?.hasImage && <button className="text-[11px] text-red-400 hover:underline flex items-center gap-1"><Trash2 size={11} /> Eliminar</button>}
+                  {category?.hasImage && <button className="text-[11px] text-[var(--error)] hover:underline flex items-center gap-1"><Trash2 size={11} /> Eliminar</button>}
                 </div>
               </div>
             </div>
@@ -917,7 +917,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                   <button
                     key={ico}
                     onClick={() => setForm(f => ({ ...f, icon: ico }))}
-                    className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm transition-colors ${
+                    className={`w-9 h-9 flex items-center justify-center rounded-[var(--radius-card)] text-sm transition-colors ${
                       form.icon === ico ? 'bg-[var(--accent)]/10 border-2 border-[var(--accent)]' : 'bg-[var(--surface2)] border border-[var(--border)] hover:border-[var(--border)]'
                     }`}
                   >
@@ -930,7 +930,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           </div>
 
           {/* ===== APPEARANCE ===== */}
-          <div id="appearance" className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+          <div id="appearance" className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
             <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Apariencia en la tienda</h4>
 
             <div>
@@ -952,14 +952,14 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Productos por pagina</label>
-                <select value={form.productsPerPage} onChange={e => setForm(f => ({ ...f, productsPerPage: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none bg-[var(--surface)]">
+                <select value={form.productsPerPage} onChange={e => setForm(f => ({ ...f, productsPerPage: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none bg-[var(--surface)]">
                   {[8, 12, 16, 24].map(n => <option key={n} value={n}>{n}</option>)}
                   <option value={999}>Todos</option>
                 </select>
               </div>
               <div>
                 <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Orden por defecto</label>
-                <select value={form.sortDefault} onChange={e => setForm(f => ({ ...f, sortDefault: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none bg-[var(--surface)]">
+                <select value={form.sortDefault} onChange={e => setForm(f => ({ ...f, sortDefault: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none bg-[var(--surface)]">
                   <option value="manual">Manual (personalizado)</option>
                   <option value="newest">Mas recientes</option>
                   <option value="price-asc">Precio menor-mayor</option>
@@ -990,15 +990,15 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
             {/* Banner */}
             <div>
               <label className="text-xs text-[var(--text-secondary)] block mb-2">Banner promocional (opcional)</label>
-              <div className="bg-[var(--surface2)] rounded-xl p-4 space-y-3">
+              <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-[10px] text-[var(--text-muted)] block mb-1">Texto</label>
-                    <input value={form.bannerText} onChange={e => setForm(f => ({ ...f, bannerText: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none bg-[var(--surface)]" placeholder="Envio gratis en pedidos de $2,500+" />
+                    <input value={form.bannerText} onChange={e => setForm(f => ({ ...f, bannerText: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] outline-none bg-[var(--surface)]" placeholder="Envio gratis en pedidos de $2,500+" />
                   </div>
                   <div>
                     <label className="text-[10px] text-[var(--text-muted)] block mb-1">Link</label>
-                    <input value={form.bannerLink} onChange={e => setForm(f => ({ ...f, bannerLink: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none bg-[var(--surface)]" placeholder="/shop?promo=..." />
+                    <input value={form.bannerLink} onChange={e => setForm(f => ({ ...f, bannerLink: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] outline-none bg-[var(--surface)]" placeholder="/shop?promo=..." />
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -1016,7 +1016,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
                   </label>
                 </div>
                 {form.bannerText && form.bannerActive && (
-                  <div className="rounded-lg py-2 px-4 text-center text-xs" style={{ backgroundColor: form.bannerBg, color: form.bannerTextColor }}>
+                  <div className="rounded-[var(--radius-card)] py-2 px-4 text-center text-xs" style={{ backgroundColor: form.bannerBg, color: form.bannerTextColor }}>
                     {form.bannerText}
                   </div>
                 )}
@@ -1025,29 +1025,29 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           </div>
 
           {/* ===== SEO ===== */}
-          <div id="seo" className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+          <div id="seo" className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">SEO — Optimizacion para buscadores</h4>
               <button className="flex items-center gap-1 text-[11px] text-[var(--accent)] hover:underline"><Sparkles size={11} /> Generar SEO con IA</button>
             </div>
 
             {/* Google preview */}
-            <div className="bg-[var(--surface2)] rounded-xl p-4 space-y-1">
+            <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 space-y-1">
               <p className="text-[10px] text-[var(--text-muted)] mb-2">Preview de Google</p>
-              <p className="text-sm text-blue-700 truncate">{form.metaTitle || form.name || 'Titulo de la categoria'} | DavidSon's Design</p>
-              <p className="text-[11px] text-green-700 truncate">davidsonsdesign.com/shop/{form.slug || 'categoria'}</p>
+              <p className="text-sm text-[var(--info)] truncate">{form.metaTitle || form.name || 'Titulo de la categoria'} | DavidSon's Design</p>
+              <p className="text-[11px] text-[var(--success)] truncate">davidsonsdesign.com/shop/{form.slug || 'categoria'}</p>
               <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2">{form.metaDescription || form.description || 'Descripcion de la categoria...'}</p>
             </div>
 
             <div>
               <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Meta titulo</label>
-              <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40" placeholder="Titulo para buscadores" />
+              <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40" placeholder="Titulo para buscadores" />
               <p className="text-[10px] text-[var(--text-muted)] mt-1">{form.metaTitle.length}/70 caracteres</p>
             </div>
 
             <div>
               <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Meta descripcion</label>
-              <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none resize-none focus:border-[var(--accent)]/40" placeholder="Descripcion para buscadores" />
+              <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none resize-none focus:border-[var(--accent)]/40" placeholder="Descripcion para buscadores" />
               <p className="text-[10px] text-[var(--text-muted)] mt-1">{form.metaDescription.length}/160 caracteres</p>
             </div>
 
@@ -1055,7 +1055,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               <label className="text-xs text-[var(--text-secondary)] block mb-1.5">URL (slug)</label>
               <div className="flex items-center gap-1">
                 <span className="text-xs text-[var(--text-muted)]">davidsonsdesign.com/shop/</span>
-                <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40" />
+                <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40" />
               </div>
               <p className="text-[10px] text-[var(--text-muted)] mt-1">Se genera automaticamente del nombre. Editable.</p>
               {isEditing && <p className="text-[10px] text-amber-500 mt-0.5">⚠ Cambiar la URL puede afectar el SEO. Se creara un redirect automatico.</p>}
@@ -1063,16 +1063,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           </div>
 
           {/* ===== PRODUCTS ===== */}
-          <div id="products" className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+          <div id="products" className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
             <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Productos en esta categoria</h4>
             {isEditing && category.products > 0 ? (
               <>
                 <p className="text-[11px] text-[var(--text-secondary)]">{category.products} productos en "{category.name}"</p>
                 <div className="space-y-1">
                   {legacyDetailProducts.map((p, i) => (
-                    <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-[var(--surface2)] rounded-lg hover:bg-[var(--surface2)] transition-colors">
+                    <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors">
                       <GripVertical size={12} className="text-[var(--text-muted)] cursor-grab" />
-                      <div className="w-8 h-8 rounded-lg bg-[var(--surface2)] flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--surface2)] flex items-center justify-center flex-shrink-0">
                         <ShoppingBag size={12} className="text-[var(--text-muted)]" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1100,10 +1100,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
 
           {/* ===== STATS ===== */}
           {isEditing && (
-            <div id="stats" className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+            <div id="stats" className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Estadisticas</h4>
-                <select className="text-[11px] text-[var(--text-secondary)] border border-[var(--border)] rounded-lg px-2 py-1 bg-[var(--surface)] outline-none">
+                <select className="text-[11px] text-[var(--text-secondary)] border border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1 bg-[var(--surface)] outline-none">
                   <option>30 dias</option>
                   <option>7 dias</option>
                   <option>90 dias</option>
@@ -1111,20 +1111,20 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-[var(--surface2)] rounded-xl p-3 text-center">
+                <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-3 text-center">
                   <p className="text-lg text-[var(--text)]">${category.salesMonth.toLocaleString()}</p>
                   <p className="text-[10px] text-[var(--text-secondary)]">Ventas del periodo</p>
-                  <p className="text-[10px] text-green-600">+15% vs prev</p>
+                  <p className="text-[10px] text-[var(--success)]">+15% vs prev</p>
                 </div>
-                <div className="bg-[var(--surface2)] rounded-xl p-3 text-center">
+                <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-3 text-center">
                   <p className="text-lg text-[var(--text)]">52</p>
                   <p className="text-[10px] text-[var(--text-secondary)]">Unidades vendidas</p>
-                  <p className="text-[10px] text-green-600">+8% vs prev</p>
+                  <p className="text-[10px] text-[var(--success)]">+8% vs prev</p>
                 </div>
-                <div className="bg-[var(--surface2)] rounded-xl p-3 text-center">
+                <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-3 text-center">
                   <p className="text-lg text-[var(--text)]">3,400</p>
                   <p className="text-[10px] text-[var(--text-secondary)]">Visitas a categoria</p>
-                  <p className="text-[10px] text-green-600">+22% vs prev</p>
+                  <p className="text-[10px] text-[var(--success)]">+22% vs prev</p>
                 </div>
               </div>
 
@@ -1156,7 +1156,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
           )}
 
           {/* ===== ADVANCED CONFIG ===== */}
-          <div id="advanced" className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+          <div id="advanced" className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
             <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Configuracion avanzada</h4>
 
             <div>
@@ -1200,9 +1200,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
 
             {/* Danger zone */}
             {isEditing && (
-              <div className="border border-red-100 rounded-xl p-4 mt-4">
-                <h5 className="text-xs text-red-500 mb-2 flex items-center gap-1"><AlertTriangle size={12} /> Zona de peligro</h5>
-                <button className="flex items-center gap-1.5 px-3 py-2 text-xs text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+              <div className="border border-red-100 rounded-[var(--radius-card)] p-4 mt-4">
+                <h5 className="text-xs text-[var(--error)] mb-2 flex items-center gap-1"><AlertTriangle size={12} /> Zona de peligro</h5>
+                <button className="flex items-center gap-1.5 px-3 py-2 text-xs text-[var(--error)] bg-[var(--error-subtle)] rounded-[var(--radius-card)] hover:bg-[var(--error-subtle)] transition-colors">
                   <Trash2 size={12} /> Eliminar categoria
                 </button>
                 <p className="text-[10px] text-[var(--text-muted)] mt-2">
@@ -1270,7 +1270,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
+          <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-[var(--radius-card)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
             <ArrowLeft size={18} />
           </button>
           <div>
@@ -1280,29 +1280,29 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
         </div>
         <div className="flex items-center gap-2">
           <button onClick={onBack} className="px-3 py-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text)]">Cancelar</button>
-          <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)]">Guardar borrador</button>
-          <button className="px-4 py-2 text-xs text-sand-100 bg-wood-900 rounded-lg hover:bg-wood-800">Publicar</button>
+          <button className="px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)]">Guardar borrador</button>
+          <button className="px-4 py-2 text-xs text-sand-100 bg-wood-900 rounded-[var(--radius-card)] hover:bg-wood-800">Publicar</button>
         </div>
       </div>
 
       <div className="space-y-6 max-w-3xl">
         {/* Basic */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
           <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Informacion basica</h4>
 
           <div>
             <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Nombre *</label>
-            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40" placeholder="Ej: Regalos para Mama" />
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40" placeholder="Ej: Regalos para Mama" />
           </div>
 
           <div>
             <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Descripcion</label>
-            <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none resize-none focus:border-[var(--accent)]/40" placeholder="Descripcion de la coleccion" />
+            <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none resize-none focus:border-[var(--accent)]/40" placeholder="Descripcion de la coleccion" />
           </div>
 
           <div>
             <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Imagen de portada</label>
-            <div className="border-2 border-dashed border-[var(--border)] rounded-xl p-6 text-center hover:border-[var(--accent)]/40 cursor-pointer transition-colors">
+            <div className="border-2 border-dashed border-[var(--border)] rounded-[var(--radius-card)] p-6 text-center hover:border-[var(--accent)]/40 cursor-pointer transition-colors">
               <Upload size={20} className="mx-auto text-[var(--text-muted)] mb-1" />
               <p className="text-[11px] text-[var(--text-secondary)]">Subir imagen</p>
               <p className="text-[10px] text-[var(--text-muted)]">Recomendado: 1200x600px</p>
@@ -1311,7 +1311,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
         </div>
 
         {/* Type */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
           <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Tipo de coleccion</h4>
 
           <div className="space-y-1.5">
@@ -1329,20 +1329,20 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
           {form.type === 'manual' && (
             <div className="space-y-3 mt-3">
               <label className="text-xs text-[var(--text-secondary)] block">Productos en esta coleccion:</label>
-              <div className="flex items-center bg-[var(--surface2)] border border-[var(--border)] rounded-lg overflow-hidden">
+              <div className="flex items-center bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden">
                 <Search size={14} className="ml-3 text-[var(--text-muted)]" />
                 <input placeholder="Buscar producto para agregar..." className="flex-1 px-3 py-2 text-xs bg-transparent outline-none text-[var(--text)] placeholder:text-[var(--text-muted)]" />
               </div>
               <div className="space-y-1">
                 {legacyCollectionProducts.map((p, i) => (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-[var(--surface2)] rounded-lg">
+                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
                     <GripVertical size={12} className="text-[var(--text-muted)] cursor-grab" />
-                    <div className="w-8 h-8 rounded-lg bg-[var(--surface2)] flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--surface2)] flex items-center justify-center flex-shrink-0">
                       <ShoppingBag size={12} className="text-[var(--text-muted)]" />
                     </div>
                     <p className="flex-1 text-xs text-[var(--text)] truncate">{p.name}</p>
                     <span className="text-xs text-[var(--text-secondary)]">${p.price.toLocaleString()}</span>
-                    <button className="p-1 text-[var(--text-muted)] hover:text-red-500"><X size={12} /></button>
+                    <button className="p-1 text-[var(--text-muted)] hover:text-[var(--error)]"><X size={12} /></button>
                   </div>
                 ))}
               </div>
@@ -1357,14 +1357,14 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
               <div className="space-y-2">
                 {rules.map((rule, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <select value={rule.field} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], field: e.target.value }; setRules(nr); }} className="px-2 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] bg-[var(--surface)] outline-none">
+                    <select value={rule.field} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], field: e.target.value }; setRules(nr); }} className="px-2 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] bg-[var(--surface)] outline-none">
                       {ruleFields.map(f => <option key={f} value={f}>{f}</option>)}
                     </select>
-                    <select className="px-2 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] bg-[var(--surface)] outline-none">
+                    <select className="px-2 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] bg-[var(--surface)] outline-none">
                       {(ruleOps[rule.field] || ruleOps['Categoria']).map(op => <option key={op} value={op}>{op}</option>)}
                     </select>
-                    <input value={rule.value} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], value: e.target.value }; setRules(nr); }} className="flex-1 px-2 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none" placeholder="Valor" />
-                    <button onClick={() => setRules(rules.filter((_, idx) => idx !== i))} className="p-1 text-[var(--text-muted)] hover:text-red-500"><X size={14} /></button>
+                    <input value={rule.value} onChange={e => { const nr = [...rules]; nr[i] = { ...nr[i], value: e.target.value }; setRules(nr); }} className="flex-1 px-2 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] outline-none" placeholder="Valor" />
+                    <button onClick={() => setRules(rules.filter((_, idx) => idx !== i))} className="p-1 text-[var(--text-muted)] hover:text-[var(--error)]"><X size={14} /></button>
                   </div>
                 ))}
               </div>
@@ -1374,7 +1374,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div>
                   <label className="text-[10px] text-[var(--text-muted)] block mb-1">Ordenar por</label>
-                  <select value={form.sortBy} onChange={e => setForm(f => ({ ...f, sortBy: e.target.value }))} className="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] bg-[var(--surface)] outline-none">
+                  <select value={form.sortBy} onChange={e => setForm(f => ({ ...f, sortBy: e.target.value }))} className="w-full px-2 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] bg-[var(--surface)] outline-none">
                     <option value="bestsellers">Mas vendidos</option>
                     <option value="newest">Mas recientes</option>
                     <option value="price-asc">Precio menor-mayor</option>
@@ -1383,7 +1383,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
                 </div>
                 <div>
                   <label className="text-[10px] text-[var(--text-muted)] block mb-1">Limite</label>
-                  <input type="number" value={form.limit} onChange={e => setForm(f => ({ ...f, limit: Number(e.target.value) }))} className="w-full px-2 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none" />
+                  <input type="number" value={form.limit} onChange={e => setForm(f => ({ ...f, limit: Number(e.target.value) }))} className="w-full px-2 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] outline-none" />
                 </div>
               </div>
             </div>
@@ -1391,17 +1391,17 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
         </div>
 
         {/* Scheduling */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
           <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5"><Calendar size={12} /> Programacion</h4>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Fecha de inicio</label>
-              <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none bg-[var(--surface)]" />
+              <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] outline-none bg-[var(--surface)]" />
             </div>
             <div>
               <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Fecha de fin</label>
-              <input type="date" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} disabled={form.noEndDate} className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none bg-[var(--surface)] disabled:opacity-40" />
+              <input type="date" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} disabled={form.noEndDate} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] outline-none bg-[var(--surface)] disabled:opacity-40" />
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer">
                 <input type="checkbox" checked={form.noEndDate} onChange={e => setForm(f => ({ ...f, noEndDate: e.target.checked }))} className="accent-accent-gold rounded" />
                 <span className="text-[10px] text-[var(--text-secondary)]">Sin fecha de fin</span>
@@ -1414,32 +1414,32 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
         </div>
 
         {/* SEO */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
           <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">SEO</h4>
-          <div className="bg-[var(--surface2)] rounded-xl p-4 space-y-1">
-            <p className="text-sm text-blue-700 truncate">{form.metaTitle || form.name || 'Titulo'} | DavidSon's Design</p>
-            <p className="text-[11px] text-green-700 truncate">davidsonsdesign.com/shop/coleccion/{form.slug || 'slug'}</p>
+          <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 space-y-1">
+            <p className="text-sm text-[var(--info)] truncate">{form.metaTitle || form.name || 'Titulo'} | DavidSon's Design</p>
+            <p className="text-[11px] text-[var(--success)] truncate">davidsonsdesign.com/shop/coleccion/{form.slug || 'slug'}</p>
             <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2">{form.metaDescription || form.description || 'Descripcion...'}</p>
           </div>
           <div>
             <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Meta titulo</label>
-            <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none" />
+            <input value={form.metaTitle} onChange={e => setForm(f => ({ ...f, metaTitle: e.target.value }))} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none" />
           </div>
           <div>
             <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Meta descripcion</label>
-            <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={2} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none resize-none" />
+            <textarea value={form.metaDescription} onChange={e => setForm(f => ({ ...f, metaDescription: e.target.value }))} rows={2} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none resize-none" />
           </div>
           <div>
             <label className="text-xs text-[var(--text-secondary)] block mb-1.5">URL (slug)</label>
             <div className="flex items-center gap-1">
               <span className="text-xs text-[var(--text-muted)]">davidsonsdesign.com/shop/coleccion/</span>
-              <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-[var(--text)] outline-none" />
+              <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none" />
             </div>
           </div>
         </div>
 
         {/* Display options */}
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
           <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Donde mostrar</h4>
           <div className="space-y-1.5">
             {[
@@ -1461,9 +1461,9 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
 
         {/* Danger zone */}
         {isEditing && (
-          <div className="border border-red-100 rounded-xl p-4">
-            <h5 className="text-xs text-red-500 mb-2 flex items-center gap-1"><AlertTriangle size={12} /> Zona de peligro</h5>
-            <button className="flex items-center gap-1.5 px-3 py-2 text-xs text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+          <div className="border border-red-100 rounded-[var(--radius-card)] p-4">
+            <h5 className="text-xs text-[var(--error)] mb-2 flex items-center gap-1"><AlertTriangle size={12} /> Zona de peligro</h5>
+            <button className="flex items-center gap-1.5 px-3 py-2 text-xs text-[var(--error)] bg-[var(--error-subtle)] rounded-[var(--radius-card)] hover:bg-[var(--error-subtle)] transition-colors">
               <Trash2 size={12} /> Eliminar coleccion
             </button>
           </div>

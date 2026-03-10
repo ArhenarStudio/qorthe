@@ -29,7 +29,7 @@ const tabItems: Array<{ id: STab; label: string; icon: React.ElementType }> = [
 
 // ===== SHARED =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function STitle({ children }: { children: React.ReactNode }) {
@@ -38,13 +38,13 @@ function STitle({ children }: { children: React.ReactNode }) {
 
 function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 'gray' | 'amber' | 'blue' | 'red' }) {
   const cls: Record<string, string> = {
-    green: 'bg-green-50 text-green-600',
+    green: 'bg-[var(--success-subtle)] text-[var(--success)]',
     gray: 'bg-[var(--surface2)] text-[var(--text-secondary)]',
     amber: 'bg-amber-50 text-amber-600',
-    blue: 'bg-blue-50 text-blue-600',
-    red: 'bg-red-50 text-red-500',
+    blue: 'bg-[var(--info-subtle)] text-[var(--info)]',
+    red: 'bg-[var(--error-subtle)] text-[var(--error)]',
   };
-  return <span className={'text-[10px] font-medium px-2 py-0.5 rounded-full ' + cls[variant]}>{text}</span>;
+  return <span className={'text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] ' + cls[variant]}>{text}</span>;
 }
 
 function Field({ label, children, className = '' }: { label: string; children: React.ReactNode; className?: string }) {
@@ -57,12 +57,12 @@ function Field({ label, children, className = '' }: { label: string; children: R
 }
 
 function Input({ defaultValue = '', placeholder = '', className = '', type = 'text', readOnly = false }: { defaultValue?: string; placeholder?: string; className?: string; type?: string; readOnly?: boolean }) {
-  return <input type={type} defaultValue={defaultValue} placeholder={placeholder} readOnly={readOnly} className={'border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none focus:border-[var(--accent)]/50 transition-colors ' + (readOnly ? 'bg-[var(--surface2)] text-[var(--text-secondary)] ' : '') + className} />;
+  return <input type={type} defaultValue={defaultValue} placeholder={placeholder} readOnly={readOnly} className={'border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] outline-none focus:border-[var(--accent)]/50 transition-colors ' + (readOnly ? 'bg-[var(--surface2)] text-[var(--text-secondary)] ' : '') + className} />;
 }
 
 function SaveBtn() {
   return (
-    <button onClick={() => toast.success('Configuracion guardada')} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
+    <button onClick={() => toast.success('Configuracion guardada')} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
       <Save size={12} /> Guardar
     </button>
   );
@@ -76,12 +76,12 @@ function SecretField({ label, value }: { label: string; value: string }) {
         <input
           type={visible ? 'text' : 'password'}
           defaultValue={value}
-          className="flex-1 border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] font-mono outline-none"
+          className="flex-1 border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] font-mono outline-none"
         />
-        <button onClick={() => setVisible(!visible)} className="p-2 rounded-lg hover:bg-[var(--surface2)] text-[var(--text-muted)] transition-colors">
+        <button onClick={() => setVisible(!visible)} className="p-2 rounded-[var(--radius-card)] hover:bg-[var(--surface2)] text-[var(--text-muted)] transition-colors">
           {visible ? <EyeOff size={12} /> : <Eye size={12} />}
         </button>
-        <button onClick={() => { navigator.clipboard.writeText(value); toast.success('Copiado'); }} className="p-2 rounded-lg hover:bg-[var(--surface2)] text-[var(--text-muted)] transition-colors">
+        <button onClick={() => { navigator.clipboard.writeText(value); toast.success('Copiado'); }} className="p-2 rounded-[var(--radius-card)] hover:bg-[var(--surface2)] text-[var(--text-muted)] transition-colors">
           <Copy size={12} />
         </button>
       </div>
@@ -100,7 +100,7 @@ function GeneralTab() {
           <Field label="Nombre legal"><Input defaultValue="David Alejandro Perez Rea" className="w-full" /></Field>
           <Field label="RFC"><Input defaultValue="PERD000000XXX" className="w-full font-mono" /></Field>
           <Field label="Regimen fiscal">
-            <select defaultValue="pfae" className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select defaultValue="pfae" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
               <option value="pfae">Persona Fisica con Actividad Empresarial</option>
               <option value="rif">Regimen de Incorporacion Fiscal</option>
               <option value="pm">Persona Moral</option>
@@ -112,7 +112,7 @@ function GeneralTab() {
           {[{ l: 'Logo principal', n: 'emails, facturas, PDFs' }, { l: 'Logo alternativo (claro)', n: 'fondos oscuros' }, { l: 'Favicon', n: '16x16px' }].map((logo) => (
             <div key={logo.l}>
               <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-1">{logo.l}</p>
-              <button className="w-20 h-20 border-2 border-dashed border-[var(--border)] rounded-lg flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-wood-300 transition-colors">
+              <button className="w-20 h-20 border-2 border-dashed border-[var(--border)] rounded-[var(--radius-card)] flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-wood-300 transition-colors">
                 <Upload size={16} />
                 <span className="text-[8px] mt-1">{logo.n}</span>
               </button>
@@ -180,26 +180,26 @@ function GeneralTab() {
         <STitle>Zona Horaria y Formato</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <Field label="Zona horaria">
-            <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
               <option>America/Hermosillo (MST, UTC-7)</option>
               <option>America/Mexico_City (CST, UTC-6)</option>
             </select>
           </Field>
           <Field label="Formato de fecha">
-            <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
               <option>DD/MM/AAAA</option>
               <option>MM/DD/AAAA</option>
               <option>AAAA-MM-DD</option>
             </select>
           </Field>
           <Field label="Formato de hora">
-            <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
               <option>12h (AM/PM)</option>
               <option>24h</option>
             </select>
           </Field>
           <Field label="Primer dia de la semana">
-            <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
               <option>Lunes</option>
               <option>Domingo</option>
             </select>
@@ -219,20 +219,20 @@ function StoreTab() {
       <Card className="p-5">
         <STitle>Dominio</STitle>
         <div className="space-y-2 text-xs">
-          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg">
+          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">Dominio principal</span>
             <span className="font-medium text-[var(--text)] font-mono">davidsonsdesign.com</span>
             <Badge text="Cloudflare" variant="blue" />
           </div>
-          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg">
+          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">URL tienda</span>
             <span className="font-mono text-[var(--text)]">https://davidsonsdesign.com</span>
           </div>
-          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg">
+          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">Estado SSL</span>
-            <span className="flex items-center gap-1"><Check size={10} className="text-green-500" /> Activo (Cloudflare)</span>
+            <span className="flex items-center gap-1"><Check size={10} className="text-[var(--success)]" /> Activo (Cloudflare)</span>
           </div>
-          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg">
+          <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">URL admin</span>
             <span className="font-mono text-[var(--text)]">https://davidsonsdesign.com/admin</span>
           </div>
@@ -243,14 +243,14 @@ function StoreTab() {
         <STitle>Moneda y Precios</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <Field label="Moneda principal">
-            <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
               <option>MXN - Peso Mexicano</option>
               <option>USD - Dolar Estadounidense</option>
             </select>
           </Field>
           <Field label="Simbolo"><Input defaultValue="$" className="w-full" /></Field>
           <Field label="Posicion">
-            <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
               <option>Antes del numero</option>
               <option>Despues del numero</option>
             </select>
@@ -369,7 +369,7 @@ function StoreTab() {
           <Field label="Formatos aceptados">
             <div className="flex flex-wrap gap-1.5">
               {['.svg', '.png', '.jpg', '.pdf'].map((f) => (
-                <span key={f} className="text-[10px] bg-[var(--surface2)] text-[var(--text-secondary)] px-2 py-0.5 rounded-full border border-[var(--border)] flex items-center gap-1">
+                <span key={f} className="text-[10px] bg-[var(--surface2)] text-[var(--text-secondary)] px-2 py-0.5 rounded-[var(--radius-badge)] border border-[var(--border)] flex items-center gap-1">
                   {f} <X size={8} className="text-[var(--text-muted)] cursor-pointer" />
                 </span>
               ))}
@@ -446,7 +446,7 @@ function PaymentsTab() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[var(--surface2)] flex items-center justify-center text-sm font-bold text-[var(--text-secondary)]">{name[0]}</div>
+            <div className="w-10 h-10 rounded-[var(--radius-card)] bg-[var(--surface2)] flex items-center justify-center text-sm font-bold text-[var(--text-secondary)]">{name[0]}</div>
             <div>
               <h4 className="text-xs font-medium text-[var(--text)]">{name}</h4>
               <p className="text-[10px] text-[var(--text-muted)]">{displayName}</p>
@@ -474,10 +474,10 @@ function PaymentsTab() {
           <Field label="Webhook URL"><Input defaultValue={webhookUrl} className="w-full font-mono" readOnly /></Field>
           <p className="text-[10px] text-[var(--text-muted)]">Comision estimada: {commission}</p>
           <div className="flex items-center gap-2">
-            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1">
+            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1">
               <RefreshCw size={10} /> Verificar conexion
             </button>
-            <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1">
+            <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1">
               <ExternalLink size={10} /> Dashboard
             </a>
           </div>
@@ -504,7 +504,7 @@ function PaymentsTab() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[var(--surface2)] flex items-center justify-center text-sm font-bold text-[var(--text-secondary)]">T</div>
+            <div className="w-10 h-10 rounded-[var(--radius-card)] bg-[var(--surface2)] flex items-center justify-center text-sm font-bold text-[var(--text-secondary)]">T</div>
             <div>
               <h4 className="text-xs font-medium text-[var(--text)]">Transferencia Bancaria</h4>
               <p className="text-[10px] text-[var(--text-muted)]">Solo para cotizaciones</p>
@@ -533,7 +533,7 @@ function PaymentsTab() {
         <STitle>Orden de metodos en checkout</STitle>
         <div className="space-y-1.5">
           {['1. Stripe (tarjeta)', '2. MercadoPago', '3. Transferencia (solo cotizaciones)'].map((m) => (
-            <div key={m} className="flex items-center gap-2 p-2.5 bg-[var(--surface2)] rounded-lg text-xs text-[var(--text)]">
+            <div key={m} className="flex items-center gap-2 p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)] text-xs text-[var(--text)]">
               <GripVertical size={14} className="text-[var(--text-muted)] cursor-grab" />
               {m}
             </div>
@@ -555,7 +555,7 @@ function ShippingTab() {
         <STitle>Zonas de Envio</STitle>
         <div className="space-y-4">
           {/* Zone 1 */}
-          <div className="border border-[var(--border)] rounded-lg p-4 space-y-2">
+          <div className="border border-[var(--border)] rounded-[var(--radius-card)] p-4 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MapPin size={14} className="text-[var(--accent)]" />
@@ -580,7 +580,7 @@ function ShippingTab() {
           </div>
 
           {/* Zone 2 */}
-          <div className="border border-[var(--border)] rounded-lg p-4 space-y-3">
+          <div className="border border-[var(--border)] rounded-[var(--radius-card)] p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MapPin size={14} className="text-[var(--accent)]" />
@@ -595,7 +595,7 @@ function ShippingTab() {
                 { name: 'DHL Express', range: '$350-$400 MXN', time: '2-3 dias habiles' },
                 { name: 'FedEx', range: '$310-$350 MXN', time: '2-4 dias habiles' },
               ].map((c) => (
-                <div key={c.name} className="flex items-center gap-3 p-2.5 bg-[var(--surface2)] rounded-lg">
+                <div key={c.name} className="flex items-center gap-3 p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
                   <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--accent)]" />
                   <span className="text-xs font-medium text-[var(--text)] w-28">{c.name}</span>
                   <span className="text-[10px] text-[var(--text-secondary)]">Tarifa: {c.range}</span>
@@ -613,7 +613,7 @@ function ShippingTab() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-[var(--text-secondary)]">Carrier por defecto cuando es gratis:</span>
-              <select className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
+              <select className="border border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1.5 text-xs bg-[var(--surface)]">
                 <option>Estafeta (el mas economico)</option>
                 <option>DHL Express</option>
                 <option>FedEx</option>
@@ -635,7 +635,7 @@ function ShippingTab() {
               <label className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]"><input type="radio" name="envia-mode" defaultChecked className="text-[var(--accent)]" /> Test</label>
               <label className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]"><input type="radio" name="envia-mode" className="text-[var(--accent)]" /> Produccion</label>
             </div>
-            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1">
+            <button onClick={() => toast.success('Conexion verificada')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1">
               <RefreshCw size={10} /> Verificar conexion
             </button>
           </div>
@@ -721,7 +721,7 @@ function TaxesTab() {
         </div>
         <div className="space-y-3 opacity-60">
           <Field label="Proveedor CFDI">
-            <select disabled className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface2)]">
+            <select disabled className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface2)]">
               <option>- Sin configurar -</option>
               <option>Facturapi</option>
               <option>SWsapien</option>
@@ -741,7 +741,7 @@ function TaxesTab() {
           <div className="grid grid-cols-2 gap-4">
             <Field label="Regimen fiscal emisor"><Input defaultValue="Persona Fisica con Actividad Empresarial" className="w-full" readOnly /></Field>
             <Field label="Uso CFDI por defecto">
-              <select disabled className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface2)]">
+              <select disabled className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface2)]">
                 <option>G03 - Gastos en general</option>
               </select>
             </Field>
@@ -806,10 +806,10 @@ function IntegrationsTab() {
         <STitle>Activas</STitle>
         <div className="space-y-3">
           {active.map((s) => (
-            <div key={s.name} className="border border-[var(--border)] rounded-lg p-4">
+            <div key={s.name} className="border border-[var(--border)] rounded-[var(--radius-card)] p-4">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[var(--surface2)] flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">{s.name[0]}</div>
+                  <div className="w-9 h-9 rounded-[var(--radius-card)] bg-[var(--surface2)] flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">{s.name[0]}</div>
                   <div>
                     <h4 className="text-xs font-medium text-[var(--text)]">{s.name}</h4>
                     <p className="text-[10px] text-[var(--text-muted)]">{s.desc}</p>
@@ -835,15 +835,15 @@ function IntegrationsTab() {
         <STitle>Disponibles (por activar)</STitle>
         <div className="space-y-3">
           {available.map((s) => (
-            <div key={s.name} className="flex items-center justify-between border border-dashed border-[var(--border)] rounded-lg p-4 hover:border-wood-300 transition-colors">
+            <div key={s.name} className="flex items-center justify-between border border-dashed border-[var(--border)] rounded-[var(--radius-card)] p-4 hover:border-wood-300 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[var(--surface2)] flex items-center justify-center text-xs font-bold text-[var(--text-muted)]">{s.name[0]}</div>
+                <div className="w-9 h-9 rounded-[var(--radius-card)] bg-[var(--surface2)] flex items-center justify-center text-xs font-bold text-[var(--text-muted)]">{s.name[0]}</div>
                 <div>
                   <h4 className="text-xs font-medium text-[var(--text)]">{s.name}</h4>
                   <p className="text-[10px] text-[var(--text-muted)]">{s.desc}</p>
                 </div>
               </div>
-              <button onClick={() => toast.success('Configurando ' + s.name + '...')} className="px-3 py-1.5 text-xs text-[var(--accent)] border border-[var(--accent)]/30 rounded-lg hover:bg-[var(--accent)]/5 transition-colors flex items-center gap-1">
+              <button onClick={() => toast.success('Configurando ' + s.name + '...')} className="px-3 py-1.5 text-xs text-[var(--accent)] border border-[var(--accent)]/30 rounded-[var(--radius-card)] hover:bg-[var(--accent)]/5 transition-colors flex items-center gap-1">
                 Conectar <ChevronRight size={10} />
               </button>
             </div>
@@ -880,9 +880,9 @@ function DeveloperTab() {
   ];
 
   const levelCfg: Record<string, { cls: string; label: string }> = {
-    info: { cls: 'text-green-600', label: 'INFO' },
+    info: { cls: 'text-[var(--success)]', label: 'INFO' },
     warn: { cls: 'text-amber-600', label: 'WARN' },
-    error: { cls: 'text-red-500', label: 'ERROR' },
+    error: { cls: 'text-[var(--error)]', label: 'ERROR' },
   };
 
   return (
@@ -935,7 +935,7 @@ function DeveloperTab() {
             { platform: 'Vercel (frontend)', vars: 12, updated: '26 Feb 2026' },
             { platform: 'DigitalOcean', vars: 18, updated: '27 Feb 2026' },
           ].map((e) => (
-            <div key={e.platform} className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg text-xs">
+            <div key={e.platform} className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)] text-xs">
               <span className="text-[var(--text)] font-medium">{e.platform}</span>
               <span className="text-[var(--text-secondary)]">{e.vars} variables configuradas</span>
               <span className="text-[var(--text-muted)]">Ultima actualizacion: {e.updated}</span>
@@ -948,15 +948,15 @@ function DeveloperTab() {
       <Card className="p-5">
         <STitle>Logs del Sistema</STitle>
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <select className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
+          <select className="border border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1.5 text-xs bg-[var(--surface)]">
             <option>Nivel: Todos</option><option>INFO</option><option>WARN</option><option>ERROR</option>
           </select>
-          <select className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
+          <select className="border border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1.5 text-xs bg-[var(--surface)]">
             <option>Servicio: Todos</option><option>Medusa</option><option>Stripe</option><option>Envia</option>
           </select>
-          <button className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors ml-auto">Exportar logs</button>
+          <button className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors ml-auto">Exportar logs</button>
         </div>
-        <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+        <div className="border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden">
           {logs.map((l, i) => {
             const cfg = levelCfg[l.level];
             return (
@@ -975,8 +975,8 @@ function DeveloperTab() {
         <STitle>Salud del Sistema</STitle>
         <div className="space-y-2">
           {health.map((h) => (
-            <div key={h.name} className="flex items-center gap-3 p-2.5 bg-[var(--surface2)] rounded-lg text-xs">
-              <Check size={12} className="text-green-500 shrink-0" />
+            <div key={h.name} className="flex items-center gap-3 p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)] text-xs">
+              <Check size={12} className="text-[var(--success)] shrink-0" />
               <span className="text-[var(--text)] font-medium w-44">{h.name}</span>
               <Badge text={h.status} variant="green" />
               <span className="text-[var(--text-secondary)] ml-auto">Uptime 30d: {h.uptime}</span>
@@ -1015,7 +1015,7 @@ export const SettingsPage: React.FC = () => {
         <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
           <Settings size={20} className="text-[var(--accent)]" /> Configuracion
         </h3>
-        <button onClick={() => toast.success('Todo guardado')} className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
+        <button onClick={() => toast.success('Todo guardado')} className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
           <Save size={12} /> Guardar todo
         </button>
       </div>

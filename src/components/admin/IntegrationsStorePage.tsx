@@ -361,7 +361,7 @@ const apps: IntegrationApp[] = [
 
 // ===== SHARED =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function Stars({ rating, size = 10 }: { rating: number; size?: number }) {
@@ -379,20 +379,20 @@ function Stars({ rating, size = 10 }: { rating: number; size?: number }) {
 }
 
 function PricingBadge({ pricing, type }: { pricing: string; type: string }) {
-  const cls = type === 'free' ? 'bg-green-50 text-green-700 border-green-200'
-    : type === 'usage' ? 'bg-purple-50 text-purple-700 border-purple-200'
-    : 'bg-blue-50 text-blue-700 border-blue-200';
-  return <span className={'text-[9px] px-1.5 py-0.5 rounded-full border ' + cls}>{pricing}</span>;
+  const cls = type === 'free' ? 'bg-[var(--success-subtle)] text-[var(--success)] border-green-200'
+    : type === 'usage' ? 'bg-[var(--accent-subtle)] text-[var(--accent)] border-purple-200'
+    : 'bg-[var(--info-subtle)] text-[var(--info)] border-blue-200';
+  return <span className={'text-[9px] px-1.5 py-0.5 rounded-[var(--radius-badge)] border ' + cls}>{pricing}</span>;
 }
 
 function StatusBadge({ status }: { status: AppStatus }) {
   const cfg: Record<AppStatus, { label: string; cls: string }> = {
-    installed: { label: 'Instalada', cls: 'bg-green-50 text-green-700 border-green-200' },
+    installed: { label: 'Instalada', cls: 'bg-[var(--success-subtle)] text-[var(--success)] border-green-200' },
     needs_config: { label: 'Requiere config', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
     not_installed: { label: 'No instalada', cls: 'bg-[var(--surface2)] text-[var(--text-secondary)] border-[var(--border)]' },
   };
   const c = cfg[status];
-  return <span className={'text-[9px] px-1.5 py-0.5 rounded-full border ' + c.cls}>{c.label}</span>;
+  return <span className={'text-[9px] px-1.5 py-0.5 rounded-[var(--radius-badge)] border ' + c.cls}>{c.label}</span>;
 }
 
 // ===== APP CARD =====
@@ -402,7 +402,7 @@ function AppCard({ app, onSelect }: { app: IntegrationApp; onSelect: () => void 
       <div onClick={onSelect}>
         <div className="flex items-start gap-3 mb-3">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm"
+            className="w-11 h-11 rounded-[var(--radius-card)] flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm"
             style={{ backgroundColor: app.logoColor }}
           >
             {app.logo}
@@ -461,7 +461,7 @@ function MarketplaceView({ onSelect }: { onSelect: (app: IntegrationApp) => void
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar apps, integraciones..."
-            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
+            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--border)] rounded-[var(--radius-card)] outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
           />
         </div>
         <div className="flex gap-1">
@@ -470,7 +470,7 @@ function MarketplaceView({ onSelect }: { onSelect: (app: IntegrationApp) => void
               key={p}
               onClick={() => setPriceFilter(p)}
               className={
-                'px-2.5 py-1.5 text-[10px] rounded-lg border transition-colors ' +
+                'px-2.5 py-1.5 text-[10px] rounded-[var(--radius-card)] border transition-colors ' +
                 (priceFilter === p ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
               }
             >
@@ -489,7 +489,7 @@ function MarketplaceView({ onSelect }: { onSelect: (app: IntegrationApp) => void
               key={c.id}
               onClick={() => setCatFilter(c.id)}
               className={
-                'flex items-center gap-1 px-2.5 py-1.5 text-[10px] rounded-lg border whitespace-nowrap transition-colors shrink-0 ' +
+                'flex items-center gap-1 px-2.5 py-1.5 text-[10px] rounded-[var(--radius-card)] border whitespace-nowrap transition-colors shrink-0 ' +
                 (catFilter === c.id ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
               }
             >
@@ -543,7 +543,7 @@ function InstalledView({ onSelect, onToggle }: { onSelect: (app: IntegrationApp)
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => onSelect(app)}>
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
+                  className="w-10 h-10 rounded-[var(--radius-card)] flex items-center justify-center text-white text-xs font-bold shrink-0"
                   style={{ backgroundColor: app.logoColor }}
                 >
                   {app.logo}
@@ -569,14 +569,14 @@ function InstalledView({ onSelect, onToggle }: { onSelect: (app: IntegrationApp)
                 )}
                 <button
                   onClick={() => onToggle(app.id)}
-                  className={'p-1.5 rounded-lg transition-colors ' + (app.enabled ? 'text-green-600 hover:bg-green-50' : 'text-[var(--text-muted)] hover:bg-[var(--surface2)]')}
+                  className={'p-1.5 rounded-[var(--radius-card)] transition-colors ' + (app.enabled ? 'text-[var(--success)] hover:bg-[var(--success-subtle)]' : 'text-[var(--text-muted)] hover:bg-[var(--surface2)]')}
                   title={app.enabled ? 'Desactivar' : 'Activar'}
                 >
                   {app.enabled ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                 </button>
                 <button
                   onClick={() => onSelect(app)}
-                  className="p-1.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
+                  className="p-1.5 rounded-[var(--radius-card)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                   title="Configurar"
                 >
                   <Settings size={12} />
@@ -590,7 +590,7 @@ function InstalledView({ onSelect, onToggle }: { onSelect: (app: IntegrationApp)
                 <div className="flex items-center gap-4">
                   {app.logs.slice(0, 2).map((log, i) => (
                     <span key={i} className="flex items-center gap-1 text-[9px] text-[var(--text-muted)]">
-                      <span className={'w-1 h-1 rounded-full ' + (log.type === 'success' ? 'bg-green-500' : log.type === 'error' ? 'bg-red-500' : 'bg-blue-400')} />
+                      <span className={'w-1 h-1 rounded-[var(--radius-badge)] ' + (log.type === 'success' ? 'bg-green-500' : log.type === 'error' ? 'bg-red-500' : 'bg-blue-400')} />
                       <span className="font-mono">{log.time}</span> {log.message}
                     </span>
                   ))}
@@ -622,7 +622,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-start gap-4">
-        <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors mt-1">
+        <button onClick={onBack} className="p-1.5 rounded-[var(--radius-card)] hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors mt-1">
           <ArrowLeft size={16} />
         </button>
         <div
@@ -635,7 +635,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-lg font-serif text-[var(--text)]">{app.name}</h2>
             {app.isRockStage && (
-              <span className="flex items-center gap-1 text-[9px] bg-[var(--accent)]/15 text-[var(--accent)] px-2 py-0.5 rounded-full font-medium">
+              <span className="flex items-center gap-1 text-[9px] bg-[var(--accent)]/15 text-[var(--accent)] px-2 py-0.5 rounded-[var(--radius-badge)] font-medium">
                 <BadgeCheck size={10} /> By RockStage
               </span>
             )}
@@ -657,7 +657,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
           {!isInstalled ? (
             <button
               onClick={() => toast.success(`${app.name} instalada exitosamente`)}
-              className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
             >
               <Download size={12} /> Instalar
             </button>
@@ -666,15 +666,15 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
               <button
                 onClick={() => toast.success(`${app.name} ${app.enabled ? 'desactivada' : 'activada'}`)}
                 className={
-                  'px-4 py-2 text-xs rounded-lg transition-colors flex items-center gap-1.5 ' +
-                  (app.enabled ? 'bg-[var(--surface2)] text-[var(--text-secondary)] hover:bg-wood-200' : 'bg-green-50 text-green-700 hover:bg-green-100')
+                  'px-4 py-2 text-xs rounded-[var(--radius-card)] transition-colors flex items-center gap-1.5 ' +
+                  (app.enabled ? 'bg-[var(--surface2)] text-[var(--text-secondary)] hover:bg-wood-200' : 'bg-[var(--success-subtle)] text-[var(--success)] hover:bg-[var(--success-subtle)]')
                 }
               >
                 {app.enabled ? <><Zap size={12} /> Activa</> : <><Zap size={12} /> Activar</>}
               </button>
               <button
                 onClick={() => toast.error(`${app.name} desinstalada`)}
-                className="px-4 py-2 text-xs border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 text-xs border border-red-200 text-[var(--error)] rounded-[var(--radius-card)] hover:bg-[var(--error-subtle)] transition-colors flex items-center gap-1.5"
               >
                 <Trash2 size={12} /> Desinstalar
               </button>
@@ -724,7 +724,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
                 <div className="space-y-3">
                   {app.reviews.map((r, i) => (
                     <div key={i} className="flex items-start gap-3 pb-3 border-b border-[var(--border)] last:border-0 last:pb-0">
-                      <div className="w-7 h-7 rounded-full bg-[var(--surface2)] flex items-center justify-center text-[9px] font-medium text-[var(--text-secondary)] shrink-0">
+                      <div className="w-7 h-7 rounded-[var(--radius-badge)] bg-[var(--surface2)] flex items-center justify-center text-[9px] font-medium text-[var(--text-secondary)] shrink-0">
                         {r.user.split(' ').map(w => w[0]).join('').slice(0, 2)}
                       </div>
                       <div>
@@ -809,7 +809,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
                       <input
                         type={field.masked && !showMasked[field.label] ? 'password' : 'text'}
                         defaultValue={field.value}
-                        className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none focus:border-[var(--accent)]/50 font-mono pr-16"
+                        className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] outline-none focus:border-[var(--accent)]/50 font-mono pr-16"
                         placeholder={field.value ? undefined : 'Ingresa valor...'}
                       />
                       {field.masked && (
@@ -823,7 +823,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
                     </div>
                   )}
                   {field.type === 'select' && (
-                    <select defaultValue={field.value} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none">
+                    <select defaultValue={field.value} className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] outline-none">
                       <option>{field.value || 'Seleccionar...'}</option>
                       {field.label.includes('Modo') && <><option>Live</option><option>Test</option></>}
                       {field.label.includes('Carrier') && <><option>FedEx</option><option>DHL</option><option>Estafeta</option><option>Redpack</option></>}
@@ -831,7 +831,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
                     </select>
                   )}
                   {field.type === 'toggle' && (
-                    <button className={'flex items-center gap-2 text-xs ' + (field.value === 'true' ? 'text-green-600' : 'text-[var(--text-muted)]')}>
+                    <button className={'flex items-center gap-2 text-xs ' + (field.value === 'true' ? 'text-[var(--success)]' : 'text-[var(--text-muted)]')}>
                       {field.value === 'true' ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                       {field.value === 'true' ? 'Activado' : 'Desactivado'}
                     </button>
@@ -840,7 +840,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
               ))}
               <button
                 onClick={() => toast.success('Configuracion guardada')}
-                className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5 mt-2"
+                className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5 mt-2"
               >
                 <Check size={12} /> Guardar configuracion
               </button>
@@ -866,8 +866,8 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
                 <div key={i} className="flex items-center gap-3 py-2 border-b border-[var(--border)] last:border-0">
                   <span className="text-[10px] text-[var(--text-muted)] font-mono w-12 shrink-0">{log.time}</span>
                   <span className={
-                    'text-[9px] px-1.5 py-0.5 rounded-full w-14 text-center shrink-0 ' +
-                    (log.type === 'success' ? 'bg-green-50 text-green-700' : log.type === 'error' ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700')
+                    'text-[9px] px-1.5 py-0.5 rounded-[var(--radius-badge)] w-14 text-center shrink-0 ' +
+                    (log.type === 'success' ? 'bg-[var(--success-subtle)] text-[var(--success)]' : log.type === 'error' ? 'bg-[var(--error-subtle)] text-[var(--error)]' : 'bg-[var(--info-subtle)] text-[var(--info)]')
                   }>
                     {log.type === 'success' ? 'OK' : log.type === 'error' ? 'Error' : 'Info'}
                   </span>
@@ -950,7 +950,7 @@ export const IntegrationsStorePage: React.FC = () => {
             }
           >
             {tab.label}
-            <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-full">{tab.count}</span>
+            <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-[var(--radius-badge)]">{tab.count}</span>
           </button>
         ))}
       </div>

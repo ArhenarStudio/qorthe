@@ -46,8 +46,8 @@ const shippingConfig: Record<string, { label: string }> = {
 
 const engravingStatusConfig: Record<string, { label: string; class: string }> = {
   'pending': { label: 'Pendiente', class: 'text-amber-600' },
-  'in-progress': { label: 'En proceso', class: 'text-blue-600' },
-  'completed': { label: 'Completado', class: 'text-green-600' },
+  'in-progress': { label: 'En proceso', class: 'text-[var(--info)]' },
+  'completed': { label: 'Completado', class: 'text-[var(--success)]' },
 };
 
 const positionLabels: Record<string, string> = {
@@ -391,14 +391,14 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-secondary)] transition-colors">
+            <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-[var(--radius-card)] text-[var(--text-secondary)] transition-colors">
               <ArrowLeft size={18} />
             </button>
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <h3 className="font-serif text-lg text-[var(--text)]">Pedido {order.number}</h3>
                 {order.hasEngraving && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-600 flex items-center gap-1">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-[var(--radius-badge)] bg-[var(--error-subtle)] text-[var(--error)] flex items-center gap-1">
                     🔴 GRABADO LÁSER
                   </span>
                 )}
@@ -409,24 +409,24 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => toast.success('Orden de producción generada')}
-              className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--text-secondary)] hover:border-wood-300 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] hover:border-wood-300 transition-colors"
             >
               <Printer size={14} /> Imprimir
             </button>
             <div className="relative">
               <button
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--text-secondary)] hover:border-wood-300 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] hover:border-wood-300 transition-colors"
               >
                 <MoreHorizontal size={14} /> Más
               </button>
               {moreMenuOpen && (
-                <div className="absolute right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg py-1 z-30 min-w-[200px]">
+                <div className="absolute right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-lg py-1 z-30 min-w-[200px]">
                   {moreMenuItems.map((item) => (
                     <button
                       key={item}
                       onClick={() => { toast.success(item + " — acción pendiente"); setMoreMenuOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 text-xs hover:bg-[var(--surface2)] transition-colors ${item.includes('Cancelar') || item.includes('Reembolsar') ? 'text-red-500' : 'text-[var(--text-secondary)]'}`}
+                      className={`w-full text-left px-4 py-2.5 text-xs hover:bg-[var(--surface2)] transition-colors ${item.includes('Cancelar') || item.includes('Reembolsar') ? 'text-[var(--error)]' : 'text-[var(--text-secondary)]'}`}
                     >
                       {item}
                     </button>
@@ -441,7 +441,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
         <div className="flex gap-2 flex-wrap ml-11">
           <TBadge text={"💳 " + (statusLabels[order.paymentStatus] || order.paymentStatus)} variant={paymentVariant(order.paymentStatus)} />
           <TBadge text={"📦 " + (orderStatusLabels[order.orderStatus] || order.orderStatus)} variant={orderVariant(order.orderStatus)} />
-          <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${order.tracking ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500'}`}>
+          <span className={`text-[10px] font-medium px-2.5 py-1 rounded-[var(--radius-badge)] flex items-center gap-1 ${order.tracking ? 'bg-[var(--info-subtle)] text-[var(--info)]' : 'bg-[var(--surface2)] text-[var(--text-muted)]'}`}>
             🚚 {order.tracking ? 'Guía generada' : 'Sin guía'}
           </span>
         </div>
@@ -454,7 +454,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
         <div className="lg:col-span-7 space-y-6">
 
           {/* 1. TIMELINE */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
             <h4 className="text-sm font-medium text-[var(--text)] mb-5">Timeline del pedido</h4>
             <div className="relative ml-3">
               {/* Vertical line */}
@@ -462,9 +462,9 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               <div className="space-y-0">
                 {order.timeline.map((step, idx) => (
                   <div key={step.id} className="relative flex gap-4 pb-5 last:pb-0">
-                    <div className={`relative z-10 w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 ${
+                    <div className={`relative z-10 w-4 h-4 rounded-[var(--radius-badge)] border-2 flex-shrink-0 mt-0.5 ${
                       step.done
-                        ? 'bg-green-500 border-green-500'
+                        ? 'bg-[var(--success)] border-[var(--success)]'
                         : 'bg-[var(--surface)] border-wood-300'
                     }`}>
                       {step.done && (
@@ -477,7 +477,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                           {step.label}
                         </span>
                         {step.notifiedClient && (
-                          <span className="text-[9px] bg-blue-50 text-blue-500 px-1.5 py-0.5 rounded">Cliente notificado</span>
+                          <span className="text-[9px] bg-[var(--info-subtle)] text-[var(--info)] px-1.5 py-0.5 rounded">Cliente notificado</span>
                         )}
                       </div>
                       {step.date && <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{step.date}</p>}
@@ -492,12 +492,12 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
             <div className="relative mt-4 pt-4 border-t border-[var(--border)]">
               <button
                 onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors"
               >
                 <ChevronDown size={14} /> Cambiar Estado
               </button>
               {statusDropdownOpen && (
-                <div className="absolute left-0 bottom-full mb-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl py-1 z-30 min-w-[220px] max-h-[280px] overflow-y-auto">
+                <div className="absolute left-0 bottom-full mb-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-xl py-1 z-30 min-w-[220px] max-h-[280px] overflow-y-auto">
                   {allStatuses.map(s => (
                     <button
                       key={s}
@@ -507,7 +507,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                       }}
                       className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--surface2)] flex items-center gap-2 ${order.orderStatus === s ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-secondary)]'}`}
                     >
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: ['delivered','payment_confirmed'].includes(s) ? 'var(--success)' : ['cancelled','refunded','disputed'].includes(s) ? 'var(--error)' : ['shipped','in_transit','new'].includes(s) ? 'var(--info)' : 'var(--warning)' }} />
+                      <span className="w-2 h-2 rounded-[var(--radius-badge)]" style={{ backgroundColor: ['delivered','payment_confirmed'].includes(s) ? 'var(--success)' : ['cancelled','refunded','disputed'].includes(s) ? 'var(--error)' : ['shipped','in_transit','new'].includes(s) ? 'var(--info)' : 'var(--warning)' }} />
                       {orderStatusLabels[s] || s}
                     </button>
                   ))}
@@ -517,7 +517,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           </div>
 
           {/* 2. ITEMS */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm">
             <div className="px-5 py-4 border-b border-[var(--border)]">
               <h4 className="text-sm font-medium text-[var(--text)]">Artículos del pedido</h4>
             </div>
@@ -526,7 +526,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                 <div key={item.id} className="p-5">
                   {/* Item Row */}
                   <div className="flex items-start gap-4">
-                    <img src={item.image} alt={item.productName} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                    <img src={item.image} alt={item.productName} className="w-16 h-16 rounded-[var(--radius-card)] object-cover flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-[var(--text)]">{item.productName}</p>
                       {item.variant && <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">Variante: {item.variant}</p>}
@@ -545,11 +545,11 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                   {item.engraving?.hasEngraving && (
                     <div className="mt-4 ml-20">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-50 text-red-600">🔴 GRABADO LÁSER INCLUIDO</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--error-subtle)] text-[var(--error)]">🔴 GRABADO LÁSER INCLUIDO</span>
                       </div>
                       <div className="space-y-3">
                         {item.engraving.designs.map((design, dIdx) => (
-                          <div key={design.id} className="bg-[var(--surface2)] rounded-lg p-4 border border-[var(--border)]">
+                          <div key={design.id} className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 border border-[var(--border)]">
                             <div className="flex items-center justify-between mb-3">
                               <span className="text-[10px] font-bold text-[var(--text)] uppercase tracking-wider">
                                 Diseño {dIdx + 1} {design.isFree ? '(gratis)' : `(+$${design.extraCost})`}
@@ -563,7 +563,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                               {/* Design Preview */}
                               <div
                                 onClick={() => setEngravingPreview(design)}
-                                className="relative aspect-video bg-[var(--surface)] rounded-lg overflow-hidden border border-[var(--border)] cursor-pointer group"
+                                className="relative aspect-video bg-[var(--surface)] rounded-[var(--radius-card)] overflow-hidden border border-[var(--border)] cursor-pointer group"
                               >
                                 <img src={design.previewUrl} alt={design.fileName} className="w-full h-full object-contain" />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
@@ -622,7 +622,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           </div>
 
           {/* 3. INTERNAL NOTES */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm">
             <div className="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
               <h4 className="text-sm font-medium text-[var(--text)] flex items-center gap-2">📝 Notas del Pedido</h4>
               <span className="text-[10px] text-[var(--text-muted)]">{order.notes.length} notas</span>
@@ -631,7 +631,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               {order.notes.length > 0 && (
                 <div className="space-y-3 mb-4">
                   {order.notes.map(n => (
-                    <div key={n.id} className={`rounded-lg p-3 ${n.pinned ? 'bg-amber-50 border border-amber-100' : 'bg-[var(--surface2)]'}`}>
+                    <div key={n.id} className={`rounded-[var(--radius-card)] p-3 ${n.pinned ? 'bg-amber-50 border border-amber-100' : 'bg-[var(--surface2)]'}`}>
                       <div className="flex items-start justify-between gap-2">
                         <p className="text-xs text-[var(--text)] flex-1">"{n.text}"</p>
                         {n.pinned && <Pin size={12} className="text-amber-500 flex-shrink-0 mt-0.5" />}
@@ -645,13 +645,13 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                 value={noteText}
                 onChange={e => setNoteText(e.target.value)}
                 placeholder="Escribir nota..."
-                className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg p-3 text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] resize-none h-20 outline-none focus:border-wood-400 transition-colors"
+                className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] p-3 text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] resize-none h-20 outline-none focus:border-wood-400 transition-colors"
               />
               <button
                 onClick={() => {
                   if (noteText.trim()) { toast.success('Nota guardada'); setNoteText(''); }
                 }}
-                className="mt-2 px-4 py-2 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors"
+                className="mt-2 px-4 py-2 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors"
               >
                 Guardar
               </button>
@@ -659,7 +659,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           </div>
 
           {/* 4. COMMUNICATIONS */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm">
             <div className="px-5 py-4 border-b border-[var(--border)]">
               <h4 className="text-sm font-medium text-[var(--text)] flex items-center gap-2">📧 Comunicaciones con el Cliente</h4>
             </div>
@@ -677,7 +677,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="text-[10px] text-[var(--text-muted)]">{new Date(com.date).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
-                        <span className={`text-[9px] font-medium ${com.status === 'delivered' ? 'text-green-500' : com.status === 'failed' ? 'text-red-500' : 'text-[var(--text-muted)]'}`}>
+                        <span className={`text-[9px] font-medium ${com.status === 'delivered' ? 'text-[var(--success)]' : com.status === 'failed' ? 'text-[var(--error)]' : 'text-[var(--text-muted)]'}`}>
                           {com.status === 'delivered' ? '✅ Entregado' : com.status === 'failed' ? '❌ Falló' : '⏳ Enviado'}
                         </span>
                       </div>
@@ -689,7 +689,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               )}
               <button
                 onClick={() => setMessageModalOpen(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors"
               >
                 <Send size={14} /> Enviar mensaje al cliente
               </button>
@@ -701,13 +701,13 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
         <div className="lg:col-span-5 space-y-6">
 
           {/* 5. CUSTOMER */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-medium text-[var(--text)] flex items-center gap-2">👤 Cliente</h4>
               <button className="text-[10px] text-[var(--accent)] font-medium hover:underline">Ver perfil →</button>
             </div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-[var(--surface2)] flex items-center justify-center text-[var(--text-secondary)] font-bold flex-shrink-0">
+              <div className="w-12 h-12 rounded-[var(--radius-badge)] bg-[var(--surface2)] flex items-center justify-center text-[var(--text-secondary)] font-bold flex-shrink-0">
                 {order.customer.avatar}
               </div>
               <div className="min-w-0">
@@ -738,10 +738,10 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           </div>
 
           {/* 6. ADDRESS */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-medium text-[var(--text)] flex items-center gap-2">📍 Dirección de Envío</h4>
-              <button onClick={copyAddress} className="p-1.5 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors" title="Copiar">
+              <button onClick={copyAddress} className="p-1.5 hover:bg-[var(--surface2)] rounded-[var(--radius-card)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors" title="Copiar">
                 <Copy size={14} />
               </button>
             </div>
@@ -759,7 +759,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           </div>
 
           {/* 7. FINANCIAL SUMMARY */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
             <h4 className="text-sm font-medium text-[var(--text)] mb-4 flex items-center gap-2">💰 Resumen</h4>
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-[var(--text-secondary)]">
@@ -777,7 +777,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                 <span>{order.shipping === 0 ? 'Gratis' : `$${order.shipping.toLocaleString()}`}</span>
               </div>
               {order.discount > 0 && (
-                <div className="flex justify-between text-xs text-green-600">
+                <div className="flex justify-between text-xs text-[var(--success)]">
                   <span>Descuento{order.discountCode ? ` (${order.discountCode})` : ''}</span>
                   <span>-${order.discount.toLocaleString()}</span>
                 </div>
@@ -825,7 +825,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                     <span>${order.margin.stripeCommission.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-xs font-medium text-green-600 pt-1.5 border-t border-[var(--border)]">
+                <div className="flex justify-between text-xs font-medium text-[var(--success)] pt-1.5 border-t border-[var(--border)]">
                   <span>Utilidad est.</span>
                   <span>${order.margin.estimatedProfit.toLocaleString()} ({order.margin.marginPercent}%)</span>
                 </div>
@@ -836,13 +836,13 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
             <div className="mt-4 pt-3 border-t border-[var(--border)] flex gap-2">
               <button
                 onClick={() => { if (order._raw?.medusa_id) window.open(`https://urchin-app-u62qc.ondigitalocean.app/app/orders/${order._raw.medusa_id}`, '_blank'); else toast.error('ID de orden no disponible'); }}
-                className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-[10px] font-medium hover:bg-red-100 transition-colors"
+                className="flex-1 px-3 py-2 bg-[var(--error-subtle)] text-[var(--error)] rounded-[var(--radius-card)] text-[10px] font-medium hover:bg-[var(--error-subtle)] transition-colors"
               >
                 Reembolsar
               </button>
               <button
                 onClick={() => { if (order._raw?.medusa_id) window.open(`https://urchin-app-u62qc.ondigitalocean.app/app/orders/${order._raw.medusa_id}`, '_blank'); else toast.error('ID de orden no disponible'); }}
-                className="flex-1 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg text-[10px] font-medium hover:bg-[var(--surface2)] transition-colors"
+                className="flex-1 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)] text-[10px] font-medium hover:bg-[var(--surface2)] transition-colors"
               >
                 Reembolso parcial
               </button>
@@ -850,12 +850,12 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           </div>
 
           {/* 8. SHIPPING */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
             <h4 className="text-sm font-medium text-[var(--text)] mb-4 flex items-center gap-2">🚚 Envío</h4>
 
             {order.tracking ? (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
+                <div className="flex items-center gap-2 text-xs text-[var(--success)] font-medium">
                   <CheckCircle size={14} /> Guía generada
                 </div>
                 <div className="space-y-2">
@@ -876,13 +876,13 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                 <div className="flex gap-2 pt-2">
                   <button
                     onClick={() => toast.success('Imprimiendo guía...')}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[10px] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-[10px] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                   >
                     <Printer size={12} /> Imprimir Guía
                   </button>
                   <button
                     onClick={() => window.open(`/tracking/${order.number?.replace('#','').replace('DSD-','')}`, '_blank')}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[10px] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-[10px] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                   >
                     <ExternalLink size={12} /> Ver rastreo
                   </button>
@@ -895,7 +895,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                     <button
                       key={c}
                       onClick={() => { toast.success(`${c} seleccionado`); }}
-                      className={`px-3 py-2 rounded-lg text-xs border transition-colors ${
+                      className={`px-3 py-2 rounded-[var(--radius-card)] text-xs border transition-colors ${
                         order.carrier === c
                           ? 'border-[var(--accent)] bg-amber-50 text-[var(--accent)] font-medium'
                           : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-wood-300'
@@ -907,7 +907,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                 </div>
                 <button
                   onClick={() => toast.success('Guía generada')}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors"
                 >
                   🏷️ Generar Guía de Envío
                 </button>
@@ -930,7 +930,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
           </div>
 
           {/* 9. QUICK ACTIONS */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
             <h4 className="text-sm font-medium text-[var(--text)] mb-3 flex items-center gap-2">⚡ Acciones Rápidas</h4>
             <div className="space-y-1.5">
               {[
@@ -944,7 +944,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                 <button
                   key={item.label}
                   onClick={item.action}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors text-left"
                 >
                   <item.icon size={14} className="text-[var(--text-muted)] flex-shrink-0" />
                   {item.label}
@@ -953,7 +953,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               <div className="pt-1.5 border-t border-[var(--border)] mt-1.5">
                 <button
                   onClick={() => { if (order._raw?.medusa_id) window.open(`https://urchin-app-u62qc.ondigitalocean.app/app/orders/${order._raw.medusa_id}`, '_blank'); else toast.error('Gestiona cancelaciones desde Medusa Admin'); }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-card)] text-xs text-[var(--error)] hover:bg-[var(--error-subtle)] transition-colors text-left"
                 >
                   <XIcon size={14} className="flex-shrink-0" /> Cancelar pedido
                 </button>
@@ -978,24 +978,24 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="bg-[var(--surface)] rounded-xl max-w-lg w-full overflow-hidden shadow-2xl"
+              className="bg-[var(--surface)] rounded-[var(--radius-card)] max-w-lg w-full overflow-hidden shadow-2xl"
             >
               <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-[var(--text)]">{engravingPreview.fileName}</p>
                   <p className="text-[10px] text-[var(--text-muted)]">{engravingPreview.width} × {engravingPreview.height} cm — {positionLabels[engravingPreview.position]}</p>
                 </div>
-                <button onClick={() => setEngravingPreview(null)} className="p-2 hover:bg-[var(--surface2)] rounded-lg">
+                <button onClick={() => setEngravingPreview(null)} className="p-2 hover:bg-[var(--surface2)] rounded-[var(--radius-card)]">
                   <XIcon size={16} className="text-[var(--text-muted)]" />
                 </button>
               </div>
               <div className="p-4">
-                <img src={engravingPreview.previewUrl} alt={engravingPreview.fileName} className="w-full rounded-lg" />
+                <img src={engravingPreview.previewUrl} alt={engravingPreview.fileName} className="w-full rounded-[var(--radius-card)]" />
               </div>
               <div className="p-4 border-t border-[var(--border)] flex gap-2">
                 <button
                   onClick={() => { toast.success('Descargando...'); setEngravingPreview(null); }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors"
                 >
                   <Download size={14} /> Descargar original
                 </button>
@@ -1020,12 +1020,12 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="bg-[var(--surface)] rounded-xl max-w-md w-full overflow-hidden shadow-2xl"
+              className="bg-[var(--surface)] rounded-[var(--radius-card)] max-w-md w-full overflow-hidden shadow-2xl"
             >
               <div className="p-5 border-b border-[var(--border)]">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium text-[var(--text)]">Enviar mensaje al cliente</h4>
-                  <button onClick={() => setMessageModalOpen(false)} className="p-1.5 hover:bg-[var(--surface2)] rounded-lg">
+                  <button onClick={() => setMessageModalOpen(false)} className="p-1.5 hover:bg-[var(--surface2)] rounded-[var(--radius-card)]">
                     <XIcon size={16} className="text-[var(--text-muted)]" />
                   </button>
                 </div>
@@ -1041,7 +1041,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                       <button
                         key={tmpl}
                         onClick={() => { setSelectedTemplate(tmpl); setMessageText(tmpl); }}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${selectedTemplate === tmpl ? 'bg-amber-50 text-[var(--accent)] font-medium border border-amber-200' : 'text-[var(--text-secondary)] hover:bg-[var(--surface2)]'}`}
+                        className={`w-full text-left px-3 py-2 rounded-[var(--radius-card)] text-xs transition-colors ${selectedTemplate === tmpl ? 'bg-amber-50 text-[var(--accent)] font-medium border border-amber-200' : 'text-[var(--text-secondary)] hover:bg-[var(--surface2)]'}`}
                       >
                         {tmpl}
                       </button>
@@ -1056,7 +1056,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                     value={messageText}
                     onChange={e => setMessageText(e.target.value)}
                     placeholder="Escribe tu mensaje..."
-                    className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg p-3 text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] resize-none h-24 outline-none focus:border-wood-400 transition-colors"
+                    className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] p-3 text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] resize-none h-24 outline-none focus:border-wood-400 transition-colors"
                   />
                 </div>
               </div>
@@ -1064,7 +1064,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
               <div className="p-5 border-t border-[var(--border)] flex gap-2">
                 <button
                   onClick={() => setMessageModalOpen(false)}
-                  className="flex-1 px-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                 >
                   Cancelar
                 </button>
@@ -1075,7 +1075,7 @@ const OrderDetail: React.FC<{ order: Order; onBack: () => void }> = ({ order, on
                     setMessageText('');
                     setSelectedTemplate('');
                   }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-wood-900 text-sand-100 rounded-lg text-xs hover:bg-wood-800 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-wood-900 text-sand-100 rounded-[var(--radius-card)] text-xs hover:bg-wood-800 transition-colors"
                 >
                   <Send size={14} /> Enviar
                 </button>

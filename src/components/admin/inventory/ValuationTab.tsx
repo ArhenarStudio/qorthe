@@ -102,20 +102,20 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
     <div className="space-y-6">
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <SummaryCard label="Valor Total (Costo)" value={fmt(summary.totalCost)} icon={<DollarSign size={16} />} color="bg-green-50 text-green-600" />
-        <SummaryCard label="Valor Total (Retail)" value={fmt(summary.totalRetail)} icon={<DollarSign size={16} />} color="bg-blue-50 text-blue-600" />
+        <SummaryCard label="Valor Total (Costo)" value={fmt(summary.totalCost)} icon={<DollarSign size={16} />} color="bg-[var(--success-subtle)] text-[var(--success)]" />
+        <SummaryCard label="Valor Total (Retail)" value={fmt(summary.totalRetail)} icon={<DollarSign size={16} />} color="bg-[var(--info-subtle)] text-[var(--info)]" />
         <SummaryCard label="Margen Total" value={fmt(summary.totalMargin)} icon={<TrendingUp size={16} />} color="bg-accent-gold/10 text-accent-gold" />
-        <SummaryCard label="Margen %" value={fmtPct(summary.marginPercent)} icon={<TrendingUp size={16} />} color="bg-purple-50 text-purple-600" />
+        <SummaryCard label="Margen %" value={fmtPct(summary.marginPercent)} icon={<TrendingUp size={16} />} color="bg-[var(--accent-subtle)] text-[var(--accent)]" />
       </div>
 
       {/* Cost history chart */}
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-bold text-wood-900 flex items-center gap-2">
             <TrendingUp size={16} className="text-accent-gold" /> Historial de Costos
           </h4>
           <select value={selectedSku} onChange={e => setSelectedSku(e.target.value)}
-            className="px-3 py-1.5 text-xs bg-sand-50 border border-wood-200 rounded-lg outline-none min-w-[200px]">
+            className="px-3 py-1.5 text-xs bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] outline-none min-w-[200px]">
             <option value="">Todos los productos</option>
             {items.map(i => (
               <option key={i.variant_id} value={i.sku}>{i.title} ({i.sku})</option>
@@ -147,14 +147,14 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
             <h5 className="text-[10px] font-bold text-wood-400 uppercase tracking-wider mb-2">Cambios Recientes</h5>
             <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
               {costHistory.slice(0, 15).map((h, i) => (
-                <div key={h.id || i} className="flex items-center justify-between py-1.5 px-3 bg-sand-50 rounded-lg text-xs">
+                <div key={h.id || i} className="flex items-center justify-between py-1.5 px-3 bg-sand-50 rounded-[var(--radius-card)] text-xs">
                   <div className="flex-1 min-w-0">
                     <span className="text-wood-900 font-medium">{h.product_title}</span>
                     <span className="text-wood-400 ml-2 font-mono text-[10px]">{h.sku}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-wood-500">{fmt(h.previous_cost)} → <span className="font-bold text-wood-900">{fmt(h.new_cost)}</span></span>
-                    <span className={`text-[10px] font-bold ${h.change_percent > 0 ? 'text-red-500' : 'text-green-600'}`}>
+                    <span className={`text-[10px] font-bold ${h.change_percent > 0 ? 'text-[var(--error)]' : 'text-[var(--success)]'}`}>
                       {h.change_percent > 0 ? '+' : ''}{fmtPct(h.change_percent)}
                     </span>
                     <span className="text-[10px] text-wood-400">{fmtDate(h.created_at)}</span>
@@ -167,7 +167,7 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
       </div>
 
       {/* Valuation by category */}
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
         <h4 className="text-sm font-bold text-wood-900 mb-4">Valoración por Categoría</h4>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={summary.byCategory} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -183,7 +183,7 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
       </div>
 
       {/* Item valuation table */}
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-wood-100">
           <h4 className="text-sm font-bold text-wood-900">Detalle de Valoración por Producto</h4>
         </div>
@@ -212,7 +212,7 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
                   <td className="px-4 py-3 text-xs text-right text-wood-600">{fmt(item.total_cost)}</td>
                   <td className="px-4 py-3 text-xs text-right text-wood-900 font-bold">{fmt(item.total_retail)}</td>
                   <td className="px-4 py-3 text-xs text-right">
-                    <span className={`font-bold ${item.margin_pct > 40 ? 'text-green-600' : item.margin_pct > 20 ? 'text-amber-600' : 'text-red-500'}`}>
+                    <span className={`font-bold ${item.margin_pct > 40 ? 'text-[var(--success)]' : item.margin_pct > 20 ? 'text-amber-600' : 'text-[var(--error)]'}`}>
                       {fmtPct(item.margin_pct)}
                     </span>
                   </td>
@@ -235,8 +235,8 @@ export const ValuationTab: React.FC<Props> = ({ items }) => {
 };
 
 const SummaryCard: React.FC<{ label: string; value: string; icon: React.ReactNode; color: string }> = ({ label, value, icon, color }) => (
-  <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
-    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${color} mb-2`}>{icon}</div>
+  <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
+    <div className={`w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center ${color} mb-2`}>{icon}</div>
     <p className="text-xl font-sans text-wood-900">{value}</p>
     <p className="text-[10px] text-wood-400 uppercase tracking-wider mt-0.5">{label}</p>
   </div>

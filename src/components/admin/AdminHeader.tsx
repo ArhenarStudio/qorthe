@@ -18,7 +18,7 @@ const headerNotifs = [
   {
     id: 'hn1',
     icon: ShoppingCart,
-    iconCls: 'bg-blue-50 text-blue-600',
+    iconCls: 'bg-[var(--info-subtle)] text-[var(--info)]',
     title: 'Nuevo pedido #165',
     detail: 'David Perez — $3,280 MXN',
     time: 'Hace 5 min',
@@ -39,7 +39,7 @@ const headerNotifs = [
   {
     id: 'hn3',
     icon: FileText,
-    iconCls: 'bg-purple-50 text-purple-600',
+    iconCls: 'bg-[var(--accent-subtle)] text-[var(--accent)]',
     title: 'Cotización COT-145',
     detail: '$52,000 — B2B',
     time: 'Hace 45 min',
@@ -49,7 +49,7 @@ const headerNotifs = [
   {
     id: 'hn4',
     icon: Package,
-    iconCls: 'bg-red-50 text-red-500',
+    iconCls: 'bg-[var(--error-subtle)] text-[var(--error)]',
     title: 'Stock bajo — Rosa Morada',
     detail: '2 unidades restantes',
     time: 'Hace 1h',
@@ -59,7 +59,7 @@ const headerNotifs = [
   {
     id: 'hn5',
     icon: DollarSign,
-    iconCls: 'bg-green-50 text-green-600',
+    iconCls: 'bg-[var(--success-subtle)] text-[var(--success)]',
     title: 'Anticipo recibido COT-142',
     detail: 'David Perez — $15,428',
     time: 'Hace 2h',
@@ -127,7 +127,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
           {/* Search */}
           <div className="relative">
             {searchOpen ? (
-              <div className="flex items-center bg-[var(--surface2)] border border-[var(--border)] rounded-lg overflow-hidden">
+              <div className="flex items-center bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden">
                 <Search size={16} className="ml-3 text-[var(--text-muted)]" />
                 <input
                   autoFocus
@@ -141,7 +141,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
                 </button>
               </div>
             ) : (
-              <button onClick={() => setSearchOpen(true)} className="p-2 text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface2)] rounded-lg transition-colors">
+              <button onClick={() => setSearchOpen(true)} className="p-2 text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface2)] rounded-[var(--radius-card)] transition-colors">
                 <Search size={18} />
               </button>
             )}
@@ -151,14 +151,14 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
           <div className="relative hidden sm:block" ref={periodRef}>
             <button
               onClick={() => setPeriodOpen(!periodOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface2)] border border-[var(--border)] rounded-lg hover:border-wood-300 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs text-[var(--text-secondary)] bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] hover:border-wood-300 transition-colors"
             >
               <Calendar size={14} />
               <span>{periodLabels[period]}</span>
               <ChevronDown size={12} />
             </button>
             {periodOpen && (
-              <div className="absolute right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg py-1 z-20 min-w-[140px]">
+              <div className="absolute right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-lg py-1 z-20 min-w-[140px]">
                 {(Object.keys(periodLabels) as Period[]).map(p => (
                   <button
                     key={p}
@@ -176,22 +176,22 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setNotifOpen(!notifOpen)}
-              className="relative p-2 text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface2)] rounded-lg transition-colors"
+              className="relative p-2 text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface2)] rounded-[var(--radius-card)] transition-colors"
             >
               <Bell size={18} />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-[var(--radius-badge)] flex items-center justify-center">
                   {unreadCount}
                 </span>
               )}
             </button>
             {notifOpen && (
-              <div className="absolute right-0 mt-2 w-[340px] bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-xl z-30 overflow-hidden">
+              <div className="absolute right-0 mt-2 w-[340px] bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-xl z-30 overflow-hidden">
                 <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <h4 className="text-sm font-medium text-[var(--text)]">Notificaciones</h4>
                     {unreadCount > 0 && (
-                      <span className="text-[9px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full">{unreadCount}</span>
+                      <span className="text-[9px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-[var(--radius-badge)]">{unreadCount}</span>
                     )}
                   </div>
                   <button
@@ -210,14 +210,14 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ period, onPeriodChange
                         onClick={() => { setNotifOpen(false); onNavigate(n.target); }}
                         className={`w-full text-left px-4 py-3 border-b border-[var(--border)] hover:bg-[var(--surface2)]/80 transition-colors flex items-start gap-3 ${!n.read ? 'bg-[var(--accent)]/5' : ''}`}
                       >
-                        <div className={'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ' + n.iconCls}>
+                        <div className={'w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center shrink-0 mt-0.5 ' + n.iconCls}>
                           <Icon size={14} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5">
-                            {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />}
+                            {!n.read && <span className="w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-red-500 shrink-0" />}
                             <p className={'text-xs text-[var(--text)] truncate ' + (!n.read ? 'font-medium' : '')}>{n.title}</p>
-                            {n.priority && <span className="text-[8px] font-bold bg-red-50 text-red-500 px-1 py-0.5 rounded shrink-0">!</span>}
+                            {n.priority && <span className="text-[8px] font-bold bg-[var(--error-subtle)] text-[var(--error)] px-1 py-0.5 rounded shrink-0">!</span>}
                           </div>
                           <p className="text-[11px] text-[var(--text-secondary)] truncate">{n.detail}</p>
                           <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{n.time}</p>

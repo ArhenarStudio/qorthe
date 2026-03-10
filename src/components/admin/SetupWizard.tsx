@@ -182,7 +182,7 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
       <div className="p-6 pb-4" style={{ borderBottom: `1px solid var(--border)` }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `var(--accent)20` }}>
+            <div className="w-10 h-10 rounded-[var(--radius-card)] flex items-center justify-center" style={{ background: `var(--accent)20` }}>
               <Sparkles size={18} style={{ color: "var(--accent)" }} />
             </div>
             <div>
@@ -190,13 +190,13 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
               <p className="text-[11px]" style={{ color: "var(--text-secondary)" }}>Paso {currentStep + 1} de {WIZARD_STEPS.length}</p>
             </div>
           </div>
-          <button onClick={onDismiss} className="p-2 rounded-lg hover:opacity-80 transition-opacity" style={{ color: "var(--text-muted)" }}>
+          <button onClick={onDismiss} className="p-2 rounded-[var(--radius-card)] hover:opacity-80 transition-opacity" style={{ color: "var(--text-muted)" }}>
             <X size={16} />
           </button>
         </div>
         {/* Progress bar */}
-        <div className="h-1 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
-          <motion.div className="h-full rounded-full" style={{ background: "var(--accent)" }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
+        <div className="h-1 rounded-[var(--radius-badge)] overflow-hidden" style={{ background: "var(--border)" }}>
+          <motion.div className="h-full rounded-[var(--radius-badge)]" style={{ background: "var(--accent)" }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
         </div>
         {/* Step indicators */}
         <div className="flex items-center gap-1 mt-3 overflow-x-auto pb-1">
@@ -204,7 +204,7 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
             <button
               key={s.id}
               onClick={() => setCurrentStep(i)}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium shrink-0 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 rounded-[var(--radius-card)] text-[10px] font-medium shrink-0 transition-colors"
               style={{
                 background: i === currentStep ? `var(--accent)15` : "transparent",
                 color: i === currentStep ? "var(--accent)" : i < currentStep ? "var(--text-secondary)" : "var(--text-muted)",
@@ -228,7 +228,7 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
           className="p-6"
         >
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `var(--accent)15`, color: "var(--accent)" }}>
+            <div className="w-10 h-10 rounded-[var(--radius-card)] flex items-center justify-center" style={{ background: `var(--accent)15`, color: "var(--accent)" }}>
               {step.icon}
             </div>
             <div>
@@ -241,24 +241,24 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
             {step.fields.map((field) => {
               if (field.type === "info") {
                 return (
-                  <div key={field.key} className="p-3 rounded-lg text-[12px] leading-relaxed" style={{ background: "var(--surface2)", color: "var(--text-secondary)" }}>
+                  <div key={field.key} className="p-3 rounded-[var(--radius-card)] text-[12px] leading-relaxed" style={{ background: "var(--surface2)", color: "var(--text-secondary)" }}>
                     {field.description}
                   </div>
                 );
               }
               if (field.type === "toggle") {
                 return (
-                  <div key={field.key} className="flex items-center justify-between p-3 rounded-lg" style={{ background: "var(--surface2)" }}>
+                  <div key={field.key} className="flex items-center justify-between p-3 rounded-[var(--radius-card)]" style={{ background: "var(--surface2)" }}>
                     <div>
                       <p className="text-xs font-medium" style={{ color: "var(--text)" }}>{field.label}</p>
                       {field.description && <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{field.description}</p>}
                     </div>
                     <button
                       onClick={() => updateField(field.key, !formData[field.key])}
-                      className="w-9 h-5 rounded-full transition-colors"
+                      className="w-9 h-5 rounded-[var(--radius-badge)] transition-colors"
                       style={{ background: formData[field.key] ? "var(--accent)" : "var(--border)" }}
                     >
-                      <div className="w-4 h-4 bg-white rounded-full shadow transition-transform" style={{ transform: formData[field.key] ? "translateX(16px)" : "translateX(2px)" }} />
+                      <div className="w-4 h-4 bg-[var(--surface)] rounded-[var(--radius-badge)] shadow transition-transform" style={{ transform: formData[field.key] ? "translateX(16px)" : "translateX(2px)" }} />
                     </button>
                   </div>
                 );
@@ -270,7 +270,7 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
                     <select
                       value={formData[field.key] || ""}
                       onChange={(e) => updateField(field.key, e.target.value)}
-                      className="w-full px-3 py-2 text-xs rounded-lg outline-none"
+                      className="w-full px-3 py-2 text-xs rounded-[var(--radius-card)] outline-none"
                       style={{ background: "var(--surface2)", color: "var(--text)", border: `1px solid var(--border)`, borderRadius: "var(--radius-input)" }}
                     >
                       {field.options?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -319,7 +319,7 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
         {currentStep > 0 && (
           <button
             onClick={() => setCurrentStep((s) => s - 1)}
-            className="px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1 transition-colors hover:opacity-80"
+            className="px-3 py-2 text-xs font-medium rounded-[var(--radius-card)] flex items-center gap-1 transition-colors hover:opacity-80"
             style={{ color: "var(--text-secondary)", border: `1px solid var(--border)`, borderRadius: "var(--radius-button)" }}
           >
             <ChevronLeft size={14} /> Anterior
@@ -328,14 +328,14 @@ export const SetupWizard: React.FC<{ onComplete: () => void; onDismiss: () => vo
         <div className="flex-1" />
         <button
           onClick={onDismiss}
-          className="px-3 py-2 text-xs rounded-lg transition-colors hover:opacity-80"
+          className="px-3 py-2 text-xs rounded-[var(--radius-card)] transition-colors hover:opacity-80"
           style={{ color: "var(--text-muted)", borderRadius: "var(--radius-button)" }}
         >
           Saltar todo
         </button>
         <button
           onClick={handleNext}
-          className="px-4 py-2 text-xs font-medium rounded-lg flex items-center gap-1 transition-colors hover:opacity-90"
+          className="px-4 py-2 text-xs font-medium rounded-[var(--radius-card)] flex items-center gap-1 transition-colors hover:opacity-90"
           style={{ background: "var(--accent)", color: "var(--accent-text)", borderRadius: "var(--radius-button)" }}
         >
           {isLastStep ? "Completar" : "Siguiente"} {isLastStep ? <Rocket size={14} /> : <ChevronRight size={14} />}

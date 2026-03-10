@@ -237,42 +237,42 @@ export interface TurnoverByCategory {
 // ── Status helpers ──────────────────────────────────────
 
 export const STOCK_STATUS_CONFIG: Record<StockStatus, { label: string; cls: string; dot: string }> = {
-  in_stock:     { label: 'En stock',     cls: 'bg-green-50 text-green-600',  dot: 'bg-green-500' },
+  in_stock:     { label: 'En stock',     cls: 'bg-[var(--success-subtle)] text-[var(--success)]',  dot: 'bg-green-500' },
   low_stock:    { label: 'Stock bajo',   cls: 'bg-amber-50 text-amber-600',  dot: 'bg-amber-500' },
-  out_of_stock: { label: 'Agotado',      cls: 'bg-red-50 text-red-500',      dot: 'bg-red-500' },
-  overstock:    { label: 'Sobrestock',   cls: 'bg-blue-50 text-blue-600',    dot: 'bg-blue-500' },
+  out_of_stock: { label: 'Agotado',      cls: 'bg-[var(--error-subtle)] text-[var(--error)]',      dot: 'bg-red-500' },
+  overstock:    { label: 'Sobrestock',   cls: 'bg-[var(--info-subtle)] text-[var(--info)]',    dot: 'bg-blue-500' },
 };
 
 export const MOVEMENT_TYPE_CONFIG: Record<MovementType, { label: string; color: string }> = {
-  purchase:         { label: 'Compra',          color: 'text-green-600' },
-  sale:             { label: 'Venta',           color: 'text-blue-600' },
+  purchase:         { label: 'Compra',          color: 'text-[var(--success)]' },
+  sale:             { label: 'Venta',           color: 'text-[var(--info)]' },
   adjustment:       { label: 'Ajuste',          color: 'text-amber-600' },
-  return:           { label: 'Devolución',      color: 'text-purple-600' },
+  return:           { label: 'Devolución',      color: 'text-[var(--accent)]' },
   transfer:         { label: 'Transferencia',   color: 'text-indigo-600' },
-  damage:           { label: 'Daño/Merma',      color: 'text-red-600' },
+  damage:           { label: 'Daño/Merma',      color: 'text-[var(--error)]' },
   production:       { label: 'Producción',      color: 'text-wood-600' },
   count_adjustment: { label: 'Ajuste conteo',   color: 'text-teal-600' },
-  reservation:      { label: 'Reserva',         color: 'text-orange-600' },
+  reservation:      { label: 'Reserva',         color: 'text-[var(--warning)]' },
 };
 
 export const TRANSFER_STATUS_CONFIG: Record<TransferStatus, { label: string; cls: string }> = {
   pending:    { label: 'Pendiente',   cls: 'bg-amber-50 text-amber-600' },
-  in_transit: { label: 'En tránsito', cls: 'bg-blue-50 text-blue-600' },
-  completed:  { label: 'Completada',  cls: 'bg-green-50 text-green-600' },
-  cancelled:  { label: 'Cancelada',   cls: 'bg-red-50 text-red-500' },
+  in_transit: { label: 'En tránsito', cls: 'bg-[var(--info-subtle)] text-[var(--info)]' },
+  completed:  { label: 'Completada',  cls: 'bg-[var(--success-subtle)] text-[var(--success)]' },
+  cancelled:  { label: 'Cancelada',   cls: 'bg-[var(--error-subtle)] text-[var(--error)]' },
 };
 
 export const COUNT_STATUS_CONFIG: Record<CountStatus, { label: string; cls: string }> = {
-  scheduled:    { label: 'Programado',   cls: 'bg-blue-50 text-blue-600' },
+  scheduled:    { label: 'Programado',   cls: 'bg-[var(--info-subtle)] text-[var(--info)]' },
   in_progress:  { label: 'En progreso',  cls: 'bg-amber-50 text-amber-600' },
-  completed:    { label: 'Completado',   cls: 'bg-green-50 text-green-600' },
-  cancelled:    { label: 'Cancelado',    cls: 'bg-red-50 text-red-500' },
+  completed:    { label: 'Completado',   cls: 'bg-[var(--success-subtle)] text-[var(--success)]' },
+  cancelled:    { label: 'Cancelado',    cls: 'bg-[var(--error-subtle)] text-[var(--error)]' },
 };
 
 export const ABC_CONFIG: Record<ABCCategory, { label: string; cls: string; description: string }> = {
-  A: { label: 'A — Alto valor',  cls: 'bg-green-50 text-green-700 border-green-200', description: '~20% productos, ~80% ingreso' },
+  A: { label: 'A — Alto valor',  cls: 'bg-[var(--success-subtle)] text-[var(--success)] border-green-200', description: '~20% productos, ~80% ingreso' },
   B: { label: 'B — Valor medio', cls: 'bg-amber-50 text-amber-700 border-amber-200', description: '~30% productos, ~15% ingreso' },
-  C: { label: 'C — Bajo valor',  cls: 'bg-red-50 text-red-600 border-red-200',       description: '~50% productos, ~5% ingreso' },
+  C: { label: 'C — Bajo valor',  cls: 'bg-[var(--error-subtle)] text-[var(--error)] border-red-200',       description: '~50% productos, ~5% ingreso' },
 };
 
 export const fmt = (n: number) =>

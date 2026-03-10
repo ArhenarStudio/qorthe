@@ -26,7 +26,7 @@ interface ImportJob {
 }
 
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 // ===== IMPORT TAB =====
@@ -66,7 +66,7 @@ function ImportTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {dataTypes.map(dt => (
             <button key={dt.id} onClick={() => { setImportType(dt.id); setStep(1); }}
-              className="p-4 border border-[var(--border)] rounded-xl text-left hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
+              className="p-4 border border-[var(--border)] rounded-[var(--radius-card)] text-left hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
               <dt.icon size={18} className="text-[var(--text-muted)] group-hover:text-[var(--accent)] mb-2" />
               <p className="text-xs font-medium text-[var(--text)]">{dt.label}</p>
               <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{dt.desc}</p>
@@ -87,7 +87,7 @@ function ImportTab() {
           <p className="text-sm font-serif text-[var(--text)] mb-1">Sube tu archivo de {dataTypes.find(d => d.id === importType)?.label}</p>
           <p className="text-xs text-[var(--text-muted)] mb-4">Formatos aceptados: CSV, Excel (.xlsx), JSON</p>
           <div className="flex flex-col items-center gap-3">
-            <div className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 w-full max-w-md hover:border-[var(--accent)]/50 transition-colors cursor-pointer">
+            <div className="border-2 border-dashed border-[var(--border)] rounded-[var(--radius-card)] p-8 w-full max-w-md hover:border-[var(--accent)]/50 transition-colors cursor-pointer">
               <input type="file" className="hidden" id="import-file" />
               <label htmlFor="import-file" className="cursor-pointer text-center">
                 <FileSpreadsheet size={24} className="text-[var(--text-muted)] mx-auto mb-2" />
@@ -95,7 +95,7 @@ function ImportTab() {
                 <p className="text-[10px] text-[var(--text-muted)] mt-1">Tamano maximo: 50MB</p>
               </label>
             </div>
-            <button onClick={() => setStep(2)} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors">
+            <button onClick={() => setStep(2)} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors">
               Subir y continuar
             </button>
             <button onClick={() => toast.success('Template descargado')} className="text-xs text-[var(--accent)] hover:underline flex items-center gap-1">
@@ -139,7 +139,7 @@ function ImportTab() {
                       </select>
                     </td>
                     <td className="px-3 py-2">
-                      {m.mapped ? <span className="text-[10px] text-green-600 flex items-center gap-1"><Check size={10} /> Mapeado</span>
+                      {m.mapped ? <span className="text-[10px] text-[var(--success)] flex items-center gap-1"><Check size={10} /> Mapeado</span>
                         : <span className="text-[10px] text-amber-500 flex items-center gap-1"><AlertTriangle size={10} /> Sin mapear</span>}
                     </td>
                   </tr>
@@ -149,8 +149,8 @@ function ImportTab() {
           </div>
         </Card>
         <div className="flex gap-2">
-          <button onClick={() => setStep(1)} className="px-3 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg">Atras</button>
-          <button onClick={() => setStep(3)} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg">Continuar</button>
+          <button onClick={() => setStep(1)} className="px-3 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)]">Atras</button>
+          <button onClick={() => setStep(3)} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)]">Continuar</button>
         </div>
       </div>
     );
@@ -163,9 +163,9 @@ function ImportTab() {
         <Card className="p-5">
           <h4 className="text-xs font-medium text-[var(--text)] mb-1">Preview de datos</h4>
           <p className="text-[10px] text-[var(--text-muted)] mb-4">Revisa los datos antes de importar.</p>
-          <div className="bg-[var(--surface2)] rounded-lg p-4 space-y-2">
+          <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 space-y-2">
             <div className="flex items-center gap-3">
-              <CheckCircle size={14} className="text-green-500" />
+              <CheckCircle size={14} className="text-[var(--success)]" />
               <span className="text-xs text-[var(--text)]">48 registros listos para importar</span>
             </div>
             <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ function ImportTab() {
               <span className="text-xs text-[var(--text)]">3 registros con advertencias (campos opcionales vacios)</span>
             </div>
             <div className="flex items-center gap-3">
-              <X size={14} className="text-red-400" />
+              <X size={14} className="text-[var(--error)]" />
               <span className="text-xs text-[var(--text)]">1 registro con errores (precio invalido)</span>
             </div>
           </div>
@@ -194,12 +194,12 @@ function ImportTab() {
                   { n: 'Bowl Maple Mini', p: '$450', sku: 'BM-001', ok: true },
                   { n: 'Set Cubiertos Pack', p: 'N/A', sku: 'SC-PK-001', ok: false },
                 ].map((r, i) => (
-                  <tr key={i} className={!r.ok ? 'bg-red-50/50' : ''}>
+                  <tr key={i} className={!r.ok ? 'bg-[var(--error-subtle)]/50' : ''}>
                     <td className="px-3 py-2 text-[var(--text-muted)]">{i + 1}</td>
                     <td className="px-3 py-2 text-[var(--text)]">{r.n}</td>
                     <td className="px-3 py-2 text-[var(--text)]">{r.p}</td>
                     <td className="px-3 py-2 font-mono text-[var(--text-secondary)]">{r.sku}</td>
-                    <td className="px-3 py-2">{r.ok ? <span className="text-green-600 text-[10px]">✓ OK</span> : <span className="text-red-500 text-[10px]">✗ Error</span>}</td>
+                    <td className="px-3 py-2">{r.ok ? <span className="text-[var(--success)] text-[10px]">✓ OK</span> : <span className="text-[var(--error)] text-[10px]">✗ Error</span>}</td>
                   </tr>
                 ))}
               </tbody>
@@ -208,8 +208,8 @@ function ImportTab() {
           </div>
         </Card>
         <div className="flex gap-2">
-          <button onClick={() => setStep(2)} className="px-3 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg">Atras</button>
-          <button onClick={() => setStep(4)} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg flex items-center gap-1.5">
+          <button onClick={() => setStep(2)} className="px-3 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)]">Atras</button>
+          <button onClick={() => setStep(4)} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] flex items-center gap-1.5">
             <Upload size={12} /> Importar 48 registros
           </button>
         </div>
@@ -227,12 +227,12 @@ function ImportTab() {
           <RefreshCw size={24} className="text-[var(--accent)] mx-auto mb-3 animate-spin" />
           <p className="text-sm font-serif text-[var(--text)]">Importando datos...</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">Procesando 48 registros</p>
-          <div className="w-full max-w-xs mx-auto mt-4 h-2 bg-[var(--surface2)] rounded-full overflow-hidden">
+          <div className="w-full max-w-xs mx-auto mt-4 h-2 bg-[var(--surface2)] rounded-[var(--radius-badge)] overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
               transition={{ duration: 2 }}
-              className="h-full bg-[var(--accent)] rounded-full"
+              className="h-full bg-[var(--accent)] rounded-[var(--radius-badge)]"
             />
           </div>
         </Card>
@@ -245,13 +245,13 @@ function ImportTab() {
     <div className="space-y-4">
       <StepIndicator current={5} />
       <Card className="p-8 text-center">
-        <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
-          <CheckCircle size={24} className="text-green-600" />
+        <div className="w-12 h-12 rounded-[var(--radius-badge)] bg-[var(--success-subtle)] flex items-center justify-center mx-auto mb-3">
+          <CheckCircle size={24} className="text-[var(--success)]" />
         </div>
         <p className="text-sm font-serif text-[var(--text)]">Importacion completada</p>
         <div className="flex justify-center gap-6 mt-4 text-center">
           <div>
-            <p className="text-lg font-serif text-green-600">48</p>
+            <p className="text-lg font-serif text-[var(--success)]">48</p>
             <p className="text-[10px] text-[var(--text-muted)]">Importados</p>
           </div>
           <div>
@@ -259,13 +259,13 @@ function ImportTab() {
             <p className="text-[10px] text-[var(--text-muted)]">Advertencias</p>
           </div>
           <div>
-            <p className="text-lg font-serif text-red-500">1</p>
+            <p className="text-lg font-serif text-[var(--error)]">1</p>
             <p className="text-[10px] text-[var(--text-muted)]">Errores</p>
           </div>
         </div>
         <div className="flex justify-center gap-2 mt-4">
-          <button onClick={() => { setStep(0); setImportType(null); }} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg">Nueva importacion</button>
-          <button onClick={() => toast.success('Reporte descargado')} className="px-4 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg flex items-center gap-1"><Download size={10} /> Descargar reporte</button>
+          <button onClick={() => { setStep(0); setImportType(null); }} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)]">Nueva importacion</button>
+          <button onClick={() => toast.success('Reporte descargado')} className="px-4 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)] flex items-center gap-1"><Download size={10} /> Descargar reporte</button>
         </div>
       </Card>
     </div>
@@ -279,7 +279,7 @@ function StepIndicator({ current }: { current: number }) {
       {steps.map((s, i) => (
         <React.Fragment key={s}>
           <div className={'flex items-center gap-1 text-[10px] ' + (i + 1 <= current ? 'text-[var(--accent)] font-medium' : 'text-[var(--text-muted)]')}>
-            <span className={'w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold ' + (i + 1 < current ? 'bg-[var(--accent)] text-white' : i + 1 === current ? 'bg-[var(--accent)]/20 text-[var(--accent)]' : 'bg-[var(--surface2)] text-[var(--text-muted)]')}>{i + 1 < current ? '✓' : i + 1}</span>
+            <span className={'w-4 h-4 rounded-[var(--radius-badge)] flex items-center justify-center text-[8px] font-bold ' + (i + 1 < current ? 'bg-[var(--accent)] text-white' : i + 1 === current ? 'bg-[var(--accent)]/20 text-[var(--accent)]' : 'bg-[var(--surface2)] text-[var(--text-muted)]')}>{i + 1 < current ? '✓' : i + 1}</span>
             <span className="hidden sm:inline">{s}</span>
           </div>
           {i < steps.length - 1 && <div className={'flex-1 h-px max-w-8 ' + (i + 1 < current ? 'bg-[var(--accent)]' : 'bg-wood-200')} />}
@@ -307,7 +307,7 @@ function ExportTab() {
         {sections.map(s => (
           <Card key={s.id} className="p-4 hover:border-[var(--accent)]/30 transition-colors">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-[var(--radius-card)] bg-[var(--accent)]/10 flex items-center justify-center">
                 <s.icon size={16} className="text-[var(--accent)]" />
               </div>
               <div>
@@ -319,7 +319,7 @@ function ExportTab() {
             <div className="flex gap-1.5">
               {['CSV', 'Excel', 'JSON'].map(f => (
                 <button key={f} onClick={() => toast.success(`${s.label} exportados como ${f}`)}
-                  className="flex-1 px-2 py-1.5 text-[10px] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors flex items-center justify-center gap-1">
+                  className="flex-1 px-2 py-1.5 text-[10px] border border-[var(--border)] rounded-[var(--radius-card)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors flex items-center justify-center gap-1">
                   <Download size={8} /> {f}
                 </button>
               ))}
@@ -349,8 +349,8 @@ function MigrateTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {platforms.map(p => (
             <button key={p.id} onClick={() => toast.success(`Wizard de migracion desde ${p.name} iniciado`)}
-              className="p-4 border border-[var(--border)] rounded-xl text-left hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
-              <div className="w-10 h-10 rounded-lg bg-[var(--surface2)] flex items-center justify-center mb-2">
+              className="p-4 border border-[var(--border)] rounded-[var(--radius-card)] text-left hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
+              <div className="w-10 h-10 rounded-[var(--radius-card)] bg-[var(--surface2)] flex items-center justify-center mb-2">
                 <span className="text-sm font-bold text-[var(--text-secondary)]">{p.name[0]}</span>
               </div>
               <p className="text-xs font-medium text-[var(--text)]">{p.name}</p>
@@ -358,7 +358,7 @@ function MigrateTab() {
               <p className="text-[9px] text-[var(--text-muted)] mt-1">Formato: {p.format}</p>
               <div className="flex flex-wrap gap-1 mt-2">
                 {p.supported.map(s => (
-                  <span key={s} className="text-[8px] bg-[var(--surface2)] text-[var(--text-secondary)] px-1.5 py-0.5 rounded-full">{s}</span>
+                  <span key={s} className="text-[8px] bg-[var(--surface2)] text-[var(--text-secondary)] px-1.5 py-0.5 rounded-[var(--radius-badge)]">{s}</span>
                 ))}
               </div>
               <span className="text-[10px] text-[var(--accent)] mt-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -384,9 +384,9 @@ function HistoryTab() {
 
   const typeLabel: Record<string, string> = { products: 'Productos', customers: 'Clientes', orders: 'Pedidos', categories: 'Categorias', reviews: 'Reviews' };
   const statusCfg: Record<string, { label: string; color: string; bg: string }> = {
-    completed: { label: 'Completado', color: 'text-green-600', bg: 'bg-green-50' },
+    completed: { label: 'Completado', color: 'text-[var(--success)]', bg: 'bg-[var(--success-subtle)]' },
     partial: { label: 'Parcial', color: 'text-amber-600', bg: 'bg-amber-50' },
-    failed: { label: 'Fallido', color: 'text-red-500', bg: 'bg-red-50' },
+    failed: { label: 'Fallido', color: 'text-[var(--error)]', bg: 'bg-[var(--error-subtle)]' },
   };
 
   return (
@@ -413,9 +413,9 @@ function HistoryTab() {
                   <td className="px-4 py-3 text-xs text-[var(--text)]">{typeLabel[j.type]}</td>
                   <td className="px-4 py-3 text-xs text-[var(--text-secondary)] font-mono">{j.source}</td>
                   <td className="px-4 py-3 text-xs text-[var(--text-muted)]">{j.date}</td>
-                  <td className="px-4 py-3 text-xs text-green-600 font-medium">{j.imported}</td>
-                  <td className="px-4 py-3 text-xs text-red-500">{j.errors}</td>
-                  <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${st.bg} ${st.color}`}>{st.label}</span></td>
+                  <td className="px-4 py-3 text-xs text-[var(--success)] font-medium">{j.imported}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--error)]">{j.errors}</td>
+                  <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] ${st.bg} ${st.color}`}>{st.label}</span></td>
                 </tr>
               );
             })}

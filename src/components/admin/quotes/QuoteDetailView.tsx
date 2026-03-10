@@ -34,12 +34,12 @@ const InlineModal: React.FC<{
   children: React.ReactNode;
 }> = ({ title, onConfirm, onCancel, confirmLabel = 'Confirmar', confirmColor = 'bg-wood-900', children }) => (
   <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onCancel}>
-    <div className="bg-white dark:bg-wood-900 rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+    <div className="bg-[var(--surface)] dark:bg-wood-900 rounded-[var(--radius-card)] shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
       <h4 className="text-sm font-serif font-bold text-wood-900 dark:text-sand-100">{title}</h4>
       {children}
       <div className="flex justify-end gap-2 pt-2">
         <button onClick={onCancel} className="px-4 py-2 text-xs text-wood-500 hover:text-wood-700">Cancelar</button>
-        <button onClick={onConfirm} className={`px-4 py-2 text-xs text-sand-100 rounded-lg hover:opacity-90 ${confirmColor}`}>{confirmLabel}</button>
+        <button onClick={onConfirm} className={`px-4 py-2 text-xs text-sand-100 rounded-[var(--radius-card)] hover:opacity-90 ${confirmColor}`}>{confirmLabel}</button>
       </div>
     </div>
   </div>
@@ -115,11 +115,11 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
       </button>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white rounded-xl border border-wood-100 shadow-sm p-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-serif text-lg text-wood-900">📋 {q.number}</h3>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full ${statusConfig[q.status].cls}`}>{statusConfig[q.status].label}</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-[var(--radius-badge)] ${statusConfig[q.status].cls}`}>{statusConfig[q.status].label}</span>
           </div>
           <p className="text-[11px] text-wood-500 mt-1">Recibida: {fmtDateTime(q.date)} | Vence: {fmtDate(q.validUntil)}</p>
           {q.projectName && <p className="text-[11px] text-wood-400 mt-0.5">Proyecto: {q.projectName}</p>}
@@ -127,7 +127,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
         <select
           value={q.status}
           onChange={e => { const newStatus = e.target.value as QuoteStatus; setQ((prev: AdminQuote) => ({ ...prev, status: newStatus })); persistQuote({ status: newStatus }); toast.success(`Estado cambiado a ${statusConfig[newStatus].label}`); }}
-          className="text-xs bg-sand-50 border border-wood-200 rounded-lg px-3 py-2 text-wood-900 outline-none"
+          className="text-xs bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] px-3 py-2 text-wood-900 outline-none"
         >
           {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
@@ -138,7 +138,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
         {/* LEFT COLUMN */}
         <div className="space-y-6">
           {/* Pieces */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4 sm:p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4 sm:p-5">
             <h4 className="text-sm text-wood-900 mb-4 flex items-center gap-2">
               <Package size={16} className="text-accent-gold" /> Piezas Solicitadas
             </h4>
@@ -150,7 +150,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
           </div>
 
           {/* Conversation */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4 sm:p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4 sm:p-5">
             <h4 className="text-sm text-wood-900 mb-4 flex items-center gap-2">
               <MessageSquare size={16} className="text-accent-gold" /> Conversación con el Cliente
             </h4>
@@ -158,7 +158,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               {q.messages.length === 0 && <p className="text-xs text-wood-400 text-center py-4">Sin mensajes aún</p>}
               {q.messages.map((m: QuoteMessage) => (
                 <div key={m.id} className={`flex ${m.sender === 'admin' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] rounded-xl px-4 py-3 ${m.sender === 'admin' ? 'bg-wood-900 text-sand-100' : 'bg-sand-50 text-wood-900 border border-wood-100'}`}>
+                  <div className={`max-w-[85%] rounded-[var(--radius-card)] px-4 py-3 ${m.sender === 'admin' ? 'bg-wood-900 text-sand-100' : 'bg-sand-50 text-wood-900 border border-wood-100'}`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-[10px] ${m.sender === 'admin' ? 'text-accent-gold' : 'text-wood-500'}`}>
                         {m.sender === 'admin' ? '🏪' : '👤'} {m.senderName}
@@ -169,7 +169,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
                     {m.attachments && m.attachments.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {m.attachments.map((a: string, ai: number) => (
-                          <span key={ai} className={`text-[10px] px-2 py-0.5 rounded-md ${m.sender === 'admin' ? 'bg-wood-800 text-wood-300' : 'bg-white text-wood-600 border border-wood-200'}`}>
+                          <span key={ai} className={`text-[10px] px-2 py-0.5 rounded-[var(--radius-button)] ${m.sender === 'admin' ? 'bg-wood-800 text-wood-300' : 'bg-[var(--surface)] text-wood-600 border border-wood-200'}`}>
                             📎 {a}
                           </span>
                         ))}
@@ -184,18 +184,18 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
                 value={newMsg} onChange={e => setNewMsg(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
                 placeholder="Escribe tu respuesta..."
-                className="flex-1 bg-sand-50 border border-wood-200 rounded-lg px-3 py-2 text-xs text-wood-900 outline-none focus:border-wood-400"
+                className="flex-1 bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] px-3 py-2 text-xs text-wood-900 outline-none focus:border-wood-400"
               />
               <button className="p-2 text-wood-400 hover:text-wood-700"><Paperclip size={14} /></button>
               <button className="p-2 text-wood-400 hover:text-wood-700"><Mail size={14} /></button>
-              <button onClick={handleSendMessage} className="px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors">
+              <button onClick={handleSendMessage} className="px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800 transition-colors">
                 <Send size={14} />
               </button>
             </div>
           </div>
 
           {/* Internal Notes */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4 sm:p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4 sm:p-5">
             <h4 className="text-sm text-wood-900 mb-3 flex items-center gap-2">
               <FileText size={16} className="text-amber-500" /> Notas Internas
               <span className="text-[10px] text-wood-400">(el cliente NO las ve)</span>
@@ -203,7 +203,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
             <div className="space-y-3 mb-3">
               {q.internalNotes.length === 0 && <p className="text-xs text-wood-400">Sin notas internas</p>}
               {q.internalNotes.map((n: QuoteInternalNote) => (
-                <div key={n.id} className="bg-amber-50/50 border border-amber-100 rounded-lg p-3">
+                <div key={n.id} className="bg-amber-50/50 border border-amber-100 rounded-[var(--radius-card)] p-3">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-[10px] text-amber-700">{n.author}</span>
                     <span className="text-[10px] text-wood-400">{fmtDateTime(n.date)}</span>
@@ -217,9 +217,9 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
                 value={newNote} onChange={e => setNewNote(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleAddNote()}
                 placeholder="Agregar nota interna..."
-                className="flex-1 bg-sand-50 border border-wood-200 rounded-lg px-3 py-2 text-xs text-wood-900 outline-none focus:border-wood-400"
+                className="flex-1 bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] px-3 py-2 text-xs text-wood-900 outline-none focus:border-wood-400"
               />
-              <button onClick={handleAddNote} className="px-3 py-2 bg-amber-100 text-amber-700 text-xs rounded-lg hover:bg-amber-200 transition-colors">Agregar</button>
+              <button onClick={handleAddNote} className="px-3 py-2 bg-amber-100 text-amber-700 text-xs rounded-[var(--radius-card)] hover:bg-amber-200 transition-colors">Agregar</button>
             </div>
           </div>
         </div>
@@ -227,7 +227,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
         {/* RIGHT COLUMN */}
         <div className="space-y-4">
           {/* Client */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
             <h4 className="text-[11px] text-wood-400 uppercase tracking-wider mb-3">Cliente</h4>
             <p className="text-sm text-wood-900">{q.customer.name}</p>
             <p className="text-[11px] text-wood-500 mt-1">{q.customer.email}</p>
@@ -235,7 +235,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
             {q.customer.tier && (
               <div className="flex items-center gap-2 mt-2">
                 {(() => { const tb = getQuoteTierBadge(q.customer.tier); return (
-                <span className="text-[10px] px-2 py-0.5 rounded-full" style={tb.styles.badge}>
+                <span className="text-[10px] px-2 py-0.5 rounded-[var(--radius-badge)]" style={tb.styles.badge}>
                   <TierIcon tierId={tb.tierId} size={12} /> {tb.name}
                 </span>); })()}
                 <span className="text-[10px] text-wood-400">{q.customer.points.toLocaleString()} puntos</span>
@@ -246,7 +246,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
           </div>
 
           {/* Financial Summary */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
             <h4 className="text-[11px] text-wood-400 uppercase tracking-wider mb-3">Resumen Financiero</h4>
             <div className="space-y-1.5 text-xs">
               {q.pieces.map((p: QuotePiece, i: number) => (
@@ -258,7 +258,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               <div className="border-t border-wood-100 pt-1.5 mt-1.5" />
               <div className="flex justify-between text-wood-600"><span>Subtotal</span><span className="text-wood-900">{fmt(subtotal)}</span></div>
               {q.discount && (
-                <div className="flex justify-between text-wood-600"><span>Descuento {q.discount.reason} ({q.discount.percent}%)</span><span className="text-red-500">-{fmt(discountAmt)}</span></div>
+                <div className="flex justify-between text-wood-600"><span>Descuento {q.discount.reason} ({q.discount.percent}%)</span><span className="text-[var(--error)]">-{fmt(discountAmt)}</span></div>
               )}
               <div className="border-t border-wood-100 pt-1.5 mt-1.5" />
               <div className="flex justify-between"><span className="text-wood-900">Total cotización</span><span className="text-wood-900">{fmt(total)}</span></div>
@@ -270,10 +270,10 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               <div className="border-t border-wood-100 pt-1.5 mt-1.5" />
               <p className="text-[10px] text-wood-400 uppercase tracking-wider mt-2 mb-1">Análisis de rentabilidad</p>
               <div className="flex justify-between text-wood-600"><span>Costo total estimado</span><span>{fmt(totalCost)}</span></div>
-              <div className="flex justify-between text-wood-600"><span>Ganancia bruta</span><span className="text-green-600">{fmt(grossProfit)}</span></div>
+              <div className="flex justify-between text-wood-600"><span>Ganancia bruta</span><span className="text-[var(--success)]">{fmt(grossProfit)}</span></div>
               <div className="flex justify-between">
                 <span className="text-wood-600">Margen bruto</span>
-                <span className={`${margin >= 50 ? 'text-green-600' : margin >= 30 ? 'text-amber-600' : 'text-red-500'}`}>
+                <span className={`${margin >= 50 ? 'text-[var(--success)]' : margin >= 30 ? 'text-amber-600' : 'text-[var(--error)]'}`}>
                   {margin}% {margin >= 50 ? '✅' : margin >= 30 ? '⚠️' : '❌'}
                 </span>
               </div>
@@ -281,7 +281,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
           </div>
 
           {/* Timeline & Conditions */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
             <h4 className="text-[11px] text-wood-400 uppercase tracking-wider mb-3">Timeline y Condiciones</h4>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between"><span className="text-wood-500">Tiempo estimado</span><span className="text-wood-900">{q.timeline}</span></div>
@@ -291,7 +291,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
                   <p className="text-[10px] text-wood-400 uppercase">Condiciones:</p>
                   {q.conditions.map((c: QuoteCondition, i: number) => (
                     <div key={i} className="flex items-center gap-2 text-xs text-wood-600">
-                      <span className={c.checked ? 'text-green-500' : 'text-wood-300'}>{c.checked ? '☑' : '☐'}</span>
+                      <span className={c.checked ? 'text-[var(--success)]' : 'text-wood-300'}>{c.checked ? '☑' : '☐'}</span>
                       {c.text}
                     </div>
                   ))}
@@ -302,9 +302,9 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
 
           {/* Deposit info */}
           {q.depositPaid && (
-            <div className="bg-green-50 rounded-xl border border-green-200 p-4">
-              <h4 className="text-[11px] text-green-700 uppercase tracking-wider mb-2">💰 Anticipo Registrado</h4>
-              <div className="space-y-1 text-xs text-green-800">
+            <div className="bg-[var(--success-subtle)] rounded-[var(--radius-card)] border border-green-200 p-4">
+              <h4 className="text-[11px] text-[var(--success)] uppercase tracking-wider mb-2">💰 Anticipo Registrado</h4>
+              <div className="space-y-1 text-xs text-[var(--success)]">
                 <p>Monto: {fmt(q.depositPaid.amount)}</p>
                 <p>Método: {q.depositPaid.method}</p>
                 <p>Ref: {q.depositPaid.ref}</p>
@@ -315,19 +315,19 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
 
           {/* Production Progress */}
           {q.productionProgress && (
-            <div className="bg-yellow-50 rounded-xl border border-yellow-200 p-4">
-              <h4 className="text-[11px] text-yellow-700 uppercase tracking-wider mb-2">🔨 Progreso de Producción</h4>
+            <div className="bg-[var(--warning-subtle)] rounded-[var(--radius-card)] border border-yellow-200 p-4">
+              <h4 className="text-[11px] text-[var(--warning)] uppercase tracking-wider mb-2">🔨 Progreso de Producción</h4>
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-3 bg-yellow-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-accent-gold rounded-full" style={{ width: `${(q.productionProgress.completed / q.productionProgress.total) * 100}%` }} />
+                <div className="flex-1 h-3 bg-[var(--warning-subtle)] rounded-[var(--radius-badge)] overflow-hidden">
+                  <div className="h-full bg-accent-gold rounded-[var(--radius-badge)]" style={{ width: `${(q.productionProgress.completed / q.productionProgress.total) * 100}%` }} />
                 </div>
-                <span className="text-xs text-yellow-800">{q.productionProgress.completed}/{q.productionProgress.total} piezas</span>
+                <span className="text-xs text-[var(--warning)]">{q.productionProgress.completed}/{q.productionProgress.total} piezas</span>
               </div>
             </div>
           )}
 
           {/* Actions */}
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
             <h4 className="text-[11px] text-wood-400 uppercase tracking-wider mb-3">Acciones</h4>
             <div className="space-y-2">
               <ActionButton icon={<FileText size={13} />} label="Generar PDF de cotización" onClick={() => { window.print(); }} />
@@ -363,7 +363,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
         <InlineModal
           title="💰 Registrar Anticipo"
           confirmLabel="Registrar Anticipo"
-          confirmColor="bg-green-600"
+          confirmColor="bg-[var(--success)]"
           onCancel={() => setShowDepositModal(false)}
           onConfirm={() => {
             const amt = parseFloat(depositAmount.replace(/[^0-9.]/g, ''));
@@ -379,14 +379,14 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
             <div>
               <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Monto del anticipo</label>
               <input type="text" value={depositAmount} onChange={e => setDepositAmount(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none"
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] focus:border-accent-gold outline-none"
                 placeholder="0.00" autoFocus />
               <p className="text-[10px] text-wood-400 mt-1">Sugerido ({q.depositPercent}%): {fmt(totalConIva * q.depositPercent / 100)}</p>
             </div>
             <div>
               <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Método de pago</label>
               <select value={depositMethod} onChange={e => setDepositMethod(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg outline-none">
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] outline-none">
                 <option>Transferencia</option>
                 <option>Efectivo</option>
                 <option>Tarjeta</option>
@@ -403,7 +403,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
         <InlineModal
           title="❌ Rechazar / Cancelar Cotización"
           confirmLabel="Confirmar Rechazo"
-          confirmColor="bg-red-600"
+          confirmColor="bg-[var(--error)]"
           onCancel={() => setShowRejectModal(false)}
           onConfirm={() => {
             if (!rejectReason.trim()) { toast.error('Escribe un motivo'); return; }
@@ -419,12 +419,12 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Motivo de rechazo</label>
               <textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)}
                 rows={3} placeholder="Precio alto, timeline largo, cambió de opinión..."
-                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg focus:border-accent-gold outline-none resize-none" autoFocus />
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] focus:border-accent-gold outline-none resize-none" autoFocus />
             </div>
             <div className="flex flex-wrap gap-1.5">
               {['Precio alto', 'Timeline largo', 'Cambió de opinión', 'Sin respuesta', 'Otro proveedor'].map(r => (
                 <button key={r} onClick={() => setRejectReason(r)}
-                  className={`text-[10px] px-2 py-1 rounded-md border transition-colors ${rejectReason === r ? 'border-red-400 bg-red-50 text-red-600' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
+                  className={`text-[10px] px-2 py-1 rounded-[var(--radius-button)] border transition-colors ${rejectReason === r ? 'border-red-400 bg-[var(--error-subtle)] text-[var(--error)]' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
                   {r}
                 </button>
               ))}
@@ -466,7 +466,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
           }}
         >
           <div className="space-y-4">
-            <div className="bg-sand-50 rounded-lg p-3 text-xs space-y-1.5">
+            <div className="bg-sand-50 rounded-[var(--radius-card)] p-3 text-xs space-y-1.5">
               <div className="flex justify-between"><span className="text-wood-500">Cotización</span><span className="text-wood-900 font-bold">{q.number}</span></div>
               <div className="flex justify-between"><span className="text-wood-500">Cliente</span><span className="text-wood-900">{q.customer.name}</span></div>
               <div className="flex justify-between"><span className="text-wood-500">Total</span><span className="text-wood-900 font-bold">{fmt(totalConIva)}</span></div>
@@ -478,13 +478,13 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               <label className="text-[10px] font-bold text-wood-400 uppercase block mb-2">Destino</label>
               <div className="grid grid-cols-2 gap-2">
                 <button onClick={() => setConvertTarget('order')}
-                  className={`p-3 rounded-lg border-2 text-center text-xs transition-all ${convertTarget === 'order' ? 'border-accent-gold bg-accent-gold/5 text-wood-900 font-bold' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
+                  className={`p-3 rounded-[var(--radius-card)] border-2 text-center text-xs transition-all ${convertTarget === 'order' ? 'border-accent-gold bg-accent-gold/5 text-wood-900 font-bold' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
                   <ShoppingCart size={16} className="mx-auto mb-1" />
                   Orden Medusa
                   <span className="block text-[9px] text-wood-400 mt-0.5">Orden directa en el sistema</span>
                 </button>
                 <button onClick={() => setConvertTarget('pos')}
-                  className={`p-3 rounded-lg border-2 text-center text-xs transition-all ${convertTarget === 'pos' ? 'border-accent-gold bg-accent-gold/5 text-wood-900 font-bold' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
+                  className={`p-3 rounded-[var(--radius-card)] border-2 text-center text-xs transition-all ${convertTarget === 'pos' ? 'border-accent-gold bg-accent-gold/5 text-wood-900 font-bold' : 'border-wood-200 text-wood-500 hover:border-wood-400'}`}>
                   <Zap size={16} className="mx-auto mb-1" />
                   Punto de Venta
                   <span className="block text-[9px] text-wood-400 mt-0.5">Aparece en historial POS</span>
@@ -493,7 +493,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
             </div>
 
             {!['aprobada', 'anticipo_recibido'].includes(q.status) && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <div className="bg-amber-50 border border-amber-200 rounded-[var(--radius-card)] p-3">
                 <p className="text-[11px] text-amber-700">⚠️ Estado actual: "{statusConfig[q.status].label}". Se recomienda convertir cuando esté aprobada o con anticipo.</p>
               </div>
             )}
@@ -508,8 +508,8 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
 const ActionButton: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void; accent?: boolean; subtle?: boolean; danger?: boolean }> = ({ icon, label, onClick, accent, subtle, danger }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg transition-colors text-left ${
-      danger ? 'text-red-500 hover:bg-red-50' :
+    className={`w-full flex items-center gap-2 px-3 py-2 text-xs rounded-[var(--radius-card)] transition-colors text-left ${
+      danger ? 'text-[var(--error)] hover:bg-[var(--error-subtle)]' :
       accent ? 'bg-wood-900 text-sand-100 hover:bg-wood-800' :
       subtle ? 'text-wood-500 hover:bg-sand-50' :
       'text-wood-700 bg-sand-50 hover:bg-sand-100'
@@ -527,7 +527,7 @@ const PieceCard: React.FC<{ piece: QuotePiece; index: number; total: number }> =
   const margin = unitPrice > 0 ? Math.round(((unitPrice - cost) / unitPrice) * 100) : 0;
 
   return (
-    <div className="border border-wood-100 rounded-lg p-4">
+    <div className="border border-wood-100 rounded-[var(--radius-card)] p-4">
       <p className="text-[10px] text-wood-400 mb-2">— Pieza {index + 1} de {total} —</p>
       <div className="flex items-start gap-2 mb-3">
         <span className="text-lg">{isGrabado ? '✂️' : '🪵'}</span>
@@ -548,8 +548,8 @@ const PieceCard: React.FC<{ piece: QuotePiece; index: number; total: number }> =
       </div>
 
       {p.engraving && (
-        <div className="bg-red-50/50 border border-red-100 rounded-lg p-3 mb-3">
-          <p className="text-[10px] text-red-600 uppercase tracking-wider mb-1">🔴 Grabado Láser</p>
+        <div className="bg-[var(--error-subtle)]/50 border border-red-100 rounded-[var(--radius-card)] p-3 mb-3">
+          <p className="text-[10px] text-[var(--error)] uppercase tracking-wider mb-1">🔴 Grabado Láser</p>
           <div className="text-xs text-wood-600 space-y-0.5">
             <p>Tipo: {p.engraving.type}</p>
             <p>Complejidad: {p.engraving.complexity}</p>
@@ -557,7 +557,7 @@ const PieceCard: React.FC<{ piece: QuotePiece; index: number; total: number }> =
             {p.engraving.text && <p>Texto: "{p.engraving.text}"</p>}
             {p.engraving.file && (
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] px-2 py-0.5 bg-white border border-wood-200 rounded-md">📎 {p.engraving.file}</span>
+                <span className="text-[10px] px-2 py-0.5 bg-[var(--surface)] border border-wood-200 rounded-[var(--radius-button)]">📎 {p.engraving.file}</span>
                 <button className="text-[10px] text-accent-gold hover:underline">👁️ Preview</button>
                 <button className="text-[10px] text-accent-gold hover:underline">⬇️ Descargar</button>
               </div>
@@ -567,7 +567,7 @@ const PieceCard: React.FC<{ piece: QuotePiece; index: number; total: number }> =
       )}
 
       {/* Pricing */}
-      <div className="bg-sand-50 rounded-lg p-3">
+      <div className="bg-sand-50 rounded-[var(--radius-card)] p-3">
         <p className="text-[10px] text-wood-400 uppercase tracking-wider mb-1.5">Pricing admin</p>
         <div className="grid grid-cols-2 gap-1.5 text-xs">
           <span className="text-wood-500">Cálculo auto:</span>
@@ -585,7 +585,7 @@ const PieceCard: React.FC<{ piece: QuotePiece; index: number; total: number }> =
             </>
           )}
           <span className="text-wood-500">Margen estimado:</span>
-          <span className={`${margin >= 50 ? 'text-green-600' : margin >= 30 ? 'text-amber-600' : 'text-red-500'}`}>
+          <span className={`${margin >= 50 ? 'text-[var(--success)]' : margin >= 30 ? 'text-amber-600' : 'text-[var(--error)]'}`}>
             {margin}% {margin >= 50 ? '✅' : margin >= 30 ? '⚠️' : '❌'}
           </span>
         </div>

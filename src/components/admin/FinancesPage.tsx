@@ -49,7 +49,7 @@ const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ chi
 );
 
 const Insight: React.FC<{ text: string; type?: 'info' | 'warning' | 'success' }> = ({ text, type = 'info' }) => {
-  const styles = { info: 'bg-[var(--info-subtle)] border-[var(--info)] text-blue-800', warning: 'bg-[var(--warning-subtle)] border-[var(--warning)] text-amber-800', success: 'bg-[var(--success-subtle)] border-[var(--success)] text-[var(--success)]' };
+  const styles = { info: 'bg-[var(--info-subtle)] border-[var(--info)] text-[var(--info)]', warning: 'bg-[var(--warning-subtle)] border-[var(--warning)] text-amber-800', success: 'bg-[var(--success-subtle)] border-[var(--success)] text-[var(--success)]' };
   const icons = { info: Lightbulb, warning: AlertTriangle, success: CheckCircle };
   const Icon = icons[type];
   return (

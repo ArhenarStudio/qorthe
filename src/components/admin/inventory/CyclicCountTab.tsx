@@ -177,24 +177,24 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
             Conteo Activo: {activeCount.count_number} — {activeCount.location}
           </h4>
           <div className="flex items-center gap-2">
-            <button onClick={() => setActiveCount(null)} className="px-3 py-1.5 text-xs text-wood-500 border border-wood-200 rounded-lg">
+            <button onClick={() => setActiveCount(null)} className="px-3 py-1.5 text-xs text-wood-500 border border-wood-200 rounded-[var(--radius-card)]">
               Volver
             </button>
             <button onClick={tryCompleteCount} disabled={submitting}
-              className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 disabled:opacity-50">
+              className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white text-xs rounded-[var(--radius-card)] hover:bg-green-700 disabled:opacity-50">
               <CheckCircle size={14} /> {submitting ? "Guardando..." : "Completar Conteo"}
             </button>
           </div>
         </div>
 
         {/* Progress */}
-        <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-wood-600">Progreso: {activeCount.counted_items}/{activeCount.total_items}</span>
             <span className="text-xs font-bold text-wood-900">{progress}%</span>
           </div>
-          <div className="w-full h-2 bg-wood-100 rounded-full overflow-hidden">
-            <div className="h-full bg-accent-gold rounded-full transition-all" style={{ width: `${progress}%` }} />
+          <div className="w-full h-2 bg-wood-100 rounded-[var(--radius-badge)] overflow-hidden">
+            <div className="h-full bg-accent-gold rounded-[var(--radius-badge)] transition-all" style={{ width: `${progress}%` }} />
           </div>
           {activeCount.discrepancies > 0 && (
             <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
@@ -204,7 +204,7 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
         </div>
 
         {/* Count items */}
-        <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm overflow-hidden">
           <table className="w-full text-left">
             <thead>
               <tr className="text-[10px] text-wood-400 uppercase tracking-wider border-b border-wood-100 bg-sand-50/50">
@@ -229,13 +229,13 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
                         min={0}
                         value={item.counted_stock ?? ""}
                         onChange={e => updateCountItem(item.variant_id, e.target.value === "" ? null : parseInt(e.target.value))}
-                        className="w-20 px-2 py-1.5 text-xs text-center bg-white border border-wood-200 rounded-lg outline-none focus:border-accent-gold"
+                        className="w-20 px-2 py-1.5 text-xs text-center bg-[var(--surface)] border border-wood-200 rounded-[var(--radius-card)] outline-none focus:border-accent-gold"
                         placeholder="—"
                       />
                     </td>
                     <td className="px-4 py-3 text-center">
                       {item.discrepancy !== null ? (
-                        <span className={`text-xs font-bold ${item.discrepancy === 0 ? 'text-green-600' : item.discrepancy > 0 ? 'text-blue-600' : 'text-red-500'}`}>
+                        <span className={`text-xs font-bold ${item.discrepancy === 0 ? 'text-[var(--success)]' : item.discrepancy > 0 ? 'text-[var(--info)]' : 'text-[var(--error)]'}`}>
                           {item.discrepancy > 0 ? '+' : ''}{item.discrepancy}
                         </span>
                       ) : (
@@ -250,7 +250,7 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
         </div>
 
         {showCompleteConfirm && (
-          <div className="bg-amber-50 rounded-xl border border-amber-200 p-4 flex items-start gap-3">
+          <div className="bg-amber-50 rounded-[var(--radius-card)] border border-amber-200 p-4 flex items-start gap-3">
             <AlertTriangle size={18} className="text-amber-500 shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-xs font-bold text-wood-900">Productos sin contar</p>
@@ -260,11 +260,11 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
               </p>
               <div className="flex gap-2 mt-3">
                 <button onClick={() => setShowCompleteConfirm(false)}
-                  className="px-3 py-1.5 text-xs text-wood-500 border border-wood-200 rounded-lg hover:bg-white">
+                  className="px-3 py-1.5 text-xs text-wood-500 border border-wood-200 rounded-[var(--radius-card)] hover:bg-[var(--surface)]">
                   Cancelar
                 </button>
                 <button onClick={completeCount}
-                  className="px-3 py-1.5 text-xs bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-bold">
+                  className="px-3 py-1.5 text-xs bg-amber-600 text-white rounded-[var(--radius-card)] hover:bg-amber-700 font-bold">
                   Sí, completar conteo
                 </button>
               </div>
@@ -283,31 +283,31 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
           <ClipboardList size={16} className="text-accent-gold" /> Conteos Cíclicos
         </h4>
         <button onClick={() => setShowCreate(!showCreate)}
-          className="flex items-center gap-1.5 px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800">
+          className="flex items-center gap-1.5 px-3 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800">
           <Plus size={14} /> Programar Conteo
         </button>
       </div>
 
       {showCreate && (
-        <div className="bg-white rounded-xl border border-accent-gold/30 shadow-sm p-5 space-y-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-accent-gold/30 shadow-sm p-5 space-y-4">
           <h5 className="text-xs font-bold text-wood-900 uppercase tracking-wider">Nuevo Conteo</h5>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Ubicación</label>
               <select value={location} onChange={e => setLocation(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg outline-none">
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] outline-none">
                 {locations.map(l => <option key={l} value={l}>{l}</option>)}
               </select>
             </div>
             <div>
               <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Fecha programada</label>
               <input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg outline-none" />
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] outline-none" />
             </div>
             <div>
               <label className="text-[10px] font-bold text-wood-400 uppercase block mb-1">Notas</label>
               <input value={countNotes} onChange={e => setCountNotes(e.target.value)} placeholder="Opcional..."
-                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-lg outline-none" />
+                className="w-full px-3 py-2.5 text-sm bg-sand-50 border border-wood-200 rounded-[var(--radius-card)] outline-none" />
             </div>
           </div>
           <div className="flex justify-between items-center">
@@ -317,7 +317,7 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
             <div className="flex gap-2">
               <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-xs text-wood-500">Cancelar</button>
               <button onClick={createCount} disabled={submitting}
-                className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-lg hover:bg-wood-800 disabled:opacity-50">
+                className="px-4 py-2 text-xs bg-wood-900 text-sand-100 rounded-[var(--radius-card)] hover:bg-wood-800 disabled:opacity-50">
                 {submitting ? "Creando..." : "Programar Conteo"}
               </button>
             </div>
@@ -325,7 +325,7 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-12 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-wood-300" /></div>
         ) : counts.length === 0 ? (
@@ -341,20 +341,20 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
               return (
                 <div key={c.id}>
                   <div className="flex items-center gap-4 px-4 py-3 hover:bg-sand-50/50 cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : c.id)}>
-                    <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-[var(--radius-card)] bg-teal-50 flex items-center justify-center">
                       <ClipboardList size={14} className="text-teal-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-wood-900">{c.count_number}</span>
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${statusCfg.cls}`}>{statusCfg.label}</span>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-[var(--radius-badge)] font-bold ${statusCfg.cls}`}>{statusCfg.label}</span>
                       </div>
                       <p className="text-[11px] text-wood-500 mt-0.5">
                         {c.location} · {c.total_items} productos · Programado: {fmtDate(c.scheduled_date)}
                       </p>
                     </div>
                     {c.discrepancies > 0 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 font-bold">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-[var(--radius-badge)] bg-amber-50 text-amber-600 font-bold">
                         {c.discrepancies} disc.
                       </span>
                     )}
@@ -366,13 +366,13 @@ export const CyclicCountTab: React.FC<Props> = ({ items, locations, onRefresh })
                       <div className="flex gap-2">
                         {c.status === 'scheduled' && (
                           <button onClick={(e) => { e.stopPropagation(); startCount(c.id); }}
-                            className="flex items-center gap-1 px-3 py-1.5 bg-accent-gold text-wood-900 text-[10px] font-bold rounded-lg hover:shadow-md">
+                            className="flex items-center gap-1 px-3 py-1.5 bg-accent-gold text-wood-900 text-[10px] font-bold rounded-[var(--radius-card)] hover:shadow-md">
                             <Play size={12} /> Iniciar Conteo
                           </button>
                         )}
                         {c.status === 'in_progress' && (
                           <button onClick={(e) => { e.stopPropagation(); setActiveCount(c); }}
-                            className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg hover:bg-blue-100">
+                            className="flex items-center gap-1 px-3 py-1.5 bg-[var(--info-subtle)] text-[var(--info)] text-[10px] font-bold rounded-[var(--radius-card)] hover:bg-[var(--info-subtle)]">
                             <ClipboardList size={12} /> Continuar Conteo
                           </button>
                         )}

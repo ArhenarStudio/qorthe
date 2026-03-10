@@ -64,10 +64,10 @@ interface AuditEntry {
 
 // ===== DATA =====
 const accessLabels: Record<AccessLevel, { label: string; icon: React.ElementType; cls: string }> = {
-  none: { label: 'Sin acceso', icon: Ban, cls: 'bg-red-50 text-red-500 border-red-200' },
-  read: { label: 'Lectura', icon: Eye, cls: 'bg-blue-50 text-blue-600 border-blue-200' },
+  none: { label: 'Sin acceso', icon: Ban, cls: 'bg-[var(--error-subtle)] text-[var(--error)] border-red-200' },
+  read: { label: 'Lectura', icon: Eye, cls: 'bg-[var(--info-subtle)] text-[var(--info)] border-blue-200' },
   edit: { label: 'Editar', icon: Edit3, cls: 'bg-amber-50 text-amber-600 border-amber-200' },
-  full: { label: 'Completo', icon: Settings, cls: 'bg-green-50 text-green-600 border-green-200' },
+  full: { label: 'Completo', icon: Settings, cls: 'bg-[var(--success-subtle)] text-[var(--success)] border-green-200' },
 };
 
 const moduleTemplates: Array<{ id: string; name: string; icon: React.ElementType; actions: Array<{ id: string; label: string; sensitive?: boolean }> }> = [
@@ -362,13 +362,13 @@ const seedUsers: AdminUser[] = [
 
 // ===== SHARED COMPONENTS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function Badge({ text, color }: { text: string; color?: string }) {
   return (
     <span
-      className="text-[10px] font-medium px-2 py-0.5 rounded-full border"
+      className="text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] border"
       style={color ? { backgroundColor: color + '15', color, borderColor: color + '30' } : undefined}
     >
       {text}
@@ -377,11 +377,11 @@ function Badge({ text, color }: { text: string; color?: string }) {
 }
 
 function StatusDot({ status }: { status: 'active' | 'inactive' | 'invited' }) {
-  const cfg = { active: 'bg-green-500', inactive: 'bg-wood-300', invited: 'bg-amber-400' };
+  const cfg = { active: 'bg-[var(--success)]', inactive: 'bg-[var(--surface3)]', invited: 'bg-[var(--warning)]' };
   const labels = { active: 'Activo', inactive: 'Inactivo', invited: 'Invitado' };
   return (
     <span className="flex items-center gap-1.5 text-[10px] text-[var(--text-secondary)]">
-      <span className={'w-1.5 h-1.5 rounded-full ' + cfg[status]} />
+      <span className={'w-1.5 h-1.5 rounded-[var(--radius-badge)] ' + cfg[status]} />
       {labels[status]}
     </span>
   );
@@ -431,12 +431,12 @@ function UsersPanel() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar usuarios..."
-            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
+            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--border)] rounded-[var(--radius-card)] outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
           />
         </div>
         <button
           onClick={() => setShowInvite(!showInvite)}
-          className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5 shrink-0"
+          className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5 shrink-0"
         >
           <UserPlus size={12} /> Invitar usuario
         </button>
@@ -453,21 +453,21 @@ function UsersPanel() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Nombre</label>
-                  <input placeholder="Nombre completo" className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none" />
+                  <input placeholder="Nombre completo" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] outline-none" />
                 </div>
                 <div>
                   <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Email</label>
-                  <input placeholder="email@ejemplo.com" className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none" />
+                  <input placeholder="email@ejemplo.com" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] outline-none" />
                 </div>
                 <div>
                   <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Rol</label>
-                  <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+                  <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
                     {defaultRoles.map(r => <option key={r.id}>{r.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Scope</label>
-                  <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+                  <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
                     <option>Todos los datos</option>
                     <option>Solo asignados</option>
                     <option>Equipo</option>
@@ -475,10 +475,10 @@ function UsersPanel() {
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-3">
-                <button onClick={() => { toast.success('Invitacion enviada'); setShowInvite(false); }} className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90">
+                <button onClick={() => { toast.success('Invitacion enviada'); setShowInvite(false); }} className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90">
                   Enviar invitacion
                 </button>
-                <button onClick={() => setShowInvite(false)} className="px-3 py-1.5 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface2)]">
+                <button onClick={() => setShowInvite(false)} className="px-3 py-1.5 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)]">
                   Cancelar
                 </button>
               </div>
@@ -507,7 +507,7 @@ function UsersPanel() {
                 <tr key={u.id} className="hover:bg-[var(--surface2)]/50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-[var(--surface2)] flex items-center justify-center text-xs font-medium text-[var(--text-secondary)]">
+                      <div className="w-8 h-8 rounded-[var(--radius-badge)] bg-[var(--surface2)] flex items-center justify-center text-xs font-medium text-[var(--text-secondary)]">
                         {u.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
                       <div>
@@ -565,7 +565,7 @@ function RolesPanel() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-[var(--text-secondary)]">{roles.length} roles configurados</p>
-        <button onClick={() => toast.success('Crear rol personalizado (proximamente)')} className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
+        <button onClick={() => toast.success('Crear rol personalizado (proximamente)')} className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
           <Plus size={12} /> Crear rol
         </button>
       </div>
@@ -577,7 +577,7 @@ function RolesPanel() {
             <Card key={role.id} className="p-4 hover:border-[var(--border)] transition-colors">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: role.color + '15' }}>
+                  <div className="w-9 h-9 rounded-[var(--radius-card)] flex items-center justify-center" style={{ backgroundColor: role.color + '15' }}>
                     <Shield size={16} style={{ color: role.color }} />
                   </div>
                   <div>
@@ -595,7 +595,7 @@ function RolesPanel() {
                 {role.permissions.map(p => (
                   <div
                     key={p.moduleId}
-                    className="h-1.5 flex-1 rounded-full"
+                    className="h-1.5 flex-1 rounded-[var(--radius-badge)]"
                     style={{
                       backgroundColor: p.access === 'full' ? '#10B981' : p.access === 'edit' ? '#F59E0B' : p.access === 'read' ? '#3B82F6' : '#E5E7EB',
                     }}
@@ -639,7 +639,7 @@ function RolesPanel() {
             );
           })}
           <span className="flex items-center gap-1.5 text-[10px] text-[var(--text-secondary)] ml-auto">
-            <Lock size={10} className="text-red-400" /> Dato sensible
+            <Lock size={10} className="text-[var(--error)]" /> Dato sensible
           </span>
         </div>
       </Card>
@@ -685,10 +685,10 @@ function RoleDetail({ role, onBack, expandedModule, setExpandedModule }: {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
+          <button onClick={onBack} className="p-1.5 rounded-[var(--radius-card)] hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
             <ChevronRight size={16} className="rotate-180" />
           </button>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: role.color + '15' }}>
+          <div className="w-9 h-9 rounded-[var(--radius-card)] flex items-center justify-center" style={{ backgroundColor: role.color + '15' }}>
             <Shield size={16} style={{ color: role.color }} />
           </div>
           <div>
@@ -697,7 +697,7 @@ function RoleDetail({ role, onBack, expandedModule, setExpandedModule }: {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => toast.success('Permisos guardados para ' + role.name)} className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 flex items-center gap-1">
+          <button onClick={() => toast.success('Permisos guardados para ' + role.name)} className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 flex items-center gap-1">
             <Check size={12} /> Guardar
           </button>
         </div>
@@ -748,7 +748,7 @@ function RoleDetail({ role, onBack, expandedModule, setExpandedModule }: {
                   <div className="flex items-center gap-2.5 flex-1 min-w-0">
                     <Icon size={14} className="text-[var(--text-muted)] shrink-0" />
                     <span className="text-xs text-[var(--text)] font-medium truncate">{perm.moduleName}</span>
-                    {hasSensitive && perm.access !== 'none' && <Lock size={9} className="text-red-400 shrink-0" />}
+                    {hasSensitive && perm.access !== 'none' && <Lock size={9} className="text-[var(--error)] shrink-0" />}
                     {perm.access !== 'none' && (
                       <span className="text-[9px] text-[var(--text-muted)]">{enabledCount}/{perm.actions.length}</span>
                     )}
@@ -813,7 +813,7 @@ function RoleDetail({ role, onBack, expandedModule, setExpandedModule }: {
                               {action.label}
                             </span>
                             {action.sensitive && (
-                              <span className="text-[8px] bg-red-50 text-red-500 px-1 py-0.5 rounded flex items-center gap-0.5">
+                              <span className="text-[8px] bg-[var(--error-subtle)] text-[var(--error)] px-1 py-0.5 rounded flex items-center gap-0.5">
                                 <Lock size={7} /> Sensible
                               </span>
                             )}
@@ -836,12 +836,12 @@ function RoleDetail({ role, onBack, expandedModule, setExpandedModule }: {
         </h4>
         <div className="flex flex-wrap gap-1.5">
           {perms.flatMap(p => p.actions.filter(a => a.sensitive && a.enabled).map(a => (
-            <span key={p.moduleId + '-' + a.id} className="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded-full border border-red-100">
+            <span key={p.moduleId + '-' + a.id} className="text-[10px] bg-[var(--error-subtle)] text-[var(--error)] px-2 py-0.5 rounded-[var(--radius-badge)] border border-red-100">
               {p.moduleName}: {a.label}
             </span>
           )))}
           {perms.flatMap(p => p.actions.filter(a => a.sensitive && a.enabled)).length === 0 && (
-            <span className="text-[10px] text-green-600">Ningun dato sensible expuesto</span>
+            <span className="text-[10px] text-[var(--success)]">Ningun dato sensible expuesto</span>
           )}
         </div>
       </Card>
@@ -896,7 +896,7 @@ function AuditPanel() {
         <select
           value={moduleFilter}
           onChange={e => setModuleFilter(e.target.value)}
-          className="border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-xs bg-[var(--surface)] outline-none"
+          className="border border-[var(--border)] rounded-[var(--radius-card)] px-2.5 py-1.5 text-xs bg-[var(--surface)] outline-none"
         >
           <option value="all">Todos los modulos</option>
           {modules.map(m => <option key={m} value={m}>{m}</option>)}
@@ -904,12 +904,12 @@ function AuditPanel() {
         <select
           value={userFilter}
           onChange={e => setUserFilter(e.target.value)}
-          className="border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-xs bg-[var(--surface)] outline-none"
+          className="border border-[var(--border)] rounded-[var(--radius-card)] px-2.5 py-1.5 text-xs bg-[var(--surface)] outline-none"
         >
           <option value="all">Todos los usuarios</option>
           {users.map(u => <option key={u} value={u}>{u}</option>)}
         </select>
-        <button className="px-2.5 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1 ml-auto">
+        <button className="px-2.5 py-1.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1 ml-auto">
           <Download size={10} /> Exportar
         </button>
       </div>
@@ -935,7 +935,7 @@ function AuditPanel() {
                   <td className="px-4 py-2.5 text-[11px] text-[var(--text-secondary)] whitespace-nowrap font-mono">{entry.timestamp}</td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-5 h-5 rounded-full bg-[var(--surface2)] flex items-center justify-center text-[8px] font-medium text-[var(--text-secondary)]">
+                      <div className="w-5 h-5 rounded-[var(--radius-badge)] bg-[var(--surface2)] flex items-center justify-center text-[8px] font-medium text-[var(--text-secondary)]">
                         {entry.user.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
                       <span className="text-xs text-[var(--text)]">{entry.user}</span>
@@ -1008,7 +1008,7 @@ export const UsersRolesManager: React.FC = () => {
             <t.icon size={13} />
             {t.label}
             {t.count !== undefined && (
-              <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-full">{t.count}</span>
+              <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-[var(--radius-badge)]">{t.count}</span>
             )}
           </button>
         ))}

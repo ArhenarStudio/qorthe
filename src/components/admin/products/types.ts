@@ -81,16 +81,16 @@ export interface ProductStats {
 
 // ── Status config ──
 export const STATUS_CONFIG: Record<ProductStatus, { label: string; cls: string; dot: string }> = {
-  active:     { label: 'Activo',     cls: 'bg-green-50 text-green-600',  dot: 'bg-green-500' },
-  draft:      { label: 'Borrador',   cls: 'bg-gray-100 text-gray-500',   dot: 'bg-gray-400' },
-  outOfStock: { label: 'Agotado',    cls: 'bg-red-50 text-red-500',      dot: 'bg-red-500' },
+  active:     { label: 'Activo',     cls: 'bg-[var(--success-subtle)] text-[var(--success)]',  dot: 'bg-green-500' },
+  draft:      { label: 'Borrador',   cls: 'bg-[var(--surface2)] text-[var(--text-muted)]',   dot: 'bg-gray-400' },
+  outOfStock: { label: 'Agotado',    cls: 'bg-[var(--error-subtle)] text-[var(--error)]',      dot: 'bg-red-500' },
   archived:   { label: 'Archivado',  cls: 'bg-wood-100 text-wood-400',   dot: 'bg-wood-300' },
 };
 
 export const STOCK_LEVEL_CONFIG: Record<StockLevel, { label: string; cls: string }> = {
-  in_stock:     { label: 'En stock',    cls: 'text-green-600' },
+  in_stock:     { label: 'En stock',    cls: 'text-[var(--success)]' },
   low_stock:    { label: 'Stock bajo',  cls: 'text-amber-500' },
-  out_of_stock: { label: 'Agotado',     cls: 'text-red-500' },
+  out_of_stock: { label: 'Agotado',     cls: 'text-[var(--error)]' },
 };
 
 // ── Formatters ──
@@ -108,9 +108,9 @@ export function getMargin(p: Product): number {
 }
 
 export function getStockColor(p: Product): string {
-  if (p.stock === 0) return 'text-red-500';
+  if (p.stock === 0) return 'text-[var(--error)]';
   if (p.stock <= p.reorder_point) return 'text-amber-500';
-  return 'text-green-600';
+  return 'text-[var(--success)]';
 }
 
 export function getStockLevel(stock: number, reorderPoint: number): StockLevel {

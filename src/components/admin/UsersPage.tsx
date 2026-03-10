@@ -110,7 +110,7 @@ export const UsersPage: React.FC = () => {
           <Users size={20} className="text-[var(--accent)]" /> Gestión de Equipo
         </h3>
         <button onClick={() => { setEditingUser(null); setShowForm(true); }}
-          className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800">
+          className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800">
           <UserPlus size={14} /> Agregar Usuario
         </button>
       </div>
@@ -118,9 +118,9 @@ export const UsersPage: React.FC = () => {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard icon={<Users size={14} />} iconCls="text-[var(--accent)] bg-[var(--accent)]/10" value={String(stats.total)} label="Total usuarios" />
-        <KpiCard icon={<Check size={14} />} iconCls="text-green-600 bg-green-50" value={String(stats.active)} label="Activos" />
-        <KpiCard icon={<Mail size={14} />} iconCls="text-blue-600 bg-blue-50" value={String(stats.invited)} label="Invitados" />
-        <KpiCard icon={<Building size={14} />} iconCls="text-purple-600 bg-purple-50" value={String(stats.departments)} label="Departamentos" />
+        <KpiCard icon={<Check size={14} />} iconCls="text-[var(--success)] bg-[var(--success-subtle)]" value={String(stats.active)} label="Activos" />
+        <KpiCard icon={<Mail size={14} />} iconCls="text-[var(--info)] bg-[var(--info-subtle)]" value={String(stats.invited)} label="Invitados" />
+        <KpiCard icon={<Building size={14} />} iconCls="text-[var(--accent)] bg-[var(--accent-subtle)]" value={String(stats.departments)} label="Departamentos" />
       </div>
 
       {/* Tabs */}
@@ -129,7 +129,7 @@ export const UsersPage: React.FC = () => {
           const Icon = t.icon;
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs rounded-lg transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs rounded-[var(--radius-card)] transition-colors ${
                 tab === t.id ? "bg-wood-900 text-sand-100" : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] border border-[var(--border)]"
               }`}>
               <Icon size={14} /> {t.label}
@@ -140,7 +140,7 @@ export const UsersPage: React.FC = () => {
 
       {/* Content */}
       {loading && users.length === 0 ? (
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-12 text-center">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-12 text-center">
           <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--text-muted)]" />
         </div>
       ) : (
@@ -173,8 +173,8 @@ export const UsersPage: React.FC = () => {
 
 // ═══════ KPI CARD ═══════
 const KpiCard: React.FC<{ icon: React.ReactNode; iconCls: string; value: string; label: string }> = ({ icon, iconCls, value, label }) => (
-  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-4">
-    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconCls} mb-2`}>{icon}</div>
+  <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-4">
+    <div className={`w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center ${iconCls} mb-2`}>{icon}</div>
     <p className="text-lg text-[var(--text)]">{value}</p>
     <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{label}</p>
   </div>
@@ -197,12 +197,12 @@ const TeamTab: React.FC<{
         <div className="relative flex-1 min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input value={search} onChange={e => onSearch(e.target.value)} placeholder="Buscar por nombre, email, departamento..."
-            className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs outline-none focus:border-wood-400" />
+            className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs outline-none focus:border-wood-400" />
         </div>
         <div className="flex gap-1.5">
           {(["all", "active", "invited", "inactive", "suspended"] as const).map(s => (
             <button key={s} onClick={() => onStatusFilter(s)}
-              className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all ${
+              className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded-[var(--radius-card)] border transition-all ${
                 statusFilter === s ? "bg-wood-900 text-sand-100 border-wood-900" : "bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:border-wood-300"
               }`}>
               {s === "all" ? "Todos" : USER_STATUS_CONFIG[s].label}
@@ -212,7 +212,7 @@ const TeamTab: React.FC<{
       </div>
 
       {/* Users table */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[800px]">
             <thead>
@@ -236,7 +236,7 @@ const TeamTab: React.FC<{
                   <tr key={u.id} className="hover:bg-[var(--surface2)]/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-xs font-bold text-[var(--accent)]">
+                        <div className="w-9 h-9 rounded-[var(--radius-badge)] bg-[var(--accent)]/10 flex items-center justify-center text-xs font-bold text-[var(--accent)]">
                           {u.full_name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
                         </div>
                         <div>
@@ -246,15 +246,15 @@ const TeamTab: React.FC<{
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ backgroundColor: `${u.role_color}15`, color: u.role_color }}>
+                      <span className="text-[10px] px-2 py-0.5 rounded-[var(--radius-badge)] font-bold" style={{ backgroundColor: `${u.role_color}15`, color: u.role_color }}>
                         {u.role_name}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{u.department}</td>
                     <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{u.position || "—"}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 w-fit ${statusCfg.cls}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} /> {statusCfg.label}
+                      <span className={`text-[10px] px-2 py-0.5 rounded-[var(--radius-badge)] font-bold flex items-center gap-1 w-fit ${statusCfg.cls}`}>
+                        <span className={`w-1.5 h-1.5 rounded-[var(--radius-badge)] ${statusCfg.dot}`} /> {statusCfg.label}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-[10px] text-[var(--text-muted)]">
@@ -263,27 +263,27 @@ const TeamTab: React.FC<{
                     <td className="px-4 py-3 text-[10px] text-[var(--text-muted)]">{fmtDate(u.created_at)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        <button onClick={() => onEdit(u)} className="p-1.5 rounded-md hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--accent)]" title="Editar">
+                        <button onClick={() => onEdit(u)} className="p-1.5 rounded-[var(--radius-button)] hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--accent)]" title="Editar">
                           <Edit3 size={12} />
                         </button>
                         {u.status === "active" ? (
-                          <button onClick={() => onStatusChange(u.id, "suspended")} className="p-1.5 rounded-md hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500" title="Suspender">
+                          <button onClick={() => onStatusChange(u.id, "suspended")} className="p-1.5 rounded-[var(--radius-button)] hover:bg-[var(--error-subtle)] text-[var(--text-muted)] hover:text-[var(--error)]" title="Suspender">
                             <Lock size={12} />
                           </button>
                         ) : u.status === "suspended" ? (
-                          <button onClick={() => onStatusChange(u.id, "active")} className="p-1.5 rounded-md hover:bg-green-50 text-[var(--text-muted)] hover:text-green-600" title="Reactivar">
+                          <button onClick={() => onStatusChange(u.id, "active")} className="p-1.5 rounded-[var(--radius-button)] hover:bg-[var(--success-subtle)] text-[var(--text-muted)] hover:text-[var(--success)]" title="Reactivar">
                             <Check size={12} />
                           </button>
                         ) : null}
                         {confirmDelete === u.id ? (
                           <div className="flex items-center gap-1">
                             <button onClick={() => { onDelete(u.id, u.full_name); setConfirmDelete(null); }}
-                              className="p-1 rounded bg-red-500 text-white"><Check size={10} /></button>
+                              className="p-1 bg-[var(--error)] text-white rounded-[var(--radius-badge)]"><Check size={10} /></button>
                             <button onClick={() => setConfirmDelete(null)}
                               className="p-1 rounded bg-wood-200 text-[var(--text-secondary)]"><X size={10} /></button>
                           </div>
                         ) : (
-                          <button onClick={() => setConfirmDelete(u.id)} className="p-1.5 rounded-md hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500" title="Eliminar">
+                          <button onClick={() => setConfirmDelete(u.id)} className="p-1.5 rounded-[var(--radius-button)] hover:bg-[var(--error-subtle)] text-[var(--text-muted)] hover:text-[var(--error)]" title="Eliminar">
                             <Trash2 size={12} />
                           </button>
                         )}
@@ -311,10 +311,10 @@ const RolesTab: React.FC<{ roles: AdminRole[]; onRefresh: () => void }> = ({ rol
           const isExpanded = expandedId === role.id;
           const perms = (role.permissions || {}) as Record<string, string>;
           return (
-            <div key={role.id} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+            <div key={role.id} className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
               <div className="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-[var(--surface2)]/50"
                 onClick={() => setExpandedId(isExpanded ? null : role.id)}>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${role.color}15` }}>
+                <div className="w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center" style={{ backgroundColor: `${role.color}15` }}>
                   <Shield size={14} style={{ color: role.color }} />
                 </div>
                 <div className="flex-1">
@@ -333,14 +333,14 @@ const RolesTab: React.FC<{ roles: AdminRole[]; onRefresh: () => void }> = ({ rol
                       return (
                         <div key={mod.id} className="flex items-center justify-between px-2 py-1.5 bg-[var(--surface2)] rounded text-[10px]">
                           <span className="text-[var(--text-secondary)]">{mod.label}</span>
-                          <span className={`font-bold ${cfg?.cls || "text-gray-400"}`}>{cfg?.label || "—"}</span>
+                          <span className={`font-bold ${cfg?.cls || "text-[var(--text-muted)]"}`}>{cfg?.label || "—"}</span>
                         </div>
                       );
                     })}
                   </div>
                   <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[var(--border)]">
                     <span className="text-[10px] text-[var(--text-muted)]">Alcance: <span className="text-[var(--text-secondary)] font-bold">{role.scope === "all" ? "Global" : role.scope === "own" ? "Propio" : "Equipo"}</span></span>
-                    {role.is_default && <span className="text-[9px] px-1.5 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-full font-bold">Default</span>}
+                    {role.is_default && <span className="text-[9px] px-1.5 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-[var(--radius-badge)] font-bold">Default</span>}
                   </div>
                 </div>
               )}
@@ -366,9 +366,9 @@ const AuditTab: React.FC<{ entries: AuditEntry[] }> = ({ entries }) => {
       <div className="relative max-w-md">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
         <input value={auditSearch} onChange={e => setAuditSearch(e.target.value)} placeholder="Buscar en actividad..."
-          className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs outline-none focus:border-wood-400" />
+          className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs outline-none focus:border-wood-400" />
       </div>
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[700px]">
             <thead>
@@ -461,7 +461,7 @@ const UserFormModal: React.FC<{
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/40 flex items-start justify-center z-50 p-4 overflow-y-auto pt-12" onClick={onClose}>
       <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-2xl" onClick={e => e.stopPropagation()}>
+        className="bg-[var(--surface)] rounded-[var(--radius-card)] shadow-2xl w-full max-w-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
           <h4 className="text-sm font-bold text-[var(--text)] flex items-center gap-2">
@@ -477,7 +477,7 @@ const UserFormModal: React.FC<{
             const Icon = s.icon;
             return (
               <button key={s.id} onClick={() => setSection(s.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-lg transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-[var(--radius-card)] transition-colors ${
                   section === s.id ? "bg-wood-900 text-sand-100" : "text-[var(--text-secondary)] hover:bg-[var(--surface2)]"
                 }`}>
                 <Icon size={12} /> {s.label}
@@ -499,7 +499,7 @@ const UserFormModal: React.FC<{
                 <div>
                   <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Rol</label>
                   <select value={form.role_id} onChange={e => update("role_id", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none">
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] outline-none">
                     <option value="">Sin rol</option>
                     {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
@@ -509,7 +509,7 @@ const UserFormModal: React.FC<{
                 <div>
                   <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Departamento</label>
                   <select value={form.department} onChange={e => update("department", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none">
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] outline-none">
                     {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
@@ -552,7 +552,7 @@ const UserFormModal: React.FC<{
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-[var(--border)]">
           <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)]">Cancelar</button>
           <button onClick={handleSave} disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-[var(--text)] text-xs font-bold rounded-lg hover:shadow-lg disabled:opacity-50">
+            className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-[var(--text)] text-xs font-bold rounded-[var(--radius-card)] hover:shadow-lg disabled:opacity-50">
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
             {saving ? "Guardando..." : isEdit ? "Guardar Cambios" : "Crear Usuario"}
           </button>
@@ -571,10 +571,10 @@ const Field: React.FC<{
     <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">{label}</label>
     {multiline ? (
       <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)] resize-none h-20" />
+        className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] outline-none focus:border-[var(--accent)] resize-none h-20" />
     ) : (
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled}
-        className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)] disabled:opacity-50" />
+        className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] outline-none focus:border-[var(--accent)] disabled:opacity-50" />
     )}
   </div>
 );

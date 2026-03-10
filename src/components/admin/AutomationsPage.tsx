@@ -54,16 +54,16 @@ interface Template {
 
 // ===== DATA =====
 const statusCfg: Record<AutoStatus, { label: string; cls: string; dotCls: string }> = {
-  active: { label: 'Activa', cls: 'bg-green-50 text-green-700 border-green-200', dotCls: 'bg-green-500' },
+  active: { label: 'Activa', cls: 'bg-[var(--success-subtle)] text-[var(--success)] border-green-200', dotCls: 'bg-green-500' },
   paused: { label: 'Pausada', cls: 'bg-amber-50 text-amber-700 border-amber-200', dotCls: 'bg-amber-500' },
   draft: { label: 'Borrador', cls: 'bg-[var(--surface2)] text-[var(--text-secondary)] border-[var(--border)]', dotCls: 'bg-wood-400' },
 };
 
 const nodeCfg: Record<NodeType, { label: string; color: string; bg: string; border: string }> = {
-  trigger: { label: 'Trigger', color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-300' },
+  trigger: { label: 'Trigger', color: 'text-[var(--success)]', bg: 'bg-[var(--success-subtle)]', border: 'border-green-300' },
   condition: { label: 'Condicion', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-300' },
-  action: { label: 'Accion', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-300' },
-  delay: { label: 'Esperar', color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-300' },
+  action: { label: 'Accion', color: 'text-[var(--info)]', bg: 'bg-[var(--info-subtle)]', border: 'border-blue-300' },
+  delay: { label: 'Esperar', color: 'text-[var(--accent)]', bg: 'bg-[var(--accent-subtle)]', border: 'border-purple-300' },
 };
 
 // Trigger options
@@ -265,7 +265,7 @@ const templates: Template[] = [
 
 // ===== SHARED COMPONENTS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function WorkflowPreview({ nodes, compact = false }: { nodes: WorkflowNode[]; compact?: boolean }) {
@@ -277,7 +277,7 @@ function WorkflowPreview({ nodes, compact = false }: { nodes: WorkflowNode[]; co
         return (
           <React.Fragment key={node.id}>
             <div className={
-              'flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] whitespace-nowrap shrink-0 ' +
+              'flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-card)] border text-[10px] whitespace-nowrap shrink-0 ' +
               cfg.bg + ' ' + cfg.border + ' ' + cfg.color
             }>
               <Icon size={10} />
@@ -337,7 +337,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar automatizaciones..."
-            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
+            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--border)] rounded-[var(--radius-card)] outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
           />
         </div>
         <div className="flex gap-1">
@@ -346,7 +346,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
               key={s}
               onClick={() => setStatusFilter(s)}
               className={
-                'px-2.5 py-1.5 text-[10px] rounded-lg border transition-colors ' +
+                'px-2.5 py-1.5 text-[10px] rounded-[var(--radius-card)] border transition-colors ' +
                 (statusFilter === s ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
               }
             >
@@ -366,14 +366,14 @@ function AutomationsList({ automations, onEdit, onToggle }: {
                 {/* Left: info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--accent)]/10 flex items-center justify-center shrink-0">
                       <Zap size={14} className="text-[var(--accent)]" />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <h4 className="text-xs font-medium text-[var(--text)] truncate">{auto.name}</h4>
-                        <span className={'text-[9px] px-1.5 py-0.5 rounded-full border flex items-center gap-1 ' + sCfg.cls}>
-                          <span className={'w-1.5 h-1.5 rounded-full ' + sCfg.dotCls} />
+                        <span className={'text-[9px] px-1.5 py-0.5 rounded-[var(--radius-badge)] border flex items-center gap-1 ' + sCfg.cls}>
+                          <span className={'w-1.5 h-1.5 rounded-[var(--radius-badge)] ' + sCfg.dotCls} />
                           {sCfg.label}
                         </span>
                       </div>
@@ -397,7 +397,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
                       <Clock size={9} /> {auto.lastRun}
                     </span>
                     {auto.successRate > 0 && (
-                      <span className={'flex items-center gap-1 ' + (auto.successRate >= 90 ? 'text-green-600' : 'text-amber-600')}>
+                      <span className={'flex items-center gap-1 ' + (auto.successRate >= 90 ? 'text-[var(--success)]' : 'text-amber-600')}>
                         <TrendingUp size={9} /> {auto.successRate}%
                       </span>
                     )}
@@ -409,8 +409,8 @@ function AutomationsList({ automations, onEdit, onToggle }: {
                     <button
                       onClick={() => onToggle(auto.id)}
                       className={
-                        'p-1.5 rounded-lg border transition-colors ' +
-                        (auto.status === 'active' ? 'border-amber-200 text-amber-600 hover:bg-amber-50' : 'border-green-200 text-green-600 hover:bg-green-50')
+                        'p-1.5 rounded-[var(--radius-card)] border transition-colors ' +
+                        (auto.status === 'active' ? 'border-amber-200 text-amber-600 hover:bg-amber-50' : 'border-green-200 text-[var(--success)] hover:bg-[var(--success-subtle)]')
                       }
                       title={auto.status === 'active' ? 'Pausar' : 'Activar'}
                     >
@@ -418,14 +418,14 @@ function AutomationsList({ automations, onEdit, onToggle }: {
                     </button>
                     <button
                       onClick={() => onEdit(auto)}
-                      className="p-1.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
+                      className="p-1.5 rounded-[var(--radius-card)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                       title="Editar"
                     >
                       <Edit3 size={12} />
                     </button>
                     <button
                       onClick={() => toast.success('Automatizacion duplicada')}
-                      className="p-1.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
+                      className="p-1.5 rounded-[var(--radius-card)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                       title="Duplicar"
                     >
                       <Copy size={12} />
@@ -462,7 +462,7 @@ function TemplatesView({ onUse }: { onUse: (t: Template) => void }) {
             key={c}
             onClick={() => setCatFilter(c)}
             className={
-              'px-2.5 py-1.5 text-[10px] rounded-lg border transition-colors ' +
+              'px-2.5 py-1.5 text-[10px] rounded-[var(--radius-card)] border transition-colors ' +
               (catFilter === c ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
             }
           >
@@ -479,7 +479,7 @@ function TemplatesView({ onUse }: { onUse: (t: Template) => void }) {
                 <div className="flex items-center gap-1.5">
                   <h4 className="text-xs font-medium text-[var(--text)]">{tpl.name}</h4>
                   {tpl.popular && (
-                    <span className="text-[8px] bg-[var(--accent)]/15 text-[var(--accent)] px-1.5 py-0.5 rounded-full font-medium">Popular</span>
+                    <span className="text-[8px] bg-[var(--accent)]/15 text-[var(--accent)] px-1.5 py-0.5 rounded-[var(--radius-badge)] font-medium">Popular</span>
                   )}
                 </div>
                 <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{tpl.description}</p>
@@ -493,7 +493,7 @@ function TemplatesView({ onUse }: { onUse: (t: Template) => void }) {
 
             <button
               onClick={() => onUse(tpl)}
-              className="w-full text-center text-[10px] text-[var(--accent)] font-medium border border-[var(--accent)]/30 rounded-lg py-1.5 hover:bg-[var(--accent)]/5 transition-colors flex items-center justify-center gap-1"
+              className="w-full text-center text-[10px] text-[var(--accent)] font-medium border border-[var(--accent)]/30 rounded-[var(--radius-card)] py-1.5 hover:bg-[var(--accent)]/5 transition-colors flex items-center justify-center gap-1"
             >
               <Plus size={10} /> Usar template
             </button>
@@ -539,10 +539,10 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
+          <button onClick={onBack} className="p-1.5 rounded-[var(--radius-card)] hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
             <ChevronRight size={16} className="rotate-180" />
           </button>
-          <div className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-[var(--radius-card)] bg-[var(--accent)]/10 flex items-center justify-center">
             <Zap size={16} className="text-[var(--accent)]" />
           </div>
           <input
@@ -552,7 +552,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
           />
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => { toast.success('Automatizacion guardada como borrador'); onBack(); }} className="px-3 py-1.5 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface2)] transition-colors">
+          <button onClick={() => { toast.success('Automatizacion guardada como borrador'); onBack(); }} className="px-3 py-1.5 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors">
             Guardar borrador
           </button>
           <button
@@ -564,7 +564,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
               toast.success('Automatizacion activada!');
               onBack();
             }}
-            className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1"
+            className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1"
           >
             <Play size={10} /> Activar
           </button>
@@ -577,14 +577,14 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
 
         {nodes.length === 0 ? (
           <div className="py-12 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-3">
-              <Zap size={24} className="text-green-600" />
+            <div className="w-14 h-14 rounded-2xl bg-[var(--success-subtle)] flex items-center justify-center mx-auto mb-3">
+              <Zap size={24} className="text-[var(--success)]" />
             </div>
             <p className="text-xs text-[var(--text-secondary)] mb-1">Comienza agregando un Trigger</p>
             <p className="text-[10px] text-[var(--text-muted)]">El trigger es el evento que inicia la automatizacion</p>
             <button
               onClick={() => setAddingType('trigger')}
-              className="mt-3 px-4 py-2 text-xs bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 transition-colors flex items-center gap-1.5 mx-auto"
+              className="mt-3 px-4 py-2 text-xs bg-[var(--success-subtle)] text-[var(--success)] border border-green-200 rounded-[var(--radius-card)] hover:bg-[var(--success-subtle)] transition-colors flex items-center gap-1.5 mx-auto"
             >
               <Plus size={12} /> Agregar Trigger
             </button>
@@ -601,14 +601,14 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={'relative flex items-center gap-3 p-3 rounded-xl border-2 ' + cfg.bg + ' ' + cfg.border}
+                    className={'relative flex items-center gap-3 p-3 rounded-[var(--radius-card)] border-2 ' + cfg.bg + ' ' + cfg.border}
                   >
                     {/* Node number */}
-                    <div className={'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border ' + cfg.border + ' ' + cfg.color + ' bg-[var(--surface)]'}>
+                    <div className={'w-7 h-7 rounded-[var(--radius-badge)] flex items-center justify-center text-[10px] font-bold shrink-0 border ' + cfg.border + ' ' + cfg.color + ' bg-[var(--surface)]'}>
                       {i + 1}
                     </div>
 
-                    <div className={'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-[var(--surface)] border ' + cfg.border}>
+                    <div className={'w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center shrink-0 bg-[var(--surface)] border ' + cfg.border}>
                       <Icon size={14} className={cfg.color} />
                     </div>
 
@@ -632,7 +632,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                           <ChevronRight size={10} className="rotate-90" />
                         </button>
                       )}
-                      <button onClick={() => removeNode(node.id)} className="p-1 rounded hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500 transition-colors" title="Eliminar">
+                      <button onClick={() => removeNode(node.id)} className="p-1 rounded hover:bg-[var(--error-subtle)] text-[var(--text-muted)] hover:text-[var(--error)] transition-colors" title="Eliminar">
                         <X size={10} />
                       </button>
                     </div>
@@ -657,20 +657,20 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                 {!nodes.some(n => n.type === 'trigger') && (
                   <button
                     onClick={() => setAddingType('trigger')}
-                    className="px-3 py-1.5 text-[10px] bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 transition-colors flex items-center gap-1"
+                    className="px-3 py-1.5 text-[10px] bg-[var(--success-subtle)] text-[var(--success)] border border-green-200 rounded-[var(--radius-card)] hover:bg-[var(--success-subtle)] transition-colors flex items-center gap-1"
                   >
                     <Plus size={10} /> Trigger
                   </button>
                 )}
                 <button
                   onClick={() => setAddingType('condition')}
-                  className="px-3 py-1.5 text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors flex items-center gap-1"
+                  className="px-3 py-1.5 text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded-[var(--radius-card)] hover:bg-amber-100 transition-colors flex items-center gap-1"
                 >
                   <Plus size={10} /> Condicion
                 </button>
                 <button
                   onClick={() => setAddingType('action')}
-                  className="px-3 py-1.5 text-[10px] bg-blue-50 text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1"
+                  className="px-3 py-1.5 text-[10px] bg-[var(--info-subtle)] text-[var(--info)] border border-blue-200 rounded-[var(--radius-card)] hover:bg-[var(--info-subtle)] transition-colors flex items-center gap-1"
                 >
                   <Plus size={10} /> Accion
                 </button>
@@ -687,7 +687,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
             <Card className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-xs font-medium text-[var(--text)] flex items-center gap-1.5">
-                  <span className={'w-2 h-2 rounded-full ' + (addingType === 'trigger' ? 'bg-green-500' : addingType === 'condition' ? 'bg-amber-500' : 'bg-blue-500')} />
+                  <span className={'w-2 h-2 rounded-[var(--radius-badge)] ' + (addingType === 'trigger' ? 'bg-green-500' : addingType === 'condition' ? 'bg-amber-500' : 'bg-blue-500')} />
                   Selecciona un {nodeCfg[addingType].label}
                 </h4>
                 <button onClick={() => setAddingType(null)} className="p-1 rounded hover:bg-[var(--surface2)] text-[var(--text-muted)]">
@@ -707,7 +707,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                             <button
                               key={item.id}
                               onClick={() => addNode('trigger', item.label, item.icon, cat.cat)}
-                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] bg-[var(--success-subtle)] text-[var(--success)] border border-green-200 rounded-[var(--radius-card)] hover:bg-[var(--success-subtle)] transition-colors"
                             >
                               <TIcon size={10} /> {item.label}
                             </button>
@@ -727,7 +727,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                       <button
                         key={item.id}
                         onClick={() => addNode('condition', item.label, item.icon, 'Filtro')}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded-[var(--radius-card)] hover:bg-amber-100 transition-colors"
                       >
                         <CIcon size={10} /> {item.label}
                       </button>
@@ -744,7 +744,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                       <button
                         key={item.id}
                         onClick={() => addNode(item.id === 'a_delay' ? 'delay' : 'action', item.label, item.icon, item.label.split(' ')[0])}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] bg-blue-50 text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] bg-[var(--info-subtle)] text-[var(--info)] border border-blue-200 rounded-[var(--radius-card)] hover:bg-[var(--info-subtle)] transition-colors"
                       >
                         <AIcon size={10} /> {item.label}
                       </button>
@@ -764,19 +764,19 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
             <Activity size={12} className="text-[var(--accent)]" /> Historial de ejecuciones
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
+            <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-2.5 text-center">
               <p className="text-sm font-serif text-[var(--text)]">{automation.executions}</p>
               <p className="text-[9px] text-[var(--text-muted)]">Total</p>
             </div>
-            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
+            <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-2.5 text-center">
               <p className="text-sm font-serif text-[var(--text)]">{automation.executions30d}</p>
               <p className="text-[9px] text-[var(--text-muted)]">Ultimos 30d</p>
             </div>
-            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
-              <p className="text-sm font-serif text-green-600">{automation.successRate}%</p>
+            <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-2.5 text-center">
+              <p className="text-sm font-serif text-[var(--success)]">{automation.successRate}%</p>
               <p className="text-[9px] text-[var(--text-muted)]">Tasa exito</p>
             </div>
-            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
+            <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-2.5 text-center">
               <p className="text-sm font-serif text-[var(--accent)]">{automation.impact}</p>
               <p className="text-[9px] text-[var(--text-muted)]">Impacto</p>
             </div>
@@ -799,7 +799,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                 <tr key={i} className="hover:bg-[var(--surface2)]/50 transition-colors">
                   <td className="px-2 py-1.5 text-[10px] text-[var(--text-secondary)] font-mono">{e.date}</td>
                   <td className="px-2 py-1.5">
-                    <span className={'text-[9px] px-1.5 py-0.5 rounded-full ' + (e.result === 'success' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600')}>
+                    <span className={'text-[9px] px-1.5 py-0.5 rounded-[var(--radius-badge)] ' + (e.result === 'success' ? 'bg-[var(--success-subtle)] text-[var(--success)]' : 'bg-[var(--error-subtle)] text-[var(--error)]')}>
                       {e.result === 'success' ? 'Exitoso' : 'Error'}
                     </span>
                   </td>
@@ -911,7 +911,7 @@ export const AutomationsPage: React.FC = () => {
         </div>
         <button
           onClick={handleNewAuto}
-          className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
+          className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
         >
           <Plus size={12} /> Nueva automatizacion
         </button>
@@ -934,7 +934,7 @@ export const AutomationsPage: React.FC = () => {
             }
           >
             {t.label}
-            <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-full">{t.count}</span>
+            <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-[var(--radius-badge)]">{t.count}</span>
           </button>
         ))}
       </div>

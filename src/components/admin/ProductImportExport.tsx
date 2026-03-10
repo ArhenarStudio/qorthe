@@ -80,7 +80,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-bold text-[var(--text)] flex items-center gap-2">
             <Download size={16} className="text-[var(--accent)]" /> Exportar Productos
@@ -94,7 +94,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             ...(filteredCount < totalProducts ? [{ id: "filtered" as const, label: "Productos filtrados", count: filteredCount }] : []),
             ...(selectedCount > 0 ? [{ id: "selected" as const, label: "Seleccionados", count: selectedCount }] : []),
           ].map(opt => (
-            <label key={opt.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+            <label key={opt.id} className={`flex items-center gap-3 p-3 rounded-[var(--radius-card)] border cursor-pointer transition-colors ${
               scope === opt.id ? "border-[var(--accent)] bg-[var(--accent)]/5" : "border-[var(--border)] hover:border-wood-300"
             }`}>
               <input type="radio" name="scope" checked={scope === opt.id} onChange={() => setScope(opt.id)} className="accent-accent-gold" />
@@ -106,7 +106,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           ))}
         </div>
 
-        <div className="bg-[var(--surface2)] rounded-lg p-3 text-xs text-[var(--text-secondary)]">
+        <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-3 text-xs text-[var(--text-secondary)]">
           <p className="flex items-center gap-1"><FileText size={12} /> Formato: CSV (compatible con Excel, Google Sheets)</p>
           <p className="text-[10px] text-[var(--text-muted)] mt-1">Incluye: SKU, nombre, precio, costo, stock, ventas, rating, estado</p>
         </div>
@@ -114,7 +114,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         <div className="flex justify-end gap-2 pt-2">
           <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)]">Cancelar</button>
           <button onClick={handleExport} disabled={exporting}
-            className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 disabled:opacity-50">
+            className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800 disabled:opacity-50">
             {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
             {exporting ? "Exportando..." : "Exportar CSV"}
           </button>
@@ -139,12 +139,12 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({ onClose }) => (
       <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
         <Upload size={18} className="text-[var(--accent)]" /> Importar Productos
       </h3>
-      <button onClick={onClose} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)]">
+      <button onClick={onClose} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-[var(--radius-card)] hover:bg-[var(--surface2)]">
         Volver
       </button>
     </div>
 
-    <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-8 text-center max-w-lg mx-auto">
+    <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-8 text-center max-w-lg mx-auto">
       <div className="w-16 h-16 rounded-2xl bg-[var(--accent)]/10 flex items-center justify-center mx-auto mb-4">
         <Upload size={24} className="text-[var(--accent)]" />
       </div>
@@ -154,7 +154,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({ onClose }) => (
         estará disponible próximamente. Por ahora, puedes crear productos
         directamente desde el admin de Medusa o usando la interfaz de productos.
       </p>
-      <div className="bg-amber-50 rounded-lg p-3 flex items-start gap-2 text-left mb-4">
+      <div className="bg-amber-50 rounded-[var(--radius-card)] p-3 flex items-start gap-2 text-left mb-4">
         <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
         <div className="text-xs text-amber-700">
           <p className="font-bold">Alternativa disponible</p>
@@ -167,7 +167,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({ onClose }) => (
           </p>
         </div>
       </div>
-      <button onClick={onClose} className="px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800">
+      <button onClick={onClose} className="px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800">
         Volver a Productos
       </button>
     </div>

@@ -201,7 +201,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         title={collapsed ? item.label : undefined}
         className={`
           w-full flex items-center gap-2.5 text-[13px] transition-all relative group
-          ${collapsed ? 'px-0 py-2 justify-center rounded-xl' : 'px-2.5 py-[7px] rounded-lg'}
+          ${collapsed ? 'px-0 py-2 justify-center rounded-[var(--radius-card)]' : 'px-2.5 py-[7px] rounded-[var(--radius-card)]'}
           ${isActive
             ? ''
             : 'hover:bg-[var(--surface2)]/70'
@@ -212,7 +212,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         {isActive && (
           <motion.div
             layoutId="sidebar-pill"
-            className="absolute inset-0 rounded-lg"
+            className="absolute inset-0 rounded-[var(--radius-card)]"
             style={{
               background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)',
               boxShadow: 'var(--shadow-lg)',
@@ -249,7 +249,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           <span className={`
             relative z-10
             ${collapsed ? 'absolute -top-1 -right-1' : 'ml-auto'}
-            min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1
+            min-w-[18px] h-[18px] flex items-center justify-center rounded-[var(--radius-badge)] px-1
             text-[9px] font-bold
             ${isActive
               ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-text)]'
@@ -263,13 +263,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         {/* Collapsed tooltip */}
         {collapsed && (
           <span className="
-            absolute left-full ml-2.5 bg-[var(--surface)] text-[var(--text)] text-[11px] px-2.5 py-1.5 rounded-lg
+            absolute left-full ml-2.5 bg-[var(--surface)] text-[var(--text)] text-[11px] px-2.5 py-1.5 rounded-[var(--radius-card)]
             opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[60]
             border border-[var(--border)] shadow-lg shadow-stone-200/50
           ">
             {item.label}
             {badgeCount > 0 && (
-              <span className="ml-1.5 bg-amber-50 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-amber-200/50">
+              <span className="ml-1.5 bg-amber-50 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded-[var(--radius-badge)] border border-amber-200/50">
                 {badgeCount}
               </span>
             )}
@@ -302,7 +302,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   DavidSon's Design
                 </h1>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className={`w-[5px] h-[5px] rounded-full ring-2 ${siteOnline ? 'bg-emerald-400 ring-emerald-100' : 'bg-red-400 ring-red-100'}`} />
+                  <span className={`w-[5px] h-[5px] rounded-[var(--radius-badge)] ring-2 ${siteOnline ? 'bg-emerald-400 ring-emerald-100' : 'bg-red-400 ring-red-100'}`} />
                   <span className="text-[10px] text-[var(--text-muted)]">{siteOnline ? 'Online' : 'Offline'}</span>
                 </div>
               </motion.div>
@@ -314,7 +314,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       {/* ===== COLLAPSE TOGGLE ===== */}
       <button
         onClick={onToggleCollapse}
-        className="absolute top-[18px] -right-[13px] w-[26px] h-[26px] rounded-full flex items-center justify-center z-10 transition-all bg-[var(--surface)] border border-[var(--border)] shadow-sm hover:shadow-md hover:border-[var(--border)] group/toggle"
+        className="absolute top-[18px] -right-[13px] w-[26px] h-[26px] rounded-[var(--radius-badge)] flex items-center justify-center z-10 transition-all bg-[var(--surface)] border border-[var(--border)] shadow-sm hover:shadow-md hover:border-[var(--border)] group/toggle"
       >
         {collapsed
           ? <PanelLeft size={12} className="text-[var(--text-muted)] group-hover/toggle:text-[var(--accent)] transition-colors" />
@@ -337,7 +337,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Buscar seccion..."
-                className="w-full pl-8 pr-7 py-[6px] rounded-lg bg-[var(--surface2)] border border-[var(--border)] text-[11px] text-[var(--text-secondary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)] focus:bg-[var(--surface)] transition-all"
+                className="w-full pl-8 pr-7 py-[6px] rounded-[var(--radius-card)] bg-[var(--surface2)] border border-[var(--border)] text-[11px] text-[var(--text-secondary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)] focus:bg-[var(--surface)] transition-all"
               />
               {searchQuery && (
                 <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
@@ -389,7 +389,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                       </span>
                       <div className="flex items-center gap-1.5">
                         {isGroupCollapsed && groupBadgeCount > 0 && (
-                          <span className="w-4 h-4 flex items-center justify-center rounded-full bg-amber-50 text-amber-600 text-[8px] font-bold border border-amber-200/60">
+                          <span className="w-4 h-4 flex items-center justify-center rounded-[var(--radius-badge)] bg-amber-50 text-amber-600 text-[8px] font-bold border border-amber-200/60">
                             {groupBadgeCount}
                           </span>
                         )}
@@ -442,11 +442,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-muted)] hover:text-[var(--accent)] bg-[var(--surface2)] hover:opacity-80 border border-[var(--border)]  rounded-lg py-[5px] transition-all"
+                className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-muted)] hover:text-[var(--accent)] bg-[var(--surface2)] hover:opacity-80 border border-[var(--border)]  rounded-[var(--radius-card)] py-[5px] transition-all"
               >
                 <ExternalLink size={10} /> Ver tienda
               </a>
-              <button className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-muted)] hover:text-red-500 bg-[var(--surface2)] hover:bg-red-50/50 border border-[var(--border)] hover:border-red-200/60 rounded-lg py-[5px] transition-all">
+              <button className="flex-1 flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-muted)] hover:text-[var(--error)] bg-[var(--surface2)] hover:bg-[var(--error-subtle)]/50 border border-[var(--border)] hover:border-red-200/60 rounded-[var(--radius-card)] py-[5px] transition-all">
                 <LogOut size={10} /> Cerrar sesion
               </button>
             </motion.div>
@@ -459,7 +459,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             {/* Avatar with status ring */}
             <div className="relative flex-shrink-0 group/avatar">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden"
+                className="w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center overflow-hidden"
                 style={{
                   background: 'linear-gradient(145deg, var(--accent) 0%, var(--accent-hover) 100%)',
                   boxShadow: 'var(--shadow)',
@@ -467,11 +467,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               >
                 <span className="text-[11px] font-bold text-[var(--sidebar-text)]">DA</span>
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-white rounded-full" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-white rounded-[var(--radius-badge)]" />
               {/* Collapsed tooltip for user */}
               {collapsed && (
                 <span className="
-                  absolute left-full ml-2.5 bg-[var(--surface)] text-[var(--text)] text-[11px] px-2.5 py-1.5 rounded-lg
+                  absolute left-full ml-2.5 bg-[var(--surface)] text-[var(--text)] text-[11px] px-2.5 py-1.5 rounded-[var(--radius-card)]
                   opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[60]
                   border border-[var(--border)] shadow-lg shadow-stone-200/50
                 ">

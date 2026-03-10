@@ -194,7 +194,7 @@ const sectionTypes: Array<{ type: HomepageSection['type']; label: string }> = [
 
 // ===== HELPERS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function SectionAccordion({ title, icon: Icon, open, onToggle, children }: {
@@ -232,7 +232,7 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
           type="color"
           value={value}
           onChange={e => onChange(e.target.value)}
-          className="w-7 h-7 rounded-lg border border-[var(--border)] cursor-pointer p-0 appearance-none overflow-hidden"
+          className="w-7 h-7 rounded-[var(--radius-card)] border border-[var(--border)] cursor-pointer p-0 appearance-none overflow-hidden"
           style={{ backgroundColor: value }}
         />
       </div>
@@ -263,7 +263,7 @@ function SliderInput({ label, value, min, max, unit, onChange }: {
         max={max}
         value={value}
         onChange={e => onChange(Number(e.target.value))}
-        className="w-full h-1.5 bg-[var(--surface2)] rounded-full appearance-none cursor-pointer accent-accent-gold"
+        className="w-full h-1.5 bg-[var(--surface2)] rounded-[var(--radius-badge)] appearance-none cursor-pointer accent-accent-gold"
       />
     </div>
   );
@@ -281,7 +281,7 @@ function OptionGroup<T extends string>({ label, options, value, onChange }: {
             key={o.value}
             onClick={() => onChange(o.value)}
             className={
-              'px-2 py-1 text-[10px] rounded-lg border transition-colors ' +
+              'px-2 py-1 text-[10px] rounded-[var(--radius-card)] border transition-colors ' +
               (value === o.value ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
             }
           >
@@ -299,9 +299,9 @@ function ToggleSwitch({ label, checked, onChange }: { label: string; checked: bo
       <span className="text-[10px] text-[var(--text-secondary)]">{label}</span>
       <button
         onClick={() => onChange(!checked)}
-        className={'relative w-8 h-4.5 rounded-full transition-colors ' + (checked ? 'bg-[var(--accent)]' : 'bg-wood-200')}
+        className={'relative w-8 h-4.5 rounded-[var(--radius-badge)] transition-colors ' + (checked ? 'bg-[var(--accent)]' : 'bg-wood-200')}
       >
-        <span className={'absolute top-0.5 w-3.5 h-3.5 rounded-full bg-[var(--surface)] shadow transition-transform ' + (checked ? 'left-4' : 'left-0.5')} />
+        <span className={'absolute top-0.5 w-3.5 h-3.5 rounded-[var(--radius-badge)] bg-[var(--surface)] shadow transition-transform ' + (checked ? 'left-4' : 'left-0.5')} />
       </button>
     </label>
   );
@@ -428,7 +428,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
             <div className={'grid gap-2 ' + (isMobile ? 'grid-cols-2' : 'grid-cols-3')}>
               {['Tablas de cortar', 'Cubiertos', 'Joyeros', 'Bowls', 'Decoracion', 'Sets regalo'].map(cat => (
                 <div key={cat} style={{ backgroundColor: c.textMuted + '10', borderRadius: cardRad }} className="p-3 text-center">
-                  <div style={{ backgroundColor: c.textMuted + '12' }} className="w-full aspect-video rounded-lg mb-2" />
+                  <div style={{ backgroundColor: c.textMuted + '12' }} className="w-full aspect-video rounded-[var(--radius-card)] mb-2" />
                   <p style={{ fontSize: f.sizeBase - 2 + 'px', color: c.text }} className="font-medium">{cat}</p>
                 </div>
               ))}
@@ -517,7 +517,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
           color: c.text,
           backgroundColor: c.background,
         }}
-        className="rounded-lg border border-[var(--border)] overflow-hidden shadow-inner"
+        className="rounded-[var(--radius-card)] border border-[var(--border)] overflow-hidden shadow-inner"
       >
         {/* Header */}
         <div
@@ -549,7 +549,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
                 <ShoppingCart size={14} style={{ color: c.textMuted }} />
                 <span
                   style={{ backgroundColor: c.accent, color: '#FFF', fontSize: '8px' }}
-                  className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold"
+                  className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-[var(--radius-badge)] flex items-center justify-center font-bold"
                 >
                   2
                 </span>
@@ -576,13 +576,13 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
               ) : (
                 <div style={{ backgroundColor: c.textMuted + '10', borderRadius: cardRad }} className="aspect-square relative">
                   {lay.productGallery === 'zoom' && (
-                    <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: c.surface, boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }}>
+                    <div className="absolute bottom-2 right-2 w-6 h-6 rounded-[var(--radius-badge)] flex items-center justify-center" style={{ backgroundColor: c.surface, boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }}>
                       <Search size={10} style={{ color: c.textMuted }} />
                     </div>
                   )}
                   {lay.productGallery === 'slider' && (
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                      {[0,1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: i === 0 ? c.accent : c.textMuted + '40' }} />)}
+                      {[0,1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-[var(--radius-badge)]" style={{ backgroundColor: i === 0 ? c.accent : c.textMuted + '40' }} />)}
                     </div>
                   )}
                 </div>
@@ -677,7 +677,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
                     <React.Fragment key={step.n}>
                       <div className="flex items-center gap-1.5">
                         <div
-                          className="w-5 h-5 rounded-full flex items-center justify-center"
+                          className="w-5 h-5 rounded-[var(--radius-badge)] flex items-center justify-center"
                           style={{ backgroundColor: step.active ? c.accent : c.textMuted + '20', color: step.active ? '#FFF' : c.textMuted }}
                         >
                           <step.icon size={9} />
@@ -961,7 +961,7 @@ export const ThemeEditorPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setTheme(themePresets[0].config); setSavedAt(null); toast.success('Tema restaurado a valores predeterminados'); }}
-            className="px-3 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"
           >
             <RotateCcw size={12} /> Restaurar
           </button>
@@ -988,9 +988,9 @@ export const ThemeEditorPage: React.FC = () => {
               }
             }}
             disabled={saving}
-            className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {saving ? <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block" /> Guardando...</> : <><Save size={12} /> Publicar tema</>}
+            {saving ? <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-[var(--radius-badge)] animate-spin inline-block" /> Guardando...</> : <><Save size={12} /> Publicar tema</>}
           </button>
           {savedAt && !saving && (
             <span className="text-[9px] text-[var(--text-muted)]">
@@ -1031,13 +1031,13 @@ export const ThemeEditorPage: React.FC = () => {
                       key={preset.id}
                       onClick={() => applyPreset(preset.config)}
                       className={
-                        'p-3 rounded-lg border text-left transition-all ' +
+                        'p-3 rounded-[var(--radius-card)] border text-left transition-all ' +
                         (isActive ? 'border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)]/20' : 'border-[var(--border)] hover:border-[var(--border)] hover:bg-[var(--surface2)]')
                       }
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <div
-                          className="w-7 h-7 rounded-lg flex items-center justify-center"
+                          className="w-7 h-7 rounded-[var(--radius-card)] flex items-center justify-center"
                           style={{ backgroundColor: preset.config.colors.secondary + '20' }}
                         >
                           <PresetIcon size={12} style={{ color: preset.config.colors.secondary }} />
@@ -1048,7 +1048,7 @@ export const ThemeEditorPage: React.FC = () => {
                       <p className="text-[9px] text-[var(--text-muted)] mt-0.5">{preset.desc}</p>
                       <div className="flex gap-0.5 mt-2">
                         {[preset.config.colors.primary, preset.config.colors.secondary, preset.config.colors.accent, preset.config.colors.background, preset.config.colors.surface].map((color, i) => (
-                          <div key={i} className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ backgroundColor: color }} />
+                          <div key={i} className="w-4 h-4 rounded-[var(--radius-badge)] border border-white shadow-sm" style={{ backgroundColor: color }} />
                         ))}
                       </div>
                     </button>
@@ -1074,7 +1074,7 @@ export const ThemeEditorPage: React.FC = () => {
                 <p className="text-[10px] text-[var(--text-muted)] mb-1.5">Logo</p>
                 <div className="flex gap-2">
                   {['Principal', 'Alternativo', 'Favicon'].map(l => (
-                    <button key={l} className="flex-1 flex flex-col items-center gap-1 p-3 border border-dashed border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors">
+                    <button key={l} className="flex-1 flex flex-col items-center gap-1 p-3 border border-dashed border-[var(--border)] rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors">
                       <Upload size={12} className="text-[var(--text-muted)]" />
                       <span className="text-[9px] text-[var(--text-muted)]">{l}</span>
                     </button>
@@ -1112,7 +1112,7 @@ export const ThemeEditorPage: React.FC = () => {
                     >
                       <div className="flex -space-x-1">
                         {preset.colors.map((c, i) => (
-                          <div key={i} className="w-4 h-4 rounded-full border-2 border-white shadow-sm group-hover:scale-110 transition-transform" style={{ backgroundColor: c }} />
+                          <div key={i} className="w-4 h-4 rounded-[var(--radius-badge)] border-2 border-white shadow-sm group-hover:scale-110 transition-transform" style={{ backgroundColor: c }} />
                         ))}
                       </div>
                       <span className="text-[8px] text-[var(--text-muted)]">{preset.label}</span>
@@ -1129,7 +1129,7 @@ export const ThemeEditorPage: React.FC = () => {
                 <select
                   value={theme.fonts.heading}
                   onChange={e => updateFonts('heading', e.target.value)}
-                  className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none"
+                  className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] outline-none"
                   style={{ fontFamily: theme.fonts.heading }}
                 >
                   {fontOptions.map(f => <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>)}
@@ -1143,7 +1143,7 @@ export const ThemeEditorPage: React.FC = () => {
                 <select
                   value={theme.fonts.body}
                   onChange={e => updateFonts('body', e.target.value)}
-                  className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none"
+                  className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)] outline-none"
                   style={{ fontFamily: theme.fonts.body }}
                 >
                   {fontOptions.map(f => <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>)}
@@ -1303,7 +1303,7 @@ export const ThemeEditorPage: React.FC = () => {
                 {theme.homepageSections.map((section, idx) => (
                   <div
                     key={section.id}
-                    className={'flex items-center gap-2 p-2 rounded-lg border transition-colors ' + (section.enabled ? 'border-[var(--border)] bg-[var(--surface)]' : 'border-dashed border-[var(--border)] bg-[var(--surface2)]/50 opacity-60')}
+                    className={'flex items-center gap-2 p-2 rounded-[var(--radius-card)] border transition-colors ' + (section.enabled ? 'border-[var(--border)] bg-[var(--surface)]' : 'border-dashed border-[var(--border)] bg-[var(--surface2)]/50 opacity-60')}
                   >
                     <GripVertical size={12} className="text-[var(--text-muted)] cursor-grab shrink-0" />
                     <div className="flex-1 min-w-0">
@@ -1347,12 +1347,12 @@ export const ThemeEditorPage: React.FC = () => {
                       </button>
                       <button
                         onClick={() => toggleSectionEnabled(section.id)}
-                        className={'p-0.5 rounded transition-colors ' + (section.enabled ? 'text-green-500' : 'text-[var(--text-muted)]')}
+                        className={'p-0.5 rounded transition-colors ' + (section.enabled ? 'text-[var(--success)]' : 'text-[var(--text-muted)]')}
                         title={section.enabled ? 'Desactivar' : 'Activar'}
                       >
                         <Eye size={10} />
                       </button>
-                      <button onClick={() => removeSectionById(section.id)} className="p-0.5 rounded text-[var(--text-muted)] hover:text-red-400 transition-colors">
+                      <button onClick={() => removeSectionById(section.id)} className="p-0.5 rounded text-[var(--text-muted)] hover:text-[var(--error)] transition-colors">
                         <Trash2 size={10} />
                       </button>
                     </div>
@@ -1367,7 +1367,7 @@ export const ThemeEditorPage: React.FC = () => {
                     <button
                       key={st.type}
                       onClick={() => addSection(st.type)}
-                      className="text-[9px] text-[var(--text-secondary)] border border-dashed border-[var(--border)] rounded-lg px-2 py-1.5 hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors flex items-center gap-1"
+                      className="text-[9px] text-[var(--text-secondary)] border border-dashed border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1.5 hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors flex items-center gap-1"
                     >
                       <Plus size={8} /> {st.label}
                     </button>

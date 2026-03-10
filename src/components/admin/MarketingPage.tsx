@@ -24,11 +24,11 @@ import { logger } from '@/src/lib/logger';
 
 // Shared UI components for live tabs
 const Card: React.FC<{ className?: string; children: React.ReactNode }> = ({ className = '', children }) => (
-  <div className={`bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ${className}`}>{children}</div>
+  <div className={`bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ${className}`}>{children}</div>
 );
 const Badge: React.FC<{ text: string; variant?: string }> = ({ text, variant = 'gray' }) => {
-  const colors: Record<string, string> = { green: 'bg-green-50 text-green-700', amber: 'bg-amber-50 text-amber-700', blue: 'bg-blue-50 text-blue-700', gray: 'bg-[var(--surface2)] text-[var(--text-secondary)]', red: 'bg-red-50 text-red-700' };
-  return <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${colors[variant] || colors.gray}`}>{text}</span>;
+  const colors: Record<string, string> = { green: 'bg-[var(--success-subtle)] text-[var(--success)]', amber: 'bg-amber-50 text-amber-700', blue: 'bg-[var(--info-subtle)] text-[var(--info)]', gray: 'bg-[var(--surface2)] text-[var(--text-secondary)]', red: 'bg-[var(--error-subtle)] text-[var(--error)]' };
+  return <span className={`text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] ${colors[variant] || colors.gray}`}>{text}</span>;
 };
 
 // ===== TYPES =====
@@ -47,12 +47,12 @@ const tabItems: { id: TabId; label: string; icon: React.ElementType }[] = [
 ];
 
 const couponStatusConfig: Record<CouponStatus, { label: string; cls: string; dot: string }> = {
-  active:    { label: 'Activo',      cls: 'bg-green-50 text-green-600',   dot: 'bg-green-500' },
-  auto:      { label: 'Auto',        cls: 'bg-blue-50 text-blue-600',     dot: 'bg-blue-500' },
-  scheduled: { label: 'Programado',  cls: 'bg-purple-50 text-purple-600', dot: 'bg-purple-500' },
+  active:    { label: 'Activo',      cls: 'bg-[var(--success-subtle)] text-[var(--success)]',   dot: 'bg-green-500' },
+  auto:      { label: 'Auto',        cls: 'bg-[var(--info-subtle)] text-[var(--info)]',     dot: 'bg-blue-500' },
+  scheduled: { label: 'Programado',  cls: 'bg-[var(--accent-subtle)] text-[var(--accent)]', dot: 'bg-purple-500' },
   paused:    { label: 'Pausado',     cls: 'bg-amber-50 text-amber-600',   dot: 'bg-amber-500' },
-  expired:   { label: 'Vencido',     cls: 'bg-gray-100 text-gray-500',    dot: 'bg-gray-400' },
-  disabled:  { label: 'Desactivado', cls: 'bg-red-50 text-red-500',       dot: 'bg-red-500' },
+  expired:   { label: 'Vencido',     cls: 'bg-[var(--surface2)] text-[var(--text-muted)]',    dot: 'bg-gray-400' },
+  disabled:  { label: 'Desactivado', cls: 'bg-[var(--error-subtle)] text-[var(--error)]',       dot: 'bg-red-500' },
 };
 
 const couponTypeLabels: Record<CouponType, string> = {
@@ -102,9 +102,9 @@ function getTimeUntil(startDate: string): string {
 
 // ===== KPI CARD =====
 const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; sub: string; accent?: boolean }> = ({ icon, value, label, sub, accent }) => (
-  <div className={`bg-[var(--surface)] rounded-xl border shadow-sm p-4 ${accent ? 'border-[var(--accent)]/30' : 'border-[var(--border)]'}`}>
+  <div className={`bg-[var(--surface)] rounded-[var(--radius-card)] border shadow-sm p-4 ${accent ? 'border-[var(--accent)]/30' : 'border-[var(--border)]'}`}>
     <div className="flex items-center gap-2 mb-2">
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-[var(--accent)]/15' : 'bg-[var(--surface2)]'}`}>
+      <div className={`w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center ${accent ? 'bg-[var(--accent)]/15' : 'bg-[var(--surface2)]'}`}>
         {icon}
       </div>
     </div>
@@ -118,8 +118,8 @@ const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; s
 const StatusBadge: React.FC<{ status: CouponStatus }> = ({ status }) => {
   const cfg = couponStatusConfig[status];
   return (
-    <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${cfg.cls}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+    <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] ${cfg.cls}`}>
+      <span className={`w-1.5 h-1.5 rounded-[var(--radius-badge)] ${cfg.dot}`} />
       {cfg.label}
     </span>
   );
@@ -154,7 +154,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-        className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-2xl"
+        className="bg-[var(--surface)] rounded-[var(--radius-card)] shadow-2xl w-full max-w-2xl"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -163,7 +163,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
             <Tag size={18} className="text-[var(--accent)]" />
             <h3 className="font-serif text-[var(--text)]">{coupon ? 'Editar Cupón' : 'Nuevo Cupón'}</h3>
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-[var(--surface2)] rounded-lg transition-colors"><X size={16} className="text-[var(--text-muted)]" /></button>
+          <button onClick={onClose} className="p-1.5 hover:bg-[var(--surface2)] rounded-[var(--radius-card)] transition-colors"><X size={16} className="text-[var(--text-muted)]" /></button>
         </div>
 
         <div className="p-5 space-y-6 max-h-[70vh] overflow-y-auto">
@@ -174,14 +174,14 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1 block">Código del cupón *</label>
                 <div className="flex gap-2">
-                  <input value={code} onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''))} placeholder="BIENVENIDO10" className="flex-1 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors" />
-                  <button onClick={generateCode} className="px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1"><RefreshCw size={12} /> Auto</button>
+                  <input value={code} onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''))} placeholder="BIENVENIDO10" className="flex-1 bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors" />
+                  <button onClick={generateCode} className="px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1"><RefreshCw size={12} /> Auto</button>
                 </div>
                 <p className="text-[10px] text-[var(--text-muted)] mt-1">Solo mayúsculas, números y guiones.</p>
               </div>
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1 block">Nombre interno</label>
-                <input value={internalName} onChange={e => setInternalName(e.target.value)} placeholder="Descuento bienvenida nuevos clientes" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors" />
+                <input value={internalName} onChange={e => setInternalName(e.target.value)} placeholder="Descuento bienvenida nuevos clientes" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors" />
               </div>
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-2 block">Tipo de aplicación</label>
@@ -202,7 +202,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
             <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Tipo de Descuento</h4>
             <div className="grid grid-cols-2 gap-2 mb-3">
               {(['percentage', 'fixed', 'free_shipping', 'buyget'] as CouponType[]).map(t => (
-                <button key={t} onClick={() => setDiscountType(t)} className={`px-3 py-2 rounded-lg text-xs border transition-colors ${discountType === t ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]' : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-wood-300'}`}>
+                <button key={t} onClick={() => setDiscountType(t)} className={`px-3 py-2 rounded-[var(--radius-card)] text-xs border transition-colors ${discountType === t ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]' : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-wood-300'}`}>
                   {couponTypeLabels[t]}
                 </button>
               ))}
@@ -210,14 +210,14 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
             {(discountType === 'percentage' || discountType === 'fixed') && (
               <div className="flex items-center gap-2">
                 <label className="text-xs text-[var(--text-secondary)]">Valor:</label>
-                <input value={value} onChange={e => setValue(e.target.value)} className="w-20 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <input value={value} onChange={e => setValue(e.target.value)} className="w-20 bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
                 <span className="text-xs text-[var(--text-secondary)]">{discountType === 'percentage' ? '%' : 'MXN'}</span>
               </div>
             )}
             {discountType === 'percentage' && (
               <div className="flex items-center gap-2 mt-2">
                 <label className="text-xs text-[var(--text-secondary)]">Máximo descuento:</label>
-                <input value={maxDiscount} onChange={e => setMaxDiscount(e.target.value)} placeholder="Sin límite" className="w-28 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <input value={maxDiscount} onChange={e => setMaxDiscount(e.target.value)} placeholder="Sin límite" className="w-28 bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
                 <span className="text-xs text-[var(--text-secondary)]">MXN</span>
               </div>
             )}
@@ -246,7 +246,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
             <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Condiciones</h4>
             <div className="flex items-center gap-2">
               <label className="text-xs text-[var(--text-secondary)]">Compra mínima:</label>
-              <input value={minPurchase} onChange={e => setMinPurchase(e.target.value)} placeholder="Sin mínimo" className="w-28 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+              <input value={minPurchase} onChange={e => setMinPurchase(e.target.value)} placeholder="Sin mínimo" className="w-28 bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               <span className="text-xs text-[var(--text-secondary)]">MXN</span>
             </div>
           </section>
@@ -257,11 +257,11 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1 block">Usos totales máximos</label>
-                <input value={usesLimit} onChange={e => setUsesLimit(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <input value={usesLimit} onChange={e => setUsesLimit(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               </div>
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1 block">Usos por cliente</label>
-                <input value={usesPerCustomer} onChange={e => setUsesPerCustomer(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <input value={usesPerCustomer} onChange={e => setUsesPerCustomer(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               </div>
             </div>
           </section>
@@ -279,9 +279,9 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
             </div>
             {vigencia === 'range' && (
               <div className="flex items-center gap-2">
-                <input type="date" className="bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <input type="date" className="bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
                 <span className="text-xs text-[var(--text-muted)]">hasta</span>
-                <input type="date" className="bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <input type="date" className="bg-[var(--surface2)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               </div>
             )}
           </section>
@@ -289,7 +289,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
           {/* Preview */}
           <section>
             <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Preview en checkout</h4>
-            <div className="bg-[var(--surface2)] rounded-lg border border-[var(--border)] p-4 text-xs text-[var(--text)]">
+            <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] border border-[var(--border)] p-4 text-xs text-[var(--text)]">
               <div className="flex items-center gap-2 mb-2">
                 <Tag size={12} className="text-[var(--accent)]" />
                 <span className="font-medium">Código aplicado: {code || 'CODIGO'}</span>
@@ -299,7 +299,7 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
               </p>
               <div className="border-t border-[var(--border)] mt-2 pt-2 space-y-1">
                 <div className="flex justify-between"><span>Subtotal:</span><span>$850.00</span></div>
-                <div className="flex justify-between text-green-600"><span>Descuento:</span><span>-{discountType === 'percentage' ? fmt(850 * (Number(value) || 0) / 100) : discountType === 'fixed' ? fmt(Number(value) || 0) : '$0'}</span></div>
+                <div className="flex justify-between text-[var(--success)]"><span>Descuento:</span><span>-{discountType === 'percentage' ? fmt(850 * (Number(value) || 0) / 100) : discountType === 'fixed' ? fmt(Number(value) || 0) : '$0'}</span></div>
                 <div className="flex justify-between"><span>Envío:</span><span>{discountType === 'free_shipping' ? <span className="line-through text-[var(--text-muted)]">$285.00</span> : '$285.00'}</span></div>
                 <div className="flex justify-between font-medium border-t border-[var(--border)] pt-1 mt-1"><span>Total:</span><span>{fmt(
                   discountType === 'percentage' ? 850 - (850 * (Number(value) || 0) / 100) + 285 :
@@ -315,8 +315,8 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
         <div className="flex items-center justify-between p-5 border-t border-[var(--border)] bg-[var(--surface2)]/50 rounded-b-xl">
           <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors">Cancelar</button>
           <div className="flex gap-2">
-            <button className="px-4 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface)] transition-colors">Guardar borrador</button>
-            <button onClick={() => { toast.success(coupon ? 'Cupón actualizado' : 'Cupón creado'); onClose(); }} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors">
+            <button className="px-4 py-2 text-xs border border-[var(--border)] rounded-[var(--radius-card)] text-[var(--text-secondary)] hover:bg-[var(--surface)] transition-colors">Guardar borrador</button>
+            <button onClick={() => { toast.success(coupon ? 'Cupón actualizado' : 'Cupón creado'); onClose(); }} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors">
               {coupon ? 'Guardar cambios' : 'Crear cupón'}
             </button>
           </div>
@@ -341,7 +341,7 @@ const CampaignsTabLive: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{campaigns.length} campañas</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Campaña</button></div>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Campaña</button></div>
       {campaigns.length === 0 ? <Card className="p-12 text-center"><Mail className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin campañas creadas</p></Card> : (
         <Card className="divide-y divide-[var(--border)]">{campaigns.map(c => (
           <div key={c.id} className="p-4 flex items-center justify-between hover:bg-[var(--surface2)]/50 transition-colors">
@@ -349,7 +349,7 @@ const CampaignsTabLive: React.FC = () => {
             <div className="flex items-center gap-2 ml-4">
               <Badge text={c.status === 'sent' ? 'Enviada' : c.status === 'scheduled' ? 'Programada' : 'Borrador'} variant={c.status === 'sent' ? 'green' : c.status === 'scheduled' ? 'blue' : 'amber'} />
               {c.status === 'draft' && <button onClick={() => handleToggle(c, 'scheduled')} className="text-[10px] text-[var(--accent)] hover:underline">Programar</button>}
-              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error-subtle)] rounded-[var(--radius-card)]"><Trash2 size={14} /></button>
             </div>
           </div>))}</Card>
       )}
@@ -370,18 +370,18 @@ const BannersTabLive: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{banners.length} banners</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Banner</button></div>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Banner</button></div>
       {banners.length === 0 ? <Card className="p-12 text-center"><Image className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin banners creados</p></Card> : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{banners.map(b => (
           <Card key={b.id} className="p-4">
             <div className="flex items-start justify-between mb-3">
               <div><p className="text-sm font-medium text-[var(--text)]">{b.name}</p><p className="text-[10px] text-[var(--text-muted)]">{LOCATIONS[b.location] || b.location}</p></div>
               <div className="flex items-center gap-2">
-                <button onClick={() => handleToggle(b)} className={"w-9 h-5 rounded-full transition-colors " + (b.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-full shadow transition-transform " + (b.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
-                <button onClick={() => handleDelete(b.id)} className="p-1 text-[var(--text-muted)] hover:text-red-600"><Trash2 size={14} /></button>
+                <button onClick={() => handleToggle(b)} className={"w-9 h-5 rounded-[var(--radius-badge)] transition-colors " + (b.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-[var(--radius-badge)] shadow transition-transform " + (b.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+                <button onClick={() => handleDelete(b.id)} className="p-1 text-[var(--text-muted)] hover:text-[var(--error)]"><Trash2 size={14} /></button>
               </div>
             </div>
-            {b.image_url ? <div className="aspect-[3/1] bg-[var(--surface2)] rounded-lg overflow-hidden mb-2"><img src={b.image_url} alt={b.alt_text} className="w-full h-full object-cover" /></div> : <div className="aspect-[3/1] bg-[var(--surface2)] rounded-lg flex items-center justify-center mb-2"><Image className="w-8 h-8 text-[var(--text-muted)]" /></div>}
+            {b.image_url ? <div className="aspect-[3/1] bg-[var(--surface2)] rounded-[var(--radius-card)] overflow-hidden mb-2"><img src={b.image_url} alt={b.alt_text} className="w-full h-full object-cover" /></div> : <div className="aspect-[3/1] bg-[var(--surface2)] rounded-[var(--radius-card)] flex items-center justify-center mb-2"><Image className="w-8 h-8 text-[var(--text-muted)]" /></div>}
             <Badge text={b.is_active ? 'Activo' : 'Inactivo'} variant={b.is_active ? 'green' : 'gray'} />
           </Card>))}</div>
       )}
@@ -402,7 +402,7 @@ const FlashSalesTabLive: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{sales.length} ventas flash</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Venta Flash</button></div>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Venta Flash</button></div>
       {sales.length === 0 ? <Card className="p-12 text-center"><Zap className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin ventas flash</p></Card> : (
         <Card className="divide-y divide-[var(--border)]">{sales.map(s => (
           <div key={s.id} className="p-4 flex items-center justify-between hover:bg-[var(--surface2)]/50 transition-colors">
@@ -412,8 +412,8 @@ const FlashSalesTabLive: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 ml-4">
               <Badge text={isActive(s) ? 'Activa' : s.is_active ? 'Expirada' : 'Inactiva'} variant={isActive(s) ? 'green' : 'gray'} />
-              <button onClick={() => handleToggle(s)} className={"w-9 h-5 rounded-full transition-colors " + (s.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-full shadow transition-transform " + (s.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
-              <button onClick={() => handleDelete(s.id)} className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+              <button onClick={() => handleToggle(s)} className={"w-9 h-5 rounded-[var(--radius-badge)] transition-colors " + (s.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-[var(--radius-badge)] shadow transition-transform " + (s.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+              <button onClick={() => handleDelete(s.id)} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error-subtle)] rounded-[var(--radius-card)]"><Trash2 size={14} /></button>
             </div>
           </div>))}</Card>
       )}
@@ -434,7 +434,7 @@ const ReferralsTabLive: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{codes.length} códigos · {redemptions.length} canjes</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Código</button></div>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Código</button></div>
       {codes.length === 0 ? <Card className="p-12 text-center"><Gift className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin códigos de referido</p></Card> : (
         <Card className="divide-y divide-[var(--border)]">{codes.map(c => (
           <div key={c.id} className="p-4 flex items-center justify-between hover:bg-[var(--surface2)]/50 transition-colors">
@@ -443,9 +443,9 @@ const ReferralsTabLive: React.FC = () => {
               <p className="text-[10px] text-[var(--text-muted)] mt-1">{c.owner_name || c.owner_email || 'Sin asignar'} · {c.discount_value}% descuento · {c.reward_value}% recompensa · {c.uses} usos</p>
             </div>
             <div className="flex items-center gap-2 ml-4">
-              <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); }} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] rounded-lg"><Copy size={14} /></button>
-              <button onClick={() => handleToggle(c)} className={"w-9 h-5 rounded-full transition-colors " + (c.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-full shadow transition-transform " + (c.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
-              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+              <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); }} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] rounded-[var(--radius-card)]"><Copy size={14} /></button>
+              <button onClick={() => handleToggle(c)} className={"w-9 h-5 rounded-[var(--radius-badge)] transition-colors " + (c.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-[var(--radius-badge)] shadow transition-transform " + (c.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error-subtle)] rounded-[var(--radius-card)]"><Trash2 size={14} /></button>
             </div>
           </div>))}</Card>
       )}
@@ -503,23 +503,23 @@ const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
     <>
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text)] outline-none focus:border-[var(--accent)]">
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-1.5 text-xs text-[var(--text)] outline-none focus:border-[var(--accent)]">
           <option value="all">Todos los estados</option>
           {Object.entries(couponStatusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as any)} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text)] outline-none focus:border-[var(--accent)]">
+        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as any)} className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-1.5 text-xs text-[var(--text)] outline-none focus:border-[var(--accent)]">
           <option value="all">Todos los tipos</option>
           {Object.entries(couponTypeLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         <div className="ml-auto">
-          <button onClick={() => setEditingCoupon(null)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs hover:bg-[var(--accent)]/90 transition-colors">
+          <button onClick={() => setEditingCoupon(null)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-xs hover:bg-[var(--accent)]/90 transition-colors">
             <Plus size={14} /> Nuevo Cupón
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
@@ -551,15 +551,15 @@ const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
                   <td className="px-4 py-3 text-[var(--text-secondary)]">{couponVigencia(c)}</td>
                   <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
                   <td className="px-4 py-3 text-right relative">
-                    <button onClick={() => setMenuOpen(menuOpen === c.id ? null : c.id)} className="p-1 hover:bg-[var(--surface2)] rounded-lg"><MoreHorizontal size={14} className="text-[var(--text-muted)]" /></button>
+                    <button onClick={() => setMenuOpen(menuOpen === c.id ? null : c.id)} className="p-1 hover:bg-[var(--surface2)] rounded-[var(--radius-card)]"><MoreHorizontal size={14} className="text-[var(--text-muted)]" /></button>
                     {menuOpen === c.id && (
-                      <div className="absolute right-4 top-10 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg py-1 z-10 w-36">
+                      <div className="absolute right-4 top-10 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-lg py-1 z-10 w-36">
                         <button onClick={() => { setEditingCoupon(c); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface2)] flex items-center gap-2"><Edit2 size={12} /> Editar</button>
                         <button onClick={() => { toast.success(c.status === 'active' ? 'Cupón pausado' : 'Cupón activado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface2)] flex items-center gap-2">
                           {c.status === 'active' ? <><Pause size={12} /> Pausar</> : <><Play size={12} /> Activar</>}
                         </button>
                         <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface2)] flex items-center gap-2"><Copy size={12} /> Copiar código</button>
-                        <button onClick={() => { toast.success('Cupón eliminado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} /> Eliminar</button>
+                        <button onClick={() => { toast.success('Cupón eliminado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--error)] hover:bg-[var(--error-subtle)] flex items-center gap-2"><Trash2 size={12} /> Eliminar</button>
                       </div>
                     )}
                   </td>
@@ -569,10 +569,10 @@ const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
           </table>
         </div>
         <div className="px-4 py-3 text-[10px] text-[var(--text-muted)] border-t border-[var(--border)] flex flex-wrap gap-x-4 gap-y-1">
-          <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 mr-1" /> Activo = en uso</span>
-          <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" /> Auto = se aplica automáticamente</span>
-          <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-500 mr-1" /> Prog. = programado</span>
-          <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-400 mr-1" /> Venc. = vencido</span>
+          <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-green-500 mr-1" /> Activo = en uso</span>
+          <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-blue-500 mr-1" /> Auto = se aplica automáticamente</span>
+          <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-purple-500 mr-1" /> Prog. = programado</span>
+          <span><span className="inline-block w-1.5 h-1.5 rounded-[var(--radius-badge)] bg-gray-400 mr-1" /> Venc. = vencido</span>
         </div>
       </div>
 
@@ -634,7 +634,7 @@ const AnalisisTab: React.FC = () => {
 
       {/* Rendimiento por canal */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
             <h4 className="text-xs font-medium text-[var(--text)]">Rendimiento por canal</h4>
           </div>
@@ -667,7 +667,7 @@ const AnalisisTab: React.FC = () => {
           <div className="px-4 py-2 text-[9px] text-[var(--text-muted)] border-t border-[var(--border)]">* Costo email = $0 (sin costo de plataforma) | ** Costo referidos = puntos valorados en MXN</div>
         </div>
 
-        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-4">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-4">
           <h4 className="text-xs font-medium text-[var(--text)] mb-3">Por canal</h4>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
@@ -680,7 +680,7 @@ const AnalisisTab: React.FC = () => {
           <div className="space-y-1 mt-2">
             {channelPie.map((c, i) => (
               <div key={c.name} className="flex items-center gap-2 text-[10px]">
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                <span className="w-2 h-2 rounded-[var(--radius-badge)] flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                 <span className="text-[var(--text-secondary)] truncate">{c.name}</span>
               </div>
             ))}
@@ -689,7 +689,7 @@ const AnalisisTab: React.FC = () => {
       </div>
 
       {/* Top Coupons */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
           <h4 className="text-xs font-medium text-[var(--text)]">Top cupones por rendimiento</h4>
         </div>
@@ -711,7 +711,7 @@ const AnalisisTab: React.FC = () => {
                   <td className="px-4 py-2 font-mono font-medium text-[var(--text)]">{c.code}</td>
                   <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.usos}</td>
                   <td className="px-4 py-2 text-right font-medium text-[var(--text)]">{fmt(c.ingresos)}</td>
-                  <td className="px-4 py-2 text-right text-red-500">{fmt(c.descOtorgado)}</td>
+                  <td className="px-4 py-2 text-right text-[var(--error)]">{fmt(c.descOtorgado)}</td>
                   <td className="px-4 py-2 text-right font-medium text-[var(--accent)]">{c.roi}x</td>
                   <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{fmt(c.ticket)} {c.ticket > 1000 && '⭐'}</td>
                 </tr>
@@ -726,7 +726,7 @@ const AnalisisTab: React.FC = () => {
       </div>
 
       {/* Email Performance */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
           <h4 className="text-xs font-medium text-[var(--text)]">Rendimiento de campañas email</h4>
         </div>
@@ -763,7 +763,7 @@ const AnalisisTab: React.FC = () => {
       </div>
 
       {/* Banner Performance */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
           <h4 className="text-xs font-medium text-[var(--text)]">Rendimiento de banners</h4>
         </div>
@@ -798,7 +798,7 @@ const AnalisisTab: React.FC = () => {
       </div>
 
       {/* Monthly Trend Chart */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
         <h4 className="text-xs font-medium text-[var(--text)] mb-4">Tendencia mensual</h4>
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={marketingMonthlyTrend}>
@@ -814,14 +814,14 @@ const AnalisisTab: React.FC = () => {
       </div>
 
       {/* Insights */}
-      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-xs font-medium text-[var(--text)]">Insights automáticos</h4>
           <button className="flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline"><Download size={10} /> Exportar reporte (PDF)</button>
         </div>
         <div className="space-y-3">
           {insights.map((ins, i) => (
-            <div key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)] bg-[var(--accent)]/5 rounded-lg p-3">
+            <div key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)] bg-[var(--accent)]/5 rounded-[var(--radius-card)] p-3">
               <Lightbulb size={14} className="text-[var(--accent)] flex-shrink-0 mt-0.5" />
               <p>{ins}</p>
             </div>
@@ -867,7 +867,7 @@ export const MarketingPage: React.FC = () => {
           <Megaphone size={20} className="text-[var(--accent)]" />
           <h2 className="font-serif text-lg text-[var(--text)]">Marketing</h2>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-white rounded-lg text-xs hover:bg-[var(--accent)]/90 transition-colors self-start sm:self-auto">
+        <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-white rounded-[var(--radius-card)] text-xs hover:bg-[var(--accent)]/90 transition-colors self-start sm:self-auto">
           <Plus size={14} /> Nueva Campaña
         </button>
       </div>
@@ -911,7 +911,7 @@ export const MarketingPage: React.FC = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar cupón, campaña o banner..."
-            className="w-full pl-9 pr-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
+            className="w-full pl-9 pr-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] text-xs text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
           />
         </div>
       )}

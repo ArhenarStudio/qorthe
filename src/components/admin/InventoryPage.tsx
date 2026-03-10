@@ -286,7 +286,7 @@ export const InventoryPage: React.FC = () => {
                 <div className="flex justify-between"><span className="text-[var(--text-secondary)]">SKU</span><span className="text-[var(--text)]">{quickAction.item.sku}</span></div>
                 <div className="flex justify-between"><span className="text-[var(--text-secondary)]">Stock actual</span><span className="text-[var(--text)] font-bold">{quickAction.item.current_stock}</span></div>
                 {quickAction.item.reserved_stock > 0 && (
-                  <div className="flex justify-between"><span className="text-[var(--text-secondary)]">Reservado</span><span className="text-orange-600 font-bold">{quickAction.item.reserved_stock}</span></div>
+                  <div className="flex justify-between"><span className="text-[var(--text-secondary)]">Reservado</span><span className="text-[var(--warning)] font-bold">{quickAction.item.reserved_stock}</span></div>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -472,8 +472,8 @@ const OverviewTab: React.FC<{
                             <input type="number" min={0} value={reorderValue} onChange={e => setReorderValue(e.target.value)}
                               onKeyDown={e => { if (e.key === 'Enter') saveReorder(item.variant_id); if (e.key === 'Escape') setEditingReorder(null); }}
                               className="w-14 px-1.5 py-1 text-xs text-center bg-[var(--surface)] border border-[var(--accent)] rounded outline-none" autoFocus />
-                            <button onClick={() => saveReorder(item.variant_id)} className="text-green-600 hover:text-green-700"><CheckCircle size={14} /></button>
-                            <button onClick={() => setEditingReorder(null)} className="text-[var(--text-muted)] hover:text-red-500"><X size={12} /></button>
+                            <button onClick={() => saveReorder(item.variant_id)} className="text-[var(--success)] hover:text-[var(--success)]"><CheckCircle size={14} /></button>
+                            <button onClick={() => setEditingReorder(null)} className="text-[var(--text-muted)] hover:text-[var(--error)]"><X size={12} /></button>
                           </div>
                         ) : (
                           <button onClick={() => startEditReorder(item)}
@@ -764,7 +764,7 @@ const ConfigTab: React.FC<{ config: InventoryConfig; onChange: (c: InventoryConf
               <Warehouse size={14} className="text-[var(--text-muted)]" />
               <span className="flex-1 text-sm text-[var(--text)]">{loc}</span>
               <button onClick={() => onChange({ ...config, locations: config.locations.filter((_, j) => j !== i) })}
-                className="text-[var(--text-muted)] hover:text-red-500 transition-colors"><X size={14} /></button>
+                className="text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"><X size={14} /></button>
             </div>
           ))}
         </div>

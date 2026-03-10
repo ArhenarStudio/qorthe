@@ -23,7 +23,7 @@ export const ThemeSelector: React.FC<{ compact?: boolean }> = ({ compact = false
         fontFamily: t.fontBody,
       }}
     >
-      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: t.accent }} />
+      <div className="w-2.5 h-2.5 rounded-[var(--radius-badge)] flex-shrink-0" style={{ backgroundColor: t.accent }} />
       {!compact && <span>{theme.name}</span>}
       <Palette size={11} />
     </div>

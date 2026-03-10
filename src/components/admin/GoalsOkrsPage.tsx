@@ -33,11 +33,11 @@ interface Goal {
 }
 
 const statusConfig: Record<GoalStatus, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  on_track: { label: 'En camino', color: 'text-green-600', bg: 'bg-green-50', icon: TrendingUp },
+  on_track: { label: 'En camino', color: 'text-[var(--success)]', bg: 'bg-[var(--success-subtle)]', icon: TrendingUp },
   at_risk: { label: 'En riesgo', color: 'text-amber-600', bg: 'bg-amber-50', icon: AlertTriangle },
-  behind: { label: 'Atrasada', color: 'text-red-500', bg: 'bg-red-50', icon: TrendingDown },
-  completed: { label: 'Completada', color: 'text-green-700', bg: 'bg-green-100', icon: CheckCircle },
-  failed: { label: 'No cumplida', color: 'text-red-600', bg: 'bg-red-100', icon: XCircle },
+  behind: { label: 'Atrasada', color: 'text-[var(--error)]', bg: 'bg-[var(--error-subtle)]', icon: TrendingDown },
+  completed: { label: 'Completada', color: 'text-[var(--success)]', bg: 'bg-[var(--success-subtle)]', icon: CheckCircle },
+  failed: { label: 'No cumplida', color: 'text-[var(--error)]', bg: 'bg-[var(--error-subtle)]', icon: XCircle },
 };
 
 
@@ -57,7 +57,7 @@ const historicalGoals = [
 ];
 
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function ProgressRing({ pct, size = 48, strokeWidth = 4, color }: { pct: number; size?: number; strokeWidth?: number; color: string }) {
@@ -88,7 +88,7 @@ function GoalCard({ goal }: { goal: Goal }) {
     <Card className="p-4">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--accent)]/10 flex items-center justify-center">
             <goal.icon size={14} className="text-[var(--accent)]" />
           </div>
           <div>
@@ -96,7 +96,7 @@ function GoalCard({ goal }: { goal: Goal }) {
             <p className="text-[10px] text-[var(--text-muted)]">{goal.periodLabel}</p>
           </div>
         </div>
-        <span className={`text-[9px] font-medium px-2 py-0.5 rounded-full ${st.bg} ${st.color} flex items-center gap-0.5`}>
+        <span className={`text-[9px] font-medium px-2 py-0.5 rounded-[var(--radius-badge)] ${st.bg} ${st.color} flex items-center gap-0.5`}>
           <StIcon size={8} />{st.label}
         </span>
       </div>
@@ -112,7 +112,7 @@ function GoalCard({ goal }: { goal: Goal }) {
             <span className="text-xs text-[var(--text-muted)]">/ {goal.prefix}{goal.target.toLocaleString()}{goal.unit}</span>
           </div>
           <div className="flex items-center gap-2 mt-1">
-            <span className={'text-[10px] font-medium flex items-center gap-0.5 ' + (goal.trend >= 0 ? 'text-green-600' : 'text-red-500')}>
+            <span className={'text-[10px] font-medium flex items-center gap-0.5 ' + (goal.trend >= 0 ? 'text-[var(--success)]' : 'text-[var(--error)]')}>
               {goal.trend >= 0 ? <TrendingUp size={8} /> : <TrendingDown size={8} />}
               {goal.trend > 0 ? '+' : ''}{goal.trend}% vs periodo anterior
             </span>
@@ -126,14 +126,14 @@ function GoalCard({ goal }: { goal: Goal }) {
           <span className="text-[9px] text-[var(--text-muted)]">Tiempo transcurrido</span>
           <span className="text-[9px] text-[var(--text-muted)]">{daysLeft} dias restantes</span>
         </div>
-        <div className="h-1 bg-[var(--surface2)] rounded-full overflow-hidden">
-          <div className="h-full bg-wood-300 rounded-full" style={{ width: pctTime + '%' }} />
+        <div className="h-1 bg-[var(--surface2)] rounded-[var(--radius-badge)] overflow-hidden">
+          <div className="h-full bg-wood-300 rounded-[var(--radius-badge)]" style={{ width: pctTime + '%' }} />
         </div>
       </div>
 
       {/* Alert */}
       {pct < pctTime && goal.status !== 'completed' && (
-        <div className="mt-3 p-2 bg-amber-50 rounded-lg flex items-start gap-2">
+        <div className="mt-3 p-2 bg-amber-50 rounded-[var(--radius-card)] flex items-start gap-2">
           <AlertTriangle size={10} className="text-amber-500 mt-0.5 shrink-0" />
           <p className="text-[9px] text-amber-700">Estas al {pct}% de la meta con {pctTime}% del tiempo transcurrido</p>
         </div>
@@ -169,21 +169,21 @@ function CreateGoalTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Tipo de meta</label>
-          <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+          <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
             {goalTypes.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
           </select>
         </div>
         <div>
           <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Titulo personalizado</label>
-          <input placeholder="ej: Ingresos Marzo" className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs outline-none" />
+          <input placeholder="ej: Ingresos Marzo" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs outline-none" />
         </div>
         <div>
           <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Target</label>
-          <input type="number" placeholder="150000" className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs outline-none" />
+          <input type="number" placeholder="150000" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs outline-none" />
         </div>
         <div>
           <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Periodo</label>
-          <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+          <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
             <option value="monthly">Mensual</option>
             <option value="quarterly">Trimestral</option>
             <option value="annual">Anual</option>
@@ -191,11 +191,11 @@ function CreateGoalTab() {
         </div>
         <div>
           <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Fecha limite</label>
-          <input type="date" defaultValue="2026-03-31" className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]" />
+          <input type="date" defaultValue="2026-03-31" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]" />
         </div>
         <div>
           <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Asignar a (opcional)</label>
-          <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+          <select className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-3 py-2 text-xs bg-[var(--surface)]">
             <option value="">— Todo el equipo —</option>
             <option>David (Admin)</option>
             <option>Carlos (Ventas)</option>
@@ -203,7 +203,7 @@ function CreateGoalTab() {
           </select>
         </div>
       </div>
-      <button onClick={() => toast.success('Meta creada exitosamente')} className="mt-4 px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 flex items-center gap-1.5">
+      <button onClick={() => toast.success('Meta creada exitosamente')} className="mt-4 px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 flex items-center gap-1.5">
         <Plus size={12} /> Crear meta
       </button>
     </Card>
@@ -221,13 +221,13 @@ function HistoryTab() {
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {h.goals.map(g => (
-              <div key={g.title} className={'p-3 rounded-lg border ' + (g.met ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50')}>
+              <div key={g.title} className={'p-3 rounded-[var(--radius-card)] border ' + (g.met ? 'border-green-200 bg-[var(--success-subtle)]/50' : 'border-red-200 bg-[var(--error-subtle)]/50')}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  {g.met ? <CheckCircle size={10} className="text-green-600" /> : <XCircle size={10} className="text-red-500" />}
+                  {g.met ? <CheckCircle size={10} className="text-[var(--success)]" /> : <XCircle size={10} className="text-[var(--error)]" />}
                   <span className="text-[10px] font-medium text-[var(--text)]">{g.title}</span>
                 </div>
                 <p className="text-xs text-[var(--text)]">Meta: {g.target}</p>
-                <p className={'text-xs font-medium ' + (g.met ? 'text-green-600' : 'text-red-500')}>Real: {g.actual}</p>
+                <p className={'text-xs font-medium ' + (g.met ? 'text-[var(--success)]' : 'text-[var(--error)]')}>Real: {g.actual}</p>
               </div>
             ))}
           </div>
@@ -254,7 +254,7 @@ function RankingTab() {
             <span className={'text-sm font-bold w-6 text-center ' + (i === 0 ? 'text-[var(--accent)]' : i === 1 ? 'text-[var(--text-muted)]' : 'text-[var(--text-muted)]')}>
               {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}
             </span>
-            <div className="w-9 h-9 rounded-full bg-[var(--accent)]/20 flex items-center justify-center text-xs font-bold text-[var(--accent)]">{s.avatar}</div>
+            <div className="w-9 h-9 rounded-[var(--radius-badge)] bg-[var(--accent)]/20 flex items-center justify-center text-xs font-bold text-[var(--accent)]">{s.avatar}</div>
             <div className="flex-1">
               <p className="text-xs font-medium text-[var(--text)]">{s.name}</p>
               <p className="text-[10px] text-[var(--text-muted)]">{s.completed}/{s.goals} metas cumplidas · {s.revenue} atribuidos</p>
@@ -263,8 +263,8 @@ function RankingTab() {
               <div className="flex items-center justify-between mb-0.5">
                 <span className="text-[10px] font-medium text-[var(--text)]">{s.pct}%</span>
               </div>
-              <div className="h-1.5 bg-[var(--surface2)] rounded-full overflow-hidden">
-                <div className="h-full bg-[var(--accent)] rounded-full" style={{ width: s.pct + '%' }} />
+              <div className="h-1.5 bg-[var(--surface2)] rounded-[var(--radius-badge)] overflow-hidden">
+                <div className="h-full bg-[var(--accent)] rounded-[var(--radius-badge)]" style={{ width: s.pct + '%' }} />
               </div>
             </div>
           </div>
@@ -333,7 +333,7 @@ export const GoalsOkrsPage: React.FC = () => {
           </h1>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Define objetivos, mide progreso y gestiona el desempeno del equipo</p>
         </div>
-        <button onClick={() => setTab('create')} className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
+        <button onClick={() => setTab('create')} className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-[var(--radius-card)] hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
           <Plus size={12} /> Nueva meta
         </button>
       </div>
@@ -341,30 +341,30 @@ export const GoalsOkrsPage: React.FC = () => {
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="p-3 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center"><Target size={14} className="text-[var(--accent)]" /></div>
+          <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--accent)]/10 flex items-center justify-center"><Target size={14} className="text-[var(--accent)]" /></div>
           <div>
             <p className="text-lg font-serif text-[var(--text)]">{total}</p>
             <p className="text-[10px] text-[var(--text-muted)]">Total activas</p>
           </div>
         </Card>
         <Card className="p-3 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center"><TrendingUp size={14} className="text-green-600" /></div>
+          <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--success-subtle)] flex items-center justify-center"><TrendingUp size={14} className="text-[var(--success)]" /></div>
           <div>
-            <p className="text-lg font-serif text-green-600">{onTrack}</p>
+            <p className="text-lg font-serif text-[var(--success)]">{onTrack}</p>
             <p className="text-[10px] text-[var(--text-muted)]">En camino</p>
           </div>
         </Card>
         <Card className="p-3 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center"><AlertTriangle size={14} className="text-amber-600" /></div>
+          <div className="w-8 h-8 rounded-[var(--radius-card)] bg-amber-50 flex items-center justify-center"><AlertTriangle size={14} className="text-amber-600" /></div>
           <div>
             <p className="text-lg font-serif text-amber-600">{atRisk}</p>
             <p className="text-[10px] text-[var(--text-muted)]">En riesgo</p>
           </div>
         </Card>
         <Card className="p-3 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center"><TrendingDown size={14} className="text-red-500" /></div>
+          <div className="w-8 h-8 rounded-[var(--radius-card)] bg-[var(--error-subtle)] flex items-center justify-center"><TrendingDown size={14} className="text-[var(--error)]" /></div>
           <div>
-            <p className="text-lg font-serif text-red-500">{behind}</p>
+            <p className="text-lg font-serif text-[var(--error)]">{behind}</p>
             <p className="text-[10px] text-[var(--text-muted)]">Atrasadas</p>
           </div>
         </Card>

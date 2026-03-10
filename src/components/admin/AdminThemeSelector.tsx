@@ -29,7 +29,7 @@ export const AdminThemeSelector: React.FC = () => {
       </div>
       <div className="flex items-center gap-3">
         <div
-          className="w-10 h-10 rounded-lg flex-shrink-0"
+          className="w-10 h-10 rounded-[var(--radius-card)] flex-shrink-0"
           style={{ backgroundColor: theme.preview.sidebar }}
         />
         <div>

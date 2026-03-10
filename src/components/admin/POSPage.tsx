@@ -84,7 +84,7 @@ const channelConfig: Record<Channel, { label: string; icon: React.ElementType; c
   instagram: { label: "Instagram", icon: Instagram, color: "bg-pink-50 text-pink-600 border-pink-200" },
   facebook: { label: "Facebook", icon: Facebook, color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
   in_person: { label: "En persona", icon: Store, color: "bg-[var(--warning-subtle)] text-[var(--warning)] border-[var(--warning)]" },
-  other: { label: "Otro", icon: Globe, color: "bg-gray-50 text-gray-600 border-gray-200" },
+  other: { label: "Otro", icon: Globe, color: "bg-[var(--surface2)] text-[var(--text-secondary)] border-[var(--border)]" },
 };
 
 const paymentConfig: Record<PaymentMethod, { label: string; icon: React.ElementType; color: string }> = {
@@ -522,7 +522,7 @@ export const POSPage: React.FC = () => {
                 {cart.length > 0 && (
                   <button
                     onClick={clearCart}
-                    className="text-[10px] text-red-400 hover:text-[var(--error)] flex items-center gap-0.5"
+                    className="text-[10px] text-[var(--error)] hover:text-[var(--error)] flex items-center gap-0.5"
                   >
                     <Trash2 size={10} /> Limpiar
                   </button>
@@ -710,7 +710,7 @@ export const POSPage: React.FC = () => {
                       <span className="flex items-center gap-1">
                         <Tag size={10} />
                         Descuento ({discount.type === "percentage" ? `${discount.value}%` : fmtMXN(discount.value)})
-                        <button onClick={() => setDiscount(null)} className="text-red-400 hover:text-[var(--error)]">
+                        <button onClick={() => setDiscount(null)} className="text-[var(--error)] hover:text-[var(--error)]">
                           <X size={10} />
                         </button>
                       </span>
@@ -808,7 +808,7 @@ const ProductCard: React.FC<{
       disabled={outOfStock}
       className={`relative text-left p-3 rounded-none border transition-all group ${
         outOfStock
-          ? "bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed"
+          ? "bg-[var(--surface2)] border-[var(--border)] opacity-60 cursor-not-allowed"
           : inCart
             ? "bg-[var(--accent)]/5 border-[var(--accent)]/30 ring-1 ring-[var(--accent)]/20"
             : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--accent)]/40 hover:shadow-sm"
@@ -836,7 +836,7 @@ const ProductCard: React.FC<{
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-[var(--accent)]">{fmtMXN(price)}</span>
         {outOfStock ? (
-          <span className="text-[9px] text-red-400 font-medium">Agotado</span>
+          <span className="text-[9px] text-[var(--error)] font-medium">Agotado</span>
         ) : (
           <span className="text-[9px] text-[var(--text-muted)]">{variant.inventory_quantity} en stock</span>
         )}
@@ -857,7 +857,7 @@ const OrderConfirmation: React.FC<{
       className="text-center max-w-md"
     >
       <div className="w-20 h-20 bg-[var(--success-subtle)] rounded-none flex items-center justify-center mx-auto mb-6">
-        <CheckCircle className="w-10 h-10 text-green-500" />
+        <CheckCircle className="w-10 h-10 text-[var(--success)]" />
       </div>
       <h2 className="text-2xl font-bold text-[var(--text)] mb-2">Pedido Creado</h2>
       <p className="text-[var(--text-secondary)] mb-1">

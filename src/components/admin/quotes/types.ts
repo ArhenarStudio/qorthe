@@ -115,17 +115,17 @@ export interface AdminQuote {
 // ── Status Config ───────────────────────────────────────────
 
 export const QUOTE_STATUS_CONFIG: Record<QuoteStatus, { label: string; cls: string; dot: string }> = {
-  nueva:              { label: 'Nueva',              cls: 'bg-blue-50 text-blue-600',    dot: 'bg-blue-500' },
+  nueva:              { label: 'Nueva',              cls: 'bg-[var(--info-subtle)] text-[var(--info)]',    dot: 'bg-blue-500' },
   en_revision:        { label: 'En revisión',        cls: 'bg-amber-50 text-amber-600',  dot: 'bg-amber-500' },
-  cotizacion_enviada: { label: 'Cotización enviada', cls: 'bg-purple-50 text-purple-600', dot: 'bg-purple-500' },
-  en_negociacion:     { label: 'En negociación',     cls: 'bg-orange-50 text-orange-600', dot: 'bg-orange-500' },
-  aprobada:           { label: 'Aprobada',           cls: 'bg-green-50 text-green-600',   dot: 'bg-green-500' },
+  cotizacion_enviada: { label: 'Cotización enviada', cls: 'bg-[var(--accent-subtle)] text-[var(--accent)]', dot: 'bg-purple-500' },
+  en_negociacion:     { label: 'En negociación',     cls: 'bg-[var(--warning-subtle)] text-[var(--warning)]', dot: 'bg-orange-500' },
+  aprobada:           { label: 'Aprobada',           cls: 'bg-[var(--success-subtle)] text-[var(--success)]',   dot: 'bg-green-500' },
   anticipo_recibido:  { label: 'Anticipo recibido',  cls: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-600' },
-  en_produccion:      { label: 'En producción',      cls: 'bg-yellow-50 text-yellow-700', dot: 'bg-yellow-500' },
-  completada:         { label: 'Completada',         cls: 'bg-gray-100 text-green-600',   dot: 'bg-green-400' },
-  rechazada:          { label: 'Rechazada',          cls: 'bg-red-50 text-red-500',       dot: 'bg-red-500' },
-  vencida:            { label: 'Vencida',            cls: 'bg-gray-100 text-gray-500',    dot: 'bg-gray-400' },
-  cancelada:          { label: 'Cancelada',          cls: 'bg-gray-200 text-gray-600',    dot: 'bg-gray-500' },
+  en_produccion:      { label: 'En producción',      cls: 'bg-[var(--warning-subtle)] text-[var(--warning)]', dot: 'bg-yellow-500' },
+  completada:         { label: 'Completada',         cls: 'bg-[var(--surface2)] text-[var(--success)]',   dot: 'bg-green-400' },
+  rechazada:          { label: 'Rechazada',          cls: 'bg-[var(--error-subtle)] text-[var(--error)]',       dot: 'bg-red-500' },
+  vencida:            { label: 'Vencida',            cls: 'bg-[var(--surface2)] text-[var(--text-muted)]',    dot: 'bg-gray-400' },
+  cancelada:          { label: 'Cancelada',          cls: 'bg-[var(--surface3)] text-[var(--text-secondary)]',    dot: 'bg-gray-500' },
 };
 
 // ── Helpers ─────────────────────────────────────────────────

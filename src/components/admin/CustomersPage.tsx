@@ -242,9 +242,9 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
           { icon: Users, color: 'bg-[var(--accent)]/10 text-[var(--accent)]', val: kpis.total, label: 'Total clientes', sub: '+12% vs prev' },
-          { icon: UserPlus, color: 'bg-blue-50 text-blue-600', val: kpis.newThisMonth, label: 'Nuevos este mes', sub: '+5 vs prev' },
-          { icon: TrendingUp, color: 'bg-green-50 text-green-600', val: `$${kpis.avgLtv.toLocaleString()}`, label: 'Valor prom. cliente', sub: '+8% vs prev' },
-          { icon: ShoppingBag, color: 'bg-purple-50 text-purple-600', val: `${kpis.repurchase}%`, label: 'Tasa de recompra', sub: '+3% vs prev' },
+          { icon: UserPlus, color: 'bg-[var(--info-subtle)] text-[var(--info)]', val: kpis.newThisMonth, label: 'Nuevos este mes', sub: '+5 vs prev' },
+          { icon: TrendingUp, color: 'bg-[var(--success-subtle)] text-[var(--success)]', val: `$${kpis.avgLtv.toLocaleString()}`, label: 'Valor prom. cliente', sub: '+8% vs prev' },
+          { icon: ShoppingBag, color: 'bg-[var(--accent-subtle)] text-[var(--accent)]', val: `${kpis.repurchase}%`, label: 'Tasa de recompra', sub: '+3% vs prev' },
           { icon: Crown, color: 'bg-amber-50 text-amber-700', val: kpis.vips, label: 'Clientes VIP', sub: `${kpis.vipPct}% del total` },
         ].map((k, i) => (
           <div key={i} className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-4">
@@ -253,7 +253,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
               <span className="text-lg text-[var(--text)]">{k.val}</span>
             </div>
             <p className="text-[11px] text-[var(--text-secondary)]">{k.label}</p>
-            <p className="text-[10px] text-green-600">{k.sub}</p>
+            <p className="text-[10px] text-[var(--success)]">{k.sub}</p>
           </div>
         ))}
       </div>
@@ -342,7 +342,7 @@ export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = 
                         <td className="px-3 py-3 text-xs text-[var(--text-secondary)] hidden lg:table-cell">{c.points.toLocaleString()}</td>
                         <td className="px-3 py-3 text-xs text-[var(--text)]">${c.totalSpent.toLocaleString()}</td>
                         <td className="px-3 py-3 text-xs text-[var(--text-secondary)] hidden md:table-cell">{c.orders}</td>
-                        <td className={`px-3 py-3 text-xs hidden xl:table-cell ${inactiveRisk ? 'text-red-500' : 'text-[var(--text-secondary)]'}`}>
+                        <td className={`px-3 py-3 text-xs hidden xl:table-cell ${inactiveRisk ? 'text-[var(--error)]' : 'text-[var(--text-secondary)]'}`}>
                           {c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                           {inactiveRisk && <span className="ml-1">⚠</span>}
                         </td>
@@ -724,7 +724,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3 flex items-center gap-1"><Zap size={12} /> Predicciones</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="text-center">
-                    <p className="text-lg text-green-600">{customer.repurchaseProb}%</p>
+                    <p className="text-lg text-[var(--success)]">{customer.repurchaseProb}%</p>
                     <p className="text-[10px] text-[var(--text-muted)]">Prob. recompra (30d)</p>
                   </div>
                   <div className="text-center">
@@ -768,10 +768,10 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                 <tbody className="divide-y divide-[var(--border)]">
                   {detailOrders.map((o: any) => {
                     const statusMap: Record<string, { label: string; cls: string }> = {
-                      fulfilled: { label: 'Entregado', cls: 'bg-green-50 text-green-600' },
+                      fulfilled: { label: 'Entregado', cls: 'bg-[var(--success-subtle)] text-[var(--success)]' },
                       not_fulfilled: { label: 'Pendiente', cls: 'bg-amber-50 text-amber-600' },
-                      partially_fulfilled: { label: 'Parcial', cls: 'bg-blue-50 text-blue-600' },
-                      shipped: { label: 'En camino', cls: 'bg-blue-50 text-blue-600' },
+                      partially_fulfilled: { label: 'Parcial', cls: 'bg-[var(--info-subtle)] text-[var(--info)]' },
+                      shipped: { label: 'En camino', cls: 'bg-[var(--info-subtle)] text-[var(--info)]' },
                     };
                     const st = statusMap[o.fulfillment_status] || statusMap[o.status] || { label: o.status || 'N/A', cls: 'bg-[var(--surface2)] text-[var(--text-secondary)]' };
                     const itemsSummary = (o.items || []).map((i: any) => `${i.title}${i.quantity > 1 ? ` x${i.quantity}` : ''}`).join(', ') || 'Productos';
@@ -863,8 +863,8 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                       <tr key={tx.id || i} className="hover:bg-[var(--surface2)]/30">
                         <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)]">{new Date(tx.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                         <td className="px-5 py-2.5 text-xs text-[var(--text)]">{tx.description || tx.order_id || 'Transacción'}</td>
-                        <td className="px-5 py-2.5"><span className={`text-[10px] px-2 py-0.5 rounded-none ${tx.type === 'earn' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{tx.type === 'earn' ? 'Ganados' : 'Canjeados'}</span></td>
-                        <td className={`px-5 py-2.5 text-xs font-medium ${tx.type === 'earn' ? 'text-green-600' : 'text-red-500'}`}>{tx.type === 'earn' ? '+' : '-'}{tx.points.toLocaleString()}</td>
+                        <td className="px-5 py-2.5"><span className={`text-[10px] px-2 py-0.5 rounded-none ${tx.type === 'earn' ? 'bg-[var(--success-subtle)] text-[var(--success)]' : 'bg-[var(--error-subtle)] text-[var(--error)]'}`}>{tx.type === 'earn' ? 'Ganados' : 'Canjeados'}</span></td>
+                        <td className={`px-5 py-2.5 text-xs font-medium ${tx.type === 'earn' ? 'text-[var(--success)]' : 'text-[var(--error)]'}`}>{tx.type === 'earn' ? '+' : '-'}{tx.points.toLocaleString()}</td>
                         <td className="px-5 py-2.5 text-xs text-[var(--text)]">{(tx.balance_after ?? 0).toLocaleString()}</td>
                       </tr>
                     ))}
@@ -935,9 +935,9 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                   <div key={i} className="flex gap-3 pb-4 last:pb-0">
                     <div className="flex flex-col items-center">
                       <div className={`w-7 h-7 rounded-none flex items-center justify-center flex-shrink-0 ${
-                        a.type === 'order' ? 'bg-blue-50 text-blue-600' :
+                        a.type === 'order' ? 'bg-[var(--info-subtle)] text-[var(--info)]' :
                         a.type === 'points' ? 'bg-[var(--accent)]/10 text-[var(--accent)]' :
-                        a.type === 'tier' ? 'bg-purple-50 text-purple-600' :
+                        a.type === 'tier' ? 'bg-[var(--accent-subtle)] text-[var(--accent)]' :
                         'bg-[var(--surface2)] text-[var(--text-secondary)]'
                       }`}>
                         <a.icon size={12} />
@@ -988,7 +988,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
               <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)] p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Enviar nuevo mensaje</h4>
-                  <div className="text-[10px] text-[var(--text-muted)]">Tasa apertura: <span className="text-green-600">72%</span> | Clics: <span className="text-[var(--accent)]">45%</span></div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Tasa apertura: <span className="text-[var(--success)]">72%</span> | Clics: <span className="text-[var(--accent)]">45%</span></div>
                 </div>
                 <select className="w-full px-3 py-2 text-xs border-2 border-[var(--border)] rounded-none bg-[var(--surface)] text-[var(--text)] outline-none">
                   <option value="">Seleccionar plantilla...</option>
@@ -1022,7 +1022,7 @@ const CustomerProfile: React.FC<{ customer: CustomerFull; onBack: () => void }> 
                         <p className="text-[10px] text-[var(--text-muted)]">{e.date}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-none ${e.status === 'opened' ? 'bg-green-50 text-green-600' : 'bg-[var(--surface2)] text-[var(--text-muted)]'}`}>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-none ${e.status === 'opened' ? 'bg-[var(--success-subtle)] text-[var(--success)]' : 'bg-[var(--surface2)] text-[var(--text-muted)]'}`}>
                           {e.status === 'opened' ? `Abierto${e.clicks > 0 ? ` (${e.clicks} clics)` : ''}` : 'No abierto'}
                         </span>
                       </div>
@@ -1111,10 +1111,10 @@ const SegmentsTab: React.FC = () => {
   const [showCreate, setShowCreate] = useState(false);
   const segments = [
     { name: 'Clientes VIP', type: 'Auto', clients: 15, metric: 'Ingresos $266,700', rule: 'Tier = Oro o Platino', color: 'bg-[var(--accent)]/10 text-[var(--accent)]' },
-    { name: 'En riesgo de abandono', type: 'Auto', clients: 45, metric: 'Ultima compra >90d', rule: 'Ultima compra > 90 dias Y Pedidos > 0', color: 'bg-red-50 text-red-500' },
-    { name: 'Grabado laser frecuente', type: 'Auto', clients: 32, metric: 'Ticket prom $1,420', rule: '>50% compras con grabado', color: 'bg-purple-50 text-purple-600' },
-    { name: 'Nuevos ultimo mes', type: 'Auto', clients: 18, metric: 'Registros recientes', rule: 'Registro ultimos 30 dias', color: 'bg-blue-50 text-blue-600' },
-    { name: 'Compradores corporativos', type: 'Manual', clients: 5, metric: 'Ticket $4,200', rule: 'Seleccion manual', color: 'bg-green-50 text-green-600' },
+    { name: 'En riesgo de abandono', type: 'Auto', clients: 45, metric: 'Ultima compra >90d', rule: 'Ultima compra > 90 dias Y Pedidos > 0', color: 'bg-[var(--error-subtle)] text-[var(--error)]' },
+    { name: 'Grabado laser frecuente', type: 'Auto', clients: 32, metric: 'Ticket prom $1,420', rule: '>50% compras con grabado', color: 'bg-[var(--accent-subtle)] text-[var(--accent)]' },
+    { name: 'Nuevos ultimo mes', type: 'Auto', clients: 18, metric: 'Registros recientes', rule: 'Registro ultimos 30 dias', color: 'bg-[var(--info-subtle)] text-[var(--info)]' },
+    { name: 'Compradores corporativos', type: 'Manual', clients: 5, metric: 'Ticket $4,200', rule: 'Seleccion manual', color: 'bg-[var(--success-subtle)] text-[var(--success)]' },
     { name: 'Hermosillo entrega local', type: 'Auto', clients: 42, metric: 'Envio prom $99', rule: 'CP 83000-83999', color: 'bg-amber-50 text-amber-600' },
   ];
 
@@ -1147,7 +1147,7 @@ const SegmentsTab: React.FC = () => {
                 <option>es igual a</option><option>no es igual a</option><option>mayor que</option><option>menor que</option>
               </select>
               <input placeholder="Valor" className="flex-1 px-2 py-2 text-xs border-2 border-[var(--border)] rounded-none text-[var(--text)] outline-none" />
-              <button className="p-1 text-[var(--text-muted)] hover:text-red-500"><X size={14} /></button>
+              <button className="p-1 text-[var(--text-muted)] hover:text-[var(--error)]"><X size={14} /></button>
             </div>
             <button className="text-[11px] text-[var(--accent)] hover:underline flex items-center gap-1"><Plus size={11} /> Agregar regla</button>
           </div>

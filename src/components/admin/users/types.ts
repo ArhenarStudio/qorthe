@@ -83,17 +83,17 @@ export interface UserFormData {
 
 // ── Status config ──
 export const USER_STATUS_CONFIG: Record<UserStatus, { label: string; cls: string; dot: string }> = {
-  active:    { label: 'Activo',     cls: 'bg-green-50 text-green-600',  dot: 'bg-green-500' },
-  inactive:  { label: 'Inactivo',   cls: 'bg-gray-100 text-gray-500',   dot: 'bg-gray-400' },
-  invited:   { label: 'Invitado',   cls: 'bg-blue-50 text-blue-600',    dot: 'bg-blue-500' },
-  suspended: { label: 'Suspendido', cls: 'bg-red-50 text-red-500',      dot: 'bg-red-500' },
+  active:    { label: 'Activo',     cls: 'bg-[var(--success-subtle)] text-[var(--success)]',  dot: 'bg-green-500' },
+  inactive:  { label: 'Inactivo',   cls: 'bg-[var(--surface2)] text-[var(--text-muted)]',   dot: 'bg-gray-400' },
+  invited:   { label: 'Invitado',   cls: 'bg-[var(--info-subtle)] text-[var(--info)]',    dot: 'bg-blue-500' },
+  suspended: { label: 'Suspendido', cls: 'bg-[var(--error-subtle)] text-[var(--error)]',      dot: 'bg-red-500' },
 };
 
 export const ACCESS_LEVELS: { value: AccessLevel; label: string; cls: string }[] = [
-  { value: 'none', label: 'Sin acceso', cls: 'text-gray-400' },
-  { value: 'read', label: 'Lectura',    cls: 'text-blue-600' },
+  { value: 'none', label: 'Sin acceso', cls: 'text-[var(--text-muted)]' },
+  { value: 'read', label: 'Lectura',    cls: 'text-[var(--info)]' },
   { value: 'edit', label: 'Edición',    cls: 'text-amber-600' },
-  { value: 'full', label: 'Completo',   cls: 'text-green-600' },
+  { value: 'full', label: 'Completo',   cls: 'text-[var(--success)]' },
 ];
 
 export const DEPARTMENTS = [

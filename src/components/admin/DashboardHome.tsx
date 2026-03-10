@@ -372,7 +372,7 @@ export const DashboardHome: React.FC<Props> = ({ period, onNavigate }) => {
                   onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--surface2)')}
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
-                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
+                  <div className="w-2 h-2 rounded-[var(--radius-badge)] flex-shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
                   <p style={{ fontSize: '12px', color: 'var(--text)', flex: 1 }}>{item.label}</p>
                   <ArrowUpRight size={12} style={{ color: 'var(--text-muted)' }} />
                 </button>

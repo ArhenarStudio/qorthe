@@ -121,7 +121,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
 
   if (!stats || items.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-12 text-center">
+      <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-12 text-center">
         <BarChart3 size={32} className="text-wood-300 mx-auto mb-3" />
         <p className="text-sm text-wood-500">No hay datos suficientes para el dashboard</p>
       </div>
@@ -136,10 +136,10 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
     <div className="space-y-6">
       {/* Row 1: Key metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label="Valor Total (costo)" value={fmt(stats.total_cost_value)} icon={<DollarSign size={16} />} color="text-green-600" bgColor="bg-green-50" />
-        <MetricCard label="Valor Total (retail)" value={fmt(stats.total_retail_value)} icon={<DollarSign size={16} />} color="text-blue-600" bgColor="bg-blue-50" />
+        <MetricCard label="Valor Total (costo)" value={fmt(stats.total_cost_value)} icon={<DollarSign size={16} />} color="text-[var(--success)]" bgColor="bg-[var(--success-subtle)]" />
+        <MetricCard label="Valor Total (retail)" value={fmt(stats.total_retail_value)} icon={<DollarSign size={16} />} color="text-[var(--info)]" bgColor="bg-[var(--info-subtle)]" />
         <MetricCard label="Margen Promedio" value={fmtPct(margin)} icon={<TrendingUp size={16} />} color="text-accent-gold" bgColor="bg-accent-gold/10" />
-        <MetricCard label="Categorías" value={String(valueByCategory.length)} icon={<Layers size={16} />} color="text-purple-600" bgColor="bg-purple-50" />
+        <MetricCard label="Categorías" value={String(valueByCategory.length)} icon={<Layers size={16} />} color="text-[var(--accent)]" bgColor="bg-[var(--accent-subtle)]" />
       </div>
 
       {/* Period selector */}
@@ -147,8 +147,8 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
         <span className="text-[10px] text-wood-400 uppercase tracking-wider font-bold">Período:</span>
         {PERIOD_OPTIONS.map(opt => (
           <button key={opt.value} onClick={() => setPeriod(opt.value)}
-            className={`px-3 py-1.5 text-[10px] font-bold rounded-lg transition-colors ${
-              period === opt.value ? 'bg-wood-900 text-sand-100' : 'bg-white text-wood-500 border border-wood-100 hover:border-wood-300'
+            className={`px-3 py-1.5 text-[10px] font-bold rounded-[var(--radius-card)] transition-colors ${
+              period === opt.value ? 'bg-wood-900 text-sand-100' : 'bg-[var(--surface)] text-wood-500 border border-wood-100 hover:border-wood-300'
             }`}>
             {opt.label}
           </button>
@@ -158,7 +158,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
       {/* Row 2: Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Movements over time */}
-        <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
           <h4 className="text-sm font-bold text-wood-900 mb-4 flex items-center gap-2">
             <BarChart3 size={16} className="text-accent-gold" /> Movimientos (últimos {period} días)
           </h4>
@@ -177,7 +177,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
         </div>
 
         {/* Status distribution pie */}
-        <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
           <h4 className="text-sm font-bold text-wood-900 mb-4 flex items-center gap-2">
             <PieIcon size={16} className="text-accent-gold" /> Distribución de Estado
           </h4>
@@ -199,7 +199,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
       {/* Row 3: Value by category + Top movers */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Value by category bar chart */}
-        <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+        <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
           <h4 className="text-sm font-bold text-wood-900 mb-4 flex items-center gap-2">
             <DollarSign size={16} className="text-accent-gold" /> Valor por Categoría
           </h4>
@@ -218,14 +218,14 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
 
         {/* Top movers + Location breakdown */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
             <h4 className="text-sm font-bold text-wood-900 mb-3">Productos Más Activos</h4>
             <div className="space-y-2">
               {topMovers.length === 0 ? (
                 <p className="text-xs text-wood-400">Sin movimientos recientes</p>
               ) : topMovers.map((m, i) => (
                 <div key={i} className="flex items-center gap-3 py-2 border-b border-wood-50 last:border-0">
-                  <span className="w-5 h-5 rounded-full bg-accent-gold/15 text-accent-gold text-[10px] flex items-center justify-center font-bold">{i + 1}</span>
+                  <span className="w-5 h-5 rounded-[var(--radius-badge)] bg-accent-gold/15 text-accent-gold text-[10px] flex items-center justify-center font-bold">{i + 1}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-wood-900 truncate">{m.title}</p>
                     <p className="text-[10px] text-wood-400 font-mono">{m.sku}</p>
@@ -239,7 +239,7 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-5">
+          <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-5">
             <h4 className="text-sm font-bold text-wood-900 mb-3">Por Ubicación</h4>
             <div className="space-y-2">
               {locationData.map((loc, i) => (
@@ -260,8 +260,8 @@ export const DashboardTab: React.FC<Props> = ({ items, movements, stats }) => {
 };
 
 const MetricCard: React.FC<{ label: string; value: string; icon: React.ReactNode; color: string; bgColor: string }> = ({ label, value, icon, color, bgColor }) => (
-  <div className="bg-white rounded-xl border border-wood-100 shadow-sm p-4">
-    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${bgColor} ${color} mb-2`}>{icon}</div>
+  <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-wood-100 shadow-sm p-4">
+    <div className={`w-8 h-8 rounded-[var(--radius-card)] flex items-center justify-center ${bgColor} ${color} mb-2`}>{icon}</div>
     <p className="text-xl font-sans text-wood-900">{value}</p>
     <p className="text-[10px] text-wood-400 uppercase tracking-wider mt-0.5">{label}</p>
   </div>

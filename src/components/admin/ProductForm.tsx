@@ -282,7 +282,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
 
   /* === Card wrapper === */
   const Card: React.FC<{ id: string; title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ id, title, icon, children }) => (
-    <div id={id} ref={el => { sectionRefs.current[id] = el; }} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-6 scroll-mt-4">
+    <div id={id} ref={el => { sectionRefs.current[id] = el; }} className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] shadow-sm p-6 scroll-mt-4">
       <h4 className="flex items-center gap-2 font-serif text-[var(--text)] mb-5">
         {icon} {title}
       </h4>
@@ -298,9 +298,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
   }> = ({ label, value, onChange, placeholder, type = 'text', hint, required, maxLength, suffix, prefix, disabled, className }) => (
     <div className={className}>
       <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">
-        {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+        {label}{required && <span className="text-[var(--error)] ml-0.5">*</span>}
       </label>
-      <div className="flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden focus-within:border-[var(--accent)]/50 transition-colors">
+      <div className="flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden focus-within:border-[var(--accent)]/50 transition-colors">
         {prefix && <span className="pl-3 text-xs text-[var(--text-muted)]">{prefix}</span>}
         <input
           type={type}
@@ -326,7 +326,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
         value={value}
         onChange={e => onChange(e.target.value)}
         rows={rows}
-        className="w-full px-3 py-2.5 text-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg outline-none text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/50 transition-colors resize-none"
+        className="w-full px-3 py-2.5 text-sm bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)] outline-none text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/50 transition-colors resize-none"
       />
       {hint && <p className="text-[10px] text-[var(--text-muted)] mt-1 flex items-center gap-1"><Info size={10} /> {hint}</p>}
       {maxLength && <p className="text-[10px] text-[var(--text-muted)] mt-0.5 text-right">{value.length}/{maxLength}</p>}
@@ -338,7 +338,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
       {/* ===== TOP HEADER ===== */}
       <div className="flex items-center justify-between pb-4 border-b border-[var(--border)] mb-4">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
+          <button onClick={onBack} className="p-2 hover:bg-[var(--surface2)] rounded-[var(--radius-card)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
             <ArrowLeft size={18} />
           </button>
           <div>
@@ -347,18 +347,18 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface2)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)] transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface2)] text-[var(--text-secondary)] text-xs rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors">
             <Eye size={13} /> Vista previa
           </button>
           <button
             onClick={() => { update('status', 'draft'); setHasChanges(false); }}
-            className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors"
           >
             <Save size={13} /> Guardar borrador
           </button>
           <button
             onClick={() => { update('status', 'active'); setHasChanges(false); }}
-            className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800 transition-colors"
           >
             <Globe size={13} /> Publicar
           </button>
@@ -376,7 +376,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               <button
                 key={s.id}
                 onClick={() => scrollToSection(s.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-left transition-colors ${isActive ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--surface2)] hover:text-[var(--text)]'}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-[var(--radius-card)] text-xs text-left transition-colors ${isActive ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--surface2)] hover:text-[var(--text)]'}`}
               >
                 <Icon size={14} />
                 {s.label}
@@ -435,10 +435,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               <label className="text-xs text-[var(--text-secondary)] block">Imagenes del producto</label>
               <div className="flex flex-wrap gap-3">
                 {form.images.map((img, i) => (
-                  <div key={i} className="relative group w-24 h-24 rounded-xl overflow-hidden border border-[var(--border)]">
+                  <div key={i} className="relative group w-24 h-24 rounded-[var(--radius-card)] overflow-hidden border border-[var(--border)]">
                     <img src={img} alt="" className="w-full h-full object-cover" />
                     {i === 0 && (
-                      <span className="absolute top-1 left-1 bg-[var(--accent)] text-white text-[8px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                      <span className="absolute top-1 left-1 bg-[var(--accent)] text-white text-[8px] px-1.5 py-0.5 rounded-[var(--radius-badge)] flex items-center gap-0.5">
                         <Star size={8} /> Principal
                       </span>
                     )}
@@ -449,7 +449,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                         </button>
                       )}
                       <button
-                        className="p-1 bg-[var(--surface)] rounded text-red-500"
+                        className="p-1 bg-[var(--surface)] rounded text-[var(--error)]"
                         onClick={() => update('images', form.images.filter((_, idx) => idx !== i))}
                       >
                         <Trash2 size={12} />
@@ -457,7 +457,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     </div>
                   </div>
                 ))}
-                <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-[var(--border)] rounded-xl cursor-pointer hover:border-[var(--accent)]/40 transition-colors">
+                <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-[var(--border)] rounded-[var(--radius-card)] cursor-pointer hover:border-[var(--accent)]/40 transition-colors">
                   <Plus size={16} className="text-[var(--text-muted)] mb-1" />
                   <span className="text-[9px] text-[var(--text-muted)] text-center px-1">Agregar</span>
                   <input type="file" className="hidden" accept="image/*" />
@@ -467,8 +467,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
 
               <InputField label="Video del producto (opcional)" value={form.videoUrl} onChange={v => update('videoUrl', v)} placeholder="https://youtube.com/watch?v=..." hint="URL de YouTube o Vimeo" />
 
-              <div className="bg-[var(--surface2)] rounded-xl p-4 flex items-center gap-3">
-                <div className="p-2 bg-[var(--accent)]/10 rounded-lg text-[var(--accent)]">
+              <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 flex items-center gap-3">
+                <div className="p-2 bg-[var(--accent)]/10 rounded-[var(--radius-card)] text-[var(--accent)]">
                   <Sparkles size={16} />
                 </div>
                 <p className="text-[11px] text-[var(--text-secondary)]">Proximamente: Sube un modelo 3D para vista AR</p>
@@ -487,7 +487,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
 
               {/* Profitability analysis */}
               {form.price > 0 && (
-                <div className="bg-[var(--surface2)] rounded-xl p-5 space-y-3">
+                <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-5 space-y-3">
                   <h5 className="text-xs text-[var(--text)] flex items-center gap-1.5"><BarChart3 size={13} /> Analisis de Rentabilidad</h5>
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between text-[var(--text-secondary)]">
@@ -496,7 +496,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     </div>
                     <div className="flex justify-between text-[var(--text-secondary)]">
                       <span>Costo del producto:</span>
-                      <span className="text-red-500">-${form.cost.toLocaleString()}</span>
+                      <span className="text-[var(--error)]">-${form.cost.toLocaleString()}</span>
                     </div>
                     <div className="border-t border-[var(--border)] my-2" />
                     <div className="flex justify-between text-[var(--text)]">
@@ -505,7 +505,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[var(--text-secondary)]">Margen bruto:</span>
-                      <span className={`${margin >= 50 ? 'text-green-600' : margin >= 30 ? 'text-[var(--accent)]' : 'text-red-500'}`}>
+                      <span className={`${margin >= 50 ? 'text-[var(--success)]' : margin >= 30 ? 'text-[var(--accent)]' : 'text-[var(--error)]'}`}>
                         {margin.toFixed(1)}% {margin >= 50 ? <Check size={10} className="inline" /> : null}
                       </span>
                     </div>
@@ -522,13 +522,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     <div className="border-t border-[var(--border)] my-2" />
                     <div className="flex justify-between text-[var(--text)]">
                       <span>Ganancia neta estimada:</span>
-                      <span className={netProfit > 0 ? 'text-green-600' : 'text-red-500'}>${netProfit.toFixed(2)}</span>
+                      <span className={netProfit > 0 ? 'text-[var(--success)]' : 'text-[var(--error)]'}>${netProfit.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-[var(--text-secondary)]">
                       <span>Margen neto estimado:</span>
                       <span>{netMargin.toFixed(1)}%</span>
                     </div>
-                    <div className="mt-3 bg-[var(--accent)]/10 rounded-lg p-3 flex items-start gap-2">
+                    <div className="mt-3 bg-[var(--accent)]/10 rounded-[var(--radius-card)] p-3 flex items-start gap-2">
                       <Info size={12} className="text-[var(--accent)] flex-shrink-0 mt-0.5" />
                       <p className="text-[10px] text-[var(--text-secondary)]">
                         Si el cliente alcanza envio gratis ($2,500+): Ganancia neta: ${netProfitFreeShipping.toFixed(2)} ({netMarginFreeShipping.toFixed(1)}%)
@@ -592,7 +592,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
 
               {/* Stock history */}
               {isEditing && (
-                <div className="bg-[var(--surface2)] rounded-xl p-4">
+                <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h5 className="text-xs text-[var(--text)] flex items-center gap-1.5"><BarChart3 size={12} /> Historial de Stock</h5>
                     <button className="text-[10px] text-[var(--accent)] hover:underline">Ver todo →</button>
@@ -604,7 +604,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                       <div key={i} className="flex items-center gap-3 text-[11px]">
                         <span className="text-[var(--text-muted)] w-14">{entry.date}</span>
                         <span className="text-[var(--text-secondary)]">Stock: {entry.stock}</span>
-                        <span className={entry.change > 0 ? 'text-green-600' : 'text-red-500'}>
+                        <span className={entry.change > 0 ? 'text-[var(--success)]' : 'text-[var(--error)]'}>
                           ({entry.change > 0 ? '+' : ''}{entry.change})
                         </span>
                         <span className="text-[var(--text-muted)]">{entry.reason}</span>
@@ -624,7 +624,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                       type="number"
                       value={stockAdjust.qty}
                       onChange={e => setStockAdjust(prev => ({ ...prev, qty: Number(e.target.value) }))}
-                      className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]/50"
+                      className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-[var(--radius-card)] outline-none focus:border-[var(--accent)]/50"
                     />
                   </div>
                   <div className="flex-1">
@@ -632,14 +632,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     <select
                       value={stockAdjust.reason}
                       onChange={e => setStockAdjust(prev => ({ ...prev, reason: e.target.value }))}
-                      className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)] text-[var(--text)]"
+                      className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-[var(--radius-card)] outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)] text-[var(--text)]"
                     >
                       {['Produccion completada', 'Correccion de inventario', 'Dano / Defectuoso', 'Muestra / Regalo', 'Devolucion de cliente', 'Conteo fisico', 'Otro'].map(r => (
                         <option key={r}>{r}</option>
                       ))}
                     </select>
                   </div>
-                  <button className="px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors whitespace-nowrap">
+                  <button className="px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800 transition-colors whitespace-nowrap">
                     Aplicar ajuste
                   </button>
                 </div>
@@ -688,7 +688,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     <select
                       value={form.shippingProfile}
                       onChange={e => update('shippingProfile', e.target.value)}
-                      className="w-full max-w-xs px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none focus:border-[var(--accent)]/50"
+                      className="w-full max-w-xs px-3 py-2.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] text-[var(--text)] outline-none focus:border-[var(--accent)]/50"
                     >
                       {['Nacional Estandar', 'Local Hermosillo', 'Fragil', 'Sobre documentos', 'Personalizado'].map(p => (
                         <option key={p}>{p}</option>
@@ -697,7 +697,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                   </div>
 
                   {/* Shipping cost preview */}
-                  <div className="bg-[var(--surface2)] rounded-xl p-4">
+                  <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4">
                     <h5 className="text-xs text-[var(--text)] mb-3">Preview de costos de envio</h5>
                     <div className="space-y-1.5 text-[11px]">
                       {[
@@ -738,15 +738,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                   <select
                     value={form.variantOption}
                     onChange={e => update('variantOption', e.target.value)}
-                    className="px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none"
+                    className="px-3 py-2 text-xs border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] text-[var(--text)] outline-none"
                   >
                     {['Tamano', 'Color', 'Acabado', 'Estilo'].map(o => <option key={o}>{o}</option>)}
                   </select>
                   <div className="flex flex-wrap gap-1.5">
                     {form.variants.map(v => (
-                      <span key={v.id} className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--surface2)] text-[var(--text)] text-[11px] rounded-full">
+                      <span key={v.id} className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--surface2)] text-[var(--text)] text-[11px] rounded-[var(--radius-badge)]">
                         {v.name}
-                        <button onClick={() => update('variants', form.variants.filter(x => x.id !== v.id))} className="text-[var(--text-muted)] hover:text-red-500">
+                        <button onClick={() => update('variants', form.variants.filter(x => x.id !== v.id))} className="text-[var(--text-muted)] hover:text-[var(--error)]">
                           <X size={10} />
                         </button>
                       </span>
@@ -766,7 +766,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
 
               {form.variants.length > 0 && (
                 <>
-                  <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
+                  <div className="overflow-x-auto rounded-[var(--radius-card)] border border-[var(--border)]">
                     <table className="w-full text-left">
                       <thead>
                         <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)] bg-[var(--surface2)]/50">
@@ -797,7 +797,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                               <input type="number" value={v.stock} onChange={e => update('variants', form.variants.map(x => x.id === v.id ? { ...x, stock: Number(e.target.value) } : x))} className="text-xs text-[var(--text)] bg-transparent outline-none w-16" />
                             </td>
                             <td className="px-4 py-2">
-                              <button onClick={() => update('variants', form.variants.filter(x => x.id !== v.id))} className="p-1 text-[var(--text-muted)] hover:text-red-500"><Trash2 size={12} /></button>
+                              <button onClick={() => update('variants', form.variants.filter(x => x.id !== v.id))} className="p-1 text-[var(--text-muted)] hover:text-[var(--error)]"><Trash2 size={12} /></button>
                             </td>
                           </tr>
                         ))}
@@ -806,7 +806,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                   </div>
 
                   {/* Dimensions per variant */}
-                  <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
+                  <div className="overflow-x-auto rounded-[var(--radius-card)] border border-[var(--border)]">
                     <table className="w-full text-left">
                       <thead>
                         <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)] bg-[var(--surface2)]/50">
@@ -862,14 +862,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                   </div>
 
                   {/* Engraving area preview */}
-                  <div className="bg-[var(--surface2)] rounded-xl p-4">
+                  <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4">
                     <p className="text-[10px] text-[var(--text-secondary)] mb-2">Preview del area de grabado:</p>
                     <div className="relative mx-auto" style={{ width: 200, height: 120 }}>
-                      <div className="absolute inset-0 bg-wood-200/40 rounded-xl border-2 border-wood-300 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-wood-200/40 rounded-[var(--radius-card)] border-2 border-wood-300 flex items-center justify-center">
                         <span className="text-[9px] text-[var(--text-muted)] absolute bottom-1 right-2">
                           {form.productLength || '45'} x {form.productWidth || '27'} cm
                         </span>
-                        <div className="bg-[var(--accent)]/15 border-2 border-dashed border-[var(--accent)]/40 rounded-lg px-4 py-3 text-center">
+                        <div className="bg-[var(--accent)]/15 border-2 border-dashed border-[var(--accent)]/40 rounded-[var(--radius-card)] px-4 py-3 text-center">
                           <span className="text-[10px] text-[var(--accent)]">AREA GRABADO</span>
                           <br />
                           <span className="text-[9px] text-[var(--accent)]/70">{form.engravingMaxWidth} x {form.engravingMaxHeight} cm</span>
@@ -909,13 +909,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Tipo de madera *</label>
-                    <select value={form.woodType} onChange={e => update('woodType', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                    <select value={form.woodType} onChange={e => update('woodType', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] text-[var(--text)] outline-none">
                       {['Parota', 'Cedro Rojo', 'Rosa Morada', 'Tzalam', 'Nogal', 'Mezquite', 'Pino', 'Teca', 'Otro'].map(w => <option key={w}>{w}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Acabado *</label>
-                    <select value={form.finish} onChange={e => update('finish', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                    <select value={form.finish} onChange={e => update('finish', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] text-[var(--text)] outline-none">
                       {['Aceite mineral grado alimenticio', 'Aceite de tung', 'Cera de abeja', 'Natural (sin acabado)', 'Otro'].map(f => <option key={f}>{f}</option>)}
                     </select>
                   </div>
@@ -954,14 +954,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Categoria principal *</label>
-                  <select value={form.mainCategory} onChange={e => update('mainCategory', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                  <select value={form.mainCategory} onChange={e => update('mainCategory', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] text-[var(--text)] outline-none">
                     <option value="">Seleccionar...</option>
                     {['Tablas para Cortar', 'Sets y Colecciones', 'Accesorios', 'Servicios'].map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Sub-categoria</label>
-                  <select value={form.subCategory} onChange={e => update('subCategory', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                  <select value={form.subCategory} onChange={e => update('subCategory', e.target.value)} className="w-full px-3 py-2.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] text-[var(--text)] outline-none">
                     <option value="">Seleccionar...</option>
                     {['Charcuteria', 'Cocina', 'Decorativas', 'Gourmet'].map(c => <option key={c}>{c}</option>)}
                   </select>
@@ -969,11 +969,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               </div>
 
               {/* Category tree */}
-              <div className="bg-[var(--surface2)] rounded-xl p-4 text-xs text-[var(--text-secondary)]">
+              <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 text-xs text-[var(--text-secondary)]">
                 <p className="text-[10px] text-[var(--text-muted)] mb-2">Arbol de categorias:</p>
                 <div className="space-y-1 ml-2">
                   <div>📁 Tablas para Cortar</div>
-                  <div className="ml-5">├── Charcuteria {form.mainCategory === 'Tablas para Cortar' && form.subCategory === 'Charcuteria' && <Check size={10} className="inline text-green-500" />}</div>
+                  <div className="ml-5">├── Charcuteria {form.mainCategory === 'Tablas para Cortar' && form.subCategory === 'Charcuteria' && <Check size={10} className="inline text-[var(--success)]" />}</div>
                   <div className="ml-5">├── Cocina</div>
                   <div className="ml-5">└── Decorativas</div>
                   <div>📁 Sets y Colecciones</div>
@@ -988,11 +988,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               {/* Tags */}
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Tags / Etiquetas</label>
-                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-lg bg-[var(--surface)] min-h-[40px]">
+                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] min-h-[40px]">
                   {form.tags.map(tag => (
-                    <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--surface2)] text-[var(--text)] text-[11px] rounded-full">
+                    <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--surface2)] text-[var(--text)] text-[11px] rounded-[var(--radius-badge)]">
                       {tag}
-                      <button onClick={() => update('tags', form.tags.filter(t => t !== tag))} className="text-[var(--text-muted)] hover:text-red-500"><X size={10} /></button>
+                      <button onClick={() => update('tags', form.tags.filter(t => t !== tag))} className="text-[var(--text-muted)] hover:text-[var(--error)]"><X size={10} /></button>
                     </span>
                   ))}
                   <input
@@ -1037,7 +1037,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
 
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Tipo de producto</label>
-                <select value={form.productType} onChange={e => update('productType', e.target.value)} className="w-full max-w-xs px-3 py-2.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none">
+                <select value={form.productType} onChange={e => update('productType', e.target.value)} className="w-full max-w-xs px-3 py-2.5 text-xs border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] text-[var(--text)] outline-none">
                   <option value="">Seleccionar...</option>
                   {['Tabla para cortar', 'Set de tablas', 'Accesorio', 'Servicio'].map(t => <option key={t}>{t}</option>)}
                 </select>
@@ -1050,11 +1050,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
           <Card id="seo" title="SEO — Optimizacion para Buscadores" icon={<SearchIcon size={16} className="text-[var(--accent)]" />}>
             <div className="space-y-5">
               {/* Google preview */}
-              <div className="bg-[var(--surface2)] rounded-xl p-4">
+              <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4">
                 <p className="text-[10px] text-[var(--text-muted)] mb-2">Preview de Google:</p>
                 <div className="space-y-0.5">
-                  <p className="text-sm text-blue-700 hover:underline cursor-pointer">{form.metaTitle || `${form.name} | DavidSon's Design`}</p>
-                  <p className="text-[11px] text-green-700">davidsonsdesign.com/shop/{form.slug || 'producto'}</p>
+                  <p className="text-sm text-[var(--info)] hover:underline cursor-pointer">{form.metaTitle || `${form.name} | DavidSon's Design`}</p>
+                  <p className="text-[11px] text-[var(--success)]">davidsonsdesign.com/shop/{form.slug || 'producto'}</p>
                   <p className="text-xs text-[var(--text-secondary)]">{form.metaDescription || form.shortDescription || 'Descripcion del producto...'}</p>
                 </div>
               </div>
@@ -1069,7 +1069,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                   <input
                     value={form.slug}
                     onChange={e => update('slug', e.target.value)}
-                    className="ml-1 px-2 py-1.5 border border-[var(--border)] rounded-lg text-[var(--text)] outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
+                    className="ml-1 px-2 py-1.5 border border-[var(--border)] rounded-[var(--radius-card)] text-[var(--text)] outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
                   />
                 </div>
                 <p className="text-[10px] text-[var(--text-muted)] mt-1 flex items-center gap-1"><Info size={10} /> Se genera automaticamente del nombre. Editable.</p>
@@ -1080,7 +1080,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                 <span className="text-xs text-[var(--text)]">Generar SEO automaticamente del nombre y descripcion</span>
               </label>
 
-              <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)]/10 text-[var(--accent)] text-xs rounded-lg hover:bg-[var(--accent)]/20 transition-colors">
+              <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)]/10 text-[var(--accent)] text-xs rounded-[var(--radius-card)] hover:bg-[var(--accent)]/20 transition-colors">
                 <Sparkles size={13} /> Generar con IA
               </button>
             </div>
@@ -1092,11 +1092,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               {/* Related */}
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Producto relacionado con</label>
-                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-lg bg-[var(--surface)] min-h-[40px]">
+                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] min-h-[40px]">
                   {form.relatedProducts.map(p => (
-                    <span key={p} className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--surface2)] text-[var(--text)] text-[11px] rounded-full">
+                    <span key={p} className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--surface2)] text-[var(--text)] text-[11px] rounded-[var(--radius-badge)]">
                       {p}
-                      <button onClick={() => update('relatedProducts', form.relatedProducts.filter(x => x !== p))} className="text-[var(--text-muted)] hover:text-red-500"><X size={10} /></button>
+                      <button onClick={() => update('relatedProducts', form.relatedProducts.filter(x => x !== p))} className="text-[var(--text-muted)] hover:text-[var(--error)]"><X size={10} /></button>
                     </span>
                   ))}
                   <span className="text-[11px] text-[var(--text-muted)] cursor-pointer">+ buscar...</span>
@@ -1107,7 +1107,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               {/* Up-sell */}
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Up-sell (compra mayor)</label>
-                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-lg bg-[var(--surface)] min-h-[40px]">
+                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] min-h-[40px]">
                   <span className="text-[11px] text-[var(--text-muted)] cursor-pointer">+ buscar...</span>
                 </div>
                 <p className="text-[10px] text-[var(--text-muted)] mt-1">Aparece como "Quieres el set completo?" en la tienda.</p>
@@ -1116,7 +1116,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               {/* Cross-sell */}
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Cross-sell (complementarios)</label>
-                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-lg bg-[var(--surface)] min-h-[40px]">
+                <div className="flex flex-wrap items-center gap-1.5 p-2.5 border border-[var(--border)] rounded-[var(--radius-card)] bg-[var(--surface)] min-h-[40px]">
                   <span className="text-[11px] text-[var(--text-muted)] cursor-pointer">+ buscar...</span>
                 </div>
                 <p className="text-[10px] text-[var(--text-muted)] mt-1">Aparece en el carrito como "Complementa tu compra".</p>
@@ -1147,7 +1147,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               <div className="space-y-5">
                 <div className="flex items-center justify-between">
                   <h5 className="text-xs text-[var(--text)]">{product.title}</h5>
-                  <select className="text-[10px] border border-[var(--border)] rounded-lg px-2 py-1 bg-[var(--surface)] text-[var(--text-secondary)] outline-none">
+                  <select className="text-[10px] border border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1 bg-[var(--surface)] text-[var(--text-secondary)] outline-none">
                     <option>30 dias</option><option>90 dias</option><option>12 meses</option>
                   </select>
                 </div>
@@ -1159,10 +1159,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                     { label: 'Ingresos totales', value: `$${product.revenue_30d.toLocaleString()}`, change: '+8%' },
                     { label: 'Visitas al producto', value: '1,240', change: '+22%' },
                   ].map(s => (
-                    <div key={s.label} className="bg-[var(--surface2)] rounded-xl p-4 text-center">
+                    <div key={s.label} className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 text-center">
                       <p className="text-lg text-[var(--text)]">{s.value}</p>
                       <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">{s.label}</p>
-                      <p className="text-[10px] text-green-600 mt-1">{s.change} vs prev</p>
+                      <p className="text-[10px] text-[var(--success)] mt-1">{s.change} vs prev</p>
                     </div>
                   ))}
                 </div>
@@ -1201,8 +1201,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
                         <div key={v.name} className="flex items-center gap-3 text-xs">
                           <span className="text-[var(--text-muted)] w-4">{i + 1}.</span>
                           <span className="text-[var(--text)] w-20">{v.name}</span>
-                          <div className="flex-1 h-2 bg-[var(--surface2)] rounded-full overflow-hidden">
-                            <div className="h-full bg-[var(--accent)] rounded-full" style={{ width: `${v.pct}%` }} />
+                          <div className="flex-1 h-2 bg-[var(--surface2)] rounded-[var(--radius-badge)] overflow-hidden">
+                            <div className="h-full bg-[var(--accent)] rounded-[var(--radius-badge)]" style={{ width: `${v.pct}%` }} />
                           </div>
                           <span className="text-[var(--text-secondary)] w-20 text-right">{v.qty} uds ({v.pct}%)</span>
                         </div>
@@ -1246,7 +1246,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
             {isEditing ? (
               <button
                 onClick={() => setHasChanges(false)}
-                className="px-5 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors"
+                className="px-5 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800 transition-colors"
               >
                 Guardar cambios
               </button>
@@ -1254,13 +1254,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               <>
                 <button
                   onClick={() => setHasChanges(false)}
-                  className="px-4 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)] transition-colors"
+                  className="px-4 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-[var(--radius-card)] hover:bg-[var(--surface2)] transition-colors"
                 >
                   Guardar borrador
                 </button>
                 <button
                   onClick={() => setHasChanges(false)}
-                  className="flex items-center gap-1.5 px-5 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 transition-colors"
+                  className="flex items-center gap-1.5 px-5 py-2 bg-wood-900 text-sand-100 text-xs rounded-[var(--radius-card)] hover:bg-wood-800 transition-colors"
                 >
                   <Check size={13} /> Publicar
                 </button>
