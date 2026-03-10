@@ -194,18 +194,18 @@ const sectionTypes: Array<{ type: HomepageSection['type']; label: string }> = [
 
 // ===== HELPERS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function SectionAccordion({ title, icon: Icon, open, onToggle, children }: {
   title: string; icon: React.ElementType; open: boolean; onToggle: () => void; children: React.ReactNode;
 }) {
   return (
-    <div className="border-b border-[var(--admin-border)] last:border-0">
-      <button onClick={onToggle} className="w-full flex items-center gap-2.5 px-4 py-3 hover:bg-[var(--admin-surface2)]/50 transition-colors text-left">
-        <Icon size={14} className="text-[var(--admin-accent)] shrink-0" />
-        <span className="text-xs font-medium text-[var(--admin-text)] flex-1">{title}</span>
-        <ChevronDown size={12} className={'text-[var(--admin-muted)] transition-transform ' + (open ? 'rotate-180' : '')} />
+    <div className="border-b border-[var(--border)] last:border-0">
+      <button onClick={onToggle} className="w-full flex items-center gap-2.5 px-4 py-3 hover:bg-[var(--surface2)]/50 transition-colors text-left">
+        <Icon size={14} className="text-[var(--accent)] shrink-0" />
+        <span className="text-xs font-medium text-[var(--text)] flex-1">{title}</span>
+        <ChevronDown size={12} className={'text-[var(--text-muted)] transition-transform ' + (open ? 'rotate-180' : '')} />
       </button>
       <AnimatePresence>
         {open && (
@@ -232,16 +232,16 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
           type="color"
           value={value}
           onChange={e => onChange(e.target.value)}
-          className="w-7 h-7 rounded-lg border border-[var(--admin-border)] cursor-pointer p-0 appearance-none overflow-hidden"
+          className="w-7 h-7 rounded-lg border border-[var(--border)] cursor-pointer p-0 appearance-none overflow-hidden"
           style={{ backgroundColor: value }}
         />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] text-[var(--admin-muted)] truncate">{label}</p>
+        <p className="text-[10px] text-[var(--text-muted)] truncate">{label}</p>
         <input
           value={value}
           onChange={e => onChange(e.target.value)}
-          className="text-[11px] font-mono text-[var(--admin-text)] bg-transparent border-none outline-none p-0 w-full uppercase"
+          className="text-[11px] font-mono text-[var(--text)] bg-transparent border-none outline-none p-0 w-full uppercase"
         />
       </div>
     </div>
@@ -254,8 +254,8 @@ function SliderInput({ label, value, min, max, unit, onChange }: {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-[10px] text-[var(--admin-muted)]">{label}</span>
-        <span className="text-[10px] text-[var(--admin-text)] font-mono">{value}{unit}</span>
+        <span className="text-[10px] text-[var(--text-muted)]">{label}</span>
+        <span className="text-[10px] text-[var(--text)] font-mono">{value}{unit}</span>
       </div>
       <input
         type="range"
@@ -263,7 +263,7 @@ function SliderInput({ label, value, min, max, unit, onChange }: {
         max={max}
         value={value}
         onChange={e => onChange(Number(e.target.value))}
-        className="w-full h-1.5 bg-[var(--admin-surface2)] rounded-full appearance-none cursor-pointer accent-accent-gold"
+        className="w-full h-1.5 bg-[var(--surface2)] rounded-full appearance-none cursor-pointer accent-accent-gold"
       />
     </div>
   );
@@ -274,7 +274,7 @@ function OptionGroup<T extends string>({ label, options, value, onChange }: {
 }) {
   return (
     <div>
-      <p className="text-[10px] text-[var(--admin-muted)] mb-1.5">{label}</p>
+      <p className="text-[10px] text-[var(--text-muted)] mb-1.5">{label}</p>
       <div className="flex gap-1 flex-wrap">
         {options.map(o => (
           <button
@@ -282,7 +282,7 @@ function OptionGroup<T extends string>({ label, options, value, onChange }: {
             onClick={() => onChange(o.value)}
             className={
               'px-2 py-1 text-[10px] rounded-lg border transition-colors ' +
-              (value === o.value ? 'border-[var(--admin-accent)] bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] font-medium' : 'border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]')
+              (value === o.value ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
             }
           >
             {o.label}
@@ -296,12 +296,12 @@ function OptionGroup<T extends string>({ label, options, value, onChange }: {
 function ToggleSwitch({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex items-center justify-between cursor-pointer">
-      <span className="text-[10px] text-[var(--admin-text-secondary)]">{label}</span>
+      <span className="text-[10px] text-[var(--text-secondary)]">{label}</span>
       <button
         onClick={() => onChange(!checked)}
-        className={'relative w-8 h-4.5 rounded-full transition-colors ' + (checked ? 'bg-[var(--admin-accent)]' : 'bg-wood-200')}
+        className={'relative w-8 h-4.5 rounded-full transition-colors ' + (checked ? 'bg-[var(--accent)]' : 'bg-wood-200')}
       >
-        <span className={'absolute top-0.5 w-3.5 h-3.5 rounded-full bg-[var(--admin-surface)] shadow transition-transform ' + (checked ? 'left-4' : 'left-0.5')} />
+        <span className={'absolute top-0.5 w-3.5 h-3.5 rounded-full bg-[var(--surface)] shadow transition-transform ' + (checked ? 'left-4' : 'left-0.5')} />
       </button>
     </label>
   );
@@ -478,7 +478,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
               <input
                 placeholder="tu@email.com"
                 style={{ borderRadius: btnRadius, fontSize: f.sizeBase - 2 + 'px', border: '1px solid ' + c.textMuted + '30', padding: '4px 10px' }}
-                className="flex-1 bg-[var(--admin-surface)]/10 outline-none"
+                className="flex-1 bg-[var(--surface)]/10 outline-none"
               />
               <button style={{ backgroundColor: c.accent, color: '#FFF', borderRadius: btnRadius, padding: '4px 12px', fontSize: f.sizeButton - 1 + 'px' }}>
                 Suscribir
@@ -517,7 +517,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
           color: c.text,
           backgroundColor: c.background,
         }}
-        className="rounded-lg border border-[var(--admin-border)] overflow-hidden shadow-inner"
+        className="rounded-lg border border-[var(--border)] overflow-hidden shadow-inner"
       >
         {/* Header */}
         <div
@@ -953,15 +953,15 @@ export const ThemeEditorPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-serif text-[var(--admin-text)] flex items-center gap-2">
-            <Palette size={20} className="text-[var(--admin-accent)]" /> Editor de Tema
+          <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
+            <Palette size={20} className="text-[var(--accent)]" /> Editor de Tema
           </h1>
-          <p className="text-xs text-[var(--admin-muted)] mt-0.5">Personaliza la apariencia de tu tienda sin codigo</p>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">Personaliza la apariencia de tu tienda sin codigo</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setTheme(themePresets[0].config); setSavedAt(null); toast.success('Tema restaurado a valores predeterminados'); }}
-            className="px-3 py-2 text-xs border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"
           >
             <RotateCcw size={12} /> Restaurar
           </button>
@@ -988,12 +988,12 @@ export const ThemeEditorPage: React.FC = () => {
               }
             }}
             disabled={saving}
-            className="px-3 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {saving ? <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block" /> Guardando...</> : <><Save size={12} /> Publicar tema</>}
           </button>
           {savedAt && !saving && (
-            <span className="text-[9px] text-[var(--admin-muted)]">
+            <span className="text-[9px] text-[var(--text-muted)]">
               Guardado {new Date(savedAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
@@ -1004,14 +1004,14 @@ export const ThemeEditorPage: React.FC = () => {
       <Card className="p-3">
         <button
           onClick={() => setShowPresets(!showPresets)}
-          className="w-full flex items-center justify-between text-xs text-[var(--admin-text)]"
+          className="w-full flex items-center justify-between text-xs text-[var(--text)]"
         >
           <span className="flex items-center gap-2">
-            <Sparkles size={12} className="text-[var(--admin-accent)]" />
+            <Sparkles size={12} className="text-[var(--accent)]" />
             <span className="font-medium">Temas predefinidos</span>
-            <span className="text-[10px] text-[var(--admin-muted)]">— Elige un punto de partida y personaliza</span>
+            <span className="text-[10px] text-[var(--text-muted)]">— Elige un punto de partida y personaliza</span>
           </span>
-          <ChevronDown size={12} className={'text-[var(--admin-muted)] transition-transform ' + (showPresets ? 'rotate-180' : '')} />
+          <ChevronDown size={12} className={'text-[var(--text-muted)] transition-transform ' + (showPresets ? 'rotate-180' : '')} />
         </button>
 
         <AnimatePresence>
@@ -1032,7 +1032,7 @@ export const ThemeEditorPage: React.FC = () => {
                       onClick={() => applyPreset(preset.config)}
                       className={
                         'p-3 rounded-lg border text-left transition-all ' +
-                        (isActive ? 'border-[var(--admin-accent)] bg-[var(--admin-accent)]/5 ring-1 ring-[var(--admin-accent)]/20' : 'border-[var(--admin-border)] hover:border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]')
+                        (isActive ? 'border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)]/20' : 'border-[var(--border)] hover:border-[var(--border)] hover:bg-[var(--surface2)]')
                       }
                     >
                       <div className="flex items-center gap-2 mb-2">
@@ -1042,10 +1042,10 @@ export const ThemeEditorPage: React.FC = () => {
                         >
                           <PresetIcon size={12} style={{ color: preset.config.colors.secondary }} />
                         </div>
-                        {isActive && <Check size={10} className="text-[var(--admin-accent)] ml-auto" />}
+                        {isActive && <Check size={10} className="text-[var(--accent)] ml-auto" />}
                       </div>
-                      <p className="text-[11px] font-medium text-[var(--admin-text)]">{preset.name}</p>
-                      <p className="text-[9px] text-[var(--admin-muted)] mt-0.5">{preset.desc}</p>
+                      <p className="text-[11px] font-medium text-[var(--text)]">{preset.name}</p>
+                      <p className="text-[9px] text-[var(--text-muted)] mt-0.5">{preset.desc}</p>
                       <div className="flex gap-0.5 mt-2">
                         {[preset.config.colors.primary, preset.config.colors.secondary, preset.config.colors.accent, preset.config.colors.background, preset.config.colors.surface].map((color, i) => (
                           <div key={i} className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ backgroundColor: color }} />
@@ -1064,25 +1064,25 @@ export const ThemeEditorPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-4" style={{ minHeight: '600px' }}>
         {/* Editor Panel */}
         <Card className="overflow-hidden flex flex-col">
-          <div className="px-4 py-2.5 bg-[var(--admin-surface2)]/50 border-b border-[var(--admin-border)]">
-            <p className="text-[10px] text-[var(--admin-muted)] font-medium uppercase tracking-wider">Editor</p>
+          <div className="px-4 py-2.5 bg-[var(--surface2)]/50 border-b border-[var(--border)]">
+            <p className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Editor</p>
           </div>
           <div className="flex-1 overflow-y-auto">
             {/* Branding */}
             <SectionAccordion title="Branding / Colores" icon={Palette} open={openSection === 'branding'} onToggle={() => toggleSection('branding')}>
               <div>
-                <p className="text-[10px] text-[var(--admin-muted)] mb-1.5">Logo</p>
+                <p className="text-[10px] text-[var(--text-muted)] mb-1.5">Logo</p>
                 <div className="flex gap-2">
                   {['Principal', 'Alternativo', 'Favicon'].map(l => (
-                    <button key={l} className="flex-1 flex flex-col items-center gap-1 p-3 border border-dashed border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">
-                      <Upload size={12} className="text-[var(--admin-muted)]" />
-                      <span className="text-[9px] text-[var(--admin-muted)]">{l}</span>
+                    <button key={l} className="flex-1 flex flex-col items-center gap-1 p-3 border border-dashed border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors">
+                      <Upload size={12} className="text-[var(--text-muted)]" />
+                      <span className="text-[9px] text-[var(--text-muted)]">{l}</span>
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <p className="text-[10px] text-[var(--admin-muted)] mb-2">Paleta de colores</p>
+                <p className="text-[10px] text-[var(--text-muted)] mb-2">Paleta de colores</p>
                 <div className="grid grid-cols-2 gap-2.5">
                   {colorFields.map(cf => (
                     <ColorInput key={cf.key} label={cf.label} value={theme.colors[cf.key]} onChange={v => updateColors(cf.key, v)} />
@@ -1091,7 +1091,7 @@ export const ThemeEditorPage: React.FC = () => {
               </div>
               {/* Color presets row */}
               <div>
-                <p className="text-[10px] text-[var(--admin-muted)] mb-1.5">Presets de color rapidos</p>
+                <p className="text-[10px] text-[var(--text-muted)] mb-1.5">Presets de color rapidos</p>
                 <div className="flex gap-1.5">
                   {[
                     { label: 'DSD', colors: ['#2d2419', '#C5A065', '#F5F3F0'] },
@@ -1115,7 +1115,7 @@ export const ThemeEditorPage: React.FC = () => {
                           <div key={i} className="w-4 h-4 rounded-full border-2 border-white shadow-sm group-hover:scale-110 transition-transform" style={{ backgroundColor: c }} />
                         ))}
                       </div>
-                      <span className="text-[8px] text-[var(--admin-muted)]">{preset.label}</span>
+                      <span className="text-[8px] text-[var(--text-muted)]">{preset.label}</span>
                     </button>
                   ))}
                 </div>
@@ -1125,11 +1125,11 @@ export const ThemeEditorPage: React.FC = () => {
             {/* Typography */}
             <SectionAccordion title="Tipografia" icon={Type} open={openSection === 'typography'} onToggle={() => toggleSection('typography')}>
               <div>
-                <p className="text-[10px] text-[var(--admin-muted)] mb-1">Fuente de titulos</p>
+                <p className="text-[10px] text-[var(--text-muted)] mb-1">Fuente de titulos</p>
                 <select
                   value={theme.fonts.heading}
                   onChange={e => updateFonts('heading', e.target.value)}
-                  className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)] outline-none"
+                  className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none"
                   style={{ fontFamily: theme.fonts.heading }}
                 >
                   {fontOptions.map(f => <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>)}
@@ -1139,11 +1139,11 @@ export const ThemeEditorPage: React.FC = () => {
                 </p>
               </div>
               <div>
-                <p className="text-[10px] text-[var(--admin-muted)] mb-1">Fuente de cuerpo</p>
+                <p className="text-[10px] text-[var(--text-muted)] mb-1">Fuente de cuerpo</p>
                 <select
                   value={theme.fonts.body}
                   onChange={e => updateFonts('body', e.target.value)}
-                  className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)] outline-none"
+                  className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)] outline-none"
                   style={{ fontFamily: theme.fonts.body }}
                 >
                   {fontOptions.map(f => <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>)}
@@ -1159,7 +1159,7 @@ export const ThemeEditorPage: React.FC = () => {
 
             {/* Layout */}
             <SectionAccordion title="Layout" icon={Layout} open={openSection === 'layout'} onToggle={() => toggleSection('layout')}>
-              <p className="text-[9px] text-[var(--admin-muted)] uppercase tracking-wider font-medium">Header</p>
+              <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider font-medium">Header</p>
               <OptionGroup
                 label="Tipo de header"
                 options={[{ value: 'fixed' as const, label: 'Fijo' }, { value: 'scroll' as const, label: 'Scroll' }, { value: 'transparent' as const, label: 'Transparente' }]}
@@ -1174,8 +1174,8 @@ export const ThemeEditorPage: React.FC = () => {
               />
               <ToggleSwitch label="Mega menu" checked={theme.layout.megaMenu} onChange={v => updateLayout('megaMenu', v)} />
 
-              <div className="border-t border-[var(--admin-border)] pt-2">
-                <p className="text-[9px] text-[var(--admin-muted)] uppercase tracking-wider font-medium mb-2">Footer</p>
+              <div className="border-t border-[var(--border)] pt-2">
+                <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider font-medium mb-2">Footer</p>
               </div>
               <OptionGroup
                 label="Columnas"
@@ -1186,8 +1186,8 @@ export const ThemeEditorPage: React.FC = () => {
               <ToggleSwitch label="Newsletter en footer" checked={theme.layout.footerNewsletter} onChange={v => updateLayout('footerNewsletter', v)} />
               <ToggleSwitch label="Redes sociales en footer" checked={theme.layout.footerSocial} onChange={v => updateLayout('footerSocial', v)} />
 
-              <div className="border-t border-[var(--admin-border)] pt-2">
-                <p className="text-[9px] text-[var(--admin-muted)] uppercase tracking-wider font-medium mb-2">Producto</p>
+              <div className="border-t border-[var(--border)] pt-2">
+                <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider font-medium mb-2">Producto</p>
               </div>
               <OptionGroup
                 label="Product cards"
@@ -1210,8 +1210,8 @@ export const ThemeEditorPage: React.FC = () => {
                 onChange={v => updateLayout('productDescStyle', v)}
               />
 
-              <div className="border-t border-[var(--admin-border)] pt-2">
-                <p className="text-[9px] text-[var(--admin-muted)] uppercase tracking-wider font-medium mb-2">Checkout</p>
+              <div className="border-t border-[var(--border)] pt-2">
+                <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider font-medium mb-2">Checkout</p>
               </div>
               <OptionGroup
                 label="Tipo de checkout"
@@ -1298,21 +1298,21 @@ export const ThemeEditorPage: React.FC = () => {
 
             {/* Homepage Builder */}
             <SectionAccordion title="Homepage Builder" icon={Home} open={openSection === 'homepage'} onToggle={() => toggleSection('homepage')}>
-              <p className="text-[10px] text-[var(--admin-muted)] mb-1">Arrastra para reordenar las secciones del homepage. El preview refleja estos cambios.</p>
+              <p className="text-[10px] text-[var(--text-muted)] mb-1">Arrastra para reordenar las secciones del homepage. El preview refleja estos cambios.</p>
               <div className="space-y-1.5">
                 {theme.homepageSections.map((section, idx) => (
                   <div
                     key={section.id}
-                    className={'flex items-center gap-2 p-2 rounded-lg border transition-colors ' + (section.enabled ? 'border-[var(--admin-border)] bg-[var(--admin-surface)]' : 'border-dashed border-[var(--admin-border)] bg-[var(--admin-surface2)]/50 opacity-60')}
+                    className={'flex items-center gap-2 p-2 rounded-lg border transition-colors ' + (section.enabled ? 'border-[var(--border)] bg-[var(--surface)]' : 'border-dashed border-[var(--border)] bg-[var(--surface2)]/50 opacity-60')}
                   >
-                    <GripVertical size={12} className="text-[var(--admin-muted)] cursor-grab shrink-0" />
+                    <GripVertical size={12} className="text-[var(--text-muted)] cursor-grab shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-medium text-[var(--admin-text)] truncate">{section.label}</p>
+                      <p className="text-[10px] font-medium text-[var(--text)] truncate">{section.label}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <select
                           value={section.spacing}
                           onChange={e => updateSectionProp(section.id, 'spacing', e.target.value)}
-                          className="text-[8px] border border-[var(--admin-border)] rounded px-1 py-0.5 bg-[var(--admin-surface)] outline-none"
+                          className="text-[8px] border border-[var(--border)] rounded px-1 py-0.5 bg-[var(--surface)] outline-none"
                         >
                           <option value="sm">Compact</option>
                           <option value="md">Normal</option>
@@ -1321,7 +1321,7 @@ export const ThemeEditorPage: React.FC = () => {
                         <select
                           value={section.bgStyle}
                           onChange={e => updateSectionProp(section.id, 'bgStyle', e.target.value)}
-                          className="text-[8px] border border-[var(--admin-border)] rounded px-1 py-0.5 bg-[var(--admin-surface)] outline-none"
+                          className="text-[8px] border border-[var(--border)] rounded px-1 py-0.5 bg-[var(--surface)] outline-none"
                         >
                           <option value="default">Fondo</option>
                           <option value="primary">Primario</option>
@@ -1331,7 +1331,7 @@ export const ThemeEditorPage: React.FC = () => {
                         <select
                           value={section.width}
                           onChange={e => updateSectionProp(section.id, 'width', e.target.value)}
-                          className="text-[8px] border border-[var(--admin-border)] rounded px-1 py-0.5 bg-[var(--admin-surface)] outline-none"
+                          className="text-[8px] border border-[var(--border)] rounded px-1 py-0.5 bg-[var(--surface)] outline-none"
                         >
                           <option value="full">Full</option>
                           <option value="contained">Contenido</option>
@@ -1339,20 +1339,20 @@ export const ThemeEditorPage: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-0.5 shrink-0">
-                      <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-0.5 rounded text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed">
+                      <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-0.5 rounded text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed">
                         <ArrowUp size={10} />
                       </button>
-                      <button onClick={() => moveSection(idx, 1)} disabled={idx === theme.homepageSections.length - 1} className="p-0.5 rounded text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed">
+                      <button onClick={() => moveSection(idx, 1)} disabled={idx === theme.homepageSections.length - 1} className="p-0.5 rounded text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed">
                         <ArrowDown size={10} />
                       </button>
                       <button
                         onClick={() => toggleSectionEnabled(section.id)}
-                        className={'p-0.5 rounded transition-colors ' + (section.enabled ? 'text-green-500' : 'text-[var(--admin-muted)]')}
+                        className={'p-0.5 rounded transition-colors ' + (section.enabled ? 'text-green-500' : 'text-[var(--text-muted)]')}
                         title={section.enabled ? 'Desactivar' : 'Activar'}
                       >
                         <Eye size={10} />
                       </button>
-                      <button onClick={() => removeSectionById(section.id)} className="p-0.5 rounded text-[var(--admin-muted)] hover:text-red-400 transition-colors">
+                      <button onClick={() => removeSectionById(section.id)} className="p-0.5 rounded text-[var(--text-muted)] hover:text-red-400 transition-colors">
                         <Trash2 size={10} />
                       </button>
                     </div>
@@ -1361,13 +1361,13 @@ export const ThemeEditorPage: React.FC = () => {
               </div>
               {/* Add section */}
               <div>
-                <p className="text-[10px] text-[var(--admin-muted)] mb-1.5">Agregar seccion</p>
+                <p className="text-[10px] text-[var(--text-muted)] mb-1.5">Agregar seccion</p>
                 <div className="grid grid-cols-2 gap-1">
                   {sectionTypes.map(st => (
                     <button
                       key={st.type}
                       onClick={() => addSection(st.type)}
-                      className="text-[9px] text-[var(--admin-text-secondary)] border border-dashed border-[var(--admin-border)] rounded-lg px-2 py-1.5 hover:border-[var(--admin-accent)] hover:text-[var(--admin-accent)] transition-colors flex items-center gap-1"
+                      className="text-[9px] text-[var(--text-secondary)] border border-dashed border-[var(--border)] rounded-lg px-2 py-1.5 hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors flex items-center gap-1"
                     >
                       <Plus size={8} /> {st.label}
                     </button>
@@ -1380,10 +1380,10 @@ export const ThemeEditorPage: React.FC = () => {
 
         {/* Preview Panel */}
         <Card className="overflow-hidden flex flex-col">
-          <div className="px-4 py-2.5 bg-[var(--admin-surface2)]/50 border-b border-[var(--admin-border)] flex items-center justify-between">
+          <div className="px-4 py-2.5 bg-[var(--surface2)]/50 border-b border-[var(--border)] flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Eye size={12} className="text-[var(--admin-accent)]" />
-              <p className="text-[10px] text-[var(--admin-muted)] font-medium uppercase tracking-wider">Preview en vivo</p>
+              <Eye size={12} className="text-[var(--accent)]" />
+              <p className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Preview en vivo</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -1401,7 +1401,7 @@ export const ThemeEditorPage: React.FC = () => {
                     onClick={() => setPreviewPage(p.id)}
                     className={
                       'px-2 py-1 text-[9px] rounded transition-colors ' +
-                      (previewPage === p.id ? 'bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] font-medium' : 'text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]')
+                      (previewPage === p.id ? 'bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]')
                     }
                   >
                     {p.label}
@@ -1425,7 +1425,7 @@ export const ThemeEditorPage: React.FC = () => {
                       onClick={() => setPreviewDevice(d.id)}
                       className={
                         'p-1.5 rounded transition-colors ' +
-                        (previewDevice === d.id ? 'bg-[var(--admin-accent)]/10 text-[var(--admin-accent)]' : 'text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]')
+                        (previewDevice === d.id ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]')
                       }
                     >
                       <DIcon size={13} />

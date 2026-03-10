@@ -80,12 +80,12 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-[var(--admin-surface)] rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
+      <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-bold text-[var(--admin-text)] flex items-center gap-2">
-            <Download size={16} className="text-[var(--admin-accent)]" /> Exportar Productos
+          <h4 className="text-sm font-bold text-[var(--text)] flex items-center gap-2">
+            <Download size={16} className="text-[var(--accent)]" /> Exportar Productos
           </h4>
-          <button onClick={onClose} className="text-[var(--admin-muted)] hover:text-[var(--admin-text)]"><X size={18} /></button>
+          <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)]"><X size={18} /></button>
         </div>
 
         <div className="space-y-2">
@@ -95,24 +95,24 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             ...(selectedCount > 0 ? [{ id: "selected" as const, label: "Seleccionados", count: selectedCount }] : []),
           ].map(opt => (
             <label key={opt.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-              scope === opt.id ? "border-[var(--admin-accent)] bg-[var(--admin-accent)]/5" : "border-[var(--admin-border)] hover:border-wood-300"
+              scope === opt.id ? "border-[var(--accent)] bg-[var(--accent)]/5" : "border-[var(--border)] hover:border-wood-300"
             }`}>
               <input type="radio" name="scope" checked={scope === opt.id} onChange={() => setScope(opt.id)} className="accent-accent-gold" />
               <div className="flex-1">
-                <span className="text-xs text-[var(--admin-text)]">{opt.label}</span>
-                <span className="text-[10px] text-[var(--admin-muted)] ml-2">({opt.count})</span>
+                <span className="text-xs text-[var(--text)]">{opt.label}</span>
+                <span className="text-[10px] text-[var(--text-muted)] ml-2">({opt.count})</span>
               </div>
             </label>
           ))}
         </div>
 
-        <div className="bg-[var(--admin-surface2)] rounded-lg p-3 text-xs text-[var(--admin-text-secondary)]">
+        <div className="bg-[var(--surface2)] rounded-lg p-3 text-xs text-[var(--text-secondary)]">
           <p className="flex items-center gap-1"><FileText size={12} /> Formato: CSV (compatible con Excel, Google Sheets)</p>
-          <p className="text-[10px] text-[var(--admin-muted)] mt-1">Incluye: SKU, nombre, precio, costo, stock, ventas, rating, estado</p>
+          <p className="text-[10px] text-[var(--text-muted)] mt-1">Incluye: SKU, nombre, precio, costo, stock, ventas, rating, estado</p>
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
-          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--admin-text-secondary)]">Cancelar</button>
+          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)]">Cancelar</button>
           <button onClick={handleExport} disabled={exporting}
             className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800 disabled:opacity-50">
             {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
@@ -136,20 +136,20 @@ interface ImportWizardProps {
 export const ImportWizard: React.FC<ImportWizardProps> = ({ onClose }) => (
   <div className="space-y-6">
     <div className="flex items-center justify-between">
-      <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
-        <Upload size={18} className="text-[var(--admin-accent)]" /> Importar Productos
+      <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
+        <Upload size={18} className="text-[var(--accent)]" /> Importar Productos
       </h3>
-      <button onClick={onClose} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] text-xs rounded-lg hover:bg-[var(--admin-surface2)]">
+      <button onClick={onClose} className="flex items-center gap-1.5 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded-lg hover:bg-[var(--surface2)]">
         Volver
       </button>
     </div>
 
-    <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-8 text-center max-w-lg mx-auto">
-      <div className="w-16 h-16 rounded-2xl bg-[var(--admin-accent)]/10 flex items-center justify-center mx-auto mb-4">
-        <Upload size={24} className="text-[var(--admin-accent)]" />
+    <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-8 text-center max-w-lg mx-auto">
+      <div className="w-16 h-16 rounded-2xl bg-[var(--accent)]/10 flex items-center justify-center mx-auto mb-4">
+        <Upload size={24} className="text-[var(--accent)]" />
       </div>
-      <h4 className="text-sm font-bold text-[var(--admin-text)] mb-2">Importación masiva de productos</h4>
-      <p className="text-xs text-[var(--admin-text-secondary)] mb-4">
+      <h4 className="text-sm font-bold text-[var(--text)] mb-2">Importación masiva de productos</h4>
+      <p className="text-xs text-[var(--text-secondary)] mb-4">
         La importación CSV con mapeo de columnas, validación y preview
         estará disponible próximamente. Por ahora, puedes crear productos
         directamente desde el admin de Medusa o usando la interfaz de productos.

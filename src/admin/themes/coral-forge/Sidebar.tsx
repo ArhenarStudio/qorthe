@@ -41,7 +41,7 @@ export const CoralForgeSidebar: React.FC<Props> = ({ currentPage, onNavigate, na
     >
       {/* Logo */}
       <div className="mb-2 p-2">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--admin-accent)' }}>
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--accent)' }}>
           <Zap className="w-4 h-4 text-white" />
         </div>
       </div>
@@ -62,12 +62,12 @@ export const CoralForgeSidebar: React.FC<Props> = ({ currentPage, onNavigate, na
               className="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200"
               style={{
                 backgroundColor: isActive ? 'rgba(249,115,22,0.15)' : isHovered ? 'rgba(255,255,255,0.05)' : 'transparent',
-                color: isActive ? 'var(--admin-accent)' : 'rgba(232,236,240,0.5)',
+                color: isActive ? 'var(--accent)' : 'rgba(232,236,240,0.5)',
               }}
             >
               <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
               {badge > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center" style={{ backgroundColor: 'var(--admin-accent)', color: '#FFF' }}>{badge}</span>
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center" style={{ backgroundColor: 'var(--accent)', color: '#FFF' }}>{badge}</span>
               )}
               {isActive && (
                 <motion.div
@@ -86,7 +86,7 @@ export const CoralForgeSidebar: React.FC<Props> = ({ currentPage, onNavigate, na
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -4 }}
                   className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-[60] px-2.5 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap"
-                  style={{ backgroundColor: 'var(--admin-surface)', color: 'var(--admin-text)', border: '1px solid var(--admin-border)', boxShadow: 'var(--admin-shadow-lg)' }}
+                  style={{ backgroundColor: 'var(--surface)', color: 'var(--text)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)' }}
                 >
                   {item.label}
                 </motion.div>

@@ -27,10 +27,10 @@ export const AdminThemeSelector: React.FC = () => {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-serif" style={{ color: "var(--admin-text)", fontFamily: "var(--admin-font-heading)" }}>
+        <h3 className="text-lg font-serif" style={{ color: "var(--text)", fontFamily: "var(--font-heading)" }}>
           Apariencia del Panel
         </h3>
-        <p className="text-sm mt-1" style={{ color: "var(--admin-text-secondary)" }}>
+        <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
           {themes.length} temas disponibles. El cambio es inmediato y se guarda automáticamente.
         </p>
       </div>
@@ -38,14 +38,14 @@ export const AdminThemeSelector: React.FC = () => {
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
-          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--admin-muted)" }} />
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
           <input
             type="text"
             placeholder="Buscar tema..."
             value={query}
             onChange={e => setQuery(e.target.value)}
             className="w-full pl-8 pr-3 py-2 text-xs rounded-lg outline-none"
-            style={{ background: "var(--admin-surface2)", border: "1px solid var(--admin-border)", color: "var(--admin-text)" }}
+            style={{ background: "var(--surface2)", border: "1px solid var(--border)", color: "var(--text)" }}
           />
         </div>
         <div className="flex gap-1">
@@ -55,9 +55,9 @@ export const AdminThemeSelector: React.FC = () => {
               onClick={() => setModeFilter(m)}
               className="px-3 py-2 text-xs rounded-lg transition-colors flex items-center gap-1.5"
               style={{
-                background: modeFilter === m ? "var(--admin-accent)" : "var(--admin-surface2)",
-                color: modeFilter === m ? "var(--admin-accent-text)" : "var(--admin-muted)",
-                border: "1px solid var(--admin-border)",
+                background: modeFilter === m ? "var(--accent)" : "var(--surface2)",
+                color: modeFilter === m ? "var(--accent-text)" : "var(--text-muted)",
+                border: "1px solid var(--border)",
               }}
             >
               {m === "light" && <Sun size={11} />}
@@ -69,7 +69,7 @@ export const AdminThemeSelector: React.FC = () => {
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-sm text-center py-8" style={{ color: "var(--admin-muted)" }}>
+        <p className="text-sm text-center py-8" style={{ color: "var(--text-muted)" }}>
           Sin resultados para &quot;{query}&quot;
         </p>
       )}
@@ -81,9 +81,9 @@ export const AdminThemeSelector: React.FC = () => {
       ].map(({ label, list, icon: GroupIcon }) => list.length > 0 && (
         <div key={label}>
           <div className="flex items-center gap-2 mb-3">
-            <GroupIcon size={12} style={{ color: "var(--admin-muted)" }} />
-            <p className="text-[11px] uppercase tracking-wider font-medium" style={{ color: "var(--admin-muted)" }}>{label}</p>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--admin-surface2)", color: "var(--admin-muted)", border: "1px solid var(--admin-border)" }}>
+            <GroupIcon size={12} style={{ color: "var(--text-muted)" }} />
+            <p className="text-[11px] uppercase tracking-wider font-medium" style={{ color: "var(--text-muted)" }}>{label}</p>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--surface2)", color: "var(--text-muted)", border: "1px solid var(--border)" }}>
               {list.length}
             </span>
           </div>
@@ -162,7 +162,7 @@ export const AdminThemeSelector: React.FC = () => {
       ))}
 
       {/* Tema activo */}
-      <div className="p-4 rounded-xl" style={{ background: "var(--admin-surface2)", border: "1px solid var(--admin-border)" }}>
+      <div className="p-4 rounded-xl" style={{ background: "var(--surface2)", border: "1px solid var(--border)" }}>
         <div className="flex items-center gap-2">
           <Palette size={14} style={{ color: t.accent }} />
           <span className="text-xs font-medium" style={{ color: t.text }}>Tema activo: {t.name}</span>

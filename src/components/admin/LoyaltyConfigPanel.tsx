@@ -49,13 +49,13 @@ const ToggleSwitch: React.FC<{ enabled: boolean; onChange: (v: boolean) => void 
     onClick={() => onChange(!enabled)}
     className={`w-9 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${enabled ? 'bg-green-500' : 'bg-wood-200'}`}
   >
-    <div className={`w-4 h-4 rounded-full bg-[var(--admin-surface)] shadow transition-transform ${enabled ? 'translate-x-4' : 'translate-x-0'}`} />
+    <div className={`w-4 h-4 rounded-full bg-[var(--surface)] shadow transition-transform ${enabled ? 'translate-x-4' : 'translate-x-0'}`} />
   </div>
 );
 
 const ToggleWithLabel: React.FC<{ label: string; enabled: boolean; onChange: (v: boolean) => void }> = ({ label, enabled, onChange }) => (
   <div className="flex items-center justify-between">
-    <span className="text-xs text-[var(--admin-text-secondary)]">{label}</span>
+    <span className="text-xs text-[var(--text-secondary)]">{label}</span>
     <ToggleSwitch enabled={enabled} onChange={onChange} />
   </div>
 );
@@ -64,7 +64,7 @@ const SaveButton: React.FC<{ onClick: () => void; saving: boolean; hasChanges: b
   <button
     onClick={onClick}
     disabled={saving || !hasChanges}
-    className="flex items-center gap-1.5 px-4 py-2 text-xs bg-[var(--admin-text)] text-[var(--admin-bg)] rounded-lg hover:bg-[var(--admin-text)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+    className="flex items-center gap-1.5 px-4 py-2 text-xs bg-[var(--text)] text-[var(--bg)] rounded-lg hover:bg-[var(--text)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
   >
     {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
     {saving ? 'Guardando...' : hasChanges ? 'Guardar cambios' : 'Sin cambios'}
@@ -72,10 +72,10 @@ const SaveButton: React.FC<{ onClick: () => void; saving: boolean; hasChanges: b
 );
 
 const MetricCard: React.FC<{ label: string; value: string; sub?: string; highlight?: boolean }> = ({ label, value, sub, highlight }) => (
-  <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-4">
-    <p className={`text-lg ${highlight ? 'text-green-600' : 'text-[var(--admin-text)]'}`}>{value}</p>
-    <p className="text-[10px] text-[var(--admin-text-secondary)]">{label}</p>
-    {sub && <p className="text-[10px] text-[var(--admin-muted)]">{sub}</p>}
+  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+    <p className={`text-lg ${highlight ? 'text-green-600' : 'text-[var(--text)]'}`}>{value}</p>
+    <p className="text-[10px] text-[var(--text-secondary)]">{label}</p>
+    {sub && <p className="text-[10px] text-[var(--text-muted)]">{sub}</p>}
   </div>
 );
 
@@ -216,8 +216,8 @@ export const LoyaltyConfigPanel: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-[var(--admin-muted)]" />
-        <span className="ml-2 text-sm text-[var(--admin-text-secondary)]">Cargando configuración...</span>
+        <Loader2 size={24} className="animate-spin text-[var(--text-muted)]" />
+        <span className="ml-2 text-sm text-[var(--text-secondary)]">Cargando configuración...</span>
       </div>
     );
   }
@@ -251,7 +251,7 @@ export const LoyaltyConfigPanel: React.FC = () => {
               key={s.id}
               onClick={() => setSection(s.id)}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-colors ${
-                section === s.id ? 'bg-[var(--admin-accent)]/10 text-[var(--admin-accent)]' : 'text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-surface2)]'
+                section === s.id ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface2)]'
               }`}
             >
               <s.icon size={13} /> {s.label}
@@ -266,14 +266,14 @@ export const LoyaltyConfigPanel: React.FC = () => {
               <button
                 onClick={saveConfig}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] bg-[var(--admin-text)] text-[var(--admin-bg)] rounded-md hover:bg-[var(--admin-text)] disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] bg-[var(--text)] text-[var(--bg)] rounded-md hover:bg-[var(--text)] disabled:opacity-50"
               >
                 {saving ? <Loader2 size={10} className="animate-spin" /> : <Save size={10} />}
                 Guardar
               </button>
               <button
                 onClick={() => { setConfig(originalConfig); setEditingTierIndex(null); }}
-                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] text-[var(--admin-text-secondary)] bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-md hover:bg-[var(--admin-surface2)]"
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-md hover:bg-[var(--surface2)]"
               >
                 Deshacer
               </button>
@@ -287,11 +287,11 @@ export const LoyaltyConfigPanel: React.FC = () => {
 
         {/* ═══ GENERAL ═══════════════════════════════════ */}
         {section === 'general' && (
-          <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-5">
-            <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Programa general</h4>
+          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-5">
+            <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Programa general</h4>
 
             <div>
-              <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Estado del programa</label>
+              <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Estado del programa</label>
               <div className="space-y-2">
                 {[
                   { value: true, label: 'Activo', desc: 'Clientes ganan y canjean puntos normalmente' },
@@ -303,11 +303,11 @@ export const LoyaltyConfigPanel: React.FC = () => {
                       name="programActive"
                       checked={config.program_active === opt.value}
                       onChange={() => updateField('program_active', opt.value)}
-                      className="accent-[var(--admin-accent)] mt-0.5"
+                      className="accent-[var(--accent)] mt-0.5"
                     />
                     <div>
-                      <span className="text-xs text-[var(--admin-text)] group-hover:text-[var(--admin-text)]">{opt.label}</span>
-                      <p className="text-[10px] text-[var(--admin-muted)]">{opt.desc}</p>
+                      <span className="text-xs text-[var(--text)] group-hover:text-[var(--text)]">{opt.label}</span>
+                      <p className="text-[10px] text-[var(--text-muted)]">{opt.desc}</p>
                     </div>
                   </label>
                 ))}
@@ -316,16 +316,16 @@ export const LoyaltyConfigPanel: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-[var(--admin-text-secondary)] block mb-1.5">Envío gratis desde</label>
+                <label className="text-xs text-[var(--text-secondary)] block mb-1.5">Envío gratis desde</label>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-[var(--admin-text-secondary)]">$</span>
+                  <span className="text-xs text-[var(--text-secondary)]">$</span>
                   <input
                     type="number"
                     value={centavosToPesos(config.free_shipping_threshold)}
                     onChange={e => updateField('free_shipping_threshold', pesosToCentavos(Number(e.target.value)))}
-                    className="w-28 px-3 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]"
+                    className="w-28 px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]"
                   />
-                  <span className="text-xs text-[var(--admin-text-secondary)]">MXN</span>
+                  <span className="text-xs text-[var(--text-secondary)]">MXN</span>
                 </div>
               </div>
               <ToggleWithLabel
@@ -349,77 +349,77 @@ export const LoyaltyConfigPanel: React.FC = () => {
         {section === 'rules' && (
           <div className="space-y-4">
             {/* Acumulación */}
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
-              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Acumulación de puntos</h4>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+              <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Acumulación de puntos</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Puntos por cada $1 MXN</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Puntos por cada $1 MXN</label>
                   <input type="number" value={config.points_per_mxn} onChange={e => updateField('points_per_mxn', Number(e.target.value))} min={1}
-                    className="w-24 px-3 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
+                    className="w-24 px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
                 </div>
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Valor de 1 punto</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Valor de 1 punto</label>
                   <div className="flex items-center gap-1">
-                    <span className="text-xs text-[var(--admin-text-secondary)]">$</span>
+                    <span className="text-xs text-[var(--text-secondary)]">$</span>
                     <input type="number" value={config.point_value_mxn} onChange={e => updateField('point_value_mxn', Number(e.target.value))} step={0.001} min={0.001}
-                      className="w-24 px-3 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
-                    <span className="text-xs text-[var(--admin-text-secondary)]">MXN</span>
+                      className="w-24 px-3 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
+                    <span className="text-xs text-[var(--text-secondary)]">MXN</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Canje */}
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
-              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Canje</h4>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+              <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Canje</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Mínimo para canjear</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Mínimo para canjear</label>
                   <div className="flex items-center gap-1">
                     <input type="number" value={config.min_redeem_points} onChange={e => updateField('min_redeem_points', Number(e.target.value))} min={1}
-                      className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
-                    <span className="text-xs text-[var(--admin-text-secondary)]">pts</span>
+                      className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
+                    <span className="text-xs text-[var(--text-secondary)]">pts</span>
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Paso de canje</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Paso de canje</label>
                   <div className="flex items-center gap-1">
                     <input type="number" value={config.redeem_step} onChange={e => updateField('redeem_step', Number(e.target.value))} min={1}
-                      className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
-                    <span className="text-xs text-[var(--admin-text-secondary)]">pts</span>
+                      className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
+                    <span className="text-xs text-[var(--text-secondary)]">pts</span>
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Máx canje por orden</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Máx canje por orden</label>
                   <div className="flex items-center gap-1">
                     <input type="number" value={config.max_redeem_percent} onChange={e => updateField('max_redeem_percent', Number(e.target.value))} min={1} max={100}
-                      className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
-                    <span className="text-xs text-[var(--admin-text-secondary)]">% del total</span>
+                      className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
+                    <span className="text-xs text-[var(--text-secondary)]">% del total</span>
                   </div>
                 </div>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Descuento combinado máximo (tier + cupón + puntos)</label>
+                <label className="text-[10px] text-[var(--text-muted)] block mb-1">Descuento combinado máximo (tier + cupón + puntos)</label>
                 <div className="flex items-center gap-1">
                   <input type="number" value={config.max_combined_discount_percent} onChange={e => updateField('max_combined_discount_percent', Number(e.target.value))} min={10} max={100}
-                    className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
-                  <span className="text-xs text-[var(--admin-text-secondary)]">% del subtotal</span>
+                    className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
+                  <span className="text-xs text-[var(--text-secondary)]">% del subtotal</span>
                 </div>
-                <p className="text-[10px] text-[var(--admin-muted)] mt-1">Protege contra descuentos apilados excesivos. Se aplica server-side en el motor de descuentos.</p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-1">Protege contra descuentos apilados excesivos. Se aplica server-side en el motor de descuentos.</p>
               </div>
             </div>
 
             {/* Vigencia */}
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
-              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Vigencia de puntos</h4>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+              <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Vigencia de puntos</h4>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[var(--admin-text-secondary)]">Expiran después de</span>
+                <span className="text-xs text-[var(--text-secondary)]">Expiran después de</span>
                 <input type="number" value={config.points_expiry_days} onChange={e => updateField('points_expiry_days', Number(e.target.value))} min={30}
-                  className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
-                <span className="text-xs text-[var(--admin-text-secondary)]">días</span>
+                  className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
+                <span className="text-xs text-[var(--text-secondary)]">días</span>
               </div>
               <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text)]">
+                <label className="flex items-center gap-1.5 text-xs text-[var(--text)]">
                   <input type="checkbox" checked={config.points_expiry_warning_days.includes(30)}
                     onChange={e => {
                       const days = e.target.checked
@@ -427,10 +427,10 @@ export const LoyaltyConfigPanel: React.FC = () => {
                         : config.points_expiry_warning_days.filter(d => d !== 30);
                       updateField('points_expiry_warning_days', days);
                     }}
-                    className="accent-[var(--admin-accent)] rounded" />
+                    className="accent-[var(--accent)] rounded" />
                   Recordatorio 30 días antes
                 </label>
-                <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text)]">
+                <label className="flex items-center gap-1.5 text-xs text-[var(--text)]">
                   <input type="checkbox" checked={config.points_expiry_warning_days.includes(7)}
                     onChange={e => {
                       const days = e.target.checked
@@ -438,15 +438,15 @@ export const LoyaltyConfigPanel: React.FC = () => {
                         : config.points_expiry_warning_days.filter(d => d !== 7);
                       updateField('points_expiry_warning_days', days);
                     }}
-                    className="accent-[var(--admin-accent)] rounded" />
+                    className="accent-[var(--accent)] rounded" />
                   Recordatorio 7 días antes
                 </label>
               </div>
             </div>
 
             {/* Puntos bonus */}
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
-              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Puntos bonus por acciones</h4>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+              <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Puntos bonus por acciones</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {([
                   { key: 'registration' as const, label: 'Bono de bienvenida' },
@@ -458,38 +458,38 @@ export const LoyaltyConfigPanel: React.FC = () => {
                   { key: 'social_share' as const, label: 'Compartir en redes' },
                 ]).map(b => (
                   <div key={b.key} className="flex items-center gap-2">
-                    <label className="text-xs text-[var(--admin-text-secondary)] flex-1">{b.label}</label>
+                    <label className="text-xs text-[var(--text-secondary)] flex-1">{b.label}</label>
                     <input type="number" value={config.action_points[b.key]}
                       onChange={e => updateActionPoints(b.key, Number(e.target.value))} min={0}
-                      className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
-                    <span className="text-[10px] text-[var(--admin-muted)]">pts</span>
+                      className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
+                    <span className="text-[10px] text-[var(--text-muted)]">pts</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Evaluación */}
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-4">
-              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Evaluación de tier</h4>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-4">
+              <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Evaluación de tier</h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Periodo de evaluación</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Periodo de evaluación</label>
                   <select value={config.evaluation_period} onChange={e => updateField('evaluation_period', e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-[var(--admin-border)] rounded-lg bg-[var(--admin-surface)] text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]">
+                    className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text)] outline-none focus:border-[var(--accent)]">
                     <option value="monthly">Mensual</option>
                     <option value="quarterly">Trimestral</option>
                     <option value="yearly">Anual</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Meses de lookback</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Meses de lookback</label>
                   <input type="number" value={config.evaluation_lookback_months} onChange={e => updateField('evaluation_lookback_months', Number(e.target.value))} min={1} max={36}
-                    className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
+                    className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
                 </div>
                 <div>
-                  <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Máx tiers de bajada</label>
+                  <label className="text-[10px] text-[var(--text-muted)] block mb-1">Máx tiers de bajada</label>
                   <input type="number" value={config.max_tier_drop} onChange={e => updateField('max_tier_drop', Number(e.target.value))} min={0} max={5}
-                    className="w-20 px-2 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-center outline-none focus:border-[var(--admin-accent)]" />
+                    className="w-20 px-2 py-2 text-xs border border-[var(--border)] rounded-lg text-center outline-none focus:border-[var(--accent)]" />
                 </div>
               </div>
             </div>
@@ -501,10 +501,10 @@ export const LoyaltyConfigPanel: React.FC = () => {
         {/* ═══ TIERS ═════════════════════════════════════ */}
         {section === 'tiers' && (
           <div className="space-y-4">
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-[var(--admin-border)] flex items-center justify-between">
-                <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider">Tiers de membresía ({config.tiers.length})</h4>
-                <button onClick={addTier} className="text-[11px] text-[var(--admin-accent)] hover:underline flex items-center gap-1">
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+              <div className="px-5 py-3 border-b border-[var(--border)] flex items-center justify-between">
+                <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Tiers de membresía ({config.tiers.length})</h4>
+                <button onClick={addTier} className="text-[11px] text-[var(--accent)] hover:underline flex items-center gap-1">
                   <Plus size={11} /> Agregar tier
                 </button>
               </div>
@@ -520,14 +520,14 @@ export const LoyaltyConfigPanel: React.FC = () => {
                         <div className="flex items-center gap-2">
                           {editingTierIndex === index ? (
                             <input value={tier.name} onChange={e => updateTier(index, { name: e.target.value })}
-                              className="text-sm font-medium text-[var(--admin-text)] px-2 py-0.5 border border-[var(--admin-accent)] rounded outline-none w-36" autoFocus />
+                              className="text-sm font-medium text-[var(--text)] px-2 py-0.5 border border-[var(--accent)] rounded outline-none w-36" autoFocus />
                           ) : (
-                            <span className="text-sm font-medium text-[var(--admin-text)]">{tier.name}</span>
+                            <span className="text-sm font-medium text-[var(--text)]">{tier.name}</span>
                           )}
-                          {index === 0 && <span className="text-[9px] bg-[var(--admin-surface2)] text-[var(--admin-muted)] px-1.5 py-0.5 rounded">Base</span>}
-                          {index === config.tiers.length - 1 && <span className="text-[9px] bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] px-1.5 py-0.5 rounded">Máximo</span>}
+                          {index === 0 && <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded">Base</span>}
+                          {index === config.tiers.length - 1 && <span className="text-[9px] bg-[var(--accent)]/10 text-[var(--accent)] px-1.5 py-0.5 rounded">Máximo</span>}
                         </div>
-                        <p className="text-[10px] text-[var(--admin-text-secondary)]">
+                        <p className="text-[10px] text-[var(--text-secondary)]">
                           ${centavosToPesos(tier.min_spend).toLocaleString()} — {tier.max_spend ? `$${centavosToPesos(tier.max_spend).toLocaleString()}` : 'Sin límite'}
                           {tier.discount_percent > 0 && ` · ${tier.discount_percent}% desc.`}
                           {tier.early_access_hours > 0 && ` · ${tier.early_access_hours}h anticipado`}
@@ -536,7 +536,7 @@ export const LoyaltyConfigPanel: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <button onClick={() => setEditingTierIndex(editingTierIndex === index ? null : index)}
-                          className="text-[10px] text-[var(--admin-accent)] hover:underline">
+                          className="text-[10px] text-[var(--accent)] hover:underline">
                           {editingTierIndex === index ? 'Cerrar' : 'Editar'}
                         </button>
                         {config.tiers.length > 2 && (
@@ -551,50 +551,50 @@ export const LoyaltyConfigPanel: React.FC = () => {
                     <AnimatePresence>
                       {editingTierIndex === index && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                          <div className="mt-4 pt-4 border-t border-[var(--admin-border)] space-y-4">
+                          <div className="mt-4 pt-4 border-t border-[var(--border)] space-y-4">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                               <div>
-                                <label className="text-[10px] text-[var(--admin-muted)] block mb-1">ID (slug)</label>
+                                <label className="text-[10px] text-[var(--text-muted)] block mb-1">ID (slug)</label>
                                 <input value={tier.id} onChange={e => updateTier(index, { id: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })}
-                                  className="w-full px-2 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)]" />
+                                  className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]" />
                               </div>
                               <div>
-                                <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Desde (MXN)</label>
+                                <label className="text-[10px] text-[var(--text-muted)] block mb-1">Desde (MXN)</label>
                                 <input type="number" value={centavosToPesos(tier.min_spend)} onChange={e => updateTier(index, { min_spend: pesosToCentavos(Number(e.target.value)) })}
-                                  className="w-full px-2 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)]" />
+                                  className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]" />
                               </div>
                               <div>
-                                <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Hasta (MXN)</label>
+                                <label className="text-[10px] text-[var(--text-muted)] block mb-1">Hasta (MXN)</label>
                                 <input type="number" value={tier.max_spend ? centavosToPesos(tier.max_spend) : ''} placeholder="Sin límite"
                                   onChange={e => updateTier(index, { max_spend: e.target.value ? pesosToCentavos(Number(e.target.value)) : null })}
-                                  className="w-full px-2 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)]" />
+                                  className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]" />
                               </div>
                               <div>
-                                <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Descuento %</label>
+                                <label className="text-[10px] text-[var(--text-muted)] block mb-1">Descuento %</label>
                                 <input type="number" value={tier.discount_percent} onChange={e => updateTier(index, { discount_percent: Number(e.target.value) })} min={0} max={50}
-                                  className="w-full px-2 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)]" />
+                                  className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]" />
                               </div>
                             </div>
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                               <div>
-                                <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Acceso anticipado (horas)</label>
+                                <label className="text-[10px] text-[var(--text-muted)] block mb-1">Acceso anticipado (horas)</label>
                                 <input type="number" value={tier.early_access_hours} onChange={e => updateTier(index, { early_access_hours: Number(e.target.value) })} min={0}
-                                  className="w-full px-2 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)]" />
+                                  className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]" />
                               </div>
                               <div>
-                                <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Regalo al subir</label>
+                                <label className="text-[10px] text-[var(--text-muted)] block mb-1">Regalo al subir</label>
                                 <select value={tier.upgrade_gift || ''} onChange={e => updateTier(index, { upgrade_gift: e.target.value || null })}
-                                  className="w-full px-2 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg bg-[var(--admin-surface)] outline-none focus:border-[var(--admin-accent)]">
+                                  className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none focus:border-[var(--accent)]">
                                   <option value="">Ninguno</option>
                                   <option value="coupon_15">Cupón 15%</option>
                                   <option value="gift_and_coupons">Regalo + cuponera</option>
                                 </select>
                               </div>
                               <div className="flex items-end pb-1">
-                                <label className="flex items-center gap-1.5 text-xs text-[var(--admin-text)]">
+                                <label className="flex items-center gap-1.5 text-xs text-[var(--text)]">
                                   <input type="checkbox" checked={tier.priority_support} onChange={e => updateTier(index, { priority_support: e.target.checked })}
-                                    className="accent-[var(--admin-accent)] rounded" />
+                                    className="accent-[var(--accent)] rounded" />
                                   Soporte prioritario
                                 </label>
                               </div>
@@ -602,14 +602,14 @@ export const LoyaltyConfigPanel: React.FC = () => {
 
                             {/* Colors */}
                             <div>
-                              <label className="text-[10px] text-[var(--admin-muted)] block mb-2">Paleta de colores</label>
+                              <label className="text-[10px] text-[var(--text-muted)] block mb-2">Paleta de colores</label>
                               <div className="flex flex-wrap gap-2 mb-2">
                                 {COLOR_PRESETS.map(preset => (
                                   <button key={preset.label}
                                     onClick={() => updateTier(index, { colors: { gradient_from: preset.from, gradient_via: preset.via, gradient_to: preset.to } })}
-                                    className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-[var(--admin-border)] hover:border-[var(--admin-accent)] transition-colors">
+                                    className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-[var(--border)] hover:border-[var(--accent)] transition-colors">
                                     <div className="w-4 h-4 rounded" style={{ background: `linear-gradient(135deg, ${preset.from}, ${preset.via}, ${preset.to})` }} />
-                                    <span className="text-[10px] text-[var(--admin-text-secondary)]">{preset.label}</span>
+                                    <span className="text-[10px] text-[var(--text-secondary)]">{preset.label}</span>
                                   </button>
                                 ))}
                               </div>
@@ -618,8 +618,8 @@ export const LoyaltyConfigPanel: React.FC = () => {
                                   <div key={key} className="flex items-center gap-1">
                                     <input type="color" value={tier.colors[key]}
                                       onChange={e => updateTier(index, { colors: { ...tier.colors, [key]: e.target.value } })}
-                                      className="w-6 h-6 rounded cursor-pointer border border-[var(--admin-border)]" />
-                                    <span className="text-[9px] text-[var(--admin-muted)]">{key.replace('gradient_', '')}</span>
+                                      className="w-6 h-6 rounded cursor-pointer border border-[var(--border)]" />
+                                    <span className="text-[9px] text-[var(--text-muted)]">{key.replace('gradient_', '')}</span>
                                   </div>
                                 ))}
                               </div>
@@ -633,7 +633,7 @@ export const LoyaltyConfigPanel: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-[10px] text-[var(--admin-muted)]">
+            <p className="text-[10px] text-[var(--text-muted)]">
               Al cambiar rangos, los clientes se reclasifican automáticamente. Los cambios de descuento se aplican en checkout al instante.
             </p>
             <SaveButton onClick={saveConfig} saving={saving} hasChanges={hasChanges} />
@@ -642,9 +642,9 @@ export const LoyaltyConfigPanel: React.FC = () => {
 
         {/* ═══ EMAILS ════════════════════════════════════ */}
         {section === 'emails' && (
-          <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-6 space-y-1">
-            <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider mb-3">Emails automáticos del programa</h4>
-            <p className="text-[10px] text-[var(--admin-muted)] mb-4">Se activan cuando se implementen los subscribers en backend. Solo &ldquo;Bienvenida&rdquo; está live.</p>
+          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-6 space-y-1">
+            <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3">Emails automáticos del programa</h4>
+            <p className="text-[10px] text-[var(--text-muted)] mb-4">Se activan cuando se implementen los subscribers en backend. Solo &ldquo;Bienvenida&rdquo; está live.</p>
             {[
               { name: 'Bienvenida al programa', trigger: 'Al registrarse', live: true },
               { name: 'Puntos ganados', trigger: 'Después de cada compra', live: false },
@@ -654,16 +654,16 @@ export const LoyaltyConfigPanel: React.FC = () => {
               { name: 'Resumen mensual', trigger: 'Primer día del mes', live: false },
               { name: 'Reactivación', trigger: 'Cliente inactivo >90d', live: false },
             ].map((em, i) => (
-              <div key={i} className="flex items-center justify-between py-3 border-b border-[var(--admin-border)] last:border-0">
+              <div key={i} className="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0">
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-xs text-[var(--admin-text)]">{em.name}</p>
+                    <p className="text-xs text-[var(--text)]">{em.name}</p>
                     {em.live
                       ? <span className="text-[8px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded-full border border-green-200">Live</span>
-                      : <span className="text-[8px] bg-[var(--admin-surface2)] text-[var(--admin-muted)] px-1.5 py-0.5 rounded-full border border-[var(--admin-border)]">Pendiente</span>
+                      : <span className="text-[8px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-full border border-[var(--border)]">Pendiente</span>
                     }
                   </div>
-                  <p className="text-[10px] text-[var(--admin-muted)]">{em.trigger}</p>
+                  <p className="text-[10px] text-[var(--text-muted)]">{em.trigger}</p>
                 </div>
               </div>
             ))}
@@ -673,8 +673,8 @@ export const LoyaltyConfigPanel: React.FC = () => {
         {/* ═══ METRICS / RESUMEN ═════════════════════════ */}
         {section === 'metrics' && (
           <div className="space-y-4">
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-5">
-              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider mb-3">Configuración actual</h4>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+              <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3">Configuración actual</h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <MetricCard label="Tiers" value={String(config.tiers.length)} sub={config.tiers.map(t => t.name).join(' → ')} />
                 <MetricCard label="Puntos/MXN" value={String(config.points_per_mxn)} sub={`1 pt = $${config.point_value_mxn} MXN`} />
@@ -689,8 +689,8 @@ export const LoyaltyConfigPanel: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-5">
-              <h4 className="text-xs text-[var(--admin-muted)] uppercase tracking-wider mb-3">Tiers configurados</h4>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+              <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-3">Tiers configurados</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {config.tiers.map(tier => (
                   <div key={tier.id} className="rounded-xl p-4 text-white relative overflow-hidden"
@@ -712,14 +712,14 @@ export const LoyaltyConfigPanel: React.FC = () => {
 
       {/* Mobile save bar */}
       {hasChanges && (
-        <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-[var(--admin-surface)] border-t border-[var(--admin-border)] p-3 flex gap-2 z-40">
+        <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-[var(--surface)] border-t border-[var(--border)] p-3 flex gap-2 z-40">
           <button onClick={saveConfig} disabled={saving}
-            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs bg-[var(--admin-text)] text-[var(--admin-bg)] rounded-lg hover:bg-[var(--admin-text)] disabled:opacity-50">
+            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs bg-[var(--text)] text-[var(--bg)] rounded-lg hover:bg-[var(--text)] disabled:opacity-50">
             {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
             Guardar cambios
           </button>
           <button onClick={() => { setConfig(originalConfig); setEditingTierIndex(null); }}
-            className="px-4 py-2.5 text-xs text-[var(--admin-text-secondary)] bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)]">
+            className="px-4 py-2.5 text-xs text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)]">
             Deshacer
           </button>
         </div>

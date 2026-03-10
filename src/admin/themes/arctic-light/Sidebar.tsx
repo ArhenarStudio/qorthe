@@ -39,23 +39,23 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
       transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
       className="fixed left-0 top-0 h-full flex flex-col z-50 overflow-hidden"
       style={{
-        backgroundColor: 'var(--admin-sidebar-bg)',
-        borderRight: '1px solid var(--admin-sidebar-border)',
+        backgroundColor: 'var(--sidebar-bg)',
+        borderRight: '1px solid var(--sidebar-border)',
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-[60px] shrink-0" style={{ borderBottom: '1px solid var(--admin-sidebar-border)' }}>
+      <div className="flex items-center gap-3 px-4 h-[60px] shrink-0" style={{ borderBottom: '1px solid var(--sidebar-border)' }}>
         <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-          style={{ backgroundColor: 'var(--admin-accent)', boxShadow: '0 2px 8px rgba(56,189,248,0.3)' }}>
+          style={{ backgroundColor: 'var(--accent)', boxShadow: '0 2px 8px rgba(56,189,248,0.3)' }}>
           <Snowflake size={16} color="white" strokeWidth={2} />
         </div>
         <AnimatePresence>
           {!collapsed && (
             <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18 }}>
-              <p className="text-[13px] font-bold tracking-tight" style={{ color: 'var(--admin-sidebar-text)', fontFamily: 'var(--admin-font-heading)' }}>
+              <p className="text-[13px] font-bold tracking-tight" style={{ color: 'var(--sidebar-text)', fontFamily: 'var(--font-heading)' }}>
                 RockSage
               </p>
-              <p className="text-[10px]" style={{ color: 'var(--admin-muted)' }}>Admin Panel</p>
+              <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Admin Panel</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -65,11 +65,11 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
       <button
         onClick={onToggleCollapse}
         className="absolute top-[18px] -right-[13px] w-[26px] h-[26px] rounded-full flex items-center justify-center z-10 transition-colors"
-        style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)' }}
+        style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         {collapsed
-          ? <ChevronRight size={11} style={{ color: 'var(--admin-muted)' }} />
-          : <ChevronLeft size={11} style={{ color: 'var(--admin-muted)' }} />}
+          ? <ChevronRight size={11} style={{ color: 'var(--text-muted)' }} />
+          : <ChevronLeft size={11} style={{ color: 'var(--text-muted)' }} />}
       </button>
 
       {/* Navigation */}
@@ -78,12 +78,12 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
           <div key={group.id} className="mb-1">
             {!collapsed && group.label && (
               <p className="px-3 pt-4 pb-1 text-[9px] uppercase tracking-[0.16em] font-semibold"
-                style={{ color: 'var(--admin-muted)', fontFamily: 'var(--admin-font-body)' }}>
+                style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}>
                 {group.label}
               </p>
             )}
             {collapsed && group.id !== 'general' && (
-              <div className="my-2 mx-3" style={{ borderTop: '1px solid var(--admin-sidebar-border)' }} />
+              <div className="my-2 mx-3" style={{ borderTop: '1px solid var(--sidebar-border)' }} />
             )}
             <div className="space-y-[2px]">
               {group.items.map((item) => {
@@ -102,7 +102,7 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
                       }`}
                       style={{
                         backgroundColor: isActive
-                          ? 'var(--admin-sidebar-active)'
+                          ? 'var(--sidebar-active)'
                           : isHovered ? 'rgba(56,189,248,0.04)' : 'transparent',
                         position: 'relative',
                       }}
@@ -110,18 +110,18 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
                       {/* Active left indicator — característico del tema Arctic */}
                       {isActive && !collapsed && (
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r"
-                          style={{ backgroundColor: 'var(--admin-accent)' }} />
+                          style={{ backgroundColor: 'var(--accent)' }} />
                       )}
                       <Icon
                         size={16}
                         strokeWidth={isActive ? 2 : 1.5}
-                        style={{ color: isActive ? 'var(--admin-sidebar-accent)' : 'var(--admin-muted)' }}
+                        style={{ color: isActive ? 'var(--sidebar-accent)' : 'var(--text-muted)' }}
                       />
                       {!collapsed && (
                         <span className="text-[12.5px] flex-1 text-left truncate"
                           style={{
-                            color: isActive ? 'var(--admin-sidebar-text)' : 'var(--admin-text-secondary)',
-                            fontFamily: 'var(--admin-font-body)',
+                            color: isActive ? 'var(--sidebar-text)' : 'var(--text-secondary)',
+                            fontFamily: 'var(--font-body)',
                             fontWeight: isActive ? '500' : '400',
                           }}>
                           {item.label}
@@ -129,7 +129,7 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
                       )}
                       {!collapsed && badge > 0 && (
                         <span className="min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 text-[9px] font-bold"
-                          style={{ backgroundColor: 'var(--admin-accent)', color: 'white' }}>
+                          style={{ backgroundColor: 'var(--accent)', color: 'white' }}>
                           {badge}
                         </span>
                       )}
@@ -142,12 +142,12 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
                             initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -6 }}
                             transition={{ duration: 0.12 }}
                             className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 px-2.5 py-1.5 rounded-lg whitespace-nowrap text-[11px] font-medium pointer-events-none"
-                            style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)', color: 'var(--admin-text)', boxShadow: 'var(--admin-shadow-lg)' }}
+                            style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)', boxShadow: 'var(--shadow-lg)' }}
                           >
                             {item.label}
                             {badge > 0 && (
                               <span className="ml-1.5 px-1 py-0.5 rounded text-[9px] font-bold"
-                                style={{ backgroundColor: 'var(--admin-accent)', color: 'white' }}>
+                                style={{ backgroundColor: 'var(--accent)', color: 'white' }}>
                                 {badge}
                               </span>
                             )}
@@ -164,18 +164,18 @@ export const ArcticLightSidebar: React.FC<Props> = ({ currentPage, onNavigate, c
       </nav>
 
       {/* Footer — user */}
-      <div className="shrink-0 p-3" style={{ borderTop: '1px solid var(--admin-sidebar-border)' }}>
+      <div className="shrink-0 p-3" style={{ borderTop: '1px solid var(--sidebar-border)' }}>
         <div className={`flex items-center gap-2.5 rounded-xl p-2 transition-colors cursor-default ${collapsed ? 'justify-center' : ''}`}
-          style={{ backgroundColor: 'var(--admin-sidebar-active)' }}>
+          style={{ backgroundColor: 'var(--sidebar-active)' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-bold"
-            style={{ backgroundColor: 'var(--admin-accent)', color: 'white' }}>
+            style={{ backgroundColor: 'var(--accent)', color: 'white' }}>
             {initials}
           </div>
           <AnimatePresence>
             {!collapsed && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="min-w-0">
-                <p className="text-[11px] font-medium truncate" style={{ color: 'var(--admin-sidebar-text)' }}>{adminName}</p>
-                <p className="text-[10px]" style={{ color: 'var(--admin-muted)' }}>Owner</p>
+                <p className="text-[11px] font-medium truncate" style={{ color: 'var(--sidebar-text)' }}>{adminName}</p>
+                <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Owner</p>
               </motion.div>
             )}
           </AnimatePresence>

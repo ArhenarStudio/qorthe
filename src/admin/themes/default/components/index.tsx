@@ -11,10 +11,10 @@ export const DefaultCard: React.FC<{ className?: string; children: React.ReactNo
   <div
     className={`overflow-hidden ${className}`}
     style={{
-      backgroundColor: 'var(--admin-surface)',
-      border: '1px solid var(--admin-border)',
-      borderRadius: 'var(--admin-card-radius)',
-      boxShadow: 'var(--admin-shadow)',
+      backgroundColor: 'var(--surface)',
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-card)',
+      boxShadow: 'var(--shadow)',
       ...style,
     }}
   >
@@ -25,12 +25,12 @@ export const DefaultCard: React.FC<{ className?: string; children: React.ReactNo
 // Badge
 export const DefaultBadge: React.FC<{ text: string; variant?: string; className?: string }> = ({ text, variant = 'gray', className = '' }) => {
   const styles: Record<string, React.CSSProperties> = {
-    green: { backgroundColor: 'rgba(22,163,74,0.1)', color: 'var(--admin-success)' },
-    red: { backgroundColor: 'rgba(220,38,38,0.1)', color: 'var(--admin-error)' },
-    amber: { backgroundColor: 'rgba(217,119,6,0.1)', color: 'var(--admin-warning)' },
-    blue: { backgroundColor: 'rgba(37,99,235,0.1)', color: 'var(--admin-info)' },
-    gray: { backgroundColor: 'var(--admin-surface2)', color: 'var(--admin-muted)' },
-    accent: { backgroundColor: 'var(--admin-accent)', color: 'var(--admin-accent-text)' },
+    green: { backgroundColor: 'rgba(22,163,74,0.1)', color: 'var(--success)' },
+    red: { backgroundColor: 'rgba(220,38,38,0.1)', color: 'var(--error)' },
+    amber: { backgroundColor: 'rgba(217,119,6,0.1)', color: 'var(--warning)' },
+    blue: { backgroundColor: 'rgba(37,99,235,0.1)', color: 'var(--info)' },
+    gray: { backgroundColor: 'var(--surface2)', color: 'var(--text-muted)' },
+    accent: { backgroundColor: 'var(--accent)', color: 'var(--accent-text)' },
   };
   return (
     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full inline-flex items-center ${className}`} style={styles[variant] || styles.gray}>
@@ -49,18 +49,18 @@ export const DefaultButton: React.FC<{
   className?: string;
 }> = ({ children, variant = 'primary', size = 'md', onClick, disabled, className = '' }) => {
   const baseStyle: React.CSSProperties = {
-    borderRadius: 'var(--admin-button-radius)',
-    fontFamily: 'var(--admin-font-body)',
+    borderRadius: 'var(--radius-button)',
+    fontFamily: 'var(--font-body)',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
     transition: 'all 0.15s ease',
   };
 
   const variantStyles: Record<string, React.CSSProperties> = {
-    primary: { backgroundColor: 'var(--admin-accent)', color: 'var(--admin-accent-text)', border: 'none' },
-    secondary: { backgroundColor: 'transparent', color: 'var(--admin-text)', border: '1px solid var(--admin-border)' },
-    ghost: { backgroundColor: 'transparent', color: 'var(--admin-text-secondary)', border: 'none' },
-    danger: { backgroundColor: 'var(--admin-error)', color: '#FFFFFF', border: 'none' },
+    primary: { backgroundColor: 'var(--accent)', color: 'var(--accent-text)', border: 'none' },
+    secondary: { backgroundColor: 'transparent', color: 'var(--text)', border: '1px solid var(--border)' },
+    ghost: { backgroundColor: 'transparent', color: 'var(--text-secondary)', border: 'none' },
+    danger: { backgroundColor: 'var(--error)', color: '#FFFFFF', border: 'none' },
   };
 
   const sizeClasses: Record<string, string> = {
@@ -83,8 +83,8 @@ export const DefaultButton: React.FC<{
 
 // Table wrapper
 export const DefaultTable: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`overflow-x-auto ${className}`} style={{ borderRadius: 'var(--admin-card-radius)' }}>
-    <table className="w-full text-xs" style={{ color: 'var(--admin-text)' }}>
+  <div className={`overflow-x-auto ${className}`} style={{ borderRadius: 'var(--radius-card)' }}>
+    <table className="w-full text-xs" style={{ color: 'var(--text)' }}>
       {children}
     </table>
   </div>
@@ -101,20 +101,20 @@ export const DefaultStatCard: React.FC<{
   <div
     className="p-4"
     style={{
-      backgroundColor: 'var(--admin-surface)',
-      border: '1px solid var(--admin-border)',
-      borderRadius: 'var(--admin-card-radius)',
-      boxShadow: 'var(--admin-shadow)',
+      backgroundColor: 'var(--surface)',
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-card)',
+      boxShadow: 'var(--shadow)',
     }}
   >
     <div className="flex items-center justify-between mb-2">
-      <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--admin-muted)' }}>{label}</span>
-      {icon && <span style={{ color: 'var(--admin-muted)' }}>{icon}</span>}
+      <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{label}</span>
+      {icon && <span style={{ color: 'var(--text-muted)' }}>{icon}</span>}
     </div>
-    <p className="text-xl font-semibold" style={{ color: 'var(--admin-text)', fontFamily: 'var(--admin-font-heading)' }}>{value}</p>
+    <p className="text-xl font-semibold" style={{ color: 'var(--text)', fontFamily: 'var(--font-heading)' }}>{value}</p>
     {change && (
       <span className="text-[10px] mt-1 inline-block" style={{
-        color: changeType === 'positive' ? 'var(--admin-success)' : changeType === 'negative' ? 'var(--admin-error)' : 'var(--admin-muted)'
+        color: changeType === 'positive' ? 'var(--success)' : changeType === 'negative' ? 'var(--error)' : 'var(--text-muted)'
       }}>
         {change}
       </span>

@@ -91,18 +91,18 @@ export const AdminErrorBoundary: React.FC<{ children: React.ReactNode; context?:
     context={context}
     fallback={
       <div className="min-h-[200px] flex items-center justify-center p-8">
-        <div className="max-w-sm w-full text-center space-y-3" style={{ color: 'var(--admin-text)' }}>
+        <div className="max-w-sm w-full text-center space-y-3" style={{ color: 'var(--text)' }}>
           <div className="flex justify-center">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
               <AlertTriangle size={18} style={{ color: '#EF4444' }} />
             </div>
           </div>
-          <p className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>Error en {context ?? 'este módulo'}</p>
-          <p className="text-xs" style={{ color: 'var(--admin-muted)' }}>Recarga la página o contacta soporte si el error persiste.</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>Error en {context ?? 'este módulo'}</p>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Recarga la página o contacta soporte si el error persiste.</p>
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
-            style={{ background: 'var(--admin-surface2)', color: 'var(--admin-text-secondary)', border: '1px solid var(--admin-border)' }}
+            style={{ background: 'var(--surface2)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
           >
             <RotateCcw size={12} /> Recargar
           </button>

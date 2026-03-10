@@ -24,23 +24,23 @@ export const IndigoGlassHeader: React.FC<Props> = ({ onNavigate, onMobileMenuTog
       style={{
         backgroundColor: 'rgba(255,255,255,0.72)',
         backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--admin-border)',
+        borderBottom: '1px solid var(--border)',
       }}
     >
       {/* Mobile menu */}
-      <button onClick={onMobileMenuToggle} className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl mr-3" style={{ backgroundColor: 'var(--admin-surface2)' }}>
-        <Menu size={16} style={{ color: 'var(--admin-accent)' }} />
+      <button onClick={onMobileMenuToggle} className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl mr-3" style={{ backgroundColor: 'var(--surface2)' }}>
+        <Menu size={16} style={{ color: 'var(--accent)' }} />
       </button>
 
       {/* Search */}
       <button
         className="flex items-center gap-2.5 h-9 px-3.5 rounded-xl transition-all max-w-xs flex-1 sm:flex-none sm:w-64"
-        style={{ backgroundColor: 'var(--admin-surface2)', color: 'var(--admin-muted)', border: '1px solid transparent' }}
+        style={{ backgroundColor: 'var(--surface2)', color: 'var(--text-muted)', border: '1px solid transparent' }}
       >
         <Search size={14} />
         <span className="text-[13px] truncate">Buscar...</span>
         <kbd className="hidden sm:inline-flex ml-auto items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px]"
-          style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)', color: 'var(--admin-muted)' }}>
+          style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
           <Command size={10} />K
         </kbd>
       </button>
@@ -49,18 +49,18 @@ export const IndigoGlassHeader: React.FC<Props> = ({ onNavigate, onMobileMenuTog
 
       {/* Right side */}
       <div className="flex items-center gap-2">
-        <span className="hidden lg:block text-xs" style={{ color: 'var(--admin-text-secondary)' }}>{greeting}, <strong style={{ color: 'var(--admin-text)' }}>{name}</strong></span>
+        <span className="hidden lg:block text-xs" style={{ color: 'var(--text-secondary)' }}>{greeting}, <strong style={{ color: 'var(--text)' }}>{name}</strong></span>
 
         <button
           className="hidden sm:flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-medium"
-          style={{ backgroundColor: 'var(--admin-accent)', color: 'var(--admin-accent-text)', boxShadow: '0 2px 8px rgba(99,102,241,0.25)' }}
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)', boxShadow: '0 2px 8px rgba(99,102,241,0.25)' }}
         >
           <Plus size={14} /> Crear
         </button>
 
-        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-colors" style={{ color: 'var(--admin-muted)' }}>
+        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-colors" style={{ color: 'var(--text-muted)' }}>
           <Bell size={16} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--admin-accent)' }} />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
         </button>
       </div>
     </header>
