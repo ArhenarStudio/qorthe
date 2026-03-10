@@ -8,7 +8,7 @@ import {
   ArrowLeft, DollarSign, Settings, TrendingDown, BarChart3, X
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ===== TYPES =====
@@ -329,7 +329,7 @@ function MetricsTab() {
 // ===== MAIN =====
 export const ReturnsRmaPage: React.FC = () => {
 
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
   // ── Live data from API ──
   const [liveReturns, setLiveReturns] = useState<any>(null);

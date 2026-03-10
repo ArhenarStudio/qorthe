@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RTooltip, XAxis } from 'recharts';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 /* ================================================================

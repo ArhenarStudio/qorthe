@@ -15,7 +15,7 @@
 //   POST /admin/fulfillment/generate-label
 // ═══════════════════════════════════════════════════════════════
 
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useEffect, useCallback } from "react";
 import {

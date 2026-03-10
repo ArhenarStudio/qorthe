@@ -1,80 +1,48 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
 // app/(admin)/layout.tsx
-// Admin Layout — ThemeProvider único, nunca se remonta
+// RockSage Commerce — Layout raíz del panel admin
+// Un solo ThemeProvider: AdminThemeProvider
 // ═══════════════════════════════════════════════════════════════
 
-import React, { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import Link from "next/link";
-import { Shield, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
-import { adminNavigation } from "@/src/admin/navigation";
-import { AdminErrorBoundary } from "@/components/ErrorBoundary";
-import { ThemeProvider, useTheme } from "@/src/theme/ThemeContext";
-
-// Layouts por tema
-import { ClassicSidebar } from "@/src/theme/layouts/ClassicLayout";
-import { ClassicHeader } from "@/src/theme/layouts/ClassicHeader";
-
-import type { AdminPage } from "@/src/admin/navigation";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
+import { Shield, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { AdminProvider, useAdmin } from '@/contexts/AdminContext';
+import { AdminThemeProvider, useAdminTheme } from '@/src/contexts/AdminThemeContext';
+import { AdminErrorBoundary } from '@/components/ErrorBoundary';
 
 const ADMIN_EMAILS = [
-  "admin@davidsonsdesign.com",
-  "designdavidsons@gmail.com",
-  "studiorockstage@gmail.com",
+  'admin@davidsonsdesign.com',
+  'designdavidsons@gmail.com',
+  'studiorockstage@gmail.com',
 ];
 
-type SidebarComponent = React.ComponentType<{
-  currentPage: AdminPage;
-  onNavigate: (page: AdminPage) => void;
-  collapsed: boolean;
-  onToggleCollapse: () => void;
-  navigation: typeof adminNavigation;
-}>;
-
-type HeaderComponent = React.ComponentType<{
-  period: string;
-  onPeriodChange: (p: string) => void;
-  onNavigate: (page: AdminPage) => void;
-  onMobileMenuToggle: () => void;
-}>;
-
-const SIDEBARS: Record<string, SidebarComponent> = {
-  "dsd-classic": ClassicSidebar,
-};
-
-const HEADERS: Record<string, HeaderComponent> = {
-  "dsd-classic": ClassicHeader,
-};
-
-// ── AdminShell — usa ThemeContext ─────────────────────────────
+// ── AdminShell — consume useAdminTheme() ──────────────────────
 function AdminShell({ children }: { children: React.ReactNode }) {
-  const { t, themeId } = useTheme();
+  const { theme } = useAdminTheme();
   const { currentPage, navigate, period, setPeriod } = useAdmin();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const t = theme.tokens;
 
   useEffect(() => {
     const onResize = () => setIsDesktop(window.innerWidth >= 1024);
     onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const Sidebar = SIDEBARS[themeId] ?? ClassicSidebar;
-  const Header  = HEADERS[themeId]  ?? ClassicHeader;
+  const { Sidebar, Header } = theme;
 
-  const activeSidebarWidth =
-    t.sidebarStyle === "rail"
-      ? t.sidebarWidth
-      : sidebarCollapsed
-        ? t.sidebarCollapsedWidth
-        : t.sidebarWidth;
+  const activeSidebarWidth = sidebarCollapsed
+    ? 64
+    : parseInt(t.sidebarWidth, 10) || 260;
 
-  const handleNavigate = (page: AdminPage) => {
+  const handleNavigate = (page: Parameters<typeof navigate>[0]) => {
     navigate(page);
     setMobileMenuOpen(false);
   };
@@ -82,21 +50,23 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <div
       id="admin-root"
-      data-theme={themeId}
-      data-mode={t.mode}
+      data-theme={theme.id}
+      data-mode={theme.mode}
       className="min-h-screen"
       style={{ backgroundColor: t.bg, fontFamily: t.fontBody, fontSize: t.fontSizeBase }}
     >
+      {/* Sidebar desktop */}
       <div className="hidden lg:block">
         <Sidebar
           currentPage={currentPage}
           onNavigate={handleNavigate}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          navigation={adminNavigation}
+          navigation={[]}
         />
       </div>
 
+      {/* Sidebar mobile */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -107,7 +77,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
             />
             <motion.div
               initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="fixed left-0 top-0 h-full z-50 lg:hidden"
             >
               <Sidebar
@@ -115,7 +85,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
                 onNavigate={handleNavigate}
                 collapsed={false}
                 onToggleCollapse={() => setMobileMenuOpen(false)}
-                navigation={adminNavigation}
+                navigation={[]}
               />
               <button
                 onClick={() => setMobileMenuOpen(false)}
@@ -129,6 +99,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
+      {/* Contenido principal */}
       <div
         className="transition-all duration-250 ease-in-out"
         style={{ marginLeft: isDesktop ? activeSidebarWidth : 0 }}
@@ -159,48 +130,46 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ── AdminLayoutInner — lógica de auth con ThemeProvider ya activo ─
-// ThemeProvider vive AFUERA de la condición — nunca se remonta
+// ── AdminLayoutInner — auth con AdminThemeProvider ya activo ──
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-  const { t } = useTheme();
+  const { theme } = useAdminTheme();
+  const t = theme.tokens;
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
-      const email = user.email?.toLowerCase() || "";
-      setAuthorized(ADMIN_EMAILS.includes(email));
+      setAuthorized(ADMIN_EMAILS.includes(user.email?.toLowerCase() ?? ''));
     }
-    if (!loading && !user) {
-      setAuthorized(false);
-    }
+    if (!loading && !user) setAuthorized(false);
   }, [user, loading]);
 
-  // Estado de carga
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: t.bg }}>
-        <div className="animate-spin w-8 h-8 rounded-full border-2 border-t-transparent"
-          style={{ borderColor: t.accent, borderTopColor: "transparent" }} />
+        <div
+          className="animate-spin w-8 h-8 rounded-full border-2"
+          style={{ borderColor: t.accent, borderTopColor: 'transparent' }}
+        />
       </div>
     );
   }
 
-  // Sin sesión
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
-        <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
-          <Shield size={40} className="mx-auto mb-4 text-[#B09878]" />
-          <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: t.bg }}>
+        <div className="p-8 max-w-md text-center" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, borderRadius: t.cardRadius }}>
+          <Shield size={40} className="mx-auto mb-4" style={{ color: t.muted }} />
+          <h1 className="text-2xl font-bold mb-2" style={{ color: t.text, fontFamily: t.fontHeading }}>
             Acceso Restringido
           </h1>
-          <p className="text-sm text-[#7A6148] mb-6">
+          <p className="text-sm mb-6" style={{ color: t.textSecondary }}>
             Necesitas iniciar sesión con una cuenta de administrador.
           </p>
           <Link
             href="/auth"
-            className="inline-block px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
+            className="inline-block px-6 py-3 text-sm font-semibold"
+            style={{ backgroundColor: t.sidebarBg, color: t.sidebarText, borderRadius: t.buttonRadius }}
           >
             Iniciar Sesión
           </Link>
@@ -209,21 +178,21 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Sin autorización
   if (!authorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF8F5" }}>
-        <div className="rounded-xl p-8 max-w-md text-center bg-white border border-[#E8E0D4] shadow-sm">
-          <Shield size={40} className="mx-auto mb-4 text-[#DC2626]" />
-          <h1 className="text-2xl font-bold mb-2 text-[#2D2419]" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: t.bg }}>
+        <div className="p-8 max-w-md text-center" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, borderRadius: t.cardRadius }}>
+          <Shield size={40} className="mx-auto mb-4" style={{ color: t.error }} />
+          <h1 className="text-2xl font-bold mb-2" style={{ color: t.text, fontFamily: t.fontHeading }}>
             Sin Autorización
           </h1>
-          <p className="text-sm text-[#7A6148] mb-2">
+          <p className="text-sm mb-2" style={{ color: t.textSecondary }}>
             Tu cuenta ({user.email}) no tiene permisos de administrador.
           </p>
           <Link
             href="/"
-            className="inline-block mt-4 px-6 py-3 text-sm font-semibold rounded-lg bg-[#2D2419] text-white hover:bg-[#3D3222] transition-colors"
+            className="inline-block mt-4 px-6 py-3 text-sm font-semibold"
+            style={{ backgroundColor: t.sidebarBg, color: t.sidebarText, borderRadius: t.buttonRadius }}
           >
             Volver al Sitio
           </Link>
@@ -232,7 +201,6 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Admin autorizado — AdminShell consume useTheme() del ThemeProvider padre
   return (
     <AdminProvider>
       <AdminShell>{children}</AdminShell>
@@ -240,11 +208,11 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ── Root export — ThemeProvider único que NUNCA se remonta ────
+// ── Root export — AdminThemeProvider único ────────────────────
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
+    <AdminThemeProvider>
       <AdminLayoutInner>{children}</AdminLayoutInner>
-    </ThemeProvider>
+    </AdminThemeProvider>
   );
 }

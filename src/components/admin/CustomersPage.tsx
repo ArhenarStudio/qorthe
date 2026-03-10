@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { LoyaltyConfigPanel } from './LoyaltyConfigPanel';
 import { DEFAULT_LOYALTY_CONFIG, getTierInlineStyles, normalizeTierId } from '@/data/loyalty';
@@ -127,7 +127,7 @@ const daysSince = (d: string) => d ? Math.floor((Date.now() - new Date(d).getTim
    ================================================================ */
 export const CustomersPage: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNavigate }) => {
   const [tab, setTab] = useState<'all' | 'membership' | 'segments' | 'config'>('all');
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [searchQ, setSearchQ] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerFull | null>(null);

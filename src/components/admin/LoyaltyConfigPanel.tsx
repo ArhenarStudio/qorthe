@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip as RTooltip } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import {
   LoyaltyConfig,

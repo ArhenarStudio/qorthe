@@ -19,12 +19,12 @@ import { useAdminTheme } from '@/contexts/AdminThemeContext';
 
 // ── Setup Wizard wrapper ───────────────────────────────────────
 const SetupWizardWrapper: React.FC = () => {
-  const { setupCompleted, setSetupCompleted } = useAdminTheme();
+  const { theme } = useAdminTheme();
   const [dismissed, setDismissed] = React.useState(false);
-  if (setupCompleted || dismissed) return null;
+  if (dismissed) return null;
   return (
     <SetupWizard
-      onComplete={() => setSetupCompleted(true)}
+      onComplete={() => setDismissed(true)}
       onDismiss={() => setDismissed(true)}
     />
   );

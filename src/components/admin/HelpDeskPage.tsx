@@ -9,7 +9,7 @@ import {
   Wifi, WifiOff, BookOpen, BarChart3, ShieldCheck, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ═══ Types ═══
@@ -57,7 +57,7 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString('es-MX', { day: '2
 // ═══ MAIN COMPONENT ═══
 export const HelpDeskPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>('tickets');
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [tickets, setTickets] = useState<any[]>([]);
   const [warrantyClaims, setWarrantyClaims] = useState<any[]>([]);

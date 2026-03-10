@@ -8,7 +8,7 @@ import {
   Settings, BarChart3, Image as ImageIcon, DollarSign, FileText
 } from 'lucide-react';
 import { type Product } from './products/types';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -146,7 +146,7 @@ interface ProductFormProps {
 
 export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => {
   const isEditing = !!product;
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives
 
   const [form, setForm] = useState<ProductFormData>(() => {

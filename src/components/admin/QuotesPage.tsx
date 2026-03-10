@@ -17,7 +17,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ===== CONSTANTS =====
@@ -68,7 +68,7 @@ const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; s
 // ===== MAIN COMPONENT =====
 export const QuotesPage: React.FC = () => {
 
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
   // ── Live data from API (no mock fallback) ──
   const [liveQuotes, setLiveQuotes] = useState<{ quotes: AdminQuote[]; stats: { today_revenue: number; today_count: number; pos_count: number; total_count: number } } | null>(null);

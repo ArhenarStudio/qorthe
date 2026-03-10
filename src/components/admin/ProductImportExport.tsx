@@ -5,7 +5,7 @@
 // Import wizard: placeholder for future Medusa bulk import API
 // ═══════════════════════════════════════════════════════════════
 
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState } from "react";
 import { X, Download, Upload, FileText, Loader2, AlertTriangle } from "lucide-react";

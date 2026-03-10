@@ -29,7 +29,7 @@ import {
   ArrowUpDown, BarChart3, TrendingUp, Eye,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ── Types ──────────────────────────────────────────────────────
@@ -80,7 +80,7 @@ const ITEMS_PER_PAGE = 20;
 
 export const ReviewsPage: React.FC = () => {
   // Data state
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [counts, setCounts] = useState<ReviewCounts>({ pending: 0, approved: 0, rejected: 0 });

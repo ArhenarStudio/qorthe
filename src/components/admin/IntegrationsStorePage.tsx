@@ -11,7 +11,7 @@ import {
   Activity, ChevronDown, ArrowLeft, BadgeCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ===== TYPES =====
@@ -887,7 +887,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
 // ===== MAIN COMPONENT =====
 export const IntegrationsStorePage: React.FC = () => {
 
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
   // ── Live data from API ──
   const [liveInteg, setLiveInteg] = useState<any>(null);

@@ -1,11 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
-// Admin Animation System — Themes define animation tokens
-// Components use these instead of hardcoding motion values
+// src/admin/animations.ts
+// Tokens de animación para el panel admin
 // ═══════════════════════════════════════════════════════════════
 
-import type { AdminUITheme, AdminAnimationTokens } from '@/src/admin/types';
-
-const defaultAnimations: AdminAnimationTokens = {
+const defaultAnimations = {
   pageTransition: {
     initial: { opacity: 0, y: 8 },
     animate: { opacity: 1, y: 0 },
@@ -17,11 +15,10 @@ const defaultAnimations: AdminAnimationTokens = {
   modalEnter: 'transition-all duration-200 ease-out',
 };
 
-export function getAnimations(theme: AdminUITheme): AdminAnimationTokens {
-  return { ...defaultAnimations, ...(theme.animations || {}) };
+export function getAnimations() {
+  return defaultAnimations;
 }
 
-export function getPageTransition(theme: AdminUITheme) {
-  const anims = getAnimations(theme);
-  return anims.pageTransition;
+export function getPageTransition() {
+  return defaultAnimations.pageTransition;
 }

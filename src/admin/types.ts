@@ -1,11 +1,13 @@
 // ═══════════════════════════════════════════════════════════════
-// Admin Theme Types — Defines the shape of a UI theme
+// src/admin/types.ts
+// RockSage Commerce — Tipos del sistema de temas admin
+// Fuente única de verdad para tokens, componentes y layouts
 // ═══════════════════════════════════════════════════════════════
 
 import type { LucideIcon } from 'lucide-react';
 import type { AdminPage, NavGroup } from '@/src/admin/navigation';
 
-// Props that layout components receive
+// ── Props de layout ────────────────────────────────────────────
 export interface AdminSidebarProps {
   currentPage: AdminPage;
   onNavigate: (page: AdminPage) => void;
@@ -15,56 +17,77 @@ export interface AdminSidebarProps {
 }
 
 export interface AdminHeaderProps {
-  period: any;
-  onPeriodChange: (p: any) => void;
+  period: string;
+  onPeriodChange: (p: string) => void;
   onNavigate: (page: AdminPage) => void;
   onMobileMenuToggle: () => void;
 }
 
-export interface AdminLayoutProps {
-  children: React.ReactNode;
-  sidebar: React.ReactNode;
-  header: React.ReactNode;
-}
-
-// Design tokens that themes can override
+// ── Design tokens completos ────────────────────────────────────
 export interface AdminDesignTokens {
+  // Fondos
   bg: string;
   surface: string;
   surface2: string;
+  surface3: string;
+
+  // Texto
   text: string;
   textSecondary: string;
   muted: string;
+
+  // Bordes y sombras
   border: string;
+  borderStrong: string;
+  shadow: string;
+  shadowLg: string;
+
+  // Acento
   accent: string;
   accentHover: string;
+  accentSubtle: string;
   accentText: string;
+
+  // Sidebar
   sidebarBg: string;
   sidebarText: string;
+  sidebarTextMuted: string;
   sidebarActive: string;
+  sidebarActiveText: string;
+  sidebarHover: string;
   sidebarAccent: string;
   sidebarBorder: string;
   sidebarWidth: string;
+
+  // Header
+  headerBg: string;
+  headerBorder: string;
+  headerText: string;
+
+  // Estados semánticos
   success: string;
+  successSubtle: string;
   error: string;
+  errorSubtle: string;
   warning: string;
+  warningSubtle: string;
   info: string;
+  infoSubtle: string;
+
+  // Radios
   cardRadius: string;
   buttonRadius: string;
   inputRadius: string;
-  shadow: string;
-  shadowLg: string;
+  badgeRadius: string;
+
+  // Tipografía
+  fontHeading: string;
+  fontBody: string;
+  fontMono: string;
+  fontSizeBase: string;
 }
 
-// Animation tokens
-export interface AdminAnimationTokens {
-  pageTransition: { initial: object; animate: object; exit: object; transition: object };
-  sidebarExpand: string;
-  cardHover: string;
-  modalEnter: string;
-}
-
-// Theme UI components that can be overridden
+// ── Componentes UI reemplazables por tema ──────────────────────
 export interface AdminThemeComponents {
   Card?: React.ComponentType<{ className?: string; children: React.ReactNode; style?: React.CSSProperties }>;
   Badge?: React.ComponentType<{ text: string; variant?: string; className?: string }>;
@@ -73,7 +96,7 @@ export interface AdminThemeComponents {
   StatCard?: React.ComponentType<{ label: string; value: string | number; change?: string; changeType?: string; icon?: React.ReactNode }>;
 }
 
-// A complete admin UI theme
+// ── Tema completo ──────────────────────────────────────────────
 export interface AdminUITheme {
   id: string;
   name: string;
@@ -81,24 +104,17 @@ export interface AdminUITheme {
   mode: 'light' | 'dark';
   preview: { sidebar: string; bg: string; accent: string; card: string };
 
-  // Component overrides — themes provide their own implementations
+  // Layout components
   Sidebar: React.ComponentType<AdminSidebarProps>;
   Header: React.ComponentType<AdminHeaderProps>;
-  Layout?: React.ComponentType<AdminLayoutProps>;
 
-  // UI component overrides (optional — defaults to default theme components)
+  // UI component overrides
   components?: AdminThemeComponents;
 
-  // Design tokens
+  // Tokens
   tokens: AdminDesignTokens;
   fonts: { heading: string; body: string; mono: string };
 
-  // Icon overrides (optional — defaults to lucide icons from navigation.ts)
+  // Overrides opcionales
   icons?: Partial<Record<AdminPage, LucideIcon>>;
-
-  // Animation tokens (optional)
-  animations?: Partial<AdminAnimationTokens>;
-
-  // CSS stylesheet path (optional)
-  stylesheet?: string;
 }

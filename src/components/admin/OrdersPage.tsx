@@ -12,7 +12,7 @@ import {
 import { type Order, type OrderItem, type EngravingDesign } from '@/data/adminMockData';
 import { useAdminData } from '@/hooks/useAdminData';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ===== CONFIG =====
@@ -139,7 +139,7 @@ function mapLiveOrder(o: any): Order {
 // ===== MAIN COMPONENT =====
 export const OrdersPage: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');

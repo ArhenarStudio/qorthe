@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Loader2, RotateCcw, Plus, Trash2, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Edit3, GripVertical } from 'lucide-react';
 import { FullQuoteConfig, DEFAULT_FULL_CONFIG } from '@/components/quote/quoteConfig';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ═══════════════════════════════════════════════════════════════

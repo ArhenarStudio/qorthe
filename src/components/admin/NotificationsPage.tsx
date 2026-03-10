@@ -10,7 +10,7 @@ import {
   XCircle, ArrowRight, Palette, Plus, X, Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useTheme } from '@/src/theme/ThemeContext';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCard, Table as TTable } from '@/src/theme/primitives';
 
 // ===== TYPES =====
@@ -804,7 +804,7 @@ function ConfigTab() {
 // ===== MAIN =====
 export const NotificationsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NTab>('center');
-  const { t } = useTheme();
+  const { theme } = useAdminTheme(); const t = theme.tokens;
   // primitivos via src/theme/primitives — leen de useTheme() directamente
 
   const tabContent: Record<NTab, React.ReactNode> = {
