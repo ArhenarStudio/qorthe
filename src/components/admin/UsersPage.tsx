@@ -106,8 +106,8 @@ export const UsersPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
-          <Users size={20} className="text-[var(--admin-accent)]" /> Gestión de Equipo
+        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
+          <Users size={20} className="text-[var(--accent)]" /> Gestión de Equipo
         </h3>
         <button onClick={() => { setEditingUser(null); setShowForm(true); }}
           className="flex items-center gap-1.5 px-4 py-2 bg-wood-900 text-sand-100 text-xs rounded-lg hover:bg-wood-800">
@@ -117,7 +117,7 @@ export const UsersPage: React.FC = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KpiCard icon={<Users size={14} />} iconCls="text-[var(--admin-accent)] bg-[var(--admin-accent)]/10" value={String(stats.total)} label="Total usuarios" />
+        <KpiCard icon={<Users size={14} />} iconCls="text-[var(--accent)] bg-[var(--accent)]/10" value={String(stats.total)} label="Total usuarios" />
         <KpiCard icon={<Check size={14} />} iconCls="text-green-600 bg-green-50" value={String(stats.active)} label="Activos" />
         <KpiCard icon={<Mail size={14} />} iconCls="text-blue-600 bg-blue-50" value={String(stats.invited)} label="Invitados" />
         <KpiCard icon={<Building size={14} />} iconCls="text-purple-600 bg-purple-50" value={String(stats.departments)} label="Departamentos" />
@@ -130,7 +130,7 @@ export const UsersPage: React.FC = () => {
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={`flex items-center gap-1.5 px-3 py-2 text-xs rounded-lg transition-colors ${
-                tab === t.id ? "bg-wood-900 text-sand-100" : "bg-[var(--admin-surface)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)] border border-[var(--admin-border)]"
+                tab === t.id ? "bg-wood-900 text-sand-100" : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] border border-[var(--border)]"
               }`}>
               <Icon size={14} /> {t.label}
             </button>
@@ -140,8 +140,8 @@ export const UsersPage: React.FC = () => {
 
       {/* Content */}
       {loading && users.length === 0 ? (
-        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] p-12 text-center">
-          <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--admin-muted)]" />
+        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-12 text-center">
+          <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--text-muted)]" />
         </div>
       ) : (
         <>
@@ -173,10 +173,10 @@ export const UsersPage: React.FC = () => {
 
 // ═══════ KPI CARD ═══════
 const KpiCard: React.FC<{ icon: React.ReactNode; iconCls: string; value: string; label: string }> = ({ icon, iconCls, value, label }) => (
-  <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-4">
+  <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-4">
     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconCls} mb-2`}>{icon}</div>
-    <p className="text-lg text-[var(--admin-text)]">{value}</p>
-    <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">{label}</p>
+    <p className="text-lg text-[var(--text)]">{value}</p>
+    <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{label}</p>
   </div>
 );
 
@@ -195,15 +195,15 @@ const TeamTab: React.FC<{
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input value={search} onChange={e => onSearch(e.target.value)} placeholder="Buscar por nombre, email, departamento..."
-            className="w-full pl-9 pr-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-xs outline-none focus:border-wood-400" />
+            className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs outline-none focus:border-wood-400" />
         </div>
         <div className="flex gap-1.5">
           {(["all", "active", "invited", "inactive", "suspended"] as const).map(s => (
             <button key={s} onClick={() => onStatusFilter(s)}
               className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all ${
-                statusFilter === s ? "bg-wood-900 text-sand-100 border-wood-900" : "bg-[var(--admin-surface)] text-[var(--admin-text-secondary)] border-[var(--admin-border)] hover:border-wood-300"
+                statusFilter === s ? "bg-wood-900 text-sand-100 border-wood-900" : "bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:border-wood-300"
               }`}>
               {s === "all" ? "Todos" : USER_STATUS_CONFIG[s].label}
             </button>
@@ -212,11 +212,11 @@ const TeamTab: React.FC<{
       </div>
 
       {/* Users table */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[800px]">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)] bg-[var(--surface2)]/50">
                 <th className="px-4 py-3">Usuario</th>
                 <th className="px-4 py-3">Rol</th>
                 <th className="px-4 py-3">Departamento</th>
@@ -229,19 +229,19 @@ const TeamTab: React.FC<{
             </thead>
             <tbody className="divide-y divide-wood-50">
               {users.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-[var(--admin-muted)]">Sin usuarios</td></tr>
+                <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-[var(--text-muted)]">Sin usuarios</td></tr>
               ) : users.map(u => {
                 const statusCfg = USER_STATUS_CONFIG[u.status];
                 return (
-                  <tr key={u.id} className="hover:bg-[var(--admin-surface2)]/50">
+                  <tr key={u.id} className="hover:bg-[var(--surface2)]/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[var(--admin-accent)]/10 flex items-center justify-center text-xs font-bold text-[var(--admin-accent)]">
+                        <div className="w-9 h-9 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-xs font-bold text-[var(--accent)]">
                           {u.full_name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-[var(--admin-text)]">{u.full_name}</p>
-                          <p className="text-[10px] text-[var(--admin-muted)]">{u.email}</p>
+                          <p className="text-xs font-medium text-[var(--text)]">{u.full_name}</p>
+                          <p className="text-[10px] text-[var(--text-muted)]">{u.email}</p>
                         </div>
                       </div>
                     </td>
@@ -250,28 +250,28 @@ const TeamTab: React.FC<{
                         {u.role_name}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">{u.department}</td>
-                    <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">{u.position || "—"}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{u.department}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{u.position || "—"}</td>
                     <td className="px-4 py-3">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 w-fit ${statusCfg.cls}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} /> {statusCfg.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-[10px] text-[var(--admin-muted)]">
+                    <td className="px-4 py-3 text-[10px] text-[var(--text-muted)]">
                       {u.last_access ? fmtDateTime(u.last_access) : "Nunca"}
                     </td>
-                    <td className="px-4 py-3 text-[10px] text-[var(--admin-muted)]">{fmtDate(u.created_at)}</td>
+                    <td className="px-4 py-3 text-[10px] text-[var(--text-muted)]">{fmtDate(u.created_at)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        <button onClick={() => onEdit(u)} className="p-1.5 rounded-md hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] hover:text-[var(--admin-accent)]" title="Editar">
+                        <button onClick={() => onEdit(u)} className="p-1.5 rounded-md hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--accent)]" title="Editar">
                           <Edit3 size={12} />
                         </button>
                         {u.status === "active" ? (
-                          <button onClick={() => onStatusChange(u.id, "suspended")} className="p-1.5 rounded-md hover:bg-red-50 text-[var(--admin-muted)] hover:text-red-500" title="Suspender">
+                          <button onClick={() => onStatusChange(u.id, "suspended")} className="p-1.5 rounded-md hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500" title="Suspender">
                             <Lock size={12} />
                           </button>
                         ) : u.status === "suspended" ? (
-                          <button onClick={() => onStatusChange(u.id, "active")} className="p-1.5 rounded-md hover:bg-green-50 text-[var(--admin-muted)] hover:text-green-600" title="Reactivar">
+                          <button onClick={() => onStatusChange(u.id, "active")} className="p-1.5 rounded-md hover:bg-green-50 text-[var(--text-muted)] hover:text-green-600" title="Reactivar">
                             <Check size={12} />
                           </button>
                         ) : null}
@@ -280,10 +280,10 @@ const TeamTab: React.FC<{
                             <button onClick={() => { onDelete(u.id, u.full_name); setConfirmDelete(null); }}
                               className="p-1 rounded bg-red-500 text-white"><Check size={10} /></button>
                             <button onClick={() => setConfirmDelete(null)}
-                              className="p-1 rounded bg-wood-200 text-[var(--admin-text-secondary)]"><X size={10} /></button>
+                              className="p-1 rounded bg-wood-200 text-[var(--text-secondary)]"><X size={10} /></button>
                           </div>
                         ) : (
-                          <button onClick={() => setConfirmDelete(u.id)} className="p-1.5 rounded-md hover:bg-red-50 text-[var(--admin-muted)] hover:text-red-500" title="Eliminar">
+                          <button onClick={() => setConfirmDelete(u.id)} className="p-1.5 rounded-md hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500" title="Eliminar">
                             <Trash2 size={12} />
                           </button>
                         )}
@@ -311,36 +311,36 @@ const RolesTab: React.FC<{ roles: AdminRole[]; onRefresh: () => void }> = ({ rol
           const isExpanded = expandedId === role.id;
           const perms = (role.permissions || {}) as Record<string, string>;
           return (
-            <div key={role.id} className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
-              <div className="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-[var(--admin-surface2)]/50"
+            <div key={role.id} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+              <div className="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-[var(--surface2)]/50"
                 onClick={() => setExpandedId(isExpanded ? null : role.id)}>
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${role.color}15` }}>
                   <Shield size={14} style={{ color: role.color }} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-[var(--admin-text)]">{role.name}</p>
-                  <p className="text-[10px] text-[var(--admin-muted)]">{role.description} · {role.user_count} usuario{role.user_count !== 1 ? "s" : ""}</p>
+                  <p className="text-sm font-bold text-[var(--text)]">{role.name}</p>
+                  <p className="text-[10px] text-[var(--text-muted)]">{role.description} · {role.user_count} usuario{role.user_count !== 1 ? "s" : ""}</p>
                 </div>
-                {isExpanded ? <ChevronDown size={14} className="text-[var(--admin-muted)]" /> : <ChevronRight size={14} className="text-[var(--admin-muted)]" />}
+                {isExpanded ? <ChevronDown size={14} className="text-[var(--text-muted)]" /> : <ChevronRight size={14} className="text-[var(--text-muted)]" />}
               </div>
               {isExpanded && (
-                <div className="px-4 pb-4 border-t border-[var(--admin-border)] pt-3">
-                  <p className="text-[10px] font-bold text-[var(--admin-muted)] uppercase tracking-wider mb-2">Permisos por módulo</p>
+                <div className="px-4 pb-4 border-t border-[var(--border)] pt-3">
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Permisos por módulo</p>
                   <div className="grid grid-cols-2 gap-1.5">
                     {ADMIN_MODULES.map(mod => {
                       const level = (perms[mod.id] || "none") as AccessLevel;
                       const cfg = ACCESS_LEVELS.find(a => a.value === level);
                       return (
-                        <div key={mod.id} className="flex items-center justify-between px-2 py-1.5 bg-[var(--admin-surface2)] rounded text-[10px]">
-                          <span className="text-[var(--admin-text-secondary)]">{mod.label}</span>
+                        <div key={mod.id} className="flex items-center justify-between px-2 py-1.5 bg-[var(--surface2)] rounded text-[10px]">
+                          <span className="text-[var(--text-secondary)]">{mod.label}</span>
                           <span className={`font-bold ${cfg?.cls || "text-gray-400"}`}>{cfg?.label || "—"}</span>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[var(--admin-border)]">
-                    <span className="text-[10px] text-[var(--admin-muted)]">Alcance: <span className="text-[var(--admin-text-secondary)] font-bold">{role.scope === "all" ? "Global" : role.scope === "own" ? "Propio" : "Equipo"}</span></span>
-                    {role.is_default && <span className="text-[9px] px-1.5 py-0.5 bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] rounded-full font-bold">Default</span>}
+                  <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[var(--border)]">
+                    <span className="text-[10px] text-[var(--text-muted)]">Alcance: <span className="text-[var(--text-secondary)] font-bold">{role.scope === "all" ? "Global" : role.scope === "own" ? "Propio" : "Equipo"}</span></span>
+                    {role.is_default && <span className="text-[9px] px-1.5 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-full font-bold">Default</span>}
                   </div>
                 </div>
               )}
@@ -364,15 +364,15 @@ const AuditTab: React.FC<{ entries: AuditEntry[] }> = ({ entries }) => {
   return (
     <div className="space-y-4">
       <div className="relative max-w-md">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
         <input value={auditSearch} onChange={e => setAuditSearch(e.target.value)} placeholder="Buscar en actividad..."
-          className="w-full pl-9 pr-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-xs outline-none focus:border-wood-400" />
+          className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs outline-none focus:border-wood-400" />
       </div>
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[700px]">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)] bg-[var(--surface2)]/50">
                 <th className="px-4 py-3">Fecha</th>
                 <th className="px-4 py-3">Usuario</th>
                 <th className="px-4 py-3">Acción</th>
@@ -382,14 +382,14 @@ const AuditTab: React.FC<{ entries: AuditEntry[] }> = ({ entries }) => {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {filtered.length === 0 ? (
-                <tr><td colSpan={5} className="px-4 py-12 text-center text-xs text-[var(--admin-muted)]">Sin actividad registrada</td></tr>
+                <tr><td colSpan={5} className="px-4 py-12 text-center text-xs text-[var(--text-muted)]">Sin actividad registrada</td></tr>
               ) : filtered.map(e => (
-                <tr key={e.id} className="hover:bg-[var(--admin-surface2)]/50">
-                  <td className="px-4 py-3 text-[10px] text-[var(--admin-muted)] whitespace-nowrap">{fmtDateTime(e.created_at)}</td>
-                  <td className="px-4 py-3 text-xs text-[var(--admin-text)]">{e.user_name || e.user_email}</td>
-                  <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">{e.action.replace(/_/g, " ")}</td>
-                  <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">{e.module}</td>
-                  <td className="px-4 py-3 text-[11px] text-[var(--admin-text-secondary)] max-w-[300px] truncate">{e.detail}</td>
+                <tr key={e.id} className="hover:bg-[var(--surface2)]/50">
+                  <td className="px-4 py-3 text-[10px] text-[var(--text-muted)] whitespace-nowrap">{fmtDateTime(e.created_at)}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--text)]">{e.user_name || e.user_email}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{e.action.replace(/_/g, " ")}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{e.module}</td>
+                  <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)] max-w-[300px] truncate">{e.detail}</td>
                 </tr>
               ))}
             </tbody>
@@ -461,14 +461,14 @@ const UserFormModal: React.FC<{
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/40 flex items-start justify-center z-50 p-4 overflow-y-auto pt-12" onClick={onClose}>
       <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-[var(--admin-surface)] rounded-xl shadow-2xl w-full max-w-2xl" onClick={e => e.stopPropagation()}>
+        className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--admin-border)]">
-          <h4 className="text-sm font-bold text-[var(--admin-text)] flex items-center gap-2">
-            <UserPlus size={16} className="text-[var(--admin-accent)]" />
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+          <h4 className="text-sm font-bold text-[var(--text)] flex items-center gap-2">
+            <UserPlus size={16} className="text-[var(--accent)]" />
             {isEdit ? `Editar: ${user.full_name}` : "Nuevo Usuario"}
           </h4>
-          <button onClick={onClose} className="text-[var(--admin-muted)] hover:text-[var(--admin-text)]"><X size={18} /></button>
+          <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)]"><X size={18} /></button>
         </div>
 
         {/* Section tabs */}
@@ -478,7 +478,7 @@ const UserFormModal: React.FC<{
             return (
               <button key={s.id} onClick={() => setSection(s.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-lg transition-colors ${
-                  section === s.id ? "bg-wood-900 text-sand-100" : "text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]"
+                  section === s.id ? "bg-wood-900 text-sand-100" : "text-[var(--text-secondary)] hover:bg-[var(--surface2)]"
                 }`}>
                 <Icon size={12} /> {s.label}
               </button>
@@ -497,9 +497,9 @@ const UserFormModal: React.FC<{
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Teléfono" value={form.phone} onChange={v => update("phone", v)} />
                 <div>
-                  <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Rol</label>
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Rol</label>
                   <select value={form.role_id} onChange={e => update("role_id", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg outline-none">
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none">
                     <option value="">Sin rol</option>
                     {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
@@ -507,9 +507,9 @@ const UserFormModal: React.FC<{
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">Departamento</label>
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Departamento</label>
                   <select value={form.department} onChange={e => update("department", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg outline-none">
+                    className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none">
                     {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
@@ -549,10 +549,10 @@ const UserFormModal: React.FC<{
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 px-6 py-4 border-t border-[var(--admin-border)]">
-          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--admin-text-secondary)]">Cancelar</button>
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-[var(--border)]">
+          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)]">Cancelar</button>
           <button onClick={handleSave} disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[var(--admin-accent)] text-[var(--admin-text)] text-xs font-bold rounded-lg hover:shadow-lg disabled:opacity-50">
+            className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-[var(--text)] text-xs font-bold rounded-lg hover:shadow-lg disabled:opacity-50">
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
             {saving ? "Guardando..." : isEdit ? "Guardar Cambios" : "Crear Usuario"}
           </button>
@@ -568,13 +568,13 @@ const Field: React.FC<{
   type?: string; placeholder?: string; disabled?: boolean; multiline?: boolean;
 }> = ({ label, value, onChange, type = "text", placeholder, disabled, multiline }) => (
   <div>
-    <label className="text-[10px] font-bold text-[var(--admin-muted)] uppercase block mb-1">{label}</label>
+    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">{label}</label>
     {multiline ? (
       <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)] resize-none h-20" />
+        className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)] resize-none h-20" />
     ) : (
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled}
-        className="w-full px-3 py-2.5 text-sm bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)] disabled:opacity-50" />
+        className="w-full px-3 py-2.5 text-sm bg-[var(--surface2)] border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)] disabled:opacity-50" />
     )}
   </div>
 );

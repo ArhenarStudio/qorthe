@@ -24,7 +24,7 @@ import { Card as TCard, Badge as TBadge, Button as TButton, StatCard as TStatCar
 type TabId = 'resumen' | 'ventas' | 'clientes' | 'productos' | 'operaciones' | 'custom';
 
 // ===== CONSTANTS =====
-const COLORS = ['var(--admin-accent)', 'var(--admin-text-secondary)', 'var(--admin-muted)', 'var(--admin-border)', 'var(--admin-text-secondary)', 'var(--admin-muted)'];
+const COLORS = ['var(--accent)', 'var(--text-secondary)', 'var(--text-muted)', 'var(--border)', 'var(--text-secondary)', 'var(--text-muted)'];
 
 const tabItems: Array<{ id: TabId; label: string; icon: React.ElementType }> = [
   { id: 'resumen', label: 'Resumen Ejecutivo', icon: BarChart3 },
@@ -40,10 +40,10 @@ const periods = ['Hoy', 'Esta semana', 'Este mes', 'Este trimestre', 'Este ano',
 const fmt = (n: number) => '$' + n.toLocaleString('es-MX');
 
 const chartStyle = {
-  background: 'var(--admin-text)',
+  background: 'var(--text)',
   border: 'none',
   borderRadius: 8,
-  color: 'var(--admin-surface2)',
+  color: 'var(--surface2)',
   fontSize: 11,
 };
 
@@ -88,11 +88,11 @@ const comparisonTable = [
 ];
 
 const funnelData = [
-  { name: 'Visitantes unicos', value: 5800, pct: 100, fill: 'var(--admin-accent)' },
-  { name: 'Vieron producto', value: 3480, pct: 60.0, fill: 'var(--admin-text-secondary)' },
-  { name: 'Agregaron al carrito', value: 680, pct: 11.7, fill: 'var(--admin-muted)' },
-  { name: 'Iniciaron checkout', value: 348, pct: 6.0, fill: 'var(--admin-muted)' },
-  { name: 'Completaron compra', value: 162, pct: 2.8, fill: 'var(--admin-text-secondary)' },
+  { name: 'Visitantes unicos', value: 5800, pct: 100, fill: 'var(--accent)' },
+  { name: 'Vieron producto', value: 3480, pct: 60.0, fill: 'var(--text-secondary)' },
+  { name: 'Agregaron al carrito', value: 680, pct: 11.7, fill: 'var(--text-muted)' },
+  { name: 'Iniciaron checkout', value: 348, pct: 6.0, fill: 'var(--text-muted)' },
+  { name: 'Completaron compra', value: 162, pct: 2.8, fill: 'var(--text-secondary)' },
 ];
 
 const salesByDayHour = [
@@ -144,7 +144,7 @@ const cohortData = [
 
 const rfmSegments = [
   { segment: 'Campeones', desc: 'R+ F+ M+', clients: 15, pct: 6, revenue: 67100, revPct: 47, color: '#22c55e', action: 'Programa embajadores, acceso anticipado' },
-  { segment: 'Leales', desc: 'R= F+ M=', clients: 28, pct: 11, revenue: 42000, revPct: 29, color: 'var(--admin-accent)', action: 'Upsell a sets, referidos' },
+  { segment: 'Leales', desc: 'R= F+ M=', clients: 28, pct: 11, revenue: 42000, revPct: 29, color: 'var(--accent)', action: 'Upsell a sets, referidos' },
   { segment: 'Potenciales', desc: 'R+ F- M-', clients: 45, pct: 18, revenue: 18400, revPct: 13, color: '#3b82f6', action: 'Nurturing + incentivo segunda compra' },
   { segment: 'En riesgo', desc: 'R- F= M=', clients: 22, pct: 9, revenue: 8800, revPct: 6, color: '#f59e0b', action: 'Campana "te extranamos" + cupon' },
   { segment: 'Perdidos', desc: 'R- F- M-', clients: 48, pct: 19, revenue: 2400, revPct: 2, color: '#ef4444', action: 'Reactivacion agresiva o aceptar perdida' },
@@ -249,7 +249,7 @@ const widgetCategories = [
 // ===== SHARED COMPONENTS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>
+    <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>
       {children}
     </div>
   );
@@ -257,7 +257,7 @@ function Card({ children, className = '' }: { children: React.ReactNode; classNa
 
 function STitle({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="text-sm font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">
+    <h4 className="text-sm font-medium text-[var(--text)] uppercase tracking-wider border-b border-[var(--border)] pb-2 mb-4">
       {children}
     </h4>
   );
@@ -295,7 +295,7 @@ function ResumenTab() {
       {/* Scorecard */}
       <Card className="p-5">
         <STitle>Scorecard de Negocio - Febrero 2026</STitle>
-        <p className="text-[10px] text-[var(--admin-muted)] mb-4 -mt-2 flex items-center gap-3">
+        <p className="text-[10px] text-[var(--text-muted)] mb-4 -mt-2 flex items-center gap-3">
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-green-500" /> En meta</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Cerca (&lt;10% debajo)</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Debajo de meta</span>
@@ -318,11 +318,11 @@ function ResumenTab() {
             >
               <div className="flex items-center gap-1.5 mb-1.5">
                 <StatusDot status={s.status} />
-                <span className="text-[10px] font-medium text-[var(--admin-text)] uppercase tracking-wider">{s.area}</span>
+                <span className="text-[10px] font-medium text-[var(--text)] uppercase tracking-wider">{s.area}</span>
               </div>
-              <p className="text-sm font-semibold text-[var(--admin-text)]">{s.value}</p>
-              <p className="text-[10px] text-[var(--admin-text-secondary)]">{s.metric} {s.met ? '(ok)' : '(!)'}</p>
-              <p className="text-[10px] text-[var(--admin-muted)]">{s.delta}</p>
+              <p className="text-sm font-semibold text-[var(--text)]">{s.value}</p>
+              <p className="text-[10px] text-[var(--text-secondary)]">{s.metric} {s.met ? '(ok)' : '(!)'}</p>
+              <p className="text-[10px] text-[var(--text-muted)]">{s.delta}</p>
             </motion.div>
           ))}
         </div>
@@ -333,13 +333,13 @@ function ResumenTab() {
         <STitle>Tendencias clave (30 dias)</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sparklineData.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 bg-[var(--admin-surface2)] rounded-lg">
+            <div key={i} className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-lg">
               <div className="w-24 h-8 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={s.data.map((v, j) => ({ v, i: j }))}>
                     <Line
                       dataKey="v"
-                      stroke={s.trend === 'up' ? '#22c55e' : (['down'] as string[]).includes(s.trend) ? '#ef4444' : 'var(--admin-accent)'}
+                      stroke={s.trend === 'up' ? '#22c55e' : (['down'] as string[]).includes(s.trend) ? '#ef4444' : 'var(--accent)'}
                       strokeWidth={1.5}
                       dot={false}
                     />
@@ -347,8 +347,8 @@ function ResumenTab() {
                 </ResponsiveContainer>
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] text-[var(--admin-muted)] truncate">{s.label}</p>
-                <p className="text-sm font-semibold text-[var(--admin-text)]">{s.value}</p>
+                <p className="text-[10px] text-[var(--text-muted)] truncate">{s.label}</p>
+                <p className="text-sm font-semibold text-[var(--text)]">{s.value}</p>
               </div>
             </div>
           ))}
@@ -367,13 +367,13 @@ function ResumenTab() {
 
       {/* Comparison table */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
+        <div className="px-5 py-3 border-b border-[var(--border)]">
           <STitle>Comparativa: Actual vs Anterior</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                 <th className="px-5 py-2">Metrica</th>
                 <th className="px-5 py-2 text-right">Actual</th>
                 <th className="px-5 py-2 text-right">Anterior</th>
@@ -383,14 +383,14 @@ function ResumenTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {comparisonTable.map((r) => (
-                <tr key={r.metric} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{r.metric}</td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text)] text-right font-mono">{r.actual}</td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right font-mono">{r.prev}</td>
+                <tr key={r.metric} className="hover:bg-[var(--surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--text)]">{r.metric}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--text)] text-right font-mono">{r.actual}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right font-mono">{r.prev}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={r.up ? 'text-green-600' : 'text-red-500'}>{r.change}</span>
                   </td>
-                  <td className="px-5 py-2.5 text-[10px] text-[var(--admin-text-secondary)] flex items-center gap-1">
+                  <td className="px-5 py-2.5 text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
                     {r.up ? <ArrowUpRight size={10} className="text-green-600" /> : <ArrowDownRight size={10} className="text-red-500" />}
                     {r.trend}
                   </td>
@@ -415,12 +415,12 @@ function VentasTab() {
           {funnelData.map((step, i) => (
             <div key={step.name}>
               <div className="flex items-center justify-between text-xs mb-1">
-                <span className="text-[var(--admin-text)] font-medium">{step.name}</span>
-                <span className="text-[var(--admin-text)] font-mono">
-                  {step.value.toLocaleString()} <span className="text-[var(--admin-muted)]">({step.pct}%)</span>
+                <span className="text-[var(--text)] font-medium">{step.name}</span>
+                <span className="text-[var(--text)] font-mono">
+                  {step.value.toLocaleString()} <span className="text-[var(--text-muted)]">({step.pct}%)</span>
                 </span>
               </div>
-              <div className="w-full bg-[var(--admin-surface2)] rounded-full h-6 overflow-hidden">
+              <div className="w-full bg-[var(--surface2)] rounded-full h-6 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: step.pct + '%' }}
@@ -446,15 +446,15 @@ function VentasTab() {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={salesByDayHour}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
-              <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
               <RTooltip contentStyle={chartStyle} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-              <Bar dataKey="8-12h" stackId="a" fill="var(--admin-border)" />
-              <Bar dataKey="12-16h" stackId="a" fill="var(--admin-muted)" />
-              <Bar dataKey="16-20h" stackId="a" fill="var(--admin-accent)" />
-              <Bar dataKey="20-24h" stackId="a" fill="var(--admin-text-secondary)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="8-12h" stackId="a" fill="var(--border)" />
+              <Bar dataKey="12-16h" stackId="a" fill="var(--text-muted)" />
+              <Bar dataKey="16-20h" stackId="a" fill="var(--accent)" />
+              <Bar dataKey="20-24h" stackId="a" fill="var(--text-secondary)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -463,13 +463,13 @@ function VentasTab() {
 
       {/* Traffic Sources */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
+        <div className="px-5 py-3 border-b border-[var(--border)]">
           <STitle>Ventas por fuente de trafico</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                 <th className="px-5 py-2">Fuente</th>
                 <th className="px-5 py-2 text-right">Ingresos</th>
                 <th className="px-5 py-2 text-right">%</th>
@@ -479,16 +479,16 @@ function VentasTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {trafficSources.map((t) => (
-                <tr key={t.source} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{t.source}</td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--admin-text)] text-right">{fmt(t.revenue)}</td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{t.pct}%</td>
+                <tr key={t.source} className="hover:bg-[var(--surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--text)]">{t.source}</td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--text)] text-right">{fmt(t.revenue)}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{t.pct}%</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={'px-1.5 py-0.5 rounded-full ' + (t.conv >= 4 ? 'bg-green-50 text-green-600' : t.conv >= 2.5 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500')}>
                       {t.conv}%
                     </span>
                   </td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--admin-text-secondary)] text-right">{fmt(t.ticket)}</td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--text-secondary)] text-right">{fmt(t.ticket)}</td>
                 </tr>
               ))}
             </tbody>
@@ -504,35 +504,35 @@ function VentasTab() {
         <STitle>Analisis de carritos abandonados</STitle>
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Carritos abandonados</p>
-            <p className="text-xl font-semibold text-[var(--admin-text)] font-sans">518</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase">Carritos abandonados</p>
+            <p className="text-xl font-semibold text-[var(--text)] font-sans">518</p>
           </div>
           <div>
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Valor total abandonado</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase">Valor total abandonado</p>
             <p className="text-xl font-semibold text-red-500 font-sans">$456,800</p>
           </div>
         </div>
-        <h6 className="text-xs font-medium text-[var(--admin-text)] mb-2">Productos mas abandonados:</h6>
+        <h6 className="text-xs font-medium text-[var(--text)] mb-2">Productos mas abandonados:</h6>
         <div className="space-y-2 mb-4">
           {abandonedProducts.map((p) => (
-            <div key={p.product} className="flex items-center justify-between p-2.5 bg-[var(--admin-surface2)] rounded-lg text-xs">
-              <span className="text-[var(--admin-text)]">{p.product} ({fmt(p.price)})</span>
-              <span className="text-[var(--admin-text-secondary)]">
-                {p.abandons} abandonos{p.reason && <span className="text-[var(--admin-muted)] ml-1">- {p.reason}</span>}
+            <div key={p.product} className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg text-xs">
+              <span className="text-[var(--text)]">{p.product} ({fmt(p.price)})</span>
+              <span className="text-[var(--text-secondary)]">
+                {p.abandons} abandonos{p.reason && <span className="text-[var(--text-muted)] ml-1">- {p.reason}</span>}
               </span>
             </div>
           ))}
         </div>
-        <h6 className="text-xs font-medium text-[var(--admin-text)] mb-2">Punto de abandono:</h6>
+        <h6 className="text-xs font-medium text-[var(--text)] mb-2">Punto de abandono:</h6>
         <div className="space-y-2">
           {abandonReasons.map((r) => (
             <div key={r.reason}>
               <div className="flex items-center justify-between text-xs mb-0.5">
-                <span className="text-[var(--admin-text-secondary)]">{r.reason}</span>
-                <span className="font-medium text-[var(--admin-text)]">{r.pct}%</span>
+                <span className="text-[var(--text-secondary)]">{r.reason}</span>
+                <span className="font-medium text-[var(--text)]">{r.pct}%</span>
               </div>
-              <div className="w-full bg-[var(--admin-surface2)] rounded-full h-2">
-                <div className="bg-[var(--admin-accent)] h-2 rounded-full" style={{ width: r.pct + '%' }} />
+              <div className="w-full bg-[var(--surface2)] rounded-full h-2">
+                <div className="bg-[var(--accent)] h-2 rounded-full" style={{ width: r.pct + '%' }} />
               </div>
             </div>
           ))}
@@ -544,10 +544,10 @@ function VentasTab() {
         <STitle>Dispositivos y plataformas</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {deviceData.map((d) => (
-            <div key={d.device} className="p-4 bg-[var(--admin-surface2)] rounded-xl text-center">
-              <d.icon size={24} className="mx-auto text-[var(--admin-text-secondary)] mb-2" />
-              <p className="text-sm font-semibold text-[var(--admin-text)]">{d.device}</p>
-              <div className="mt-2 space-y-1 text-xs text-[var(--admin-text-secondary)]">
+            <div key={d.device} className="p-4 bg-[var(--surface2)] rounded-xl text-center">
+              <d.icon size={24} className="mx-auto text-[var(--text-secondary)] mb-2" />
+              <p className="text-sm font-semibold text-[var(--text)]">{d.device}</p>
+              <div className="mt-2 space-y-1 text-xs text-[var(--text-secondary)]">
                 <p>{d.traffic}% trafico</p>
                 <p>{d.sales}% ventas</p>
                 <p className={'font-medium ' + (d.conv >= 3 ? 'text-green-600' : 'text-amber-600')}>{d.conv}% conversion</p>
@@ -568,18 +568,18 @@ function ClientesTab() {
       {/* Acquisition */}
       <Card className="p-5">
         <STitle>Adquisicion de clientes</STitle>
-        <div className="flex items-center gap-4 mb-3 text-xs text-[var(--admin-text-secondary)]">
-          <span>Total nuevos (periodo): <span className="font-semibold text-[var(--admin-text)]">18</span></span>
+        <div className="flex items-center gap-4 mb-3 text-xs text-[var(--text-secondary)]">
+          <span>Total nuevos (periodo): <span className="font-semibold text-[var(--text)]">18</span></span>
           <span>Costo de adquisicion est.: <span className="font-semibold text-green-600">$0</span> (organico)</span>
         </div>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={newCustomersWeekly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
-              <XAxis dataKey="week" tick={{ fontSize: 8, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} interval={3} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="week" tick={{ fontSize: 8, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} interval={3} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
               <RTooltip contentStyle={chartStyle} />
-              <Bar dataKey="count" name="Nuevos clientes" fill="var(--admin-accent)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="count" name="Nuevos clientes" fill="var(--accent)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -591,7 +591,7 @@ function ClientesTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
                 <th className="py-2 pr-4">Cohorte</th>
                 {['Mes 0', 'Mes 1', 'Mes 2', 'Mes 3', 'Mes 4', 'Mes 5', 'Mes 6'].map((m) => (
                   <th key={m} className="py-2 text-center px-2">{m}</th>
@@ -600,8 +600,8 @@ function ClientesTab() {
             </thead>
             <tbody>
               {cohortData.map((c) => (
-                <tr key={c.cohort} className="border-t border-[var(--admin-border)]">
-                  <td className="py-2 pr-4 text-xs font-medium text-[var(--admin-text)] whitespace-nowrap">{c.cohort}</td>
+                <tr key={c.cohort} className="border-t border-[var(--border)]">
+                  <td className="py-2 pr-4 text-xs font-medium text-[var(--text)] whitespace-nowrap">{c.cohort}</td>
                   {c.months.map((v, i) => (
                     <td key={i} className="py-2 px-2 text-center">
                       {v !== null ? (
@@ -615,7 +615,7 @@ function ClientesTab() {
                           {v}%
                         </span>
                       ) : (
-                        <span className="text-[var(--admin-muted)]">&mdash;</span>
+                        <span className="text-[var(--text-muted)]">&mdash;</span>
                       )}
                     </td>
                   ))}
@@ -632,18 +632,18 @@ function ClientesTab() {
         <STitle>Analisis RFM (Recencia, Frecuencia, Monetizacion)</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
           {rfmSegments.map((s) => (
-            <div key={s.segment} className="p-3 rounded-xl border border-[var(--admin-border)]">
+            <div key={s.segment} className="p-3 rounded-xl border border-[var(--border)]">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-                <span className="text-xs font-medium text-[var(--admin-text)]">{s.segment}</span>
-                <span className="text-[10px] text-[var(--admin-muted)]">({s.desc})</span>
+                <span className="text-xs font-medium text-[var(--text)]">{s.segment}</span>
+                <span className="text-[10px] text-[var(--text-muted)]">({s.desc})</span>
               </div>
-              <div className="text-[10px] text-[var(--admin-text-secondary)] space-y-0.5">
+              <div className="text-[10px] text-[var(--text-secondary)] space-y-0.5">
                 <p>{s.clients} clientes ({s.pct}%)</p>
                 <p>{fmt(s.revenue)} ({s.revPct}% ingresos)</p>
               </div>
-              <div className="mt-2 p-2 bg-[var(--admin-surface2)] rounded text-[10px] text-[var(--admin-text-secondary)]">
-                <span className="font-medium text-[var(--admin-text)]">Accion:</span> {s.action}
+              <div className="mt-2 p-2 bg-[var(--surface2)] rounded text-[10px] text-[var(--text-secondary)]">
+                <span className="font-medium text-[var(--text)]">Accion:</span> {s.action}
               </div>
             </div>
           ))}
@@ -676,13 +676,13 @@ function ClientesTab() {
         <STitle>Distribucion geografica de clientes</STitle>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {geoData.map((g) => (
-            <div key={g.city} className="p-3 bg-[var(--admin-surface2)] rounded-lg">
+            <div key={g.city} className="p-3 bg-[var(--surface2)] rounded-lg">
               <div className="flex items-center gap-1.5 mb-1">
-                <MapPin size={12} className="text-[var(--admin-accent)]" />
-                <span className="text-xs font-medium text-[var(--admin-text)]">{g.city}</span>
+                <MapPin size={12} className="text-[var(--accent)]" />
+                <span className="text-xs font-medium text-[var(--text)]">{g.city}</span>
               </div>
-              <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">{g.clients}</p>
-              <p className="text-[10px] text-[var(--admin-muted)]">{g.pct}% del total</p>
+              <p className="text-lg font-semibold text-[var(--text)] font-sans">{g.clients}</p>
+              <p className="text-[10px] text-[var(--text-muted)]">{g.pct}% del total</p>
             </div>
           ))}
         </div>
@@ -693,7 +693,7 @@ function ClientesTab() {
 
 // ===== TAB 4: PRODUCTOS =====
 function ProductosTab() {
-  const catColors: Record<string, string> = { star: '#22c55e', cow: 'var(--admin-accent)', question: '#3b82f6', dog: '#ef4444' };
+  const catColors: Record<string, string> = { star: '#22c55e', cow: 'var(--accent)', question: '#3b82f6', dog: '#ef4444' };
   const catLabels: Record<string, string> = { star: 'Estrella', cow: 'Vaca', question: 'Interrogante', dog: 'Perro' };
 
   return (
@@ -704,25 +704,25 @@ function ProductosTab() {
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis
                 type="number"
                 dataKey="share"
                 name="Participacion %"
-                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
-                label={{ value: 'Participacion %', position: 'bottom', fontSize: 10, fill: 'var(--admin-muted)' }}
+                tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+                label={{ value: 'Participacion %', position: 'bottom', fontSize: 10, fill: 'var(--text-muted)' }}
               />
               <YAxis
                 type="number"
                 dataKey="growth"
                 name="Crecimiento %"
-                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
-                label={{ value: 'Crecimiento %', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'var(--admin-muted)' }}
+                tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+                label={{ value: 'Crecimiento %', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'var(--text-muted)' }}
               />
               <ZAxis type="number" dataKey="revenue" range={[100, 600]} />
               <RTooltip contentStyle={chartStyle} />
-              <ReferenceLine y={10} stroke="var(--admin-muted)" strokeDasharray="3 3" />
-              <ReferenceLine x={10} stroke="var(--admin-muted)" strokeDasharray="3 3" />
+              <ReferenceLine y={10} stroke="var(--text-muted)" strokeDasharray="3 3" />
+              <ReferenceLine x={10} stroke="var(--text-muted)" strokeDasharray="3 3" />
               <Scatter data={bcgProducts}>
                 {bcgProducts.map((p, i) => (
                   <Cell key={i} fill={catColors[p.category]} />
@@ -733,12 +733,12 @@ function ProductosTab() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
           {(['star', 'cow', 'question', 'dog'] as const).map((cat) => (
-            <div key={cat} className="p-3 rounded-lg border border-[var(--admin-border)]">
+            <div key={cat} className="p-3 rounded-lg border border-[var(--border)]">
               <p className="text-xs font-medium mb-1" style={{ color: catColors[cat] }}>{catLabels[cat]}</p>
               <div className="space-y-1">
                 {bcgProducts.filter((p) => p.category === cat).map((p) => (
-                  <p key={p.name} className="text-[10px] text-[var(--admin-text-secondary)]">
-                    {p.name} <span className="text-[var(--admin-muted)]">({p.growth > 0 ? '+' : ''}{p.growth}%, {p.share}%)</span>
+                  <p key={p.name} className="text-[10px] text-[var(--text-secondary)]">
+                    {p.name} <span className="text-[var(--text-muted)]">({p.growth > 0 ? '+' : ''}{p.growth}%, {p.share}%)</span>
                   </p>
                 ))}
               </div>
@@ -753,19 +753,19 @@ function ProductosTab() {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis
                 type="number"
                 dataKey="price"
-                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
-                label={{ value: 'Precio (MXN)', position: 'bottom', fontSize: 10, fill: 'var(--admin-muted)' }}
+                tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+                label={{ value: 'Precio (MXN)', position: 'bottom', fontSize: 10, fill: 'var(--text-muted)' }}
                 tickFormatter={(v) => fmt(v)}
               />
               <YAxis
                 type="number"
                 dataKey="units"
-                tick={{ fontSize: 10, fill: 'var(--admin-muted)' }}
-                label={{ value: 'Unidades vendidas', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'var(--admin-muted)' }}
+                tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+                label={{ value: 'Unidades vendidas', angle: -90, position: 'insideLeft', fontSize: 10, fill: 'var(--text-muted)' }}
               />
               <ZAxis type="number" dataKey="margin" range={[80, 300]} />
               <RTooltip
@@ -774,7 +774,7 @@ function ProductosTab() {
                   if (active && payload && payload.length) {
                     const d = payload[0].payload;
                     return (
-                      <div className="bg-[var(--admin-text)] text-[var(--admin-surface2)] p-2 rounded-lg text-[10px]">
+                      <div className="bg-[var(--text)] text-[var(--surface2)] p-2 rounded-lg text-[10px]">
                         <p className="font-medium">{d.name}</p>
                         <p>Precio: {fmt(d.price)}</p>
                         <p>Uds: {d.units}</p>
@@ -785,7 +785,7 @@ function ProductosTab() {
                   return null;
                 }}
               />
-              <Scatter data={priceVsDemand} fill="var(--admin-accent)" />
+              <Scatter data={priceVsDemand} fill="var(--accent)" />
             </ScatterChart>
           </ResponsiveContainer>
         </div>
@@ -795,13 +795,13 @@ function ProductosTab() {
       {/* Cross-sell */}
       <Card className="p-5">
         <STitle>Cross-sell / Afinidad de productos</STitle>
-        <p className="text-xs text-[var(--admin-text-secondary)] mb-3">"Los que compraron X tambien compraron Y"</p>
+        <p className="text-xs text-[var(--text-secondary)] mb-3">"Los que compraron X tambien compraron Y"</p>
         <div className="space-y-3">
           {crossSellData.map((c) => (
-            <div key={c.product} className="flex items-center gap-3 p-3 bg-[var(--admin-surface2)] rounded-lg text-xs">
-              <span className="font-medium text-[var(--admin-text)]">{c.product}</span>
-              <ChevronRight size={14} className="text-[var(--admin-muted)]" />
-              <span className="text-[var(--admin-text)]">{c.pct}% tambien compro <span className="font-medium">{c.related}</span></span>
+            <div key={c.product} className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-lg text-xs">
+              <span className="font-medium text-[var(--text)]">{c.product}</span>
+              <ChevronRight size={14} className="text-[var(--text-muted)]" />
+              <span className="text-[var(--text)]">{c.pct}% tambien compro <span className="font-medium">{c.related}</span></span>
             </div>
           ))}
         </div>
@@ -810,13 +810,13 @@ function ProductosTab() {
 
       {/* Sell-through */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
+        <div className="px-5 py-3 border-b border-[var(--border)]">
           <STitle>Velocidad de venta (sell-through rate)</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                 <th className="px-5 py-2">Producto</th>
                 <th className="px-5 py-2 text-right">Stock inicio</th>
                 <th className="px-5 py-2 text-right">Vendidos</th>
@@ -826,16 +826,16 @@ function ProductosTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {sellThroughData.map((p) => (
-                <tr key={p.product} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{p.product}</td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{p.stockStart}</td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{p.sold}</td>
+                <tr key={p.product} className="hover:bg-[var(--surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--text)]">{p.product}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{p.stockStart}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{p.sold}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={'px-1.5 py-0.5 rounded-full ' + (p.level === 'green' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500')}>
                       {p.sellThrough}%
                     </span>
                   </td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">
+                  <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">
                     {p.daysToEmpty >= 999 ? '(no se vende)' : '~' + p.daysToEmpty + ' dias'}
                   </td>
                 </tr>
@@ -857,11 +857,11 @@ function OperacionesTab() {
         <STitle>SLA de Tiempos</STitle>
         <div className="space-y-3">
           {slaData.map((s) => (
-            <div key={s.name} className="flex items-center justify-between p-3 bg-[var(--admin-surface2)] rounded-lg">
-              <span className="text-xs text-[var(--admin-text)]">{s.name}</span>
+            <div key={s.name} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-lg">
+              <span className="text-xs text-[var(--text)]">{s.name}</span>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-medium text-[var(--admin-text)]">{s.actual}</span>
-                <span className="text-[10px] text-[var(--admin-muted)]">Meta: {s.target}</span>
+                <span className="text-xs font-mono font-medium text-[var(--text)]">{s.actual}</span>
+                <span className="text-[10px] text-[var(--text-muted)]">Meta: {s.target}</span>
                 {s.met ? (
                   <CheckCircle size={14} className="text-green-500" />
                 ) : (
@@ -879,30 +879,30 @@ function OperacionesTab() {
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={deliveryDistribution}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" vertical={false} />
-              <XAxis dataKey="range" tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--admin-muted)' }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="range" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
               <RTooltip contentStyle={chartStyle} />
-              <Bar dataKey="count" name="Envios" fill="var(--admin-accent)" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="count" name="Envios" fill="var(--accent)" radius={[4, 4, 0, 0]}>
                 {deliveryDistribution.map((_, i) => (
-                  <Cell key={i} fill={i <= 1 ? '#22c55e' : i === 2 ? 'var(--admin-accent)' : i === 3 ? '#f59e0b' : '#ef4444'} />
+                  <Cell key={i} fill={i <= 1 ? '#22c55e' : i === 2 ? 'var(--accent)' : i === 3 ? '#f59e0b' : '#ef4444'} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <p className="text-xs text-[var(--admin-text-secondary)] mt-2">68% en &lt;5 dias | 22% en 5-7 dias | 10% en &gt;7 dias</p>
+        <p className="text-xs text-[var(--text-secondary)] mt-2">68% en &lt;5 dias | 22% en 5-7 dias | 10% en &gt;7 dias</p>
       </Card>
 
       {/* Carrier performance */}
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-[var(--admin-border)]">
+        <div className="px-5 py-3 border-b border-[var(--border)]">
           <STitle>Rendimiento por carrier</STitle>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                 <th className="px-5 py-2">Carrier</th>
                 <th className="px-5 py-2 text-right">Envios</th>
                 <th className="px-5 py-2 text-right">Prom. entrega</th>
@@ -914,24 +914,24 @@ function OperacionesTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {carrierPerformance.map((c) => (
-                <tr key={c.carrier} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
-                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--admin-text)]">{c.carrier}</td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{c.shipments}</td>
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] text-right">{c.avgDelivery}</td>
+                <tr key={c.carrier} className="hover:bg-[var(--surface2)]/50 transition-colors">
+                  <td className="px-5 py-2.5 text-xs font-medium text-[var(--text)]">{c.carrier}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{c.shipments}</td>
+                  <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{c.avgDelivery}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className={'px-1.5 py-0.5 rounded-full ' + (c.onTime >= 90 ? 'bg-green-50 text-green-600' : c.onTime >= 80 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500')}>
                       {c.onTime}%
                     </span>
                   </td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className={c.problemPct > 10 ? 'text-red-500' : 'text-[var(--admin-text-secondary)]'}>
+                    <span className={c.problemPct > 10 ? 'text-red-500' : 'text-[var(--text-secondary)]'}>
                       {c.problems} ({c.problemPct}%)
                     </span>
                   </td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--admin-text-secondary)] text-right">{fmt(c.costAvg)}</td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--text-secondary)] text-right">{fmt(c.costAvg)}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
                     <span className="flex items-center justify-end gap-0.5">
-                      <Star size={10} className="text-[var(--admin-accent)] fill-accent-gold" />{c.rating}
+                      <Star size={10} className="text-[var(--accent)] fill-accent-gold" />{c.rating}
                     </span>
                   </td>
                 </tr>
@@ -949,11 +949,11 @@ function OperacionesTab() {
         <STitle>Tasa de problemas</STitle>
         <div className="space-y-2">
           {problemRates.map((p) => (
-            <div key={p.name} className="flex items-center justify-between p-3 bg-[var(--admin-surface2)] rounded-lg text-xs">
-              <span className="text-[var(--admin-text)]">{p.name}</span>
+            <div key={p.name} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-lg text-xs">
+              <span className="text-[var(--text)]">{p.name}</span>
               <div className="flex items-center gap-3">
-                <span className="font-mono font-medium text-[var(--admin-text)]">{p.actual}</span>
-                <span className="text-[10px] text-[var(--admin-muted)]">Meta: {p.target}</span>
+                <span className="font-mono font-medium text-[var(--text)]">{p.actual}</span>
+                <span className="text-[10px] text-[var(--text-muted)]">Meta: {p.target}</span>
                 {p.met ? (
                   <CheckCircle size={14} className="text-green-500" />
                 ) : (
@@ -970,28 +970,28 @@ function OperacionesTab() {
         <STitle>Capacidad del taller</STitle>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <div>
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase">En produccion</p>
-            <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">8 pedidos</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase">En produccion</p>
+            <p className="text-lg font-semibold text-[var(--text)] font-sans">8 pedidos</p>
           </div>
           <div>
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Cotizaciones en prod.</p>
-            <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">1 (5 piezas)</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase">Cotizaciones en prod.</p>
+            <p className="text-lg font-semibold text-[var(--text)] font-sans">1 (5 piezas)</p>
           </div>
           <div>
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Capacidad estimada</p>
-            <p className="text-lg font-semibold text-[var(--admin-text)] font-sans">12 simultaneos</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase">Capacidad estimada</p>
+            <p className="text-lg font-semibold text-[var(--text)] font-sans">12 simultaneos</p>
           </div>
           <div>
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase">Utilizacion</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase">Utilizacion</p>
             <p className="text-lg font-semibold text-green-600 font-sans">67%</p>
           </div>
         </div>
-        <div className="w-full bg-[var(--admin-surface2)] rounded-full h-4 mb-3">
+        <div className="w-full bg-[var(--surface2)] rounded-full h-4 mb-3">
           <div className="bg-green-500 h-4 rounded-full flex items-center justify-center" style={{ width: '67%' }}>
             <span className="text-[10px] text-white font-medium">67%</span>
           </div>
         </div>
-        <p className="text-xs text-[var(--admin-text-secondary)] mb-2">
+        <p className="text-xs text-[var(--text-secondary)] mb-2">
           Cuello de botella: <span className="font-medium">Grabado laser</span> (1 maquina, 45 grabados este mes)
         </p>
         <Insight text="Si las ventas siguen creciendo +18%, necesitaras un 3er artesano o ampliar las horas del taller en ~3 meses." type="warning" />
@@ -1012,13 +1012,13 @@ function CustomTab() {
             <button
               key={d.id}
               onClick={() => toast.success('Abriendo "' + d.name + '"...')}
-              className="p-4 bg-[var(--admin-surface2)] rounded-xl text-left hover:bg-[var(--admin-surface2)] transition-colors border border-transparent hover:border-[var(--admin-accent)]/30"
+              className="p-4 bg-[var(--surface2)] rounded-xl text-left hover:bg-[var(--surface2)] transition-colors border border-transparent hover:border-[var(--accent)]/30"
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-medium bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] px-1.5 py-0.5 rounded">{d.icon}</span>
-                <span className="text-xs font-medium text-[var(--admin-text)]">{d.name}</span>
+                <span className="text-xs font-medium bg-[var(--accent)]/10 text-[var(--accent)] px-1.5 py-0.5 rounded">{d.icon}</span>
+                <span className="text-xs font-medium text-[var(--text)]">{d.name}</span>
               </div>
-              <p className="text-[10px] text-[var(--admin-muted)]">{d.widgets} widgets</p>
+              <p className="text-[10px] text-[var(--text-muted)]">{d.widgets} widgets</p>
             </button>
           ))}
         </div>
@@ -1028,23 +1028,23 @@ function CustomTab() {
       <Card className="p-5">
         <STitle>Crear / Editar Dashboard</STitle>
         <div className="mb-4">
-          <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Nombre del dashboard</label>
+          <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Nombre del dashboard</label>
           <input
             type="text"
             defaultValue="Mi Resumen Diario"
-            className="w-full max-w-md border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]"
+            className="w-full max-w-md border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]"
           />
         </div>
 
-        <h6 className="text-xs font-medium text-[var(--admin-text)] mb-3">Widgets disponibles (arrastrar al canvas)</h6>
+        <h6 className="text-xs font-medium text-[var(--text)] mb-3">Widgets disponibles (arrastrar al canvas)</h6>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           {widgetCategories.map((cat) => (
-            <div key={cat.category} className="p-3 bg-[var(--admin-surface2)] rounded-xl">
-              <p className="text-xs font-medium text-[var(--admin-text)] mb-2">{cat.category}</p>
+            <div key={cat.category} className="p-3 bg-[var(--surface2)] rounded-xl">
+              <p className="text-xs font-medium text-[var(--text)] mb-2">{cat.category}</p>
               <div className="space-y-1.5">
                 {cat.items.map((item) => (
-                  <div key={item} className="flex items-center gap-2 p-2 bg-[var(--admin-surface)] rounded-lg border border-[var(--admin-border)] text-[10px] text-[var(--admin-text-secondary)] hover:border-[var(--admin-accent)]/40 transition-colors">
-                    <GripVertical size={10} className="text-[var(--admin-muted)]" />
+                  <div key={item} className="flex items-center gap-2 p-2 bg-[var(--surface)] rounded-lg border border-[var(--border)] text-[10px] text-[var(--text-secondary)] hover:border-[var(--accent)]/40 transition-colors">
+                    <GripVertical size={10} className="text-[var(--text-muted)]" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -1054,40 +1054,40 @@ function CustomTab() {
         </div>
 
         {/* Placeholder canvas */}
-        <div className="border-2 border-dashed border-[var(--admin-border)] rounded-xl p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
+        <div className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl mb-4">
             {[
               { title: 'Ingresos Hoy', value: '$5,200', type: 'KPI' },
               { title: 'Pedidos Pendientes', value: '8', type: 'KPI' },
               { title: 'Stock Bajo', value: '3 productos', type: 'Alerta' },
             ].map((w, i) => (
-              <div key={i} className="bg-[var(--admin-surface)] p-3 rounded-lg border border-[var(--admin-border)] shadow-sm text-left">
+              <div key={i} className="bg-[var(--surface)] p-3 rounded-lg border border-[var(--border)] shadow-sm text-left">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] text-[var(--admin-muted)] uppercase">{w.type}</span>
-                  <GripVertical size={10} className="text-[var(--admin-muted)]" />
+                  <span className="text-[9px] text-[var(--text-muted)] uppercase">{w.type}</span>
+                  <GripVertical size={10} className="text-[var(--text-muted)]" />
                 </div>
-                <p className="text-sm font-semibold text-[var(--admin-text)]">{w.value}</p>
-                <p className="text-[10px] text-[var(--admin-text-secondary)]">{w.title}</p>
+                <p className="text-sm font-semibold text-[var(--text)]">{w.value}</p>
+                <p className="text-[10px] text-[var(--text-secondary)]">{w.title}</p>
               </div>
             ))}
           </div>
-          <p className="text-xs text-[var(--admin-muted)]">Arrastra widgets aqui para construir tu dashboard</p>
-          <p className="text-[10px] text-[var(--admin-muted)] mt-1">Los widgets son configurables: metrica, periodo, comparativa, tamano</p>
+          <p className="text-xs text-[var(--text-muted)]">Arrastra widgets aqui para construir tu dashboard</p>
+          <p className="text-[10px] text-[var(--text-muted)] mt-1">Los widgets son configurables: metrica, periodo, comparativa, tamano</p>
         </div>
 
         <div className="flex items-center justify-end gap-2 mt-4">
-          <button className="px-4 py-2 text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)] rounded-lg transition-colors">
+          <button className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] rounded-lg transition-colors">
             Cancelar
           </button>
           <button
             onClick={() => toast.success('Dashboard guardado')}
-            className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors"
+            className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors"
           >
             Guardar dashboard
           </button>
           <button
             onClick={() => toast.success('Establecido como inicio')}
-            className="px-4 py-2 text-xs border border-[var(--admin-accent)] text-[var(--admin-accent)] rounded-lg hover:bg-[var(--admin-accent)]/10 transition-colors"
+            className="px-4 py-2 text-xs border border-[var(--accent)] text-[var(--accent)] rounded-lg hover:bg-[var(--accent)]/10 transition-colors"
           >
             Establecer como mi inicio
           </button>
@@ -1125,19 +1125,19 @@ export const ReportsAnalyticsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
-          <BarChart3 size={20} className="text-[var(--admin-accent)]" /> Reportes y Analytics
+        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
+          <BarChart3 size={20} className="text-[var(--accent)]" /> Reportes y Analytics
         </h3>
         <div className="flex items-center gap-2">
           <button
             onClick={() => toast.success('Creando nuevo dashboard...')}
-            className="px-3 py-1.5 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
           >
             <Plus size={12} /> Nuevo Dashboard
           </button>
           <button
             onClick={() => toast.success('Exportando...')}
-            className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"
           >
             <Download size={12} /> Exportar
           </button>
@@ -1146,7 +1146,7 @@ export const ReportsAnalyticsPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="overflow-x-auto -mx-1 px-1">
-        <div className="flex gap-1 min-w-max border-b border-[var(--admin-border)]">
+        <div className="flex gap-1 min-w-max border-b border-[var(--border)]">
           {tabItems.map((t) => (
             <button
               key={t.id}
@@ -1154,8 +1154,8 @@ export const ReportsAnalyticsPage: React.FC = () => {
               className={
                 'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 whitespace-nowrap ' +
                 (activeTab === t.id
-                  ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium'
-                  : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')
+                  ? 'border-[var(--accent)] text-[var(--accent)] font-medium'
+                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text)]')
               }
             >
               <t.icon size={14} />{t.label}
@@ -1166,22 +1166,22 @@ export const ReportsAnalyticsPage: React.FC = () => {
 
       {/* Period */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
-          <Calendar size={12} className="text-[var(--admin-muted)]" />
+        <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+          <Calendar size={12} className="text-[var(--text-muted)]" />
           <span>Periodo:</span>
           <select
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
-            className="border border-[var(--admin-border)] rounded-lg px-2 py-1 text-xs bg-[var(--admin-surface)]"
+            className="border border-[var(--border)] rounded-lg px-2 py-1 text-xs bg-[var(--surface)]"
           >
             {periods.map((p) => (
               <option key={p}>{p}</option>
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-[var(--admin-text-secondary)]">
+        <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
           <span>Comparar:</span>
-          <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1 text-xs bg-[var(--admin-surface)]">
+          <select className="border border-[var(--border)] rounded-lg px-2 py-1 text-xs bg-[var(--surface)]">
             <option>Mes anterior</option>
             <option>Mismo periodo ano anterior</option>
             <option>Sin comparar</option>

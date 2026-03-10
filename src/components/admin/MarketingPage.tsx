@@ -24,10 +24,10 @@ import { logger } from '@/src/lib/logger';
 
 // Shared UI components for live tabs
 const Card: React.FC<{ className?: string; children: React.ReactNode }> = ({ className = '', children }) => (
-  <div className={`bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ${className}`}>{children}</div>
+  <div className={`bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ${className}`}>{children}</div>
 );
 const Badge: React.FC<{ text: string; variant?: string }> = ({ text, variant = 'gray' }) => {
-  const colors: Record<string, string> = { green: 'bg-green-50 text-green-700', amber: 'bg-amber-50 text-amber-700', blue: 'bg-blue-50 text-blue-700', gray: 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]', red: 'bg-red-50 text-red-700' };
+  const colors: Record<string, string> = { green: 'bg-green-50 text-green-700', amber: 'bg-amber-50 text-amber-700', blue: 'bg-blue-50 text-blue-700', gray: 'bg-[var(--surface2)] text-[var(--text-secondary)]', red: 'bg-red-50 text-red-700' };
   return <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${colors[variant] || colors.gray}`}>{text}</span>;
 };
 
@@ -35,7 +35,7 @@ const Badge: React.FC<{ text: string; variant?: string }> = ({ text, variant = '
 type TabId = 'cupones' | 'campanas' | 'banners' | 'flash' | 'referidos' | 'analisis';
 
 // ===== CONSTANTS =====
-const COLORS = ['var(--admin-accent)', 'var(--admin-text-secondary)', 'var(--admin-muted)', 'var(--admin-border)', 'var(--admin-text-secondary)'];
+const COLORS = ['var(--accent)', 'var(--text-secondary)', 'var(--text-muted)', 'var(--border)', 'var(--text-secondary)'];
 
 const tabItems: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'cupones', label: 'Cupones y Descuentos', icon: Tag },
@@ -102,15 +102,15 @@ function getTimeUntil(startDate: string): string {
 
 // ===== KPI CARD =====
 const KpiCard: React.FC<{ icon: React.ReactNode; value: string; label: string; sub: string; accent?: boolean }> = ({ icon, value, label, sub, accent }) => (
-  <div className={`bg-[var(--admin-surface)] rounded-xl border shadow-sm p-4 ${accent ? 'border-[var(--admin-accent)]/30' : 'border-[var(--admin-border)]'}`}>
+  <div className={`bg-[var(--surface)] rounded-xl border shadow-sm p-4 ${accent ? 'border-[var(--accent)]/30' : 'border-[var(--border)]'}`}>
     <div className="flex items-center gap-2 mb-2">
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-[var(--admin-accent)]/15' : 'bg-[var(--admin-surface2)]'}`}>
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-[var(--accent)]/15' : 'bg-[var(--surface2)]'}`}>
         {icon}
       </div>
     </div>
-    <p className="text-2xl font-sans text-[var(--admin-text)]">{value}</p>
-    <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider mt-0.5">{label}</p>
-    <p className="text-[11px] text-[var(--admin-text-secondary)] mt-1">{sub}</p>
+    <p className="text-2xl font-sans text-[var(--text)]">{value}</p>
+    <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-0.5">{label}</p>
+    <p className="text-[11px] text-[var(--text-secondary)] mt-1">{sub}</p>
   </div>
 );
 
@@ -154,43 +154,43 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-        className="bg-[var(--admin-surface)] rounded-xl shadow-2xl w-full max-w-2xl"
+        className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-2xl"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[var(--admin-border)]">
+        <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
-            <Tag size={18} className="text-[var(--admin-accent)]" />
-            <h3 className="font-serif text-[var(--admin-text)]">{coupon ? 'Editar Cupón' : 'Nuevo Cupón'}</h3>
+            <Tag size={18} className="text-[var(--accent)]" />
+            <h3 className="font-serif text-[var(--text)]">{coupon ? 'Editar Cupón' : 'Nuevo Cupón'}</h3>
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-[var(--admin-surface2)] rounded-lg transition-colors"><X size={16} className="text-[var(--admin-muted)]" /></button>
+          <button onClick={onClose} className="p-1.5 hover:bg-[var(--surface2)] rounded-lg transition-colors"><X size={16} className="text-[var(--text-muted)]" /></button>
         </div>
 
         <div className="p-5 space-y-6 max-h-[70vh] overflow-y-auto">
           {/* Basic Info */}
           <section>
-            <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">Información Básica</h4>
+            <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Información Básica</h4>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[var(--admin-text-secondary)] mb-1 block">Código del cupón *</label>
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Código del cupón *</label>
                 <div className="flex gap-2">
-                  <input value={code} onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''))} placeholder="BIENVENIDO10" className="flex-1 bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)] transition-colors" />
-                  <button onClick={generateCode} className="px-3 py-2 bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1"><RefreshCw size={12} /> Auto</button>
+                  <input value={code} onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''))} placeholder="BIENVENIDO10" className="flex-1 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors" />
+                  <button onClick={generateCode} className="px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-1"><RefreshCw size={12} /> Auto</button>
                 </div>
-                <p className="text-[10px] text-[var(--admin-muted)] mt-1">Solo mayúsculas, números y guiones.</p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-1">Solo mayúsculas, números y guiones.</p>
               </div>
               <div>
-                <label className="text-xs text-[var(--admin-text-secondary)] mb-1 block">Nombre interno</label>
-                <input value={internalName} onChange={e => setInternalName(e.target.value)} placeholder="Descuento bienvenida nuevos clientes" className="w-full bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)] transition-colors" />
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Nombre interno</label>
+                <input value={internalName} onChange={e => setInternalName(e.target.value)} placeholder="Descuento bienvenida nuevos clientes" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors" />
               </div>
               <div>
-                <label className="text-xs text-[var(--admin-text-secondary)] mb-2 block">Tipo de aplicación</label>
+                <label className="text-xs text-[var(--text-secondary)] mb-2 block">Tipo de aplicación</label>
                 <div className="flex gap-4">
-                  <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                    <input type="radio" checked={!isAutomatic} onChange={() => setIsAutomatic(false)} className="accent-[var(--admin-accent)]" /> Manual (cliente ingresa código)
+                  <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+                    <input type="radio" checked={!isAutomatic} onChange={() => setIsAutomatic(false)} className="accent-[var(--accent)]" /> Manual (cliente ingresa código)
                   </label>
-                  <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                    <input type="radio" checked={isAutomatic} onChange={() => setIsAutomatic(true)} className="accent-[var(--admin-accent)]" /> Automático (sin código)
+                  <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+                    <input type="radio" checked={isAutomatic} onChange={() => setIsAutomatic(true)} className="accent-[var(--accent)]" /> Automático (sin código)
                   </label>
                 </div>
               </div>
@@ -199,33 +199,33 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
 
           {/* Discount Type */}
           <section>
-            <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">Tipo de Descuento</h4>
+            <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Tipo de Descuento</h4>
             <div className="grid grid-cols-2 gap-2 mb-3">
               {(['percentage', 'fixed', 'free_shipping', 'buyget'] as CouponType[]).map(t => (
-                <button key={t} onClick={() => setDiscountType(t)} className={`px-3 py-2 rounded-lg text-xs border transition-colors ${discountType === t ? 'border-[var(--admin-accent)] bg-[var(--admin-accent)]/10 text-[var(--admin-accent)]' : 'border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:border-wood-300'}`}>
+                <button key={t} onClick={() => setDiscountType(t)} className={`px-3 py-2 rounded-lg text-xs border transition-colors ${discountType === t ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]' : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-wood-300'}`}>
                   {couponTypeLabels[t]}
                 </button>
               ))}
             </div>
             {(discountType === 'percentage' || discountType === 'fixed') && (
               <div className="flex items-center gap-2">
-                <label className="text-xs text-[var(--admin-text-secondary)]">Valor:</label>
-                <input value={value} onChange={e => setValue(e.target.value)} className="w-20 bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]" />
-                <span className="text-xs text-[var(--admin-text-secondary)]">{discountType === 'percentage' ? '%' : 'MXN'}</span>
+                <label className="text-xs text-[var(--text-secondary)]">Valor:</label>
+                <input value={value} onChange={e => setValue(e.target.value)} className="w-20 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <span className="text-xs text-[var(--text-secondary)]">{discountType === 'percentage' ? '%' : 'MXN'}</span>
               </div>
             )}
             {discountType === 'percentage' && (
               <div className="flex items-center gap-2 mt-2">
-                <label className="text-xs text-[var(--admin-text-secondary)]">Máximo descuento:</label>
-                <input value={maxDiscount} onChange={e => setMaxDiscount(e.target.value)} placeholder="Sin límite" className="w-28 bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]" />
-                <span className="text-xs text-[var(--admin-text-secondary)]">MXN</span>
+                <label className="text-xs text-[var(--text-secondary)]">Máximo descuento:</label>
+                <input value={maxDiscount} onChange={e => setMaxDiscount(e.target.value)} placeholder="Sin límite" className="w-28 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <span className="text-xs text-[var(--text-secondary)]">MXN</span>
               </div>
             )}
           </section>
 
           {/* Target */}
           <section>
-            <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">¿Dónde se aplica?</h4>
+            <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">¿Dónde se aplica?</h4>
             <div className="space-y-2">
               {([
                 { v: 'order' as CouponTarget, l: 'Todo el pedido' },
@@ -234,8 +234,8 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
                 { v: 'collections' as CouponTarget, l: 'Colecciones específicas' },
                 { v: 'shipping' as CouponTarget, l: 'Solo envío' },
               ]).map(t => (
-                <label key={t.v} className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                  <input type="radio" checked={target === t.v} onChange={() => setTarget(t.v)} className="accent-[var(--admin-accent)]" /> {t.l}
+                <label key={t.v} className="flex items-center gap-2 text-xs text-[var(--text)]">
+                  <input type="radio" checked={target === t.v} onChange={() => setTarget(t.v)} className="accent-[var(--accent)]" /> {t.l}
                 </label>
               ))}
             </div>
@@ -243,65 +243,65 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
 
           {/* Conditions */}
           <section>
-            <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">Condiciones</h4>
+            <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Condiciones</h4>
             <div className="flex items-center gap-2">
-              <label className="text-xs text-[var(--admin-text-secondary)]">Compra mínima:</label>
-              <input value={minPurchase} onChange={e => setMinPurchase(e.target.value)} placeholder="Sin mínimo" className="w-28 bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]" />
-              <span className="text-xs text-[var(--admin-text-secondary)]">MXN</span>
+              <label className="text-xs text-[var(--text-secondary)]">Compra mínima:</label>
+              <input value={minPurchase} onChange={e => setMinPurchase(e.target.value)} placeholder="Sin mínimo" className="w-28 bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+              <span className="text-xs text-[var(--text-secondary)]">MXN</span>
             </div>
           </section>
 
           {/* Usage Limits */}
           <section>
-            <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">Límites de Uso</h4>
+            <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Límites de Uso</h4>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-[var(--admin-text-secondary)] mb-1 block">Usos totales máximos</label>
-                <input value={usesLimit} onChange={e => setUsesLimit(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]" />
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Usos totales máximos</label>
+                <input value={usesLimit} onChange={e => setUsesLimit(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               </div>
               <div>
-                <label className="text-xs text-[var(--admin-text-secondary)] mb-1 block">Usos por cliente</label>
-                <input value={usesPerCustomer} onChange={e => setUsesPerCustomer(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]" />
+                <label className="text-xs text-[var(--text-secondary)] mb-1 block">Usos por cliente</label>
+                <input value={usesPerCustomer} onChange={e => setUsesPerCustomer(e.target.value)} placeholder="Sin límite" className="w-full bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               </div>
             </div>
           </section>
 
           {/* Vigencia */}
           <section>
-            <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">Vigencia</h4>
+            <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Vigencia</h4>
             <div className="flex gap-4 mb-3">
-              <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                <input type="radio" checked={vigencia === 'permanent'} onChange={() => setVigencia('permanent')} className="accent-[var(--admin-accent)]" /> Permanente
+              <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+                <input type="radio" checked={vigencia === 'permanent'} onChange={() => setVigencia('permanent')} className="accent-[var(--accent)]" /> Permanente
               </label>
-              <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-                <input type="radio" checked={vigencia === 'range'} onChange={() => setVigencia('range')} className="accent-[var(--admin-accent)]" /> Rango de fechas
+              <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+                <input type="radio" checked={vigencia === 'range'} onChange={() => setVigencia('range')} className="accent-[var(--accent)]" /> Rango de fechas
               </label>
             </div>
             {vigencia === 'range' && (
               <div className="flex items-center gap-2">
-                <input type="date" className="bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]" />
-                <span className="text-xs text-[var(--admin-muted)]">hasta</span>
-                <input type="date" className="bg-[var(--admin-surface2)] border border-[var(--admin-border)] rounded-lg px-3 py-2 text-sm text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]" />
+                <input type="date" className="bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
+                <span className="text-xs text-[var(--text-muted)]">hasta</span>
+                <input type="date" className="bg-[var(--surface2)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               </div>
             )}
           </section>
 
           {/* Preview */}
           <section>
-            <h4 className="text-[11px] text-[var(--admin-muted)] uppercase tracking-wider mb-3">Preview en checkout</h4>
-            <div className="bg-[var(--admin-surface2)] rounded-lg border border-[var(--admin-border)] p-4 text-xs text-[var(--admin-text)]">
+            <h4 className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider mb-3">Preview en checkout</h4>
+            <div className="bg-[var(--surface2)] rounded-lg border border-[var(--border)] p-4 text-xs text-[var(--text)]">
               <div className="flex items-center gap-2 mb-2">
-                <Tag size={12} className="text-[var(--admin-accent)]" />
+                <Tag size={12} className="text-[var(--accent)]" />
                 <span className="font-medium">Código aplicado: {code || 'CODIGO'}</span>
               </div>
-              <p className="text-[var(--admin-text-secondary)]">
+              <p className="text-[var(--text-secondary)]">
                 Descuento: -{discountType === 'percentage' ? `${value || 0}%` : discountType === 'fixed' ? fmt(Number(value) || 0) : 'Envío gratis'}
               </p>
-              <div className="border-t border-[var(--admin-border)] mt-2 pt-2 space-y-1">
+              <div className="border-t border-[var(--border)] mt-2 pt-2 space-y-1">
                 <div className="flex justify-between"><span>Subtotal:</span><span>$850.00</span></div>
                 <div className="flex justify-between text-green-600"><span>Descuento:</span><span>-{discountType === 'percentage' ? fmt(850 * (Number(value) || 0) / 100) : discountType === 'fixed' ? fmt(Number(value) || 0) : '$0'}</span></div>
-                <div className="flex justify-between"><span>Envío:</span><span>{discountType === 'free_shipping' ? <span className="line-through text-[var(--admin-muted)]">$285.00</span> : '$285.00'}</span></div>
-                <div className="flex justify-between font-medium border-t border-[var(--admin-border)] pt-1 mt-1"><span>Total:</span><span>{fmt(
+                <div className="flex justify-between"><span>Envío:</span><span>{discountType === 'free_shipping' ? <span className="line-through text-[var(--text-muted)]">$285.00</span> : '$285.00'}</span></div>
+                <div className="flex justify-between font-medium border-t border-[var(--border)] pt-1 mt-1"><span>Total:</span><span>{fmt(
                   discountType === 'percentage' ? 850 - (850 * (Number(value) || 0) / 100) + 285 :
                   discountType === 'fixed' ? 850 - (Number(value) || 0) + 285 :
                   discountType === 'free_shipping' ? 850 : 1135
@@ -312,11 +312,11 @@ const CouponFormModal: React.FC<{ coupon?: Coupon | null; onClose: () => void }>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-5 border-t border-[var(--admin-border)] bg-[var(--admin-surface2)]/50 rounded-b-xl">
-          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors">Cancelar</button>
+        <div className="flex items-center justify-between p-5 border-t border-[var(--border)] bg-[var(--surface2)]/50 rounded-b-xl">
+          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors">Cancelar</button>
           <div className="flex gap-2">
-            <button className="px-4 py-2 text-xs border border-[var(--admin-border)] rounded-lg text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface)] transition-colors">Guardar borrador</button>
-            <button onClick={() => { toast.success(coupon ? 'Cupón actualizado' : 'Cupón creado'); onClose(); }} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors">
+            <button className="px-4 py-2 text-xs border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface)] transition-colors">Guardar borrador</button>
+            <button onClick={() => { toast.success(coupon ? 'Cupón actualizado' : 'Cupón creado'); onClose(); }} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors">
               {coupon ? 'Guardar cambios' : 'Crear cupón'}
             </button>
           </div>
@@ -337,19 +337,19 @@ const CampaignsTabLive: React.FC = () => {
   const handleCreate = async () => { const res = await fetch('/api/admin/marketing/campaigns', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Nueva campaña', subject: '' }) }); if (res.ok) { toast.success('Campaña creada'); fetchData(); } };
   const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/campaigns?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Campaña eliminada'); fetchData(); } };
   const handleToggle = async (c: any, status: string) => { await fetch('/api/admin/marketing/campaigns', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, status }) }); toast.success('Estado actualizado'); fetchData(); };
-  if (loading) return <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando campañas...</Card>;
+  if (loading) return <Card className="p-8 text-center text-[var(--text-muted)]">Cargando campañas...</Card>;
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center"><p className="text-sm text-[var(--admin-text-secondary)]">{campaigns.length} campañas</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Campaña</button></div>
-      {campaigns.length === 0 ? <Card className="p-12 text-center"><Mail className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)]">Sin campañas creadas</p></Card> : (
-        <Card className="divide-y divide-[var(--admin-border)]">{campaigns.map(c => (
-          <div key={c.id} className="p-4 flex items-center justify-between hover:bg-[var(--admin-surface2)]/50 transition-colors">
-            <div className="min-w-0 flex-1"><p className="text-sm font-medium text-[var(--admin-text)]">{c.name}</p><p className="text-[10px] text-[var(--admin-muted)]">{c.subject || 'Sin asunto'} · {c.segment} · {new Date(c.created_at).toLocaleDateString('es-MX')}</p></div>
+      <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{campaigns.length} campañas</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Campaña</button></div>
+      {campaigns.length === 0 ? <Card className="p-12 text-center"><Mail className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin campañas creadas</p></Card> : (
+        <Card className="divide-y divide-[var(--border)]">{campaigns.map(c => (
+          <div key={c.id} className="p-4 flex items-center justify-between hover:bg-[var(--surface2)]/50 transition-colors">
+            <div className="min-w-0 flex-1"><p className="text-sm font-medium text-[var(--text)]">{c.name}</p><p className="text-[10px] text-[var(--text-muted)]">{c.subject || 'Sin asunto'} · {c.segment} · {new Date(c.created_at).toLocaleDateString('es-MX')}</p></div>
             <div className="flex items-center gap-2 ml-4">
               <Badge text={c.status === 'sent' ? 'Enviada' : c.status === 'scheduled' ? 'Programada' : 'Borrador'} variant={c.status === 'sent' ? 'green' : c.status === 'scheduled' ? 'blue' : 'amber'} />
-              {c.status === 'draft' && <button onClick={() => handleToggle(c, 'scheduled')} className="text-[10px] text-[var(--admin-accent)] hover:underline">Programar</button>}
-              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--admin-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+              {c.status === 'draft' && <button onClick={() => handleToggle(c, 'scheduled')} className="text-[10px] text-[var(--accent)] hover:underline">Programar</button>}
+              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
             </div>
           </div>))}</Card>
       )}
@@ -366,22 +366,22 @@ const BannersTabLive: React.FC = () => {
   const handleToggle = async (b: any) => { await fetch('/api/admin/marketing/banners', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, is_active: !b.is_active }) }); toast.success(b.is_active ? 'Desactivado' : 'Activado'); fetchData(); };
   const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/banners?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Banner eliminado'); fetchData(); } };
   const LOCATIONS: Record<string, string> = { hero: 'Hero', announcement_bar: 'Barra de anuncio', category: 'Categoría', popup: 'Pop-up', footer: 'Footer' };
-  if (loading) return <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando banners...</Card>;
+  if (loading) return <Card className="p-8 text-center text-[var(--text-muted)]">Cargando banners...</Card>;
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center"><p className="text-sm text-[var(--admin-text-secondary)]">{banners.length} banners</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Banner</button></div>
-      {banners.length === 0 ? <Card className="p-12 text-center"><Image className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)]">Sin banners creados</p></Card> : (
+      <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{banners.length} banners</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Banner</button></div>
+      {banners.length === 0 ? <Card className="p-12 text-center"><Image className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin banners creados</p></Card> : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{banners.map(b => (
           <Card key={b.id} className="p-4">
             <div className="flex items-start justify-between mb-3">
-              <div><p className="text-sm font-medium text-[var(--admin-text)]">{b.name}</p><p className="text-[10px] text-[var(--admin-muted)]">{LOCATIONS[b.location] || b.location}</p></div>
+              <div><p className="text-sm font-medium text-[var(--text)]">{b.name}</p><p className="text-[10px] text-[var(--text-muted)]">{LOCATIONS[b.location] || b.location}</p></div>
               <div className="flex items-center gap-2">
-                <button onClick={() => handleToggle(b)} className={"w-9 h-5 rounded-full transition-colors " + (b.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--admin-surface)] rounded-full shadow transition-transform " + (b.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
-                <button onClick={() => handleDelete(b.id)} className="p-1 text-[var(--admin-muted)] hover:text-red-600"><Trash2 size={14} /></button>
+                <button onClick={() => handleToggle(b)} className={"w-9 h-5 rounded-full transition-colors " + (b.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-full shadow transition-transform " + (b.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+                <button onClick={() => handleDelete(b.id)} className="p-1 text-[var(--text-muted)] hover:text-red-600"><Trash2 size={14} /></button>
               </div>
             </div>
-            {b.image_url ? <div className="aspect-[3/1] bg-[var(--admin-surface2)] rounded-lg overflow-hidden mb-2"><img src={b.image_url} alt={b.alt_text} className="w-full h-full object-cover" /></div> : <div className="aspect-[3/1] bg-[var(--admin-surface2)] rounded-lg flex items-center justify-center mb-2"><Image className="w-8 h-8 text-[var(--admin-muted)]" /></div>}
+            {b.image_url ? <div className="aspect-[3/1] bg-[var(--surface2)] rounded-lg overflow-hidden mb-2"><img src={b.image_url} alt={b.alt_text} className="w-full h-full object-cover" /></div> : <div className="aspect-[3/1] bg-[var(--surface2)] rounded-lg flex items-center justify-center mb-2"><Image className="w-8 h-8 text-[var(--text-muted)]" /></div>}
             <Badge text={b.is_active ? 'Activo' : 'Inactivo'} variant={b.is_active ? 'green' : 'gray'} />
           </Card>))}</div>
       )}
@@ -398,22 +398,22 @@ const FlashSalesTabLive: React.FC = () => {
   const handleToggle = async (s: any) => { await fetch('/api/admin/marketing/flash-sales', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, is_active: !s.is_active }) }); toast.success(s.is_active ? 'Desactivada' : 'Activada'); fetchData(); };
   const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/flash-sales?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Venta eliminada'); fetchData(); } };
   const isActive = (s: any) => s.is_active && new Date(s.ends_at) > new Date();
-  if (loading) return <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando ventas flash...</Card>;
+  if (loading) return <Card className="p-8 text-center text-[var(--text-muted)]">Cargando ventas flash...</Card>;
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center"><p className="text-sm text-[var(--admin-text-secondary)]">{sales.length} ventas flash</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Venta Flash</button></div>
-      {sales.length === 0 ? <Card className="p-12 text-center"><Zap className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)]">Sin ventas flash</p></Card> : (
-        <Card className="divide-y divide-[var(--admin-border)]">{sales.map(s => (
-          <div key={s.id} className="p-4 flex items-center justify-between hover:bg-[var(--admin-surface2)]/50 transition-colors">
+      <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{sales.length} ventas flash</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nueva Venta Flash</button></div>
+      {sales.length === 0 ? <Card className="p-12 text-center"><Zap className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin ventas flash</p></Card> : (
+        <Card className="divide-y divide-[var(--border)]">{sales.map(s => (
+          <div key={s.id} className="p-4 flex items-center justify-between hover:bg-[var(--surface2)]/50 transition-colors">
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-[var(--admin-text)]">{s.name}</p>
-              <p className="text-[10px] text-[var(--admin-muted)]">{s.discount_value}{s.discount_type === 'percentage' ? '%' : ' MXN'} OFF · {new Date(s.starts_at).toLocaleDateString('es-MX')} → {new Date(s.ends_at).toLocaleDateString('es-MX')}</p>
+              <p className="text-sm font-medium text-[var(--text)]">{s.name}</p>
+              <p className="text-[10px] text-[var(--text-muted)]">{s.discount_value}{s.discount_type === 'percentage' ? '%' : ' MXN'} OFF · {new Date(s.starts_at).toLocaleDateString('es-MX')} → {new Date(s.ends_at).toLocaleDateString('es-MX')}</p>
             </div>
             <div className="flex items-center gap-2 ml-4">
               <Badge text={isActive(s) ? 'Activa' : s.is_active ? 'Expirada' : 'Inactiva'} variant={isActive(s) ? 'green' : 'gray'} />
-              <button onClick={() => handleToggle(s)} className={"w-9 h-5 rounded-full transition-colors " + (s.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--admin-surface)] rounded-full shadow transition-transform " + (s.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
-              <button onClick={() => handleDelete(s.id)} className="p-1.5 text-[var(--admin-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+              <button onClick={() => handleToggle(s)} className={"w-9 h-5 rounded-full transition-colors " + (s.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-full shadow transition-transform " + (s.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+              <button onClick={() => handleDelete(s.id)} className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
             </div>
           </div>))}</Card>
       )}
@@ -430,22 +430,22 @@ const ReferralsTabLive: React.FC = () => {
   const handleCreate = async () => { const res = await fetch('/api/admin/marketing/referrals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) }); if (res.ok) { toast.success('Código de referido creado'); fetchData(); } };
   const handleToggle = async (c: any) => { await fetch('/api/admin/marketing/referrals', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, is_active: !c.is_active }) }); toast.success(c.is_active ? 'Desactivado' : 'Activado'); fetchData(); };
   const handleDelete = async (id: string) => { const res = await fetch(`/api/admin/marketing/referrals?id=${id}`, { method: 'DELETE' }); if (res.ok) { toast.success('Código eliminado'); fetchData(); } };
-  if (loading) return <Card className="p-8 text-center text-[var(--admin-muted)]">Cargando referidos...</Card>;
+  if (loading) return <Card className="p-8 text-center text-[var(--text-muted)]">Cargando referidos...</Card>;
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center"><p className="text-sm text-[var(--admin-text-secondary)]">{codes.length} códigos · {redemptions.length} canjes</p>
-        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--admin-accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Código</button></div>
-      {codes.length === 0 ? <Card className="p-12 text-center"><Gift className="w-10 h-10 text-[var(--admin-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--admin-text-secondary)]">Sin códigos de referido</p></Card> : (
-        <Card className="divide-y divide-[var(--admin-border)]">{codes.map(c => (
-          <div key={c.id} className="p-4 flex items-center justify-between hover:bg-[var(--admin-surface2)]/50 transition-colors">
+      <div className="flex justify-between items-center"><p className="text-sm text-[var(--text-secondary)]">{codes.length} códigos · {redemptions.length} canjes</p>
+        <button onClick={handleCreate} className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[var(--accent)]/90 flex items-center gap-1"><Plus size={12} /> Nuevo Código</button></div>
+      {codes.length === 0 ? <Card className="p-12 text-center"><Gift className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" /><p className="text-sm text-[var(--text-secondary)]">Sin códigos de referido</p></Card> : (
+        <Card className="divide-y divide-[var(--border)]">{codes.map(c => (
+          <div key={c.id} className="p-4 flex items-center justify-between hover:bg-[var(--surface2)]/50 transition-colors">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2"><code className="text-sm font-mono font-bold text-[var(--admin-accent)] bg-[var(--admin-accent)]/10 px-2 py-0.5 rounded">{c.code}</code><Badge text={c.is_active ? 'Activo' : 'Inactivo'} variant={c.is_active ? 'green' : 'gray'} /></div>
-              <p className="text-[10px] text-[var(--admin-muted)] mt-1">{c.owner_name || c.owner_email || 'Sin asignar'} · {c.discount_value}% descuento · {c.reward_value}% recompensa · {c.uses} usos</p>
+              <div className="flex items-center gap-2"><code className="text-sm font-mono font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded">{c.code}</code><Badge text={c.is_active ? 'Activo' : 'Inactivo'} variant={c.is_active ? 'green' : 'gray'} /></div>
+              <p className="text-[10px] text-[var(--text-muted)] mt-1">{c.owner_name || c.owner_email || 'Sin asignar'} · {c.discount_value}% descuento · {c.reward_value}% recompensa · {c.uses} usos</p>
             </div>
             <div className="flex items-center gap-2 ml-4">
-              <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); }} className="p-1.5 text-[var(--admin-muted)] hover:text-[var(--admin-text)] rounded-lg"><Copy size={14} /></button>
-              <button onClick={() => handleToggle(c)} className={"w-9 h-5 rounded-full transition-colors " + (c.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--admin-surface)] rounded-full shadow transition-transform " + (c.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
-              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--admin-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
+              <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); }} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] rounded-lg"><Copy size={14} /></button>
+              <button onClick={() => handleToggle(c)} className={"w-9 h-5 rounded-full transition-colors " + (c.is_active ? "bg-green-500" : "bg-wood-200")}><div className={"w-4 h-4 bg-[var(--surface)] rounded-full shadow transition-transform " + (c.is_active ? "translate-x-4" : "translate-x-0.5")} /></button>
+              <button onClick={() => handleDelete(c.id)} className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={14} /></button>
             </div>
           </div>))}</Card>
       )}
@@ -503,62 +503,62 @@ const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
     <>
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]">
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text)] outline-none focus:border-[var(--accent)]">
           <option value="all">Todos los estados</option>
           {Object.entries(couponStatusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as any)} className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)]">
+        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as any)} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text)] outline-none focus:border-[var(--accent)]">
           <option value="all">Todos los tipos</option>
           {Object.entries(couponTypeLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         <div className="ml-auto">
-          <button onClick={() => setEditingCoupon(null)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--admin-accent)] text-white rounded-lg text-xs hover:bg-[var(--admin-accent)]/90 transition-colors">
+          <button onClick={() => setEditingCoupon(null)} className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs hover:bg-[var(--accent)]/90 transition-colors">
             <Plus size={14} /> Nuevo Cupón
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="bg-[var(--admin-surface2)]/80 border-b border-[var(--admin-border)]">
-                <th className="text-left px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Código</th>
-                <th className="text-left px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Tipo</th>
-                <th className="text-left px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Valor</th>
-                <th className="text-left px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Aplica a</th>
-                <th className="text-left px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Usos</th>
-                <th className="text-left px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Vigencia</th>
-                <th className="text-left px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Estado</th>
-                <th className="text-right px-4 py-3 text-[var(--admin-text-secondary)] font-medium">Acciones</th>
+              <tr className="bg-[var(--surface2)]/80 border-b border-[var(--border)]">
+                <th className="text-left px-4 py-3 text-[var(--text-secondary)] font-medium">Código</th>
+                <th className="text-left px-4 py-3 text-[var(--text-secondary)] font-medium">Tipo</th>
+                <th className="text-left px-4 py-3 text-[var(--text-secondary)] font-medium">Valor</th>
+                <th className="text-left px-4 py-3 text-[var(--text-secondary)] font-medium">Aplica a</th>
+                <th className="text-left px-4 py-3 text-[var(--text-secondary)] font-medium">Usos</th>
+                <th className="text-left px-4 py-3 text-[var(--text-secondary)] font-medium">Vigencia</th>
+                <th className="text-left px-4 py-3 text-[var(--text-secondary)] font-medium">Estado</th>
+                <th className="text-right px-4 py-3 text-[var(--text-secondary)] font-medium">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map(c => (
-                <tr key={c.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30 transition-colors">
+                <tr key={c.id} className="border-b border-[var(--border)] hover:bg-[var(--surface2)]/30 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-medium text-[var(--admin-text)]">{c.code}</span>
-                      <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); }} className="p-0.5 hover:bg-[var(--admin-surface2)] rounded"><Copy size={10} className="text-[var(--admin-muted)]" /></button>
+                      <span className="font-mono font-medium text-[var(--text)]">{c.code}</span>
+                      <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); }} className="p-0.5 hover:bg-[var(--surface2)] rounded"><Copy size={10} className="text-[var(--text-muted)]" /></button>
                     </div>
-                    <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{c.internalName}</p>
+                    <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{c.internalName}</p>
                   </td>
-                  <td className="px-4 py-3 text-[var(--admin-text-secondary)]">{couponTypeLabels[c.type]}</td>
-                  <td className="px-4 py-3 font-medium text-[var(--admin-text)]">{couponValueLabel(c)}</td>
-                  <td className="px-4 py-3 text-[var(--admin-text-secondary)]">{c.targetLabel}</td>
-                  <td className="px-4 py-3 text-[var(--admin-text-secondary)]">{c.usesCount}/{c.usesLimit ?? '∞'}</td>
-                  <td className="px-4 py-3 text-[var(--admin-text-secondary)]">{couponVigencia(c)}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{couponTypeLabels[c.type]}</td>
+                  <td className="px-4 py-3 font-medium text-[var(--text)]">{couponValueLabel(c)}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{c.targetLabel}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{c.usesCount}/{c.usesLimit ?? '∞'}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{couponVigencia(c)}</td>
                   <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
                   <td className="px-4 py-3 text-right relative">
-                    <button onClick={() => setMenuOpen(menuOpen === c.id ? null : c.id)} className="p-1 hover:bg-[var(--admin-surface2)] rounded-lg"><MoreHorizontal size={14} className="text-[var(--admin-muted)]" /></button>
+                    <button onClick={() => setMenuOpen(menuOpen === c.id ? null : c.id)} className="p-1 hover:bg-[var(--surface2)] rounded-lg"><MoreHorizontal size={14} className="text-[var(--text-muted)]" /></button>
                     {menuOpen === c.id && (
-                      <div className="absolute right-4 top-10 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg shadow-lg py-1 z-10 w-36">
-                        <button onClick={() => { setEditingCoupon(c); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--admin-text)] hover:bg-[var(--admin-surface2)] flex items-center gap-2"><Edit2 size={12} /> Editar</button>
-                        <button onClick={() => { toast.success(c.status === 'active' ? 'Cupón pausado' : 'Cupón activado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--admin-text)] hover:bg-[var(--admin-surface2)] flex items-center gap-2">
+                      <div className="absolute right-4 top-10 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg py-1 z-10 w-36">
+                        <button onClick={() => { setEditingCoupon(c); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface2)] flex items-center gap-2"><Edit2 size={12} /> Editar</button>
+                        <button onClick={() => { toast.success(c.status === 'active' ? 'Cupón pausado' : 'Cupón activado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface2)] flex items-center gap-2">
                           {c.status === 'active' ? <><Pause size={12} /> Pausar</> : <><Play size={12} /> Activar</>}
                         </button>
-                        <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--admin-text)] hover:bg-[var(--admin-surface2)] flex items-center gap-2"><Copy size={12} /> Copiar código</button>
+                        <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Código copiado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface2)] flex items-center gap-2"><Copy size={12} /> Copiar código</button>
                         <button onClick={() => { toast.success('Cupón eliminado'); setMenuOpen(null); }} className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} /> Eliminar</button>
                       </div>
                     )}
@@ -568,7 +568,7 @@ const CuponesTab: React.FC<{ search: string }> = ({ search }) => {
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-3 text-[10px] text-[var(--admin-muted)] border-t border-[var(--admin-border)] flex flex-wrap gap-x-4 gap-y-1">
+        <div className="px-4 py-3 text-[10px] text-[var(--text-muted)] border-t border-[var(--border)] flex flex-wrap gap-x-4 gap-y-1">
           <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 mr-1" /> Activo = en uso</span>
           <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" /> Auto = se aplica automáticamente</span>
           <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-500 mr-1" /> Prog. = programado</span>
@@ -626,49 +626,49 @@ const AnalisisTab: React.FC = () => {
     <div className="space-y-6">
       {/* Executive Summary KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <KpiCard icon={<DollarSign size={16} className="text-[var(--admin-accent)]" />} value="$68,400" label="Ingresos atribuidos a marketing" sub="18% del total" accent />
-        <KpiCard icon={<Tag size={16} className="text-[var(--admin-muted)]" />} value="$8,200" label="Costo total de marketing" sub="descuentos" />
-        <KpiCard icon={<TrendingUp size={16} className="text-[var(--admin-muted)]" />} value="3.2x" label="ROI" sub="Por cada $1 genera $3.20" />
-        <KpiCard icon={<ShoppingCart size={16} className="text-[var(--admin-muted)]" />} value="22%" label="% Ventas con descuento" sub="" />
+        <KpiCard icon={<DollarSign size={16} className="text-[var(--accent)]" />} value="$68,400" label="Ingresos atribuidos a marketing" sub="18% del total" accent />
+        <KpiCard icon={<Tag size={16} className="text-[var(--text-muted)]" />} value="$8,200" label="Costo total de marketing" sub="descuentos" />
+        <KpiCard icon={<TrendingUp size={16} className="text-[var(--text-muted)]" />} value="3.2x" label="ROI" sub="Por cada $1 genera $3.20" />
+        <KpiCard icon={<ShoppingCart size={16} className="text-[var(--text-muted)]" />} value="22%" label="% Ventas con descuento" sub="" />
       </div>
 
       {/* Rendimiento por canal */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
-        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
-            <h4 className="text-xs font-medium text-[var(--admin-text)]">Rendimiento por canal</h4>
+        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+          <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
+            <h4 className="text-xs font-medium text-[var(--text)]">Rendimiento por canal</h4>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-[var(--admin-border)]">
-                  <th className="text-left px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Canal</th>
-                  <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Ingresos</th>
-                  <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Costo</th>
-                  <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">ROI</th>
-                  <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Pedidos</th>
-                  <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Ticket</th>
+                <tr className="border-b border-[var(--border)]">
+                  <th className="text-left px-4 py-2 text-[var(--text-secondary)] font-medium">Canal</th>
+                  <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Ingresos</th>
+                  <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Costo</th>
+                  <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">ROI</th>
+                  <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Pedidos</th>
+                  <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Ticket</th>
                 </tr>
               </thead>
               <tbody>
                 {channelData.map(c => (
-                  <tr key={c.canal} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30">
-                    <td className="px-4 py-2 font-medium text-[var(--admin-text)]">{c.canal}</td>
-                    <td className="px-4 py-2 text-right text-[var(--admin-text)]">{fmt(c.ingresos)}</td>
-                    <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{c.costo === 0 ? '$0*' : fmt(c.costo)}</td>
-                    <td className="px-4 py-2 text-right font-medium text-[var(--admin-accent)]">{c.roi === Infinity ? '∞' : `${c.roi}x`}</td>
-                    <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{c.pedidos}</td>
-                    <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{fmt(c.ticket)}</td>
+                  <tr key={c.canal} className="border-b border-[var(--border)] hover:bg-[var(--surface2)]/30">
+                    <td className="px-4 py-2 font-medium text-[var(--text)]">{c.canal}</td>
+                    <td className="px-4 py-2 text-right text-[var(--text)]">{fmt(c.ingresos)}</td>
+                    <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.costo === 0 ? '$0*' : fmt(c.costo)}</td>
+                    <td className="px-4 py-2 text-right font-medium text-[var(--accent)]">{c.roi === Infinity ? '∞' : `${c.roi}x`}</td>
+                    <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.pedidos}</td>
+                    <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{fmt(c.ticket)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-2 text-[9px] text-[var(--admin-muted)] border-t border-[var(--admin-border)]">* Costo email = $0 (sin costo de plataforma) | ** Costo referidos = puntos valorados en MXN</div>
+          <div className="px-4 py-2 text-[9px] text-[var(--text-muted)] border-t border-[var(--border)]">* Costo email = $0 (sin costo de plataforma) | ** Costo referidos = puntos valorados en MXN</div>
         </div>
 
-        <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-4">
-          <h4 className="text-xs font-medium text-[var(--admin-text)] mb-3">Por canal</h4>
+        <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-4">
+          <h4 className="text-xs font-medium text-[var(--text)] mb-3">Por canal</h4>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie data={channelPie} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="value">
@@ -681,7 +681,7 @@ const AnalisisTab: React.FC = () => {
             {channelPie.map((c, i) => (
               <div key={c.name} className="flex items-center gap-2 text-[10px]">
                 <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                <span className="text-[var(--admin-text-secondary)] truncate">{c.name}</span>
+                <span className="text-[var(--text-secondary)] truncate">{c.name}</span>
               </div>
             ))}
           </div>
@@ -689,117 +689,117 @@ const AnalisisTab: React.FC = () => {
       </div>
 
       {/* Top Coupons */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
-          <h4 className="text-xs font-medium text-[var(--admin-text)]">Top cupones por rendimiento</h4>
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
+          <h4 className="text-xs font-medium text-[var(--text)]">Top cupones por rendimiento</h4>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-[var(--admin-border)]">
-                <th className="text-left px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Código</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Usos</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Ingresos</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Desc. otorgado</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">ROI</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Ticket prom</th>
+              <tr className="border-b border-[var(--border)]">
+                <th className="text-left px-4 py-2 text-[var(--text-secondary)] font-medium">Código</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Usos</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Ingresos</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Desc. otorgado</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">ROI</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Ticket prom</th>
               </tr>
             </thead>
             <tbody>
               {topCoupons.map(c => (
-                <tr key={c.code} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30">
-                  <td className="px-4 py-2 font-mono font-medium text-[var(--admin-text)]">{c.code}</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{c.usos}</td>
-                  <td className="px-4 py-2 text-right font-medium text-[var(--admin-text)]">{fmt(c.ingresos)}</td>
+                <tr key={c.code} className="border-b border-[var(--border)] hover:bg-[var(--surface2)]/30">
+                  <td className="px-4 py-2 font-mono font-medium text-[var(--text)]">{c.code}</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.usos}</td>
+                  <td className="px-4 py-2 text-right font-medium text-[var(--text)]">{fmt(c.ingresos)}</td>
                   <td className="px-4 py-2 text-right text-red-500">{fmt(c.descOtorgado)}</td>
-                  <td className="px-4 py-2 text-right font-medium text-[var(--admin-accent)]">{c.roi}x</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{fmt(c.ticket)} {c.ticket > 1000 && '⭐'}</td>
+                  <td className="px-4 py-2 text-right font-medium text-[var(--accent)]">{c.roi}x</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{fmt(c.ticket)} {c.ticket > 1000 && '⭐'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-3 text-[10px] text-[var(--admin-text-secondary)] border-t border-[var(--admin-border)] bg-[var(--admin-accent)]/5 flex items-start gap-1.5">
-          <Lightbulb size={12} className="text-[var(--admin-accent)] flex-shrink-0 mt-0.5" />
+        <div className="px-4 py-3 text-[10px] text-[var(--text-secondary)] border-t border-[var(--border)] bg-[var(--accent)]/5 flex items-start gap-1.5">
+          <Lightbulb size={12} className="text-[var(--accent)] flex-shrink-0 mt-0.5" />
           VIP15 tiene el ticket promedio más alto ($1,517). Considerar hacer más promociones exclusivas para clientes VIP.
         </div>
       </div>
 
       {/* Email Performance */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
-          <h4 className="text-xs font-medium text-[var(--admin-text)]">Rendimiento de campañas email</h4>
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
+          <h4 className="text-xs font-medium text-[var(--text)]">Rendimiento de campañas email</h4>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-[var(--admin-border)]">
-                <th className="text-left px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Campaña</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Enviados</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Apertura</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Clics</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Ventas</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Ingresos</th>
+              <tr className="border-b border-[var(--border)]">
+                <th className="text-left px-4 py-2 text-[var(--text-secondary)] font-medium">Campaña</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Enviados</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Apertura</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Clics</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Ventas</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Ingresos</th>
               </tr>
             </thead>
             <tbody>
               {emailPerf.map(c => (
-                <tr key={c.name} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30">
-                  <td className="px-4 py-2 font-medium text-[var(--admin-text)]">{c.name}</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{c.enviados}</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{c.apertura}%</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{c.clics}%</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{c.ventas}</td>
-                  <td className="px-4 py-2 text-right font-medium text-[var(--admin-text)]">{fmt(c.ingresos)}</td>
+                <tr key={c.name} className="border-b border-[var(--border)] hover:bg-[var(--surface2)]/30">
+                  <td className="px-4 py-2 font-medium text-[var(--text)]">{c.name}</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.enviados}</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.apertura}%</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.clics}%</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{c.ventas}</td>
+                  <td className="px-4 py-2 text-right font-medium text-[var(--text)]">{fmt(c.ingresos)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-3 text-[10px] text-[var(--admin-text-secondary)] border-t border-[var(--admin-border)] bg-[var(--admin-accent)]/5 flex items-start gap-1.5">
-          <Lightbulb size={12} className="text-[var(--admin-accent)] flex-shrink-0 mt-0.5" />
+        <div className="px-4 py-3 text-[10px] text-[var(--text-secondary)] border-t border-[var(--border)] bg-[var(--accent)]/5 flex items-start gap-1.5">
+          <Lightbulb size={12} className="text-[var(--accent)] flex-shrink-0 mt-0.5" />
           Las campañas a segmentos pequeños (VIP, puntos) tienen mucho mejor apertura y conversión que las masivas. Segmentar más.
         </div>
       </div>
 
       {/* Banner Performance */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
-          <h4 className="text-xs font-medium text-[var(--admin-text)]">Rendimiento de banners</h4>
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface2)]/50">
+          <h4 className="text-xs font-medium text-[var(--text)]">Rendimiento de banners</h4>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-[var(--admin-border)]">
-                <th className="text-left px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Banner</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Impresiones</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Clics</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">CTR</th>
-                <th className="text-right px-4 py-2 text-[var(--admin-text-secondary)] font-medium">Ventas atrib.</th>
+              <tr className="border-b border-[var(--border)]">
+                <th className="text-left px-4 py-2 text-[var(--text-secondary)] font-medium">Banner</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Impresiones</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Clics</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">CTR</th>
+                <th className="text-right px-4 py-2 text-[var(--text-secondary)] font-medium">Ventas atrib.</th>
               </tr>
             </thead>
             <tbody>
               {bannerPerf.map(b => (
-                <tr key={b.name} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30">
-                  <td className="px-4 py-2 font-medium text-[var(--admin-text)]">{b.name}</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{fmtNum(b.impresiones)}</td>
-                  <td className="px-4 py-2 text-right text-[var(--admin-text-secondary)]">{fmtNum(b.clics)}</td>
-                  <td className="px-4 py-2 text-right font-medium text-[var(--admin-accent)]">{b.ctr}%</td>
-                  <td className="px-4 py-2 text-right font-medium text-[var(--admin-text)]">{fmt(b.ventas)}</td>
+                <tr key={b.name} className="border-b border-[var(--border)] hover:bg-[var(--surface2)]/30">
+                  <td className="px-4 py-2 font-medium text-[var(--text)]">{b.name}</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{fmtNum(b.impresiones)}</td>
+                  <td className="px-4 py-2 text-right text-[var(--text-secondary)]">{fmtNum(b.clics)}</td>
+                  <td className="px-4 py-2 text-right font-medium text-[var(--accent)]">{b.ctr}%</td>
+                  <td className="px-4 py-2 text-right font-medium text-[var(--text)]">{fmt(b.ventas)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-3 text-[10px] text-[var(--admin-text-secondary)] border-t border-[var(--admin-border)] bg-[var(--admin-accent)]/5 flex items-start gap-1.5">
-          <Lightbulb size={12} className="text-[var(--admin-accent)] flex-shrink-0 mt-0.5" />
+        <div className="px-4 py-3 text-[10px] text-[var(--text-secondary)] border-t border-[var(--border)] bg-[var(--accent)]/5 flex items-start gap-1.5">
+          <Lightbulb size={12} className="text-[var(--accent)] flex-shrink-0 mt-0.5" />
           El banner "Envío gratis" tiene el mejor CTR y ventas atribuidas. La barra superior tiene muchas impresiones pero bajo CTR — considerar rotar el mensaje.
         </div>
       </div>
 
       {/* Monthly Trend Chart */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-5">
-        <h4 className="text-xs font-medium text-[var(--admin-text)] mb-4">Tendencia mensual</h4>
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
+        <h4 className="text-xs font-medium text-[var(--text)] mb-4">Tendencia mensual</h4>
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={marketingMonthlyTrend}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e8e2da" />
@@ -807,22 +807,22 @@ const AnalisisTab: React.FC = () => {
             <YAxis tick={{ fontSize: 10, fill: '#8a7a6a' }} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
             <RTooltip formatter={(v: any) => fmt(v)} />
             <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-            <Line type="monotone" dataKey="marketing" stroke="var(--admin-accent)" strokeWidth={2} name="Marketing" dot={{ r: 3 }} />
-            <Line type="monotone" dataKey="organic" stroke="var(--admin-text-secondary)" strokeWidth={2} name="Orgánico" dot={{ r: 3 }} />
+            <Line type="monotone" dataKey="marketing" stroke="var(--accent)" strokeWidth={2} name="Marketing" dot={{ r: 3 }} />
+            <Line type="monotone" dataKey="organic" stroke="var(--text-secondary)" strokeWidth={2} name="Orgánico" dot={{ r: 3 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Insights */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm p-5">
+      <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-xs font-medium text-[var(--admin-text)]">Insights automáticos</h4>
-          <button className="flex items-center gap-1 text-[10px] text-[var(--admin-accent)] hover:underline"><Download size={10} /> Exportar reporte (PDF)</button>
+          <h4 className="text-xs font-medium text-[var(--text)]">Insights automáticos</h4>
+          <button className="flex items-center gap-1 text-[10px] text-[var(--accent)] hover:underline"><Download size={10} /> Exportar reporte (PDF)</button>
         </div>
         <div className="space-y-3">
           {insights.map((ins, i) => (
-            <div key={i} className="flex items-start gap-2 text-xs text-[var(--admin-text-secondary)] bg-[var(--admin-accent)]/5 rounded-lg p-3">
-              <Lightbulb size={14} className="text-[var(--admin-accent)] flex-shrink-0 mt-0.5" />
+            <div key={i} className="flex items-start gap-2 text-xs text-[var(--text-secondary)] bg-[var(--accent)]/5 rounded-lg p-3">
+              <Lightbulb size={14} className="text-[var(--accent)] flex-shrink-0 mt-0.5" />
               <p>{ins}</p>
             </div>
           ))}
@@ -864,25 +864,25 @@ export const MarketingPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Megaphone size={20} className="text-[var(--admin-accent)]" />
-          <h2 className="font-serif text-lg text-[var(--admin-text)]">Marketing</h2>
+          <Megaphone size={20} className="text-[var(--accent)]" />
+          <h2 className="font-serif text-lg text-[var(--text)]">Marketing</h2>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--admin-accent)] text-white rounded-lg text-xs hover:bg-[var(--admin-accent)]/90 transition-colors self-start sm:self-auto">
+        <button className="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] text-white rounded-lg text-xs hover:bg-[var(--accent)]/90 transition-colors self-start sm:self-auto">
           <Plus size={14} /> Nueva Campaña
         </button>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <KpiCard icon={<Tag size={16} className="text-[var(--admin-accent)]" />} value={String(activeCoupons)} label="Cupones activos" sub={expiringCoupons > 0 ? `${expiringCoupons} por vencer` : 'Ninguno por vencer'} accent />
-        <KpiCard icon={<DollarSign size={16} className="text-[var(--admin-muted)]" />} value={`${promoStats.total}`} label="Cupones creados" sub={`${promoStats.expired} expirados`} />
-        <KpiCard icon={<Mail size={16} className="text-[var(--admin-muted)]" />} value="0" label="Campañas email" sub="Próximamente" />
-        <KpiCard icon={<Zap size={16} className="text-[var(--admin-muted)]" />} value="0" label="Ventas flash" sub="Próximamente" />
-        <KpiCard icon={<TrendingUp size={16} className="text-[var(--admin-accent)]" />} value={`${promoStats.active + promoStats.expired}`} label="Promociones totales" sub={`${promoStats.active} activas`} accent />
+        <KpiCard icon={<Tag size={16} className="text-[var(--accent)]" />} value={String(activeCoupons)} label="Cupones activos" sub={expiringCoupons > 0 ? `${expiringCoupons} por vencer` : 'Ninguno por vencer'} accent />
+        <KpiCard icon={<DollarSign size={16} className="text-[var(--text-muted)]" />} value={`${promoStats.total}`} label="Cupones creados" sub={`${promoStats.expired} expirados`} />
+        <KpiCard icon={<Mail size={16} className="text-[var(--text-muted)]" />} value="0" label="Campañas email" sub="Próximamente" />
+        <KpiCard icon={<Zap size={16} className="text-[var(--text-muted)]" />} value="0" label="Ventas flash" sub="Próximamente" />
+        <KpiCard icon={<TrendingUp size={16} className="text-[var(--accent)]" />} value={`${promoStats.active + promoStats.expired}`} label="Promociones totales" sub={`${promoStats.active} activas`} accent />
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-[var(--admin-border)]">
+      <div className="border-b border-[var(--border)]">
         <div className="flex gap-0 overflow-x-auto -mb-px">
           {tabItems.map(t => {
             const isActive = tab === t.id;
@@ -891,7 +891,7 @@ export const MarketingPage: React.FC = () => {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`flex items-center gap-1.5 px-4 py-2.5 text-xs whitespace-nowrap border-b-2 transition-colors ${
-                  isActive ? 'border-[var(--admin-accent)] text-[var(--admin-accent)]' : 'border-transparent text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]'
+                  isActive ? 'border-[var(--accent)] text-[var(--accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                 }`}
               >
                 <t.icon size={14} />
@@ -906,12 +906,12 @@ export const MarketingPage: React.FC = () => {
       {/* Search */}
       {tab !== 'analisis' && tab !== 'flash' && tab !== 'referidos' && (
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar cupón, campaña o banner..."
-            className="w-full pl-9 pr-4 py-2 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text)] outline-none focus:border-[var(--admin-accent)] transition-colors"
+            className="w-full pl-9 pr-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
           />
         </div>
       )}

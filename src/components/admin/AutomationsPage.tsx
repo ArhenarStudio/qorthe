@@ -56,7 +56,7 @@ interface Template {
 const statusCfg: Record<AutoStatus, { label: string; cls: string; dotCls: string }> = {
   active: { label: 'Activa', cls: 'bg-green-50 text-green-700 border-green-200', dotCls: 'bg-green-500' },
   paused: { label: 'Pausada', cls: 'bg-amber-50 text-amber-700 border-amber-200', dotCls: 'bg-amber-500' },
-  draft: { label: 'Borrador', cls: 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)] border-[var(--admin-border)]', dotCls: 'bg-wood-400' },
+  draft: { label: 'Borrador', cls: 'bg-[var(--surface2)] text-[var(--text-secondary)] border-[var(--border)]', dotCls: 'bg-wood-400' },
 };
 
 const nodeCfg: Record<NodeType, { label: string; color: string; bg: string; border: string }> = {
@@ -265,7 +265,7 @@ const templates: Template[] = [
 
 // ===== SHARED COMPONENTS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function WorkflowPreview({ nodes, compact = false }: { nodes: WorkflowNode[]; compact?: boolean }) {
@@ -284,7 +284,7 @@ function WorkflowPreview({ nodes, compact = false }: { nodes: WorkflowNode[]; co
               <span>{node.label}</span>
             </div>
             {i < nodes.length - 1 && (
-              <ArrowRight size={10} className="text-[var(--admin-muted)] shrink-0" />
+              <ArrowRight size={10} className="text-[var(--text-muted)] shrink-0" />
             )}
           </React.Fragment>
         );
@@ -322,9 +322,9 @@ function AutomationsList({ automations, onEdit, onToggle }: {
           { label: 'Impacto estimado', value: '$27,620', sub: 'Ingresos atribuidos' },
         ].map(k => (
           <Card key={k.label} className="p-3">
-            <p className="text-lg font-serif text-[var(--admin-text)]">{k.value}</p>
-            <p className="text-[10px] text-[var(--admin-muted)]">{k.label}</p>
-            <p className="text-[9px] text-[var(--admin-accent)] mt-0.5">{k.sub}</p>
+            <p className="text-lg font-serif text-[var(--text)]">{k.value}</p>
+            <p className="text-[10px] text-[var(--text-muted)]">{k.label}</p>
+            <p className="text-[9px] text-[var(--accent)] mt-0.5">{k.sub}</p>
           </Card>
         ))}
       </div>
@@ -332,12 +332,12 @@ function AutomationsList({ automations, onEdit, onToggle }: {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <div className="relative flex-1 w-full sm:max-w-xs">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar automatizaciones..."
-            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--admin-border)] rounded-lg outline-none focus:border-[var(--admin-accent)]/50 bg-[var(--admin-surface)]"
+            className="w-full pl-9 pr-3 py-2 text-xs border border-[var(--border)] rounded-lg outline-none focus:border-[var(--accent)]/50 bg-[var(--surface)]"
           />
         </div>
         <div className="flex gap-1">
@@ -347,7 +347,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
               onClick={() => setStatusFilter(s)}
               className={
                 'px-2.5 py-1.5 text-[10px] rounded-lg border transition-colors ' +
-                (statusFilter === s ? 'border-[var(--admin-accent)] bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] font-medium' : 'border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]')
+                (statusFilter === s ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
               }
             >
               {s === 'all' ? 'Todas' : statusCfg[s].label}
@@ -361,23 +361,23 @@ function AutomationsList({ automations, onEdit, onToggle }: {
         {filtered.map(auto => {
           const sCfg = statusCfg[auto.status];
           return (
-            <Card key={auto.id} className="p-4 hover:border-[var(--admin-border)] transition-colors">
+            <Card key={auto.id} className="p-4 hover:border-[var(--border)] transition-colors">
               <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                 {/* Left: info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-8 h-8 rounded-lg bg-[var(--admin-accent)]/10 flex items-center justify-center shrink-0">
-                      <Zap size={14} className="text-[var(--admin-accent)]" />
+                    <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center shrink-0">
+                      <Zap size={14} className="text-[var(--accent)]" />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-xs font-medium text-[var(--admin-text)] truncate">{auto.name}</h4>
+                        <h4 className="text-xs font-medium text-[var(--text)] truncate">{auto.name}</h4>
                         <span className={'text-[9px] px-1.5 py-0.5 rounded-full border flex items-center gap-1 ' + sCfg.cls}>
                           <span className={'w-1.5 h-1.5 rounded-full ' + sCfg.dotCls} />
                           {sCfg.label}
                         </span>
                       </div>
-                      <p className="text-[10px] text-[var(--admin-muted)] truncate">{auto.description}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] truncate">{auto.description}</p>
                     </div>
                   </div>
 
@@ -389,7 +389,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
 
                 {/* Right: metrics + actions */}
                 <div className="flex flex-wrap lg:flex-col items-start lg:items-end gap-2 shrink-0">
-                  <div className="flex items-center gap-3 text-[10px] text-[var(--admin-muted)]">
+                  <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)]">
                     <span className="flex items-center gap-1">
                       <Activity size={9} /> {auto.executions30d} ejecuciones (30d)
                     </span>
@@ -403,7 +403,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
                     )}
                   </div>
                   {auto.impact !== '—' && (
-                    <p className="text-[9px] text-[var(--admin-accent)] font-medium">{auto.impact}</p>
+                    <p className="text-[9px] text-[var(--accent)] font-medium">{auto.impact}</p>
                   )}
                   <div className="flex items-center gap-1">
                     <button
@@ -418,14 +418,14 @@ function AutomationsList({ automations, onEdit, onToggle }: {
                     </button>
                     <button
                       onClick={() => onEdit(auto)}
-                      className="p-1.5 rounded-lg border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)] transition-colors"
+                      className="p-1.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                       title="Editar"
                     >
                       <Edit3 size={12} />
                     </button>
                     <button
                       onClick={() => toast.success('Automatizacion duplicada')}
-                      className="p-1.5 rounded-lg border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)] transition-colors"
+                      className="p-1.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
                       title="Duplicar"
                     >
                       <Copy size={12} />
@@ -438,7 +438,7 @@ function AutomationsList({ automations, onEdit, onToggle }: {
         })}
 
         {filtered.length === 0 && (
-          <div className="py-16 text-center text-xs text-[var(--admin-muted)]">
+          <div className="py-16 text-center text-xs text-[var(--text-muted)]">
             No se encontraron automatizaciones
           </div>
         )}
@@ -463,7 +463,7 @@ function TemplatesView({ onUse }: { onUse: (t: Template) => void }) {
             onClick={() => setCatFilter(c)}
             className={
               'px-2.5 py-1.5 text-[10px] rounded-lg border transition-colors ' +
-              (catFilter === c ? 'border-[var(--admin-accent)] bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] font-medium' : 'border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]')
+              (catFilter === c ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium' : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')
             }
           >
             {c === 'all' ? 'Todas' : c}
@@ -473,18 +473,18 @@ function TemplatesView({ onUse }: { onUse: (t: Template) => void }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {filtered.map(tpl => (
-          <Card key={tpl.id} className="p-4 hover:border-[var(--admin-border)] transition-colors">
+          <Card key={tpl.id} className="p-4 hover:border-[var(--border)] transition-colors">
             <div className="flex items-start justify-between mb-2">
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-xs font-medium text-[var(--admin-text)]">{tpl.name}</h4>
+                  <h4 className="text-xs font-medium text-[var(--text)]">{tpl.name}</h4>
                   {tpl.popular && (
-                    <span className="text-[8px] bg-[var(--admin-accent)]/15 text-[var(--admin-accent)] px-1.5 py-0.5 rounded-full font-medium">Popular</span>
+                    <span className="text-[8px] bg-[var(--accent)]/15 text-[var(--accent)] px-1.5 py-0.5 rounded-full font-medium">Popular</span>
                   )}
                 </div>
-                <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{tpl.description}</p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{tpl.description}</p>
               </div>
-              <span className="text-[9px] bg-[var(--admin-surface2)] text-[var(--admin-muted)] px-1.5 py-0.5 rounded shrink-0">{tpl.category}</span>
+              <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded shrink-0">{tpl.category}</span>
             </div>
 
             <div className="mt-3 mb-3">
@@ -493,7 +493,7 @@ function TemplatesView({ onUse }: { onUse: (t: Template) => void }) {
 
             <button
               onClick={() => onUse(tpl)}
-              className="w-full text-center text-[10px] text-[var(--admin-accent)] font-medium border border-[var(--admin-accent)]/30 rounded-lg py-1.5 hover:bg-[var(--admin-accent)]/5 transition-colors flex items-center justify-center gap-1"
+              className="w-full text-center text-[10px] text-[var(--accent)] font-medium border border-[var(--accent)]/30 rounded-lg py-1.5 hover:bg-[var(--accent)]/5 transition-colors flex items-center justify-center gap-1"
             >
               <Plus size={10} /> Usar template
             </button>
@@ -539,20 +539,20 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)] transition-colors">
+          <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
             <ChevronRight size={16} className="rotate-180" />
           </button>
-          <div className="w-9 h-9 rounded-lg bg-[var(--admin-accent)]/10 flex items-center justify-center">
-            <Zap size={16} className="text-[var(--admin-accent)]" />
+          <div className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
+            <Zap size={16} className="text-[var(--accent)]" />
           </div>
           <input
             value={name}
             onChange={e => setName(e.target.value)}
-            className="text-sm font-medium text-[var(--admin-text)] bg-transparent border-b border-transparent hover:border-[var(--admin-border)] focus:border-[var(--admin-accent)] outline-none px-1 py-0.5"
+            className="text-sm font-medium text-[var(--text)] bg-transparent border-b border-transparent hover:border-[var(--border)] focus:border-[var(--accent)] outline-none px-1 py-0.5"
           />
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => { toast.success('Automatizacion guardada como borrador'); onBack(); }} className="px-3 py-1.5 text-xs border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">
+          <button onClick={() => { toast.success('Automatizacion guardada como borrador'); onBack(); }} className="px-3 py-1.5 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface2)] transition-colors">
             Guardar borrador
           </button>
           <button
@@ -564,7 +564,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
               toast.success('Automatizacion activada!');
               onBack();
             }}
-            className="px-3 py-1.5 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1"
+            className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1"
           >
             <Play size={10} /> Activar
           </button>
@@ -573,15 +573,15 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
 
       {/* Visual Workflow Builder */}
       <Card className="p-6">
-        <h4 className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider font-medium mb-4">Constructor de Workflow</h4>
+        <h4 className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-medium mb-4">Constructor de Workflow</h4>
 
         {nodes.length === 0 ? (
           <div className="py-12 text-center">
             <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-3">
               <Zap size={24} className="text-green-600" />
             </div>
-            <p className="text-xs text-[var(--admin-text-secondary)] mb-1">Comienza agregando un Trigger</p>
-            <p className="text-[10px] text-[var(--admin-muted)]">El trigger es el evento que inicia la automatizacion</p>
+            <p className="text-xs text-[var(--text-secondary)] mb-1">Comienza agregando un Trigger</p>
+            <p className="text-[10px] text-[var(--text-muted)]">El trigger es el evento que inicia la automatizacion</p>
             <button
               onClick={() => setAddingType('trigger')}
               className="mt-3 px-4 py-2 text-xs bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 transition-colors flex items-center gap-1.5 mx-auto"
@@ -604,18 +604,18 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                     className={'relative flex items-center gap-3 p-3 rounded-xl border-2 ' + cfg.bg + ' ' + cfg.border}
                   >
                     {/* Node number */}
-                    <div className={'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border ' + cfg.border + ' ' + cfg.color + ' bg-[var(--admin-surface)]'}>
+                    <div className={'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border ' + cfg.border + ' ' + cfg.color + ' bg-[var(--surface)]'}>
                       {i + 1}
                     </div>
 
-                    <div className={'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-[var(--admin-surface)] border ' + cfg.border}>
+                    <div className={'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-[var(--surface)] border ' + cfg.border}>
                       <Icon size={14} className={cfg.color} />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className={'text-[9px] font-bold uppercase tracking-wider ' + cfg.color}>{cfg.label}</span>
-                        <span className="text-[9px] text-[var(--admin-muted)]">/ {node.category}</span>
+                        <span className="text-[9px] text-[var(--text-muted)]">/ {node.category}</span>
                       </div>
                       <p className={'text-xs font-medium ' + cfg.color}>{node.label}</p>
                     </div>
@@ -623,16 +623,16 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                     {/* Controls */}
                     <div className="flex items-center gap-1 shrink-0">
                       {i > 0 && (
-                        <button onClick={() => moveNode(i, 'up')} className="p-1 rounded hover:bg-[var(--admin-surface)]/50 text-[var(--admin-muted)]" title="Mover arriba">
+                        <button onClick={() => moveNode(i, 'up')} className="p-1 rounded hover:bg-[var(--surface)]/50 text-[var(--text-muted)]" title="Mover arriba">
                           <ChevronRight size={10} className="-rotate-90" />
                         </button>
                       )}
                       {i < nodes.length - 1 && (
-                        <button onClick={() => moveNode(i, 'down')} className="p-1 rounded hover:bg-[var(--admin-surface)]/50 text-[var(--admin-muted)]" title="Mover abajo">
+                        <button onClick={() => moveNode(i, 'down')} className="p-1 rounded hover:bg-[var(--surface)]/50 text-[var(--text-muted)]" title="Mover abajo">
                           <ChevronRight size={10} className="rotate-90" />
                         </button>
                       )}
-                      <button onClick={() => removeNode(node.id)} className="p-1 rounded hover:bg-red-50 text-[var(--admin-muted)] hover:text-red-500 transition-colors" title="Eliminar">
+                      <button onClick={() => removeNode(node.id)} className="p-1 rounded hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500 transition-colors" title="Eliminar">
                         <X size={10} />
                       </button>
                     </div>
@@ -686,11 +686,11 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}>
             <Card className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-xs font-medium text-[var(--admin-text)] flex items-center gap-1.5">
+                <h4 className="text-xs font-medium text-[var(--text)] flex items-center gap-1.5">
                   <span className={'w-2 h-2 rounded-full ' + (addingType === 'trigger' ? 'bg-green-500' : addingType === 'condition' ? 'bg-amber-500' : 'bg-blue-500')} />
                   Selecciona un {nodeCfg[addingType].label}
                 </h4>
-                <button onClick={() => setAddingType(null)} className="p-1 rounded hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)]">
+                <button onClick={() => setAddingType(null)} className="p-1 rounded hover:bg-[var(--surface2)] text-[var(--text-muted)]">
                   <X size={12} />
                 </button>
               </div>
@@ -699,7 +699,7 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                 <div className="space-y-3">
                   {triggerOptions.map(cat => (
                     <div key={cat.cat}>
-                      <p className="text-[9px] text-[var(--admin-muted)] uppercase tracking-wider font-medium mb-1">{cat.cat}</p>
+                      <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider font-medium mb-1">{cat.cat}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {cat.items.map(item => {
                           const TIcon = item.icon;
@@ -760,31 +760,31 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
       {/* Execution history */}
       {automation && automation.executions > 0 && (
         <Card className="p-4">
-          <h4 className="text-xs font-medium text-[var(--admin-text)] mb-3 flex items-center gap-1.5">
-            <Activity size={12} className="text-[var(--admin-accent)]" /> Historial de ejecuciones
+          <h4 className="text-xs font-medium text-[var(--text)] mb-3 flex items-center gap-1.5">
+            <Activity size={12} className="text-[var(--accent)]" /> Historial de ejecuciones
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-            <div className="bg-[var(--admin-surface2)] rounded-lg p-2.5 text-center">
-              <p className="text-sm font-serif text-[var(--admin-text)]">{automation.executions}</p>
-              <p className="text-[9px] text-[var(--admin-muted)]">Total</p>
+            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
+              <p className="text-sm font-serif text-[var(--text)]">{automation.executions}</p>
+              <p className="text-[9px] text-[var(--text-muted)]">Total</p>
             </div>
-            <div className="bg-[var(--admin-surface2)] rounded-lg p-2.5 text-center">
-              <p className="text-sm font-serif text-[var(--admin-text)]">{automation.executions30d}</p>
-              <p className="text-[9px] text-[var(--admin-muted)]">Ultimos 30d</p>
+            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
+              <p className="text-sm font-serif text-[var(--text)]">{automation.executions30d}</p>
+              <p className="text-[9px] text-[var(--text-muted)]">Ultimos 30d</p>
             </div>
-            <div className="bg-[var(--admin-surface2)] rounded-lg p-2.5 text-center">
+            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
               <p className="text-sm font-serif text-green-600">{automation.successRate}%</p>
-              <p className="text-[9px] text-[var(--admin-muted)]">Tasa exito</p>
+              <p className="text-[9px] text-[var(--text-muted)]">Tasa exito</p>
             </div>
-            <div className="bg-[var(--admin-surface2)] rounded-lg p-2.5 text-center">
-              <p className="text-sm font-serif text-[var(--admin-accent)]">{automation.impact}</p>
-              <p className="text-[9px] text-[var(--admin-muted)]">Impacto</p>
+            <div className="bg-[var(--surface2)] rounded-lg p-2.5 text-center">
+              <p className="text-sm font-serif text-[var(--accent)]">{automation.impact}</p>
+              <p className="text-[9px] text-[var(--text-muted)]">Impacto</p>
             </div>
           </div>
 
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[9px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+              <tr className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                 <th className="px-2 py-1.5">Fecha</th>
                 <th className="px-2 py-1.5">Resultado</th>
                 <th className="px-2 py-1.5">Detalle</th>
@@ -796,14 +796,14 @@ function WorkflowEditor({ automation, onBack }: { automation: Automation | null;
                 { date: '25 Feb 09:15', result: 'success', detail: 'Email enviado a cliente #231' },
                 { date: '20 Feb 16:40', result: 'success', detail: '+500 puntos a cliente #219' },
               ].map((e, i) => (
-                <tr key={i} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
-                  <td className="px-2 py-1.5 text-[10px] text-[var(--admin-text-secondary)] font-mono">{e.date}</td>
+                <tr key={i} className="hover:bg-[var(--surface2)]/50 transition-colors">
+                  <td className="px-2 py-1.5 text-[10px] text-[var(--text-secondary)] font-mono">{e.date}</td>
                   <td className="px-2 py-1.5">
                     <span className={'text-[9px] px-1.5 py-0.5 rounded-full ' + (e.result === 'success' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600')}>
                       {e.result === 'success' ? 'Exitoso' : 'Error'}
                     </span>
                   </td>
-                  <td className="px-2 py-1.5 text-[10px] text-[var(--admin-text-secondary)]">{e.detail}</td>
+                  <td className="px-2 py-1.5 text-[10px] text-[var(--text-secondary)]">{e.detail}</td>
                 </tr>
               ))}
             </tbody>
@@ -904,21 +904,21 @@ export const AutomationsPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-serif text-[var(--admin-text)] flex items-center gap-2">
-            <Zap size={20} className="text-[var(--admin-accent)]" /> Automatizaciones
+          <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
+            <Zap size={20} className="text-[var(--accent)]" /> Automatizaciones
           </h1>
-          <p className="text-xs text-[var(--admin-muted)] mt-0.5">Workflows automaticos tipo Zapier/Shopify Flow — sin codigo</p>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">Workflows automaticos tipo Zapier/Shopify Flow — sin codigo</p>
         </div>
         <button
           onClick={handleNewAuto}
-          className="px-3 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5"
+          className="px-3 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
         >
           <Plus size={12} /> Nueva automatizacion
         </button>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-[var(--admin-border)]">
+      <div className="flex gap-1 border-b border-[var(--border)]">
         {([
           { id: 'list' as ViewMode, label: 'Mis automatizaciones', count: automations.length },
           { id: 'templates' as ViewMode, label: 'Templates', count: templates.length },
@@ -929,12 +929,12 @@ export const AutomationsPage: React.FC = () => {
             className={
               'flex items-center gap-1.5 px-3 py-2 text-xs border-b-2 transition-colors ' +
               (view === t.id
-                ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium'
-                : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')
+                ? 'border-[var(--accent)] text-[var(--accent)] font-medium'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text)]')
             }
           >
             {t.label}
-            <span className="text-[9px] bg-[var(--admin-surface2)] text-[var(--admin-muted)] px-1.5 py-0.5 rounded-full">{t.count}</span>
+            <span className="text-[9px] bg-[var(--surface2)] text-[var(--text-muted)] px-1.5 py-0.5 rounded-full">{t.count}</span>
           </button>
         ))}
       </div>

@@ -26,17 +26,17 @@ const tabItems: Array<{ id: NTab; label: string; icon: React.ElementType }> = [
 
 // ===== SHARED =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function STitle({ children }: { children: React.ReactNode }) {
-  return <h4 className="text-sm font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">{children}</h4>;
+  return <h4 className="text-sm font-medium text-[var(--text)] uppercase tracking-wider border-b border-[var(--border)] pb-2 mb-4">{children}</h4>;
 }
 
 function Badge({ text, variant = 'green' }: { text: string; variant?: 'green' | 'gray' | 'amber' | 'blue' | 'red' | 'purple' }) {
   const cls: Record<string, string> = {
     green: 'bg-green-50 text-green-600',
-    gray: 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]',
+    gray: 'bg-[var(--surface2)] text-[var(--text-secondary)]',
     amber: 'bg-amber-50 text-amber-600',
     blue: 'bg-blue-50 text-blue-600',
     red: 'bg-red-50 text-red-500',
@@ -231,24 +231,24 @@ function CenterTab() {
     const cfg = categoryConfig[n.category];
     const Icon = cfg.icon;
     return (
-      <div className={'flex items-start gap-3 p-4 hover:bg-[var(--admin-surface2)]/50 transition-colors border-b border-[var(--admin-border)] last:border-0 ' + (!n.read ? 'bg-[var(--admin-accent)]/5' : '')}>
+      <div className={'flex items-start gap-3 p-4 hover:bg-[var(--surface2)]/50 transition-colors border-b border-[var(--border)] last:border-0 ' + (!n.read ? 'bg-[var(--accent)]/5' : '')}>
         <div className={'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ' + cfg.cls}>
           <Icon size={14} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start gap-2">
-            <p className={'text-xs text-[var(--admin-text)] flex-1 ' + (!n.read ? 'font-medium' : '')}>
+            <p className={'text-xs text-[var(--text)] flex-1 ' + (!n.read ? 'font-medium' : '')}>
               {n.title}
             </p>
-            {!n.read && <span className="w-2 h-2 rounded-full bg-[var(--admin-accent)] shrink-0 mt-1" />}
+            {!n.read && <span className="w-2 h-2 rounded-full bg-[var(--accent)] shrink-0 mt-1" />}
             {n.priority && <Badge text="PRIORIDAD" variant="red" />}
           </div>
-          {n.detail && <p className="text-[11px] text-[var(--admin-text-secondary)] mt-0.5">{n.detail}</p>}
-          <button className="text-[10px] text-[var(--admin-accent)] hover:underline mt-1 flex items-center gap-0.5">
+          {n.detail && <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">{n.detail}</p>}
+          <button className="text-[10px] text-[var(--accent)] hover:underline mt-1 flex items-center gap-0.5">
             {n.action} <ArrowRight size={8} />
           </button>
         </div>
-        <span className="text-[10px] text-[var(--admin-muted)] shrink-0 mt-0.5">{n.time}</span>
+        <span className="text-[10px] text-[var(--text-muted)] shrink-0 mt-0.5">{n.time}</span>
       </div>
     );
   }
@@ -258,7 +258,7 @@ function CenterTab() {
     if (filtered.length === 0) return null;
     return (
       <div>
-        <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider font-medium px-4 py-2 bg-[var(--admin-surface2)]/80">{title}</p>
+        <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-medium px-4 py-2 bg-[var(--surface2)]/80">{title}</p>
         {filtered.map((n) => <NotifItem key={n.id} n={n} />)}
       </div>
     );
@@ -270,32 +270,32 @@ function CenterTab() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[var(--admin-text-secondary)]">Filtros:</span>
+          <span className="text-xs text-[var(--text-secondary)]">Filtros:</span>
           <div className="flex flex-wrap gap-1">
             {categories.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setFilter(c.id)}
-                className={'px-2.5 py-1 text-[10px] rounded-full transition-colors ' + (filter === c.id ? 'bg-[var(--admin-accent)] text-white' : 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface2)]')}
+                className={'px-2.5 py-1 text-[10px] rounded-full transition-colors ' + (filter === c.id ? 'bg-[var(--accent)] text-white' : 'bg-[var(--surface2)] text-[var(--text-secondary)] hover:bg-[var(--surface2)]')}
               >
                 {c.label}
               </button>
             ))}
           </div>
         </div>
-        <button onClick={markAllRead} className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5">
+        <button onClick={markAllRead} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
           <CheckCheck size={12} /> Marcar todo como leido {unreadCount > 0 && <Badge text={String(unreadCount)} variant="red" />}
         </button>
       </div>
 
       <Card className="overflow-hidden">
         {notifsLoading ? (
-          <div className="p-8 text-center text-[var(--admin-muted)] text-xs">Cargando notificaciones...</div>
+          <div className="p-8 text-center text-[var(--text-muted)] text-xs">Cargando notificaciones...</div>
         ) : isLive ? (
           <>
             {unreadNotifs.length > 0 && <NotifGroup title={`Sin leer (${unreadNotifs.length})`} items={unreadNotifs} />}
             {readNotifs.length > 0 && <NotifGroup title="Le\u00eddas" items={readNotifs} />}
-            {allNotifs.length === 0 && <div className="p-8 text-center text-[var(--admin-muted)] text-xs">Sin notificaciones pendientes</div>}
+            {allNotifs.length === 0 && <div className="p-8 text-center text-[var(--text-muted)] text-xs">Sin notificaciones pendientes</div>}
           </>
         ) : (
           <>
@@ -306,8 +306,8 @@ function CenterTab() {
         )}
       </Card>
 
-      <div className="flex items-center gap-3 text-[10px] text-[var(--admin-muted)]">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--admin-accent)]" /> No leida</span>
+      <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)]">
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--accent)]" /> No leida</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-wood-200" /> Leida</span>
         <span className="ml-auto">Cada notificacion tiene link directo a la pantalla relevante</span>
       </div>
@@ -361,37 +361,37 @@ function EmailsTab() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <button onClick={() => setEditingEmail(null)} className="text-xs text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors">Emails al Cliente</button>
-          <ChevronRight size={12} className="text-[var(--admin-muted)]" />
-          <span className="text-xs font-medium text-[var(--admin-text)]">{editingEmail.name}</span>
+          <button onClick={() => setEditingEmail(null)} className="text-xs text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors">Emails al Cliente</button>
+          <ChevronRight size={12} className="text-[var(--text-muted)]" />
+          <span className="text-xs font-medium text-[var(--text)]">{editingEmail.name}</span>
         </div>
         <Card className="p-5 space-y-4">
           <div>
-            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Template Key</label>
-            <p className="text-xs font-mono text-[var(--admin-text-secondary)] bg-[var(--admin-surface2)] px-3 py-2 rounded-lg">{editingEmail.template_key}</p>
+            <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Template Key</label>
+            <p className="text-xs font-mono text-[var(--text-secondary)] bg-[var(--surface2)] px-3 py-2 rounded-lg">{editingEmail.template_key}</p>
           </div>
           <div>
-            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Override del Asunto (dejar vacío para usar el default)</label>
+            <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Override del Asunto (dejar vacío para usar el default)</label>
             <input
               value={subjectOverride}
               onChange={(e) => setSubjectOverride(e.target.value)}
               placeholder="Ej: Tu pedido #{order_id} está confirmado"
-              className="w-full border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]"
+              className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]"
             />
           </div>
           <div>
-            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Trigger</label>
-            <p className="text-xs text-[var(--admin-text-secondary)]">{editingEmail.trigger_description}</p>
+            <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Trigger</label>
+            <p className="text-xs text-[var(--text-secondary)]">{editingEmail.trigger_description}</p>
           </div>
           <div>
-            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Destinatario</label>
-            <p className="text-xs text-[var(--admin-text-secondary)] capitalize">{editingEmail.recipient_type}</p>
+            <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Destinatario</label>
+            <p className="text-xs text-[var(--text-secondary)] capitalize">{editingEmail.recipient_type}</p>
           </div>
           <div className="flex items-center gap-2 pt-2">
-            <button onClick={handleSaveSubject} className="px-3 py-1.5 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1">
+            <button onClick={handleSaveSubject} className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1">
               <Save size={12} /> Guardar
             </button>
-            <button onClick={() => setEditingEmail(null)} className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors">
+            <button onClick={() => setEditingEmail(null)} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors">
               Cancelar
             </button>
           </div>
@@ -405,27 +405,27 @@ function EmailsTab() {
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-[var(--admin-border)] flex items-center justify-between">
-          <h4 className="text-sm font-medium text-[var(--admin-text)]">Emails Automáticos</h4>
-          <span className="text-[10px] text-[var(--admin-muted)]">{templates.length} templates · {templates.filter(t => t.is_active).length} activos</span>
+        <div className="px-5 py-3 border-b border-[var(--border)] flex items-center justify-between">
+          <h4 className="text-sm font-medium text-[var(--text)]">Emails Automáticos</h4>
+          <span className="text-[10px] text-[var(--text-muted)]">{templates.length} templates · {templates.filter(t => t.is_active).length} activos</span>
         </div>
         {loading ? (
-          <div className="p-8 text-center text-[var(--admin-muted)] text-sm">Cargando templates...</div>
+          <div className="p-8 text-center text-[var(--text-muted)] text-sm">Cargando templates...</div>
         ) : categories.map(cat => (
           <div key={cat} className="mb-1">
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider font-medium px-5 py-2 bg-[var(--admin-surface2)]/80 border-b border-[var(--admin-border)] capitalize">{cat}</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-medium px-5 py-2 bg-[var(--surface2)]/80 border-b border-[var(--border)] capitalize">{cat}</p>
             {templates.filter(t => t.category === cat).map(tpl => (
-              <div key={tpl.id} className="flex items-center gap-3 px-5 py-3 border-b border-[var(--admin-border)] hover:bg-[var(--admin-surface2)]/30 transition-colors">
+              <div key={tpl.id} className="flex items-center gap-3 px-5 py-3 border-b border-[var(--border)] hover:bg-[var(--surface2)]/30 transition-colors">
                 <button
                   onClick={() => handleToggle(tpl)}
                   className={'w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ' + (tpl.is_active ? 'bg-green-500' : 'bg-wood-200')}
                 >
-                  <div className={'w-4 h-4 rounded-full bg-[var(--admin-surface)] shadow transition-transform ' + (tpl.is_active ? 'translate-x-3' : 'translate-x-0')} />
+                  <div className={'w-4 h-4 rounded-full bg-[var(--surface)] shadow transition-transform ' + (tpl.is_active ? 'translate-x-3' : 'translate-x-0')} />
                 </button>
-                <span className="text-xs text-[var(--admin-text)] flex-1">{tpl.name}</span>
-                <span className="text-[10px] text-[var(--admin-muted)] hidden sm:block">{tpl.trigger_description}</span>
-                <span className="text-[9px] text-[var(--admin-muted)] hidden md:block capitalize">{tpl.recipient_type}</span>
-                <button onClick={() => { setEditingEmail(tpl); setSubjectOverride(tpl.subject_override || ''); }} className="p-1.5 rounded hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] transition-colors" title="Editar">
+                <span className="text-xs text-[var(--text)] flex-1">{tpl.name}</span>
+                <span className="text-[10px] text-[var(--text-muted)] hidden sm:block">{tpl.trigger_description}</span>
+                <span className="text-[9px] text-[var(--text-muted)] hidden md:block capitalize">{tpl.recipient_type}</span>
+                <button onClick={() => { setEditingEmail(tpl); setSubjectOverride(tpl.subject_override || ''); }} className="p-1.5 rounded hover:bg-[var(--surface2)] text-[var(--text-muted)] transition-colors" title="Editar">
                   <Layout size={12} />
                 </button>
               </div>
@@ -443,28 +443,28 @@ function TemplatesTab() {
     <div className="space-y-6">
       <Card className="p-5">
         <STitle>Plantilla Base (branding)</STitle>
-        <p className="text-[10px] text-[var(--admin-muted)] mb-4">Todos los emails heredan de esta plantilla base.</p>
+        <p className="text-[10px] text-[var(--text-muted)] mb-4">Todos los emails heredan de esta plantilla base.</p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Config */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div>
-                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Logo</label>
-                <button className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1">
+                <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Logo</label>
+                <button className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1">
                   <Upload size={12} /> Subir logo
                 </button>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Posicion</label>
-                <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
+                <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Posicion</label>
+                <select className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
                   <option>Centro</option>
                   <option>Izquierda</option>
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Tamano</label>
-                <select className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
+                <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Tamano</label>
+                <select className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
                   <option>180px</option>
                   <option>150px</option>
                   <option>120px</option>
@@ -474,18 +474,18 @@ function TemplatesTab() {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: 'Fondo header', value: 'var(--admin-text)', name: 'wood-900' },
-                { label: 'Fondo body', value: 'var(--admin-bg)', name: 'sand' },
-                { label: 'Color texto', value: 'var(--admin-text)', name: 'wood-900' },
-                { label: 'Color links', value: 'var(--admin-accent)', name: 'gold' },
-                { label: 'Fondo botones', value: 'var(--admin-text)', name: 'wood-900' },
-                { label: 'Texto botones', value: 'var(--admin-bg)', name: 'sand' },
+                { label: 'Fondo header', value: 'var(--text)', name: 'wood-900' },
+                { label: 'Fondo body', value: 'var(--bg)', name: 'sand' },
+                { label: 'Color texto', value: 'var(--text)', name: 'wood-900' },
+                { label: 'Color links', value: 'var(--accent)', name: 'gold' },
+                { label: 'Fondo botones', value: 'var(--text)', name: 'wood-900' },
+                { label: 'Texto botones', value: 'var(--bg)', name: 'sand' },
               ].map((c) => (
                 <div key={c.label}>
-                  <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">{c.label}</label>
+                  <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">{c.label}</label>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded border border-[var(--admin-border)]" style={{ backgroundColor: c.value }} />
-                    <input defaultValue={c.value} className="flex-1 border border-[var(--admin-border)] rounded px-2 py-1 text-xs bg-[var(--admin-surface)] font-mono" />
+                    <div className="w-6 h-6 rounded border border-[var(--border)]" style={{ backgroundColor: c.value }} />
+                    <input defaultValue={c.value} className="flex-1 border border-[var(--border)] rounded px-2 py-1 text-xs bg-[var(--surface)] font-mono" />
                   </div>
                 </div>
               ))}
@@ -493,16 +493,16 @@ function TemplatesTab() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Tipografia titulos</label>
-                <select className="w-full border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
+                <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Tipografia titulos</label>
+                <select className="w-full border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
                   <option>Playfair Display</option>
                   <option>Georgia</option>
                   <option>Times New Roman</option>
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Tipografia body</label>
-                <select className="w-full border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
+                <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Tipografia body</label>
+                <select className="w-full border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
                   <option>Inter</option>
                   <option>Arial</option>
                   <option>Helvetica</option>
@@ -511,12 +511,12 @@ function TemplatesTab() {
             </div>
 
             <div>
-              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Ancho maximo</label>
-              <input defaultValue="600px" className="w-24 border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
+              <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Ancho maximo</label>
+              <input defaultValue="600px" className="w-24 border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]" />
             </div>
 
             <div>
-              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-2">Footer incluye</label>
+              <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-2">Footer incluye</label>
               {[
                 'Logo pequeno',
                 'Direccion: Hermosillo, Sonora, Mexico',
@@ -525,8 +525,8 @@ function TemplatesTab() {
                 'Link "Darse de baja"',
                 'Texto legal: "Recibiste este email porque..."',
               ].map((opt) => (
-                <label key={opt} className="flex items-center gap-2 text-xs text-[var(--admin-text-secondary)] mb-1.5">
-                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
+                <label key={opt} className="flex items-center gap-2 text-xs text-[var(--text-secondary)] mb-1.5">
+                  <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--accent)]" />
                   {opt}
                 </label>
               ))}
@@ -535,40 +535,40 @@ function TemplatesTab() {
 
           {/* Preview */}
           <div>
-            <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-2">Preview</label>
-            <div className="border border-[var(--admin-border)] rounded-lg overflow-hidden shadow-sm">
-              <div className="bg-[var(--admin-text)] p-5 text-center">
-                <div className="text-[var(--admin-accent)] font-serif">DavidSon's Design</div>
+            <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-2">Preview</label>
+            <div className="border border-[var(--border)] rounded-lg overflow-hidden shadow-sm">
+              <div className="bg-[var(--text)] p-5 text-center">
+                <div className="text-[var(--accent)] font-serif">DavidSon's Design</div>
               </div>
-              <div className="bg-[var(--admin-bg)] p-6">
-                <div className="bg-[var(--admin-surface)] rounded-lg p-5 max-w-xs mx-auto space-y-3">
-                  <h3 className="text-sm font-serif text-[var(--admin-text)] text-center">[Titulo del email]</h3>
-                  <p className="text-[11px] text-[var(--admin-text)]/70 text-center">
-                    Contenido del email con <span className="text-[var(--admin-accent)]">links dorados</span> y tipografia Inter para el body.
+              <div className="bg-[var(--bg)] p-6">
+                <div className="bg-[var(--surface)] rounded-lg p-5 max-w-xs mx-auto space-y-3">
+                  <h3 className="text-sm font-serif text-[var(--text)] text-center">[Titulo del email]</h3>
+                  <p className="text-[11px] text-[var(--text)]/70 text-center">
+                    Contenido del email con <span className="text-[var(--accent)]">links dorados</span> y tipografia Inter para el body.
                   </p>
                   <div className="text-center">
-                    <span className="inline-block bg-[var(--admin-text)] text-[var(--admin-bg)] px-5 py-1.5 rounded text-[10px]">
+                    <span className="inline-block bg-[var(--text)] text-[var(--bg)] px-5 py-1.5 rounded text-[10px]">
                       Boton CTA
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="bg-[var(--admin-text)] p-3 text-center space-y-1">
+              <div className="bg-[var(--text)] p-3 text-center space-y-1">
                 <div className="flex items-center justify-center gap-3 mb-1">
                   {['FB', 'IG', 'X'].map((s) => (
-                    <span key={s} className="w-5 h-5 rounded-full bg-[var(--admin-bg)]/10 flex items-center justify-center text-[8px] text-[var(--admin-bg)]/50">{s}</span>
+                    <span key={s} className="w-5 h-5 rounded-full bg-[var(--bg)]/10 flex items-center justify-center text-[8px] text-[var(--bg)]/50">{s}</span>
                   ))}
                 </div>
-                <p className="text-[8px] text-[var(--admin-bg)]/40">DavidSon's Design | Hermosillo, Sonora, Mexico</p>
-                <p className="text-[8px] text-[var(--admin-accent)]/40">Gestionar preferencias | Darse de baja</p>
-                <p className="text-[8px] text-[var(--admin-bg)]/30">Recibiste este email porque eres cliente de DavidSon's Design</p>
+                <p className="text-[8px] text-[var(--bg)]/40">DavidSon's Design | Hermosillo, Sonora, Mexico</p>
+                <p className="text-[8px] text-[var(--accent)]/40">Gestionar preferencias | Darse de baja</p>
+                <p className="text-[8px] text-[var(--bg)]/30">Recibiste este email porque eres cliente de DavidSon's Design</p>
               </div>
             </div>
           </div>
         </div>
       </Card>
 
-      <button onClick={() => toast.success('Plantilla base guardada')} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5">
+      <button onClick={() => toast.success('Plantilla base guardada')} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5">
         <Save size={12} /> Guardar plantilla base
       </button>
     </div>
@@ -603,7 +603,7 @@ function HistoryTab() {
   const historyData = liveHistory || [];
 
   const statusConfig: Record<string, { label: string; icon: React.ElementType; cls: string }> = {
-    sent: { label: 'No abierto', icon: Mail, cls: 'text-[var(--admin-muted)]' },
+    sent: { label: 'No abierto', icon: Mail, cls: 'text-[var(--text-muted)]' },
     opened: { label: 'Abierto', icon: MailOpen, cls: 'text-green-600' },
     clicked: { label: 'Abierto+Clic', icon: MousePointerClick, cls: 'text-blue-600' },
     bounced: { label: 'Rebotado', icon: XCircle, cls: 'text-red-500' },
@@ -613,15 +613,15 @@ function HistoryTab() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-[var(--admin-text-secondary)]">Filtros:</span>
-        <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
+        <span className="text-xs text-[var(--text-secondary)]">Filtros:</span>
+        <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
           <option value="all">Tipo: Todos</option>
           <option>Confirmacion pedido</option>
           <option>Solicitar review</option>
           <option>Puntos ganados</option>
           <option>Campana</option>
         </select>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]">
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]">
           <option value="all">Estado: Todos</option>
           <option value="sent">No abierto</option>
           <option value="opened">Abierto</option>
@@ -634,7 +634,7 @@ function HistoryTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                 <th className="px-5 py-2">Fecha/Hora</th>
                 <th className="px-5 py-2">Tipo</th>
                 <th className="px-5 py-2">Destinatario</th>
@@ -644,15 +644,15 @@ function HistoryTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {historyLoading ? (
-                <tr><td colSpan={5} className="p-8 text-center text-[var(--admin-muted)] text-xs">Cargando historial de emails...</td></tr>
+                <tr><td colSpan={5} className="p-8 text-center text-[var(--text-muted)] text-xs">Cargando historial de emails...</td></tr>
               ) : historyData.map((h) => {
                 const sc = statusConfig[h.status] || statusConfig['sent'];
                 return (
-                  <tr key={h.id} className="hover:bg-[var(--admin-surface2)]/50 transition-colors cursor-pointer">
-                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)] whitespace-nowrap">{h.date}</td>
-                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text)]">{h.type}</td>
-                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text-secondary)]">{h.recipient}</td>
-                    <td className="px-5 py-2.5 text-xs text-[var(--admin-text)]">{h.subject}</td>
+                  <tr key={h.id} className="hover:bg-[var(--surface2)]/50 transition-colors cursor-pointer">
+                    <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] whitespace-nowrap">{h.date}</td>
+                    <td className="px-5 py-2.5 text-xs text-[var(--text)]">{h.type}</td>
+                    <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)]">{h.recipient}</td>
+                    <td className="px-5 py-2.5 text-xs text-[var(--text)]">{h.subject}</td>
                     <td className="px-5 py-2.5">
                       <span className={'flex items-center gap-1 text-[10px] font-medium ' + sc.cls}>
                         <sc.icon size={10} /> {sc.label}
@@ -678,14 +678,14 @@ function HistoryTab() {
             { label: 'Unsubscribes', value: '1 (0.3%)' },
           ].map((m) => (
             <div key={m.label} className="text-center">
-              <p className="text-lg font-serif text-[var(--admin-text)]">{m.value}</p>
-              <p className="text-[10px] text-[var(--admin-muted)]">{m.label}</p>
+              <p className="text-lg font-serif text-[var(--text)]">{m.value}</p>
+              <p className="text-[10px] text-[var(--text-muted)]">{m.label}</p>
             </div>
           ))}
         </div>
       </Card>
 
-      <p className="text-[10px] text-[var(--admin-muted)]">Click en cualquier email para ver detalle: contenido completo, timeline (Enviado &rarr; Entregado &rarr; Abierto &rarr; Click), device, y opcion de reenviar.</p>
+      <p className="text-[10px] text-[var(--text-muted)]">Click en cualquier email para ver detalle: contenido completo, timeline (Enviado &rarr; Entregado &rarr; Abierto &rarr; Click), device, y opcion de reenviar.</p>
     </div>
   );
 }
@@ -702,15 +702,15 @@ function ConfigTab() {
     'Critica': 'bg-red-50 text-red-600',
     'Alta': 'bg-amber-50 text-amber-600',
     'Normal': 'bg-blue-50 text-blue-600',
-    'Baja': 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]',
+    'Baja': 'bg-[var(--surface2)] text-[var(--text-secondary)]',
   };
 
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden">
-        <div className="px-5 py-3 border-b border-[var(--admin-border)] flex items-center justify-between">
-          <h4 className="text-sm font-medium text-[var(--admin-text)]">Mis Preferencias de Notificacion</h4>
-          <div className="flex items-center gap-3 text-[10px] text-[var(--admin-muted)]">
+        <div className="px-5 py-3 border-b border-[var(--border)] flex items-center justify-between">
+          <h4 className="text-sm font-medium text-[var(--text)]">Mis Preferencias de Notificacion</h4>
+          <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)]">
             <span className="flex items-center gap-1"><Bell size={10} /> In-App</span>
             <span className="flex items-center gap-1"><Mail size={10} /> Email</span>
             <span className="flex items-center gap-1"><Send size={10} /> Push</span>
@@ -719,7 +719,7 @@ function ConfigTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+              <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                 <th className="px-5 py-2">Notificacion</th>
                 <th className="px-5 py-2 text-center w-16">In-App</th>
                 <th className="px-5 py-2 text-center w-16">Email</th>
@@ -729,20 +729,20 @@ function ConfigTab() {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {prefs.map((p, idx) => (
-                <tr key={p.name} className="hover:bg-[var(--admin-surface2)]/30 transition-colors">
-                  <td className="px-5 py-2.5 text-xs text-[var(--admin-text)]">{p.name}</td>
+                <tr key={p.name} className="hover:bg-[var(--surface2)]/30 transition-colors">
+                  <td className="px-5 py-2.5 text-xs text-[var(--text)]">{p.name}</td>
                   {(['inApp', 'email', 'push'] as const).map((ch) => (
                     <td key={ch} className="px-5 py-2.5 text-center">
                       <button
                         onClick={() => togglePref(idx, ch)}
                         className={'w-8 h-5 rounded-full p-0.5 transition-colors mx-auto block ' + (p[ch] ? 'bg-green-500' : 'bg-wood-200')}
                       >
-                        <div className={'w-4 h-4 rounded-full bg-[var(--admin-surface)] shadow transition-transform ' + (p[ch] ? 'translate-x-3' : 'translate-x-0')} />
+                        <div className={'w-4 h-4 rounded-full bg-[var(--surface)] shadow transition-transform ' + (p[ch] ? 'translate-x-3' : 'translate-x-0')} />
                       </button>
                     </td>
                   ))}
                   <td className="px-5 py-2.5 text-center">
-                    <span className={'text-[9px] font-medium px-2 py-0.5 rounded-full ' + (priorityCls[p.priority] || 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]')}>
+                    <span className={'text-[9px] font-medium px-2 py-0.5 rounded-full ' + (priorityCls[p.priority] || 'bg-[var(--surface2)] text-[var(--text-secondary)]')}>
                       {p.priority}
                     </span>
                   </td>
@@ -757,21 +757,21 @@ function ConfigTab() {
       <Card className="p-5">
         <STitle>Resumen diario</STitle>
         <div className="space-y-3">
-          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
+          <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--accent)]" />
             Enviar resumen del dia
           </label>
           <div className="grid grid-cols-2 gap-3 pl-6">
             <div>
-              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Hora de envio</label>
-              <input type="time" defaultValue="08:00" className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
+              <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Hora de envio</label>
+              <input type="time" defaultValue="08:00" className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]" />
             </div>
             <div>
-              <label className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider block mb-1">Enviar a</label>
-              <input defaultValue="admin@davidsonsdesign.com" className="w-full border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
+              <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Enviar a</label>
+              <input defaultValue="admin@davidsonsdesign.com" className="w-full border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]" />
             </div>
           </div>
-          <p className="text-[10px] text-[var(--admin-muted)] pl-6">Incluye: pedidos, ingresos, reviews, cotizaciones, alertas</p>
+          <p className="text-[10px] text-[var(--text-muted)] pl-6">Incluye: pedidos, ingresos, reviews, cotizaciones, alertas</p>
         </div>
       </Card>
 
@@ -780,20 +780,20 @@ function ConfigTab() {
         <STitle>Horario silencioso (no enviar push)</STitle>
         <div className="flex items-center gap-3">
           <div>
-            <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Desde</label>
-            <input type="time" defaultValue="22:00" className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
+            <label className="text-[10px] text-[var(--text-muted)] block mb-1">Desde</label>
+            <input type="time" defaultValue="22:00" className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]" />
           </div>
           <div>
-            <label className="text-[10px] text-[var(--admin-muted)] block mb-1">Hasta</label>
-            <input type="time" defaultValue="07:00" className="border border-[var(--admin-border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--admin-surface)]" />
+            <label className="text-[10px] text-[var(--text-muted)] block mb-1">Hasta</label>
+            <input type="time" defaultValue="07:00" className="border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs bg-[var(--surface)]" />
           </div>
         </div>
-        <p className="text-[10px] text-[var(--admin-muted)] mt-2">(excepto prioridad Critica)</p>
+        <p className="text-[10px] text-[var(--text-muted)] mt-2">(excepto prioridad Critica)</p>
       </Card>
 
       <button
         onClick={() => toast.success('Preferencias de notificacion guardadas')}
-        className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors flex items-center gap-1.5"
+        className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
       >
         <Save size={12} /> Guardar preferencias
       </button>
@@ -819,12 +819,12 @@ export const NotificationsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="font-serif text-lg text-[var(--admin-text)] flex items-center gap-2">
-          <Bell size={20} className="text-[var(--admin-accent)]" /> Notificaciones
+        <h3 className="font-serif text-lg text-[var(--text)] flex items-center gap-2">
+          <Bell size={20} className="text-[var(--accent)]" /> Notificaciones
         </h3>
         <button
           onClick={() => setActiveTab('config')}
-          className="px-3 py-1.5 text-xs border border-[var(--admin-border)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5"
+          className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"
         >
           <Settings2 size={12} /> Configurar
         </button>
@@ -832,7 +832,7 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="overflow-x-auto -mx-1 px-1">
-        <div className="flex gap-1 min-w-max border-b border-[var(--admin-border)]">
+        <div className="flex gap-1 min-w-max border-b border-[var(--border)]">
           {tabItems.map((t) => (
             <button
               key={t.id}
@@ -840,8 +840,8 @@ export const NotificationsPage: React.FC = () => {
               className={
                 'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 whitespace-nowrap ' +
                 (activeTab === t.id
-                  ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium'
-                  : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')
+                  ? 'border-[var(--accent)] text-[var(--accent)] font-medium'
+                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text)]')
               }
             >
               <t.icon size={14} />{t.label}

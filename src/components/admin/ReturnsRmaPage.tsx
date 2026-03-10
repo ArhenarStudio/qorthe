@@ -52,13 +52,13 @@ const mockRmas: RmaRequest[] = [
 ];
 
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={'bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm ' + className}>{children}</div>;
+  return <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>{children}</div>;
 }
 
 function Badge({ text, variant = 'gray' }: { text: string; variant?: string }) {
   const cls: Record<string, string> = {
     green: 'bg-green-50 text-green-600', red: 'bg-red-50 text-red-500', amber: 'bg-amber-50 text-amber-600',
-    blue: 'bg-blue-50 text-blue-600', gray: 'bg-[var(--admin-surface2)] text-[var(--admin-text-secondary)]', purple: 'bg-purple-50 text-purple-600',
+    blue: 'bg-blue-50 text-blue-600', gray: 'bg-[var(--surface2)] text-[var(--text-secondary)]', purple: 'bg-purple-50 text-purple-600',
   };
   return <span className={'text-[10px] font-medium px-2 py-0.5 rounded-full ' + (cls[variant] || cls.gray)}>{text}</span>;
 }
@@ -67,14 +67,14 @@ function StatCard({ label, value, icon: Icon, trend, trendLabel }: { label: stri
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between mb-2">
-        <div className="w-8 h-8 rounded-lg bg-[var(--admin-accent)]/10 flex items-center justify-center">
-          <Icon size={14} className="text-[var(--admin-accent)]" />
+        <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
+          <Icon size={14} className="text-[var(--accent)]" />
         </div>
         {trend && <span className={'text-[10px] font-medium ' + (trend.startsWith('-') ? 'text-green-600' : 'text-red-500')}>{trend}</span>}
       </div>
-      <p className="text-lg font-serif text-[var(--admin-text)]">{value}</p>
-      <p className="text-[10px] text-[var(--admin-muted)]">{label}</p>
-      {trendLabel && <p className="text-[9px] text-[var(--admin-muted)] mt-0.5">{trendLabel}</p>}
+      <p className="text-lg font-serif text-[var(--text)]">{value}</p>
+      <p className="text-[10px] text-[var(--text-muted)]">{label}</p>
+      {trendLabel && <p className="text-[9px] text-[var(--text-muted)] mt-0.5">{trendLabel}</p>}
     </Card>
   );
 }
@@ -93,13 +93,13 @@ function RmaDetail({ rma, onClose }: { rma: RmaRequest; onClose: () => void }) {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-12 px-4 overflow-y-auto">
-      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95 }} className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-xl w-full max-w-2xl mb-12">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--admin-border)]">
+      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95 }} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-xl w-full max-w-2xl mb-12">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-3">
-            <button onClick={onClose} className="text-[var(--admin-muted)] hover:text-[var(--admin-text-secondary)]"><ArrowLeft size={16} /></button>
+            <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]"><ArrowLeft size={16} /></button>
             <div>
-              <h3 className="text-sm font-serif text-[var(--admin-text)]">{rma.id}</h3>
-              <p className="text-[10px] text-[var(--admin-muted)]">Pedido {rma.orderId} · {rma.date}</p>
+              <h3 className="text-sm font-serif text-[var(--text)]">{rma.id}</h3>
+              <p className="text-[10px] text-[var(--text-muted)]">Pedido {rma.orderId} · {rma.date}</p>
             </div>
           </div>
           <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${st.bg} ${st.color}`}>{st.label}</span>
@@ -109,32 +109,32 @@ function RmaDetail({ rma, onClose }: { rma: RmaRequest; onClose: () => void }) {
           {/* Info */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-1">Cliente</p>
-              <p className="text-xs text-[var(--admin-text)] font-medium">{rma.customer}</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Cliente</p>
+              <p className="text-xs text-[var(--text)] font-medium">{rma.customer}</p>
             </div>
             <div>
-              <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-1">Producto</p>
-              <p className="text-xs text-[var(--admin-text)] font-medium">{rma.product}</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Producto</p>
+              <p className="text-xs text-[var(--text)] font-medium">{rma.product}</p>
               {rma.hasEngraving && <Badge text="Con grabado" variant="amber" />}
             </div>
             <div>
-              <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-1">Motivo</p>
-              <p className="text-xs text-[var(--admin-text)]">{rma.reason}</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Motivo</p>
+              <p className="text-xs text-[var(--text)]">{rma.reason}</p>
             </div>
             <div>
-              <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-1">Monto</p>
-              <p className="text-xs text-[var(--admin-text)] font-bold">{rma.amount} MXN</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Monto</p>
+              <p className="text-xs text-[var(--text)] font-bold">{rma.amount} MXN</p>
             </div>
           </div>
 
           {/* Photos */}
           {rma.hasPhotos && (
             <div>
-              <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-2">Fotos del cliente</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase mb-2">Fotos del cliente</p>
               <div className="flex gap-2">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="w-20 h-20 rounded-lg bg-[var(--admin-surface2)] flex items-center justify-center">
-                    <Camera size={14} className="text-[var(--admin-muted)]" />
+                  <div key={i} className="w-20 h-20 rounded-lg bg-[var(--surface2)] flex items-center justify-center">
+                    <Camera size={14} className="text-[var(--text-muted)]" />
                   </div>
                 ))}
               </div>
@@ -144,26 +144,26 @@ function RmaDetail({ rma, onClose }: { rma: RmaRequest; onClose: () => void }) {
           {/* Notes */}
           {rma.notes && (
             <div>
-              <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-1">Notas</p>
-              <p className="text-xs text-[var(--admin-text-secondary)] bg-[var(--admin-surface2)] rounded-lg p-3">{rma.notes}</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Notas</p>
+              <p className="text-xs text-[var(--text-secondary)] bg-[var(--surface2)] rounded-lg p-3">{rma.notes}</p>
             </div>
           )}
 
           {/* Timeline */}
           <div>
-            <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-3">Progreso</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase mb-3">Progreso</p>
             <div className="space-y-0">
               {timeline.map((step, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="flex flex-col items-center">
-                    <div className={'w-5 h-5 rounded-full flex items-center justify-center ' + (step.done ? 'bg-[var(--admin-accent)] text-white' : 'bg-[var(--admin-surface2)] text-[var(--admin-muted)]')}>
+                    <div className={'w-5 h-5 rounded-full flex items-center justify-center ' + (step.done ? 'bg-[var(--accent)] text-white' : 'bg-[var(--surface2)] text-[var(--text-muted)]')}>
                       {step.done ? <CheckCircle size={10} /> : <div className="w-2 h-2 rounded-full bg-wood-200" />}
                     </div>
-                    {i < timeline.length - 1 && <div className={'w-0.5 h-6 ' + (step.done ? 'bg-[var(--admin-accent)]/30' : 'bg-[var(--admin-surface2)]')} />}
+                    {i < timeline.length - 1 && <div className={'w-0.5 h-6 ' + (step.done ? 'bg-[var(--accent)]/30' : 'bg-[var(--surface2)]')} />}
                   </div>
                   <div className="pb-4">
-                    <p className={'text-xs ' + (step.done ? 'text-[var(--admin-text)] font-medium' : 'text-[var(--admin-muted)]')}>{step.label}</p>
-                    {step.date && <p className="text-[10px] text-[var(--admin-muted)]">{step.date}</p>}
+                    <p className={'text-xs ' + (step.done ? 'text-[var(--text)] font-medium' : 'text-[var(--text-muted)]')}>{step.label}</p>
+                    {step.date && <p className="text-[10px] text-[var(--text-muted)]">{step.date}</p>}
                   </div>
                 </div>
               ))}
@@ -172,14 +172,14 @@ function RmaDetail({ rma, onClose }: { rma: RmaRequest; onClose: () => void }) {
 
           {/* Actions */}
           {(rma.status === 'requested' || rma.status === 'reviewing') && (
-            <div className="flex gap-2 pt-2 border-t border-[var(--admin-border)]">
+            <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
               <button onClick={() => { toast.success('Devolucion aprobada'); onClose(); }} className="px-4 py-2 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1.5">
                 <CheckCircle size={12} /> Aprobar
               </button>
               <button onClick={() => { toast.success('Devolucion rechazada'); onClose(); }} className="px-4 py-2 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1.5">
                 <XCircle size={12} /> Rechazar
               </button>
-              <button className="px-4 py-2 text-xs border border-[var(--admin-border)] text-[var(--admin-text-secondary)] rounded-lg hover:bg-[var(--admin-surface2)] transition-colors flex items-center gap-1.5">
+              <button className="px-4 py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
                 <MessageSquare size={12} /> Solicitar mas info
               </button>
             </div>
@@ -187,13 +187,13 @@ function RmaDetail({ rma, onClose }: { rma: RmaRequest; onClose: () => void }) {
 
           {/* Resolution */}
           {rma.status === 'approved' && (
-            <div className="border-t border-[var(--admin-border)] pt-4">
-              <p className="text-[10px] text-[var(--admin-muted)] uppercase mb-2">Seleccionar resolucion</p>
+            <div className="border-t border-[var(--border)] pt-4">
+              <p className="text-[10px] text-[var(--text-muted)] uppercase mb-2">Seleccionar resolucion</p>
               <div className="flex gap-2">
                 {[{ v: 'refund', l: 'Reembolso completo', ic: DollarSign }, { v: 'exchange', l: 'Cambio de producto', ic: RotateCcw }, { v: 'credit', l: 'Credito en tienda', ic: DollarSign }].map(r => (
-                  <button key={r.v} onClick={() => toast.success(`Resolucion: ${r.l}`)} className="flex-1 flex flex-col items-center gap-1.5 p-3 border border-[var(--admin-border)] rounded-lg hover:border-[var(--admin-accent)] hover:bg-[var(--admin-accent)]/5 transition-colors">
-                    <r.ic size={14} className="text-[var(--admin-muted)]" />
-                    <span className="text-[10px] text-[var(--admin-text-secondary)]">{r.l}</span>
+                  <button key={r.v} onClick={() => toast.success(`Resolucion: ${r.l}`)} className="flex-1 flex flex-col items-center gap-1.5 p-3 border border-[var(--border)] rounded-lg hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-colors">
+                    <r.ic size={14} className="text-[var(--text-muted)]" />
+                    <span className="text-[10px] text-[var(--text-secondary)]">{r.l}</span>
                   </button>
                 ))}
               </div>
@@ -219,16 +219,16 @@ function PoliciesTab() {
   return (
     <div className="space-y-4">
       <Card className="p-5">
-        <h4 className="text-xs font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">Politicas de devolucion DSD</h4>
+        <h4 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider border-b border-[var(--border)] pb-2 mb-4">Politicas de devolucion DSD</h4>
         <div className="space-y-3">
           {policies.map(p => (
-            <div key={p.type} className="flex items-center gap-4 p-3 bg-[var(--admin-surface2)] rounded-lg">
+            <div key={p.type} className="flex items-center gap-4 p-3 bg-[var(--surface2)] rounded-lg">
               <div className="flex-1">
-                <p className="text-xs font-medium text-[var(--admin-text)]">{p.type}</p>
-                <p className="text-[10px] text-[var(--admin-muted)] mt-0.5">{p.notes}</p>
+                <p className="text-xs font-medium text-[var(--text)]">{p.type}</p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{p.notes}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-[var(--admin-text)]">{p.days > 0 ? `${p.days} dias` : 'N/A'}</p>
+                <p className="text-xs text-[var(--text)]">{p.days > 0 ? `${p.days} dias` : 'N/A'}</p>
                 {p.refundable ? <Badge text="Reembolsable" variant="green" /> : <Badge text="No reembolsable" variant="red" />}
               </div>
             </div>
@@ -237,29 +237,29 @@ function PoliciesTab() {
       </Card>
 
       <Card className="p-5">
-        <h4 className="text-xs font-medium text-[var(--admin-text)] uppercase tracking-wider border-b border-[var(--admin-border)] pb-2 mb-4">Configuracion general</h4>
+        <h4 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider border-b border-[var(--border)] pb-2 mb-4">Configuracion general</h4>
         <div className="space-y-3">
-          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
+          <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--accent)]" />
             Requiere fotos obligatorias para danos en envio
           </label>
-          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
+          <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--accent)]" />
             Enviar email automatico al recibir solicitud
           </label>
-          <label className="flex items-center gap-2 text-xs text-[var(--admin-text)]">
-            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--admin-accent)]" />
+          <label className="flex items-center gap-2 text-xs text-[var(--text)]">
+            <input type="checkbox" defaultChecked className="rounded border-wood-300 text-[var(--accent)]" />
             Notificar al admin de solicitudes nuevas
           </label>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[var(--admin-text-secondary)]">Tiempo maximo de respuesta:</span>
-            <input defaultValue="48" className="w-14 border border-[var(--admin-border)] rounded-lg px-2 py-1 text-xs text-center" />
-            <span className="text-xs text-[var(--admin-muted)]">horas</span>
+            <span className="text-xs text-[var(--text-secondary)]">Tiempo maximo de respuesta:</span>
+            <input defaultValue="48" className="w-14 border border-[var(--border)] rounded-lg px-2 py-1 text-xs text-center" />
+            <span className="text-xs text-[var(--text-muted)]">horas</span>
           </div>
         </div>
       </Card>
 
-      <button onClick={() => toast.success('Politicas guardadas')} className="px-4 py-2 text-xs bg-[var(--admin-accent)] text-white rounded-lg hover:bg-[var(--admin-accent)]/90 transition-colors">
+      <button onClick={() => toast.success('Politicas guardadas')} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors">
         Guardar politicas
       </button>
     </div>
@@ -287,16 +287,16 @@ function MetricsTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-5">
-          <h4 className="text-xs font-medium text-[var(--admin-text)] uppercase tracking-wider mb-4">Motivos mas frecuentes</h4>
+          <h4 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider mb-4">Motivos mas frecuentes</h4>
           <div className="space-y-3">
             {reasons.map(r => (
               <div key={r.reason}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-[var(--admin-text)]">{r.reason}</span>
-                  <span className="text-[10px] text-[var(--admin-muted)]">{r.count} ({r.pct}%)</span>
+                  <span className="text-xs text-[var(--text)]">{r.reason}</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">{r.count} ({r.pct}%)</span>
                 </div>
-                <div className="h-1.5 bg-[var(--admin-surface2)] rounded-full overflow-hidden">
-                  <div className="h-full bg-[var(--admin-accent)] rounded-full" style={{ width: r.pct + '%' }} />
+                <div className="h-1.5 bg-[var(--surface2)] rounded-full overflow-hidden">
+                  <div className="h-full bg-[var(--accent)] rounded-full" style={{ width: r.pct + '%' }} />
                 </div>
               </div>
             ))}
@@ -304,7 +304,7 @@ function MetricsTab() {
         </Card>
 
         <Card className="p-5">
-          <h4 className="text-xs font-medium text-[var(--admin-text)] uppercase tracking-wider mb-4">Resoluciones aplicadas</h4>
+          <h4 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider mb-4">Resoluciones aplicadas</h4>
           <div className="space-y-3">
             {[
               { type: 'Reembolso completo', count: 15, pct: 50, color: 'bg-green-500' },
@@ -314,9 +314,9 @@ function MetricsTab() {
             ].map(r => (
               <div key={r.type} className="flex items-center gap-3">
                 <div className={'w-2 h-2 rounded-full ' + r.color} />
-                <span className="text-xs text-[var(--admin-text)] flex-1">{r.type}</span>
-                <span className="text-xs font-medium text-[var(--admin-text)]">{r.count}</span>
-                <span className="text-[10px] text-[var(--admin-muted)] w-8 text-right">{r.pct}%</span>
+                <span className="text-xs text-[var(--text)] flex-1">{r.type}</span>
+                <span className="text-xs font-medium text-[var(--text)]">{r.count}</span>
+                <span className="text-[10px] text-[var(--text-muted)] w-8 text-right">{r.pct}%</span>
               </div>
             ))}
           </div>
@@ -359,18 +359,18 @@ export const ReturnsRmaPage: React.FC = () => {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-serif text-[var(--admin-text)] flex items-center gap-2">
-            <RotateCcw size={20} className="text-[var(--admin-accent)]" /> Devoluciones y Garantias
+          <h1 className="text-xl font-serif text-[var(--text)] flex items-center gap-2">
+            <RotateCcw size={20} className="text-[var(--accent)]" /> Devoluciones y Garantias
           </h1>
-          <p className="text-xs text-[var(--admin-muted)] mt-0.5">Gestiona solicitudes de devolucion, cambios y reembolsos</p>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">Gestiona solicitudes de devolucion, cambios y reembolsos</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-[var(--admin-border)]">
+      <div className="flex gap-1 border-b border-[var(--border)]">
         {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className={'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 ' + (tab === t.id ? 'border-[var(--admin-accent)] text-[var(--admin-accent)] font-medium' : 'border-transparent text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]')}>
+            className={'flex items-center gap-1.5 px-3 py-2.5 text-xs transition-colors border-b-2 ' + (tab === t.id ? 'border-[var(--accent)] text-[var(--accent)] font-medium' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text)]')}>
             <t.icon size={14} />{t.label}
           </button>
         ))}
@@ -381,10 +381,10 @@ export const ReturnsRmaPage: React.FC = () => {
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 max-w-xs">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-muted)]" />
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por ID, cliente o producto..." className="w-full pl-9 pr-3 py-2 border border-[var(--admin-border)] rounded-lg text-xs outline-none focus:border-[var(--admin-accent)]/50" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por ID, cliente o producto..." className="w-full pl-9 pr-3 py-2 border border-[var(--border)] rounded-lg text-xs outline-none focus:border-[var(--accent)]/50" />
             </div>
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="border border-[var(--admin-border)] rounded-lg px-3 py-2 text-xs bg-[var(--admin-surface)]">
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} className="border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
               <option value="all">Todos los estados</option>
               {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
@@ -395,7 +395,7 @@ export const ReturnsRmaPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)]">
+                  <tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
                     <th className="px-4 py-3">ID</th>
                     <th className="px-4 py-3">Pedido</th>
                     <th className="px-4 py-3">Cliente</th>
@@ -411,22 +411,22 @@ export const ReturnsRmaPage: React.FC = () => {
                   {filtered.map(r => {
                     const st = statusConfig[r.status];
                     return (
-                      <tr key={r.id} className="hover:bg-[var(--admin-surface2)]/50 transition-colors">
-                        <td className="px-4 py-3 text-xs font-mono font-medium text-[var(--admin-text)]">{r.id}</td>
-                        <td className="px-4 py-3 text-xs text-[var(--admin-accent)] cursor-pointer hover:underline">{r.orderId}</td>
-                        <td className="px-4 py-3 text-xs text-[var(--admin-text)]">{r.customer}</td>
-                        <td className="px-4 py-3 text-xs text-[var(--admin-text)]">
+                      <tr key={r.id} className="hover:bg-[var(--surface2)]/50 transition-colors">
+                        <td className="px-4 py-3 text-xs font-mono font-medium text-[var(--text)]">{r.id}</td>
+                        <td className="px-4 py-3 text-xs text-[var(--accent)] cursor-pointer hover:underline">{r.orderId}</td>
+                        <td className="px-4 py-3 text-xs text-[var(--text)]">{r.customer}</td>
+                        <td className="px-4 py-3 text-xs text-[var(--text)]">
                           <span>{r.product}</span>
                           {r.hasEngraving && <span className="ml-1 text-[9px] text-amber-500">★ Grabado</span>}
                         </td>
-                        <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">{r.reason}</td>
-                        <td className="px-4 py-3 text-xs font-medium text-[var(--admin-text)]">{r.amount}</td>
+                        <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{r.reason}</td>
+                        <td className="px-4 py-3 text-xs font-medium text-[var(--text)]">{r.amount}</td>
                         <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${st.bg} ${st.color}`}>{st.label}</span></td>
-                        <td className="px-4 py-3 text-xs text-[var(--admin-muted)]">{r.date}</td>
+                        <td className="px-4 py-3 text-xs text-[var(--text-muted)]">{r.date}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-1">
-                            {r.hasPhotos && <Camera size={12} className="text-[var(--admin-muted)]" />}
-                            <button onClick={() => setSelectedRma(r)} className="p-1 rounded hover:bg-[var(--admin-surface2)] text-[var(--admin-muted)] hover:text-[var(--admin-accent)] transition-colors">
+                            {r.hasPhotos && <Camera size={12} className="text-[var(--text-muted)]" />}
+                            <button onClick={() => setSelectedRma(r)} className="p-1 rounded hover:bg-[var(--surface2)] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
                               <Eye size={14} />
                             </button>
                           </div>
