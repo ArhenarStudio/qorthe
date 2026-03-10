@@ -116,6 +116,56 @@ function applyTokensToDOM(tokens: ThemeTokens) {
   if (tokens.glassBorder) r.style.setProperty("--t-glass-border", tokens.glassBorder);
   if (tokens.gradientAccent) r.style.setProperty("--t-gradient-accent", tokens.gradientAccent);
 
+  // ── Sin prefijo → estándar industria (Shadcn, Radix, plantillas Figma) ──────
+  // Las plantillas de temas usan --bg, --accent, etc. directamente.
+  // Este bloque las hace funcionar sin modificar las plantillas generadas.
+  r.style.setProperty("--bg",                  tokens.bg);
+  r.style.setProperty("--surface",             tokens.surface);
+  r.style.setProperty("--surface2",            tokens.surface2);
+  r.style.setProperty("--surface3",            tokens.surface3);
+  r.style.setProperty("--text",                tokens.text);
+  r.style.setProperty("--text-secondary",      tokens.textSecondary);
+  r.style.setProperty("--text-muted",          tokens.textMuted);
+  r.style.setProperty("--border",              tokens.border);
+  r.style.setProperty("--border-strong",       tokens.borderStrong);
+  r.style.setProperty("--shadow",              tokens.shadow);
+  r.style.setProperty("--shadow-lg",           tokens.shadowLg);
+  r.style.setProperty("--accent",              tokens.accent);
+  r.style.setProperty("--accent-hover",        tokens.accentHover);
+  r.style.setProperty("--accent-subtle",       tokens.accentSubtle);
+  r.style.setProperty("--accent-text",         tokens.accentText);
+  r.style.setProperty("--sidebar-bg",          tokens.sidebarBg);
+  r.style.setProperty("--sidebar-text",        tokens.sidebarText);
+  r.style.setProperty("--sidebar-text-muted",  tokens.sidebarTextMuted);
+  r.style.setProperty("--sidebar-active",      tokens.sidebarActive);
+  r.style.setProperty("--sidebar-active-text", tokens.sidebarActiveText);
+  r.style.setProperty("--sidebar-hover",       tokens.sidebarHover);
+  r.style.setProperty("--sidebar-border",      tokens.sidebarBorder);
+  r.style.setProperty("--sidebar-width",       `${tokens.sidebarWidth}px`);
+  r.style.setProperty("--header-bg",           tokens.headerBg);
+  r.style.setProperty("--header-border",       tokens.headerBorder);
+  r.style.setProperty("--header-text",         tokens.headerText);
+  r.style.setProperty("--success",             tokens.success);
+  r.style.setProperty("--success-subtle",      tokens.successSubtle);
+  r.style.setProperty("--error",               tokens.error);
+  r.style.setProperty("--error-subtle",        tokens.errorSubtle);
+  r.style.setProperty("--warning",             tokens.warning);
+  r.style.setProperty("--warning-subtle",      tokens.warningSubtle);
+  r.style.setProperty("--info",                tokens.info);
+  r.style.setProperty("--info-subtle",         tokens.infoSubtle);
+  r.style.setProperty("--font-heading",        tokens.fontHeading);
+  r.style.setProperty("--font-body",           tokens.fontBody);
+  r.style.setProperty("--font-mono",           tokens.fontMono);
+  r.style.setProperty("--font-size-base",      tokens.fontSizeBase);
+  r.style.setProperty("--radius-card",         tokens.radiusCard);
+  r.style.setProperty("--radius-button",       tokens.radiusButton);
+  r.style.setProperty("--radius-input",        tokens.radiusInput);
+  r.style.setProperty("--radius-badge",        tokens.radiusBadge);
+  if (tokens.glassBlur)      r.style.setProperty("--glass-blur",      tokens.glassBlur);
+  if (tokens.glassBg)        r.style.setProperty("--glass-bg",        tokens.glassBg);
+  if (tokens.glassBorder)    r.style.setProperty("--glass-border",    tokens.glassBorder);
+  if (tokens.gradientAccent) r.style.setProperty("--gradient-accent", tokens.gradientAccent);
+
   // ── Aliases --admin-* → compatibilidad con módulos admin ─────
   // Módulos usan var(--admin-*); este bloque los sincroniza con los tokens activos
   r.style.setProperty("--admin-bg",              tokens.bg);
