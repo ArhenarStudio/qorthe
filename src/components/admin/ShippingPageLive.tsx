@@ -264,8 +264,8 @@ export default function AdminShippingPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-none p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none bg-amber-50 flex items-center justify-center">
-              <Clock size={18} className="text-amber-600" />
+            <div className="w-10 h-10 flex items-center justify-center" style={{background:"var(--surface2)",border:"1px solid var(--border)"}}>
+              <Clock size={18} style={{color:"var(--warning)"}} />
             </div>
             <div>
               <p className="text-[24px] font-bold text-[var(--text)]">{pendingOrders.length}</p>
@@ -275,8 +275,8 @@ export default function AdminShippingPage() {
         </div>
         <div className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-none p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none bg-green-50 flex items-center justify-center">
-              <Truck size={18} className="text-green-600" />
+            <div className="w-10 h-10 flex items-center justify-center" style={{background:"var(--surface2)",border:"1px solid var(--border)"}}>
+              <Truck size={18} style={{color:"var(--success)"}} />
             </div>
             <div>
               <p className="text-[24px] font-bold text-[var(--text)]">{shippedOrders.length}</p>
@@ -286,8 +286,8 @@ export default function AdminShippingPage() {
         </div>
         <div className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-none p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none bg-blue-50 flex items-center justify-center">
-              <Package size={18} className="text-blue-600" />
+            <div className="w-10 h-10 flex items-center justify-center" style={{background:"var(--surface2)",border:"1px solid var(--border)"}}>
+              <Package size={18} style={{color:"var(--info)"}} />
             </div>
             <div>
               <p className="text-[24px] font-bold text-[var(--text)]">
@@ -303,7 +303,7 @@ export default function AdminShippingPage() {
       <div className="flex gap-1 mb-6 bg-[var(--surface)] border-2 border-[var(--border)] rounded-none p-1 w-fit">
         <button
           onClick={() => setActiveTab("pending")}
-          className={`px-4 py-2 rounded text-[13px] font-medium transition-colors ${
+          className={`px-4 py-2 text-[13px] font-medium transition-colors ${
             activeTab === "pending"
               ? "bg-[var(--text)] text-white"
               : "text-[var(--text-secondary)] hover:bg-[var(--surface2)]"
@@ -313,7 +313,7 @@ export default function AdminShippingPage() {
         </button>
         <button
           onClick={() => setActiveTab("shipped")}
-          className={`px-4 py-2 rounded text-[13px] font-medium transition-colors ${
+          className={`px-4 py-2 text-[13px] font-medium transition-colors ${
             activeTab === "shipped"
               ? "bg-[var(--text)] text-white"
               : "text-[var(--text-secondary)] hover:bg-[var(--surface2)]"
@@ -325,8 +325,8 @@ export default function AdminShippingPage() {
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-none p-4 mb-6">
-          <p className="text-[14px] text-red-700">{error}</p>
+        <div className="p-4 mb-6" style={{background:"var(--error-subtle)",border:"1px solid var(--error)"}}>
+          <p className="text-[14px]" style={{color:"var(--error)"}}>{error}</p>
         </div>
       )}
 
@@ -343,7 +343,7 @@ export default function AdminShippingPage() {
         <div className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-none p-12 text-center">
           {activeTab === "pending" ? (
             <>
-              <CheckCircle size={40} className="mx-auto mb-4 text-green-400" />
+              <CheckCircle size={40} style={{color:"var(--success)"}} className="mx-auto mb-4" />
               <h2 className="font-serif text-xl text-[var(--text)] mb-2">
                 Todo al día
               </h2>
@@ -388,7 +388,7 @@ export default function AdminShippingPage() {
                   {/* Status dot */}
                   <div
                     className={`w-3 h-3 rounded-none flex-shrink-0 ${
-                      order.fulfillment ? "bg-green-500" : "bg-amber-400"
+                      order.fulfillment ? "" : ""
                     }`}
                   />
 
@@ -440,7 +440,7 @@ export default function AdminShippingPage() {
                   {/* Tracking badge or expand icon */}
                   <div className="w-8 flex-shrink-0 text-center">
                     {order.fulfillment ? (
-                      <CheckCircle size={16} className="text-green-500 mx-auto" />
+                      <CheckCircle size={16} style={{color:"var(--success)"}} className="mx-auto" />
                     ) : isExpanded ? (
                       <ChevronUp size={16} className="text-[var(--text-muted)] mx-auto" />
                     ) : (
@@ -462,7 +462,7 @@ export default function AdminShippingPage() {
                           {order.items.map((item) => (
                             <div
                               key={item.id}
-                              className="flex items-center gap-3 bg-[var(--surface)] rounded p-2 border-2 border-[var(--border)]"
+                              className="flex items-center gap-3 bg-[var(--surface)] p-2 border-2 border-[var(--border)]"
                             >
                               {item.thumbnail ? (
                                 <img
@@ -517,7 +517,7 @@ export default function AdminShippingPage() {
                         <h3 className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-3 font-semibold">
                           Dirección de envío
                         </h3>
-                        <div className="bg-[var(--surface)] rounded p-4 border-2 border-[var(--border)] space-y-1">
+                        <div className="bg-[var(--surface)] p-4 border-2 border-[var(--border)] space-y-1">
                           <p className="text-[14px] font-semibold text-[var(--text)]">
                             {addr.first_name} {addr.last_name}
                           </p>
@@ -535,7 +535,7 @@ export default function AdminShippingPage() {
                         </div>
 
                         {order.shipping_method && (
-                          <div className="mt-3 bg-[var(--surface)] rounded p-3 border-2 border-[var(--border)]">
+                          <div className="mt-3 bg-[var(--surface)] p-3 border-2 border-[var(--border)]">
                             <p className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-1">
                               Método seleccionado
                             </p>
@@ -558,23 +558,23 @@ export default function AdminShippingPage() {
                             <h3 className="text-[11px] uppercase tracking-wider text-[var(--text-muted)] mb-3 font-semibold">
                               Envío generado
                             </h3>
-                            <div className="bg-green-50 border border-green-200 rounded p-4 space-y-2">
+                            <div className="p-4 space-y-2" style={{background:"var(--success-subtle)",border:"1px solid var(--success)"}}>
                               <div className="flex items-center gap-2">
-                                <CheckCircle size={16} className="text-green-600" />
-                                <span className="text-[13px] font-semibold text-green-800">
+                                <CheckCircle size={16} style={{color:"var(--success)"}} />
+                                <span className="text-[13px] font-semibold" style={{color:"var(--success)"}}>
                                   Guía generada
                                 </span>
                               </div>
-                              <p className="text-[12px] text-green-700">
+                              <p className="text-[12px]" style={{color:"var(--success)"}}>
                                 Carrier: {order.fulfillment.carrier}
                               </p>
-                              <p className="text-[12px] text-green-700 font-mono">
+                              <p className="text-[12px] font-mono" style={{color:"var(--success)"}}>
                                 Tracking: {order.fulfillment.tracking_number || "—"}
                               </p>
                               {order.fulfillment.label_url && (
                                 <button
                                   onClick={() => handlePrintLabel(order.fulfillment!.label_url)}
-                                  className="flex items-center gap-2 mt-2 px-4 py-2 bg-green-600 text-white text-[12px] font-semibold rounded hover:bg-green-700 transition-colors w-full justify-center"
+                                  className="flex items-center gap-2 mt-2 px-4 py-2 text-[12px] font-semibold w-full justify-center" style={{background:"var(--success)",color:"#fff",border:"1px solid var(--success)"}}
                                 >
                                   <Printer size={14} />
                                   Imprimir Guía
@@ -585,7 +585,7 @@ export default function AdminShippingPage() {
                                   href={order.fulfillment.tracking_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-[12px] text-green-700 hover:text-green-900"
+                                  className="flex items-center gap-2 text-[12px]" style={{color:"var(--success)"}}
                                 >
                                   <ExternalLink size={12} />
                                   Ver rastreo
@@ -636,7 +636,7 @@ export default function AdminShippingPage() {
                             <button
                               onClick={() => handleGenerateLabel(order)}
                               disabled={isGenerating}
-                              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[var(--text)] text-white text-[13px] font-semibold rounded hover:bg-[#3e3226] transition-colors disabled:opacity-50"
+                              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[var(--text)] text-white text-[13px] font-semibold rounded transition-colors disabled:opacity-50"
                             >
                               {isGenerating ? (
                                 <>
@@ -655,41 +655,41 @@ export default function AdminShippingPage() {
                             {labelResult && (
                               <div className="mt-3">
                                 {labelResult.success ? (
-                                  <div className="bg-green-50 border border-green-200 rounded p-4 space-y-2">
+                                  <div className="p-4 space-y-2" style={{background:"var(--success-subtle)",border:"1px solid var(--success)"}}>
                                     <div className="flex items-center gap-2">
-                                      <CheckCircle size={16} className="text-green-600" />
-                                      <span className="text-[13px] font-semibold text-green-800">
+                                      <CheckCircle size={16} style={{color:"var(--success)"}} />
+                                      <span className="text-[13px] font-semibold" style={{color:"var(--success)"}}>
                                         Guía generada exitosamente
                                       </span>
                                     </div>
-                                    <p className="text-[12px] text-green-700 font-mono">
+                                    <p className="text-[12px] font-mono" style={{color:"var(--success)"}}>
                                       Tracking: {labelResult.tracking_number}
                                     </p>
                                     {labelResult.label_url && (
                                       <button
                                         onClick={() => handlePrintLabel(labelResult.label_url)}
-                                        className="flex items-center gap-2 mt-1 px-4 py-2 bg-green-600 text-white text-[12px] font-semibold rounded hover:bg-green-700 transition-colors w-full justify-center"
+                                        className="flex items-center gap-2 mt-1 px-4 py-2 text-[12px] font-semibold w-full justify-center" style={{background:"var(--success)",color:"#fff"}}
                                       >
                                         <Printer size={14} />
                                         Imprimir Guía (PDF)
                                       </button>
                                     )}
-                                    <p className="text-[11px] text-green-600">
+                                    <p className="text-[11px]" style={{color:"var(--success)"}}>
                                       El cliente recibirá un email con el tracking automáticamente.
                                     </p>
                                   </div>
                                 ) : (
-                                  <div className="bg-red-50 border border-red-200 rounded p-4">
+                                  <div className="p-4" style={{background:"var(--error-subtle)",border:"1px solid var(--error)"}}>
                                     <div className="flex items-center gap-2 mb-1">
-                                      <AlertCircle size={16} className="text-red-500" />
-                                      <span className="text-[13px] font-semibold text-red-800">
+                                      <AlertCircle size={16} style={{color:"var(--error)"}} className="" />
+                                      <span className="text-[13px] font-semibold" style={{color:"var(--error)"}}>
                                         Error al generar guía
                                       </span>
                                     </div>
-                                    <p className="text-[12px] text-red-700">
+                                    <p className="text-[12px]" style={{color:"var(--error)"}}>
                                       {labelResult.error}
                                     </p>
-                                    <p className="text-[11px] text-red-500 mt-2">
+                                    <p className="text-[11px] mt-2" style={{color:"var(--error)"}}>
                                       Intenta con otro carrier o verifica la dirección.
                                     </p>
                                   </div>

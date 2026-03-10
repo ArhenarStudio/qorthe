@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion,  } from 'motion/react';
 import {
   MessageSquare, Search, Filter, Plus, ChevronRight, Clock, CheckCircle,
   AlertTriangle, User, Package, Shield, Receipt, Truck, Tag,
@@ -19,18 +19,18 @@ type Priority = 'low' | 'normal' | 'high' | 'urgent';
 type WarrantyStatus = 'submitted' | 'reviewing' | 'approved' | 'rejected' | 'replaced' | 'refunded';
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  open: { label: 'Abierto', color: 'bg-blue-50 text-blue-600', icon: Clock },
-  in_progress: { label: 'En proceso', color: 'bg-amber-50 text-amber-600', icon: Loader2 },
-  waiting_customer: { label: 'Esperando cliente', color: 'bg-purple-50 text-purple-600', icon: User },
-  resolved: { label: 'Resuelto', color: 'bg-green-50 text-green-600', icon: CheckCircle },
+  open: { label: 'Abierto', color: 'bg-[var(--info-subtle)] text-[var(--info)]', icon: Clock },
+  in_progress: { label: 'En proceso', color: 'bg-[var(--warning-subtle)] text-[var(--warning)]', icon: Loader2 },
+  waiting_customer: { label: 'Esperando cliente', color: 'bg-[var(--accent-subtle)] text-[var(--accent)]', icon: User },
+  resolved: { label: 'Resuelto', color: 'bg-[var(--success-subtle)] text-[var(--success)]', icon: CheckCircle },
   closed: { label: 'Cerrado', color: 'bg-[var(--surface2)] text-[var(--text-secondary)]', icon: Archive },
 };
 
 const priorityConfig: Record<string, { label: string; color: string }> = {
   low: { label: 'Baja', color: 'bg-[var(--surface2)] text-[var(--text-secondary)]' },
-  normal: { label: 'Normal', color: 'bg-blue-50 text-blue-600' },
-  high: { label: 'Alta', color: 'bg-orange-50 text-orange-600' },
-  urgent: { label: 'Urgente', color: 'bg-red-50 text-red-600' },
+  normal: { label: 'Normal', color: 'bg-[var(--info-subtle)] text-[var(--info)]' },
+  high: { label: 'Alta', color: 'bg-[var(--warning-subtle)] text-[var(--warning)]' },
+  urgent: { label: 'Urgente', color: 'bg-[var(--error-subtle)] text-[var(--error)]' },
 };
 
 const categoryConfig: Record<string, { label: string; icon: React.ElementType }> = {
@@ -43,10 +43,10 @@ const categoryConfig: Record<string, { label: string; icon: React.ElementType }>
 };
 
 const warrantyStatusConfig: Record<string, { label: string; color: string }> = {
-  submitted: { label: 'Enviada', color: 'bg-blue-50 text-blue-600' },
-  reviewing: { label: 'En revisión', color: 'bg-amber-50 text-amber-600' },
-  approved: { label: 'Aprobada', color: 'bg-green-50 text-green-600' },
-  rejected: { label: 'Rechazada', color: 'bg-red-50 text-red-600' },
+  submitted: { label: 'Enviada', color: 'bg-[var(--info-subtle)] text-[var(--info)]' },
+  reviewing: { label: 'En revisión', color: 'bg-[var(--warning-subtle)] text-[var(--warning)]' },
+  approved: { label: 'Aprobada', color: 'bg-[var(--success-subtle)] text-[var(--success)]' },
+  rejected: { label: 'Rechazada', color: 'bg-[var(--error-subtle)] text-[var(--error)]' },
   replaced: { label: 'Reemplazada', color: 'bg-emerald-50 text-emerald-600' },
   refunded: { label: 'Reembolsada', color: 'bg-indigo-50 text-indigo-600' },
 };
@@ -216,20 +216,20 @@ export const HelpDeskPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <ShieldCheck size={18} className="text-[var(--accent)]" />
           <h3 className="font-serif text-lg text-[var(--text)]">Soporte & Garantías</h3>
-          {ticketStats.open > 0 && <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{ticketStats.open} abiertos</span>}
+          {ticketStats.open > 0 && <span className="bg-[var(--error-subtle)]0 text-white text-[10px] font-bold px-2 py-0.5 rounded-none">{ticketStats.open} abiertos</span>}
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex bg-[var(--surface2)] rounded-lg p-0.5">
+          <div className="flex bg-[var(--surface2)] rounded-none p-0.5">
             {([['tickets', `Tickets (${ticketStats.total})`, MessageSquare], ['warranty', `Garantías (${warrantyStats.total})`, Shield], ['metrics', 'Métricas', BarChart3]] as const).map(([id, label, Icon]) => (
-              <button key={id} onClick={() => { setTab(id); setSelectedTicket(null); setSelectedClaim(null); setStatusFilter('all'); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors ${tab === id ? 'bg-[var(--surface)] shadow-sm text-[var(--text)]' : 'text-[var(--text-secondary)] hover:text-[var(--text)]'}`}>
+              <button key={id} onClick={() => { setTab(id); setSelectedTicket(null); setSelectedClaim(null); setStatusFilter('all'); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-[11px] font-medium transition-colors ${tab === id ? 'bg-[var(--surface)] shadow-sm text-[var(--text)]' : 'text-[var(--text-secondary)] hover:text-[var(--text)]'}`}>
                 <Icon size={12} /> {label}
               </button>
             ))}
           </div>
-          <span className={`flex items-center gap-1 text-[10px] ${isLive ? 'text-green-600' : 'text-[var(--text-muted)]'}`}>
+          <span className={`flex items-center gap-1 text-[10px] ${isLive ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
             {isLive ? <Wifi size={10} /> : <WifiOff size={10} />}
           </span>
-          <button onClick={() => fetchAll()} className="p-1.5 hover:bg-[var(--surface2)] rounded-lg text-[var(--text-muted)]"><RefreshCw size={12} /></button>
+          <button onClick={() => fetchAll()} className="p-1.5 hover:bg-[var(--surface2)] rounded-none text-[var(--text-muted)]"><RefreshCw size={12} /></button>
         </div>
       </div>
 
@@ -239,12 +239,12 @@ export const HelpDeskPage: React.FC = () => {
           {/* KPIs */}
           <div className="grid grid-cols-4 gap-3">
             {[
-              { label: 'Abiertos', value: ticketStats.open, color: 'text-blue-600' },
-              { label: 'En proceso', value: ticketStats.inProgress, color: 'text-amber-600' },
-              { label: 'Urgentes', value: ticketStats.urgent, color: 'text-red-600' },
+              { label: 'Abiertos', value: ticketStats.open, color: 'text-[var(--info)]' },
+              { label: 'En proceso', value: ticketStats.inProgress, color: 'text-[var(--warning)]' },
+              { label: 'Urgentes', value: ticketStats.urgent, color: 'text-[var(--error)]' },
               { label: 'Total', value: ticketStats.total, color: 'text-[var(--text)]' },
             ].map(kpi => (
-              <div key={kpi.label} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+              <div key={kpi.label} className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
                 <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{kpi.label}</p>
                 <p className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</p>
               </div>
@@ -252,35 +252,35 @@ export const HelpDeskPage: React.FC = () => {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2 bg-[var(--surface)] rounded-xl border border-[var(--border)] p-3">
-            <div className="flex items-center bg-[var(--surface2)] rounded-lg px-3 py-1.5 flex-1 min-w-[200px]">
+          <div className="flex flex-wrap items-center gap-2 bg-[var(--surface)] rounded-none border border-[var(--border)] p-3">
+            <div className="flex items-center bg-[var(--surface2)] rounded-none px-3 py-1.5 flex-1 min-w-[200px]">
               <Search size={12} className="text-[var(--text-muted)] mr-2" />
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por # ticket, asunto, cliente..." className="flex-1 text-xs bg-transparent outline-none" />
             </div>
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)]">
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-none px-2 py-1.5 bg-[var(--surface)]">
               <option value="all">Estado: Todos</option>
               {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
-            <select value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)]">
+            <select value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-none px-2 py-1.5 bg-[var(--surface)]">
               <option value="all">Prioridad: Todas</option>
               {Object.entries(priorityConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
-            <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)]">
+            <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-none px-2 py-1.5 bg-[var(--surface)]">
               <option value="all">Categoría: Todas</option>
               {Object.entries(categoryConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
-            <select value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)]">
+            <select value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-none px-2 py-1.5 bg-[var(--surface)]">
               <option value="all">Área: Todas</option>
               {departments.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
-            <select value={agentFilter} onChange={e => setAgentFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)]">
+            <select value={agentFilter} onChange={e => setAgentFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-none px-2 py-1.5 bg-[var(--surface)]">
               <option value="all">Agente: Todos</option>
               {agents.map(a => <option key={a.id} value={a.id}>{a.name} ({a.department})</option>)}
             </select>
           </div>
 
           {/* Ticket list */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] overflow-hidden">
+          <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] overflow-hidden">
             {loading ? (
               <div className="p-12 text-center text-[var(--text-muted)]"><Loader2 className="w-5 h-5 animate-spin mx-auto" /></div>
             ) : filteredTickets.length === 0 ? (
@@ -316,8 +316,8 @@ export const HelpDeskPage: React.FC = () => {
                         </td>
                         <td className="px-4 py-3 text-xs text-[var(--text)] max-w-[200px] truncate">{t.subject}</td>
                         <td className="px-4 py-3"><span className="flex items-center gap-1 text-[10px] text-[var(--text-secondary)]"><CatIcon size={10} /> {cc.label}</span></td>
-                        <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${pc.color}`}>{pc.label}</span></td>
-                        <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${sc.color}`}>{sc.label}</span></td>
+                        <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-none ${pc.color}`}>{pc.label}</span></td>
+                        <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-none ${sc.color}`}>{sc.label}</span></td>
                         <td className="px-4 py-3 text-[10px] text-[var(--text-secondary)]">{t.department || <span className="text-[var(--text-muted)] italic">Sin asignar</span>}</td>
                         <td className="px-4 py-3 text-[10px] text-[var(--text-secondary)]">{t.assigned_to || <span className="text-[var(--text-muted)] italic">—</span>}</td>
                         <td className="px-4 py-3 text-[10px] text-[var(--text-muted)] whitespace-nowrap">{fmtDate(t.created_at)}</td>
@@ -341,22 +341,22 @@ export const HelpDeskPage: React.FC = () => {
             {/* Main content */}
             <div className="flex-1 space-y-4">
               {/* Ticket header */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h4 className="text-sm font-medium text-[var(--text)]">{selectedTicket.subject}</h4>
                     <p className="text-[10px] text-[var(--text-muted)] mt-1">T-{selectedTicket.ticket_number} · {selectedTicket.customer_name || selectedTicket.customer_email} · {fmtDate(selectedTicket.created_at)}</p>
                   </div>
                   <div className="flex gap-2">
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${(priorityConfig[selectedTicket.priority] || priorityConfig.normal).color}`}>{(priorityConfig[selectedTicket.priority] || priorityConfig.normal).label}</span>
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${(statusConfig[selectedTicket.status] || statusConfig.open).color}`}>{(statusConfig[selectedTicket.status] || statusConfig.open).label}</span>
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-none ${(priorityConfig[selectedTicket.priority] || priorityConfig.normal).color}`}>{(priorityConfig[selectedTicket.priority] || priorityConfig.normal).label}</span>
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-none ${(statusConfig[selectedTicket.status] || statusConfig.open).color}`}>{(statusConfig[selectedTicket.status] || statusConfig.open).label}</span>
                   </div>
                 </div>
-                {selectedTicket.description && <p className="text-xs text-[var(--text-secondary)] bg-[var(--surface2)] rounded-lg p-3">{selectedTicket.description}</p>}
+                {selectedTicket.description && <p className="text-xs text-[var(--text-secondary)] bg-[var(--surface2)] rounded-none p-3">{selectedTicket.description}</p>}
               </div>
 
               {/* Messages */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-5">
                 <h5 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider mb-4">Conversación</h5>
                 {detailLoading ? (
                   <div className="py-8 text-center text-[var(--text-muted)]"><Loader2 className="w-4 h-4 animate-spin mx-auto" /></div>
@@ -365,9 +365,9 @@ export const HelpDeskPage: React.FC = () => {
                 ) : (
                   <div className="space-y-3 mb-4">
                     {ticketMessages.map(m => (
-                      <div key={m.id} className={`p-3 rounded-xl text-xs ${m.sender === 'admin' ? (m.is_internal ? 'bg-amber-50 border border-amber-200' : 'bg-wood-900 text-sand-100') : 'bg-[var(--surface2)]'}`}>
+                      <div key={m.id} className={`p-3 rounded-none text-xs ${m.sender === 'admin' ? (m.is_internal ? 'bg-[var(--warning-subtle)] border border-[var(--warning)]' : 'bg-wood-900 text-sand-100') : 'bg-[var(--surface2)]'}`}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] font-medium ${m.sender === 'admin' ? (m.is_internal ? 'text-amber-600' : 'text-sand-300') : 'text-[var(--text-muted)]'}`}>
+                          <span className={`text-[10px] font-medium ${m.sender === 'admin' ? (m.is_internal ? 'text-[var(--warning)]' : 'text-sand-300') : 'text-[var(--text-muted)]'}`}>
                             {m.sender === 'admin' ? (m.is_internal ? '🔒 Nota interna' : 'Admin') : 'Cliente'}
                           </span>
                           <span className={`text-[9px] ${m.sender === 'admin' && !m.is_internal ? 'text-sand-400' : 'text-[var(--text-muted)]'}`}>{fmtDate(m.created_at)}</span>
@@ -383,13 +383,13 @@ export const HelpDeskPage: React.FC = () => {
                   <div className="border-t border-[var(--border)] pt-4 space-y-2">
                     <div className="flex items-center gap-2 mb-2">
                       <label className="flex items-center gap-1.5 text-[10px] text-[var(--text-secondary)] cursor-pointer">
-                        <input type="checkbox" checked={isInternal} onChange={e => setIsInternal(e.target.checked)} className="rounded border-wood-300 text-amber-500" />
+                        <input type="checkbox" checked={isInternal} onChange={e => setIsInternal(e.target.checked)} className="rounded border-wood-300 text-[var(--warning)]" />
                         Nota interna (no visible al cliente)
                       </label>
                     </div>
                     <div className="flex gap-2">
-                      <textarea value={newReply} onChange={e => setNewReply(e.target.value)} rows={2} placeholder={isInternal ? 'Agregar nota interna...' : 'Responder al cliente...'} className="flex-1 px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-xl text-xs outline-none focus:border-[var(--accent)]/40 resize-none" />
-                      <button onClick={handleReply} disabled={sending || !newReply.trim()} className="px-4 py-2 bg-wood-900 text-sand-100 rounded-xl text-xs hover:bg-wood-800 disabled:opacity-50 self-end flex items-center gap-1.5"><Send size={12} /></button>
+                      <textarea value={newReply} onChange={e => setNewReply(e.target.value)} rows={2} placeholder={isInternal ? 'Agregar nota interna...' : 'Responder al cliente...'} className="flex-1 px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-none text-xs outline-none focus:border-[var(--accent)]/40 resize-none" />
+                      <button onClick={handleReply} disabled={sending || !newReply.trim()} className="px-4 py-2 bg-wood-900 text-sand-100 rounded-none text-xs hover:bg-wood-800 disabled:opacity-50 self-end flex items-center gap-1.5"><Send size={12} /></button>
                     </div>
                   </div>
                 )}
@@ -399,11 +399,11 @@ export const HelpDeskPage: React.FC = () => {
             {/* Right sidebar — actions */}
             <div className="w-64 space-y-4 shrink-0">
               {/* Status */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
                 <h5 className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider mb-3">Estado</h5>
                 <div className="space-y-1.5">
                   {Object.entries(statusConfig).map(([key, val]) => (
-                    <button key={key} onClick={() => updateTicket(selectedTicket.id, { status: key })} className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center gap-2 transition-colors ${selectedTicket.status === key ? val.color + ' font-medium' : 'hover:bg-[var(--surface2)] text-[var(--text-secondary)]'}`}>
+                    <button key={key} onClick={() => updateTicket(selectedTicket.id, { status: key })} className={`w-full text-left px-3 py-2 rounded-none text-xs flex items-center gap-2 transition-colors ${selectedTicket.status === key ? val.color + ' font-medium' : 'hover:bg-[var(--surface2)] text-[var(--text-secondary)]'}`}>
                       <val.icon size={12} /> {val.label}
                     </button>
                   ))}
@@ -411,11 +411,11 @@ export const HelpDeskPage: React.FC = () => {
               </div>
 
               {/* Priority */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
                 <h5 className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider mb-3">Prioridad</h5>
                 <div className="space-y-1.5">
                   {Object.entries(priorityConfig).map(([key, val]) => (
-                    <button key={key} onClick={() => updateTicket(selectedTicket.id, { priority: key })} className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center gap-2 transition-colors ${selectedTicket.priority === key ? val.color + ' font-medium' : 'hover:bg-[var(--surface2)] text-[var(--text-secondary)]'}`}>
+                    <button key={key} onClick={() => updateTicket(selectedTicket.id, { priority: key })} className={`w-full text-left px-3 py-2 rounded-none text-xs flex items-center gap-2 transition-colors ${selectedTicket.priority === key ? val.color + ' font-medium' : 'hover:bg-[var(--surface2)] text-[var(--text-secondary)]'}`}>
                       {val.label}
                     </button>
                   ))}
@@ -423,24 +423,24 @@ export const HelpDeskPage: React.FC = () => {
               </div>
 
               {/* Assign to agent */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
                 <h5 className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider mb-3">Asignar a</h5>
                 <select value={selectedTicket.assigned_agent_id || ''} onChange={e => {
                   const agent = agents.find((a: any) => a.id === e.target.value);
                   updateTicket(selectedTicket.id, { assigned_agent_id: e.target.value || null, assigned_to: agent?.name || null, department: agent?.department || selectedTicket.department });
-                }} className="w-full text-xs border border-[var(--border)] rounded-lg px-2 py-2 bg-[var(--surface)]">
+                }} className="w-full text-xs border border-[var(--border)] rounded-none px-2 py-2 bg-[var(--surface)]">
                   <option value="">Sin asignar</option>
                   {agents.map((a: any) => <option key={a.id} value={a.id}>{a.name} — {a.department} ({a.openTickets} abiertos)</option>)}
                 </select>
                 {selectedTicket.department && <p className="text-[10px] text-[var(--text-muted)] mt-2">Área: <span className="font-medium text-[var(--text-secondary)]">{selectedTicket.department}</span></p>}
                 {!selectedTicket.escalated && (
-                  <button onClick={() => updateTicket(selectedTicket.id, { escalated: true, priority: 'urgent' })} className="mt-3 w-full text-[10px] text-red-500 border border-red-200 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors">Escalar ticket</button>
+                  <button onClick={() => updateTicket(selectedTicket.id, { escalated: true, priority: 'urgent' })} className="mt-3 w-full text-[10px] text-[var(--error)] border border-[var(--error)] rounded-none px-3 py-1.5 hover:bg-[var(--error-subtle)] transition-colors">Escalar ticket</button>
                 )}
-                {selectedTicket.escalated && <p className="text-[10px] text-red-500 font-medium mt-2">Ticket escalado</p>}
+                {selectedTicket.escalated && <p className="text-[10px] text-[var(--error)] font-medium mt-2">Ticket escalado</p>}
               </div>
 
               {/* Info */}
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4 space-y-3">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4 space-y-3">
                 <h5 className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">Info</h5>
                 <div><p className="text-[9px] text-[var(--text-muted)]">Cliente</p><p className="text-xs text-[var(--text)]">{selectedTicket.customer_name || selectedTicket.customer_email?.split('@')[0]}</p><p className="text-[10px] text-[var(--text-muted)]">{selectedTicket.customer_email}</p></div>
                 {selectedTicket.order_id && <div><p className="text-[9px] text-[var(--text-muted)]">Pedido</p><p className="text-xs text-[var(--text)]">#{selectedTicket.order_id}</p></div>}
@@ -458,11 +458,11 @@ export const HelpDeskPage: React.FC = () => {
           {/* KPIs */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Pendientes', value: warrantyStats.pending, color: 'text-amber-600' },
-              { label: 'Aprobadas', value: warrantyStats.approved, color: 'text-green-600' },
+              { label: 'Pendientes', value: warrantyStats.pending, color: 'text-[var(--warning)]' },
+              { label: 'Aprobadas', value: warrantyStats.approved, color: 'text-[var(--success)]' },
               { label: 'Total', value: warrantyStats.total, color: 'text-[var(--text)]' },
             ].map(kpi => (
-              <div key={kpi.label} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+              <div key={kpi.label} className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
                 <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{kpi.label}</p>
                 <p className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</p>
               </div>
@@ -470,19 +470,19 @@ export const HelpDeskPage: React.FC = () => {
           </div>
 
           {/* Filters */}
-          <div className="flex items-center gap-2 bg-[var(--surface)] rounded-xl border border-[var(--border)] p-3">
-            <div className="flex items-center bg-[var(--surface2)] rounded-lg px-3 py-1.5 flex-1">
+          <div className="flex items-center gap-2 bg-[var(--surface)] rounded-none border border-[var(--border)] p-3">
+            <div className="flex items-center bg-[var(--surface2)] rounded-none px-3 py-1.5 flex-1">
               <Search size={12} className="text-[var(--text-muted)] mr-2" />
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar producto, cliente..." className="flex-1 text-xs bg-transparent outline-none" />
             </div>
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)]">
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="text-xs border border-[var(--border)] rounded-none px-2 py-1.5 bg-[var(--surface)]">
               <option value="all">Estado: Todos</option>
               {Object.entries(warrantyStatusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
           </div>
 
           {/* Claims list */}
-          <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] overflow-hidden">
+          <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] overflow-hidden">
             {loading ? (
               <div className="p-12 text-center text-[var(--text-muted)]"><Loader2 className="w-5 h-5 animate-spin mx-auto" /></div>
             ) : filteredClaims.length === 0 ? (
@@ -510,8 +510,8 @@ export const HelpDeskPage: React.FC = () => {
                         <td className="px-4 py-3 text-xs text-[var(--text)]">{c.customer_name || c.customer_email?.split('@')[0]}</td>
                         <td className="px-4 py-3 text-xs text-[var(--text)] max-w-[150px] truncate">{c.product_title}</td>
                         <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{c.defect_type}</td>
-                        <td className="px-4 py-3"><span className={`text-[10px] px-2 py-0.5 rounded-full ${c.is_within_warranty ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{c.is_within_warranty ? 'Vigente' : 'Vencida'}</span></td>
-                        <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${ws.color}`}>{ws.label}</span></td>
+                        <td className="px-4 py-3"><span className={`text-[10px] px-2 py-0.5 rounded-none ${c.is_within_warranty ? 'bg-[var(--success-subtle)] text-[var(--success)]' : 'bg-[var(--error-subtle)] text-[var(--error)]'}`}>{c.is_within_warranty ? 'Vigente' : 'Vencida'}</span></td>
+                        <td className="px-4 py-3"><span className={`text-[10px] font-medium px-2 py-0.5 rounded-none ${ws.color}`}>{ws.label}</span></td>
                         <td className="px-4 py-3 text-[10px] text-[var(--text-muted)] whitespace-nowrap">{fmtDate(c.created_at)}</td>
                         <td className="px-4 py-3"><ChevronRight size={12} className="text-[var(--text-muted)]" /></td>
                       </tr>
@@ -529,45 +529,45 @@ export const HelpDeskPage: React.FC = () => {
         <div className="space-y-4">
           <button onClick={() => setSelectedClaim(null)} className="flex items-center gap-1 text-xs text-[var(--text-secondary)] hover:text-[var(--text)]"><ArrowLeft size={12} /> Volver</button>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2 bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5 space-y-4">
+            <div className="lg:col-span-2 bg-[var(--surface)] rounded-none border border-[var(--border)] p-5 space-y-4">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="text-sm font-medium text-[var(--text)]">Garantía W-{selectedClaim.claim_number}</h4>
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">{selectedClaim.customer_name || selectedClaim.customer_email} · Pedido #{selectedClaim.order_display_id || selectedClaim.order_id}</p>
                 </div>
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${(warrantyStatusConfig[selectedClaim.status] || warrantyStatusConfig.submitted).color}`}>{(warrantyStatusConfig[selectedClaim.status] || warrantyStatusConfig.submitted).label}</span>
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-none ${(warrantyStatusConfig[selectedClaim.status] || warrantyStatusConfig.submitted).color}`}>{(warrantyStatusConfig[selectedClaim.status] || warrantyStatusConfig.submitted).label}</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[var(--surface2)] rounded-lg p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Producto</p><p className="text-xs text-[var(--text)] font-medium">{selectedClaim.product_title}</p></div>
-                <div className="bg-[var(--surface2)] rounded-lg p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Tipo de defecto</p><p className="text-xs text-[var(--text)]">{selectedClaim.defect_type}</p></div>
-                <div className="bg-[var(--surface2)] rounded-lg p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Fecha de compra</p><p className="text-xs text-[var(--text)]">{selectedClaim.purchase_date ? fmtDate(selectedClaim.purchase_date) : '—'}</p></div>
-                <div className="bg-[var(--surface2)] rounded-lg p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Garantía</p><p className="text-xs"><span className={selectedClaim.is_within_warranty ? 'text-green-600 font-medium' : 'text-red-500'}>{selectedClaim.is_within_warranty ? `Vigente (${selectedClaim.warranty_days} días)` : 'Vencida'}</span></p></div>
+                <div className="bg-[var(--surface2)] rounded-none p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Producto</p><p className="text-xs text-[var(--text)] font-medium">{selectedClaim.product_title}</p></div>
+                <div className="bg-[var(--surface2)] rounded-none p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Tipo de defecto</p><p className="text-xs text-[var(--text)]">{selectedClaim.defect_type}</p></div>
+                <div className="bg-[var(--surface2)] rounded-none p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Fecha de compra</p><p className="text-xs text-[var(--text)]">{selectedClaim.purchase_date ? fmtDate(selectedClaim.purchase_date) : '—'}</p></div>
+                <div className="bg-[var(--surface2)] rounded-none p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase">Garantía</p><p className="text-xs"><span className={selectedClaim.is_within_warranty ? 'text-[var(--success)] font-medium' : 'text-[var(--error)]'}>{selectedClaim.is_within_warranty ? `Vigente (${selectedClaim.warranty_days} días)` : 'Vencida'}</span></p></div>
               </div>
-              {selectedClaim.defect_description && <div className="bg-[var(--surface2)] rounded-lg p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase mb-1">Descripción</p><p className="text-xs text-[var(--text)]">{selectedClaim.defect_description}</p></div>}
+              {selectedClaim.defect_description && <div className="bg-[var(--surface2)] rounded-none p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase mb-1">Descripción</p><p className="text-xs text-[var(--text)]">{selectedClaim.defect_description}</p></div>}
               {selectedClaim.photo_urls?.length > 0 && (
-                <div><p className="text-[9px] text-[var(--text-muted)] uppercase mb-2">Fotos evidencia</p><div className="flex gap-2">{selectedClaim.photo_urls.map((url: string, i: number) => <img key={i} src={url} alt={`Evidencia ${i + 1}`} className="w-20 h-20 object-cover rounded-lg border" />)}</div></div>
+                <div><p className="text-[9px] text-[var(--text-muted)] uppercase mb-2">Fotos evidencia</p><div className="flex gap-2">{selectedClaim.photo_urls.map((url: string, i: number) => <img key={i} src={url} alt={`Evidencia ${i + 1}`} className="w-20 h-20 object-cover rounded-none border" />)}</div></div>
               )}
               {/* Admin notes */}
               <div>
                 <p className="text-[9px] text-[var(--text-muted)] uppercase mb-1">Notas admin</p>
-                <textarea value={selectedClaim.admin_notes || ''} onChange={e => setSelectedClaim({ ...selectedClaim, admin_notes: e.target.value })} rows={2} placeholder="Agregar notas internas..." className="w-full px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-lg text-xs outline-none resize-none" />
+                <textarea value={selectedClaim.admin_notes || ''} onChange={e => setSelectedClaim({ ...selectedClaim, admin_notes: e.target.value })} rows={2} placeholder="Agregar notas internas..." className="w-full px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-none text-xs outline-none resize-none" />
                 <button onClick={() => updateClaim(selectedClaim.id, { admin_notes: selectedClaim.admin_notes })} className="mt-1 text-[10px] text-[var(--accent)] hover:underline">Guardar notas</button>
               </div>
             </div>
 
             {/* Actions sidebar */}
             <div className="space-y-4">
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
                 <h5 className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider mb-3">Cambiar estado</h5>
                 <div className="space-y-1.5">
                   {Object.entries(warrantyStatusConfig).map(([key, val]) => (
-                    <button key={key} onClick={() => updateClaim(selectedClaim.id, { status: key })} className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${selectedClaim.status === key ? val.color + ' font-medium' : 'hover:bg-[var(--surface2)] text-[var(--text-secondary)]'}`}>{val.label}</button>
+                    <button key={key} onClick={() => updateClaim(selectedClaim.id, { status: key })} className={`w-full text-left px-3 py-2 rounded-none text-xs transition-colors ${selectedClaim.status === key ? val.color + ' font-medium' : 'hover:bg-[var(--surface2)] text-[var(--text-secondary)]'}`}>{val.label}</button>
                   ))}
                 </div>
               </div>
-              <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+              <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
                 <h5 className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider mb-3">Resolución</h5>
-                <select value={selectedClaim.resolution_type || ''} onChange={e => updateClaim(selectedClaim.id, { resolution_type: e.target.value })} className="w-full text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)] mb-2">
+                <select value={selectedClaim.resolution_type || ''} onChange={e => updateClaim(selectedClaim.id, { resolution_type: e.target.value })} className="w-full text-xs border border-[var(--border)] rounded-none px-2 py-1.5 bg-[var(--surface)] mb-2">
                   <option value="">Seleccionar resolución</option>
                   <option value="replacement">Reemplazo de producto</option>
                   <option value="refund">Reembolso completo</option>
@@ -590,7 +590,7 @@ export const HelpDeskPage: React.FC = () => {
             { label: 'Garantías pendientes', value: warrantyStats.pending, sub: `de ${warrantyStats.total} total` },
             { label: 'Garantías aprobadas', value: warrantyStats.approved, sub: warrantyStats.total > 0 ? `${Math.round((warrantyStats.approved / warrantyStats.total) * 100)}% aprobación` : '0%' },
           ].map(m => (
-            <div key={m.label} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-5">
+            <div key={m.label} className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-5">
               <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{m.label}</p>
               <p className="text-3xl font-bold text-[var(--text)] mt-1">{m.value}</p>
               <p className="text-[10px] text-[var(--text-muted)] mt-1">{m.sub}</p>

@@ -21,7 +21,7 @@
 import { useTheme } from '@/src/theme/ThemeContext';
 import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion,  } from "motion/react";
 import {
   Search, Plus, Minus, Trash2, ShoppingCart, DollarSign,
   User, Phone, Mail, MapPin, MessageSquare, CreditCard,
@@ -79,18 +79,18 @@ type ShippingType = "local_delivery" | "pickup" | "national" | null;
 
 // ═══════ CONFIG ═══════
 const channelConfig: Record<Channel, { label: string; icon: React.ElementType; color: string }> = {
-  whatsapp: { label: "WhatsApp", icon: MessageSquare, color: "bg-green-50 text-green-600 border-green-200" },
-  phone: { label: "Teléfono", icon: Phone, color: "bg-blue-50 text-blue-600 border-blue-200" },
+  whatsapp: { label: "WhatsApp", icon: MessageSquare, color: "bg-[var(--success-subtle)] text-[var(--success)] border-[var(--success)]" },
+  phone: { label: "Teléfono", icon: Phone, color: "bg-[var(--info-subtle)] text-[var(--info)] border-[var(--info)]" },
   instagram: { label: "Instagram", icon: Instagram, color: "bg-pink-50 text-pink-600 border-pink-200" },
   facebook: { label: "Facebook", icon: Facebook, color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
-  in_person: { label: "En persona", icon: Store, color: "bg-amber-50 text-amber-600 border-amber-200" },
+  in_person: { label: "En persona", icon: Store, color: "bg-[var(--warning-subtle)] text-[var(--warning)] border-[var(--warning)]" },
   other: { label: "Otro", icon: Globe, color: "bg-gray-50 text-gray-600 border-gray-200" },
 };
 
 const paymentConfig: Record<PaymentMethod, { label: string; icon: React.ElementType; color: string }> = {
-  cash: { label: "Efectivo", icon: Banknote, color: "bg-green-50 text-green-600 border-green-200" },
-  transfer: { label: "Transferencia", icon: ArrowRightLeft, color: "bg-blue-50 text-blue-600 border-blue-200" },
-  terminal: { label: "Terminal", icon: CreditCard, color: "bg-purple-50 text-purple-600 border-purple-200" },
+  cash: { label: "Efectivo", icon: Banknote, color: "bg-[var(--success-subtle)] text-[var(--success)] border-[var(--success)]" },
+  transfer: { label: "Transferencia", icon: ArrowRightLeft, color: "bg-[var(--info-subtle)] text-[var(--info)] border-[var(--info)]" },
+  terminal: { label: "Terminal", icon: CreditCard, color: "bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent)]" },
   online: { label: "Pago en línea", icon: Smartphone, color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
 };
 
@@ -326,14 +326,14 @@ export const POSPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-[var(--border)] bg-[var(--surface)]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-[var(--accent)] to-[#8B7355] rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-br from-[var(--accent)] to-[#8B7355] rounded-none flex items-center justify-center">
             <Zap className="w-4 h-4 text-white" />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-[var(--text)]">Punto de Venta</h1>
             <p className="text-[10px] text-[var(--text-muted)]">
               {productsData ? (
-                <span className="text-green-600 flex items-center gap-1"><Wifi size={8} /> {products.length} productos</span>
+                <span className="text-[var(--success)] flex items-center gap-1"><Wifi size={8} /> {products.length} productos</span>
               ) : (
                 <span className="text-[var(--text-muted)] flex items-center gap-1"><Loader2 size={8} className="animate-spin" /> Conectando...</span>
               )}
@@ -343,7 +343,7 @@ export const POSPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setView(view === "pos" ? "history" : "pos")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-none border transition-colors ${
               view === "history"
                 ? "bg-wood-900 text-white border-wood-900"
                 : "bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface2)]"
@@ -356,9 +356,9 @@ export const POSPage: React.FC = () => {
             )}
           </button>
           {ordersData?.stats && (
-            <div className="hidden md:flex items-center gap-4 px-4 py-1.5 bg-[var(--surface2)] rounded-lg text-xs text-[var(--text-secondary)]">
+            <div className="hidden md:flex items-center gap-4 px-4 py-1.5 bg-[var(--surface2)] rounded-none text-xs text-[var(--text-secondary)]">
               <span className="flex items-center gap-1">
-                <TrendingUp size={12} className="text-green-600" />
+                <TrendingUp size={12} className="text-[var(--success)]" />
                 Hoy: {fmtMXN(ordersData.stats.today_revenue)}
               </span>
               <span className="flex items-center gap-1">
@@ -388,7 +388,7 @@ export const POSPage: React.FC = () => {
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Buscar producto, SKU... (⌘K)"
-                  className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface2)] border border-[var(--border)] rounded-xl text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 focus:border-[var(--accent)]"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface2)] border border-[var(--border)] rounded-none text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 focus:border-[var(--accent)]"
                 />
               </div>
             </div>
@@ -417,7 +417,7 @@ export const POSPage: React.FC = () => {
                     return Array.from(grouped.entries()).map(([cat, prods]) => (
                       <div key={cat}>
                         <h3 className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2 flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+                          <span className="w-1.5 h-1.5 rounded-none bg-[var(--accent)]" />
                           {cat} ({prods.length})
                         </h3>
                         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -453,7 +453,7 @@ export const POSPage: React.FC = () => {
                       <button
                         key={key}
                         onClick={() => setChannel(key)}
-                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
+                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-none text-[11px] font-medium border transition-all ${
                           channel === key
                             ? cfg.color + " ring-1 ring-current/20"
                             : "bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)] hover:bg-[var(--surface2)]"
@@ -479,14 +479,14 @@ export const POSPage: React.FC = () => {
                   value={customer.first_name}
                   onChange={(e) => setCustomer({ ...customer, first_name: e.target.value })}
                   placeholder="Nombre"
-                  className="px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                  className="px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-none text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                 />
                 <input
                   type="text"
                   value={customer.last_name}
                   onChange={(e) => setCustomer({ ...customer, last_name: e.target.value })}
                   placeholder="Apellido"
-                  className="px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                  className="px-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-none text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -497,7 +497,7 @@ export const POSPage: React.FC = () => {
                     value={customer.phone}
                     onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                     placeholder="Teléfono"
-                    className="w-full pl-8 pr-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                    className="w-full pl-8 pr-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-none text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                   />
                 </div>
                 <div className="relative">
@@ -507,7 +507,7 @@ export const POSPage: React.FC = () => {
                     value={customer.email}
                     onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                     placeholder="Email (opcional)"
-                    className="w-full pl-8 pr-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                    className="w-full pl-8 pr-3 py-2 bg-[var(--surface2)] border border-[var(--border)] rounded-none text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                   />
                 </div>
               </div>
@@ -522,7 +522,7 @@ export const POSPage: React.FC = () => {
                 {cart.length > 0 && (
                   <button
                     onClick={clearCart}
-                    className="text-[10px] text-red-400 hover:text-red-600 flex items-center gap-0.5"
+                    className="text-[10px] text-red-400 hover:text-[var(--error)] flex items-center gap-0.5"
                   >
                     <Trash2 size={10} /> Limpiar
                   </button>
@@ -539,13 +539,13 @@ export const POSPage: React.FC = () => {
                   {cart.map((item) => (
                     <div
                       key={item.variant_id}
-                      className="flex items-center gap-3 p-2.5 bg-[var(--surface2)]/50 rounded-xl border border-[var(--border)]/50"
+                      className="flex items-center gap-3 p-2.5 bg-[var(--surface2)]/50 rounded-none border border-[var(--border)]/50"
                     >
                       {item.thumbnail && (
                         <img
                           src={item.thumbnail}
                           alt=""
-                          className="w-10 h-10 rounded-lg object-cover"
+                          className="w-10 h-10 rounded-none object-cover"
                         />
                       )}
                       <div className="flex-1 min-w-0">
@@ -557,7 +557,7 @@ export const POSPage: React.FC = () => {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => updateQuantity(item.variant_id, -1)}
-                          className="w-6 h-6 flex items-center justify-center rounded-md bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors"
+                          className="w-6 h-6 flex items-center justify-center rounded-none bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--error-subtle)] hover:text-[var(--error)] hover:border-[var(--error)] transition-colors"
                         >
                           <Minus size={10} />
                         </button>
@@ -566,7 +566,7 @@ export const POSPage: React.FC = () => {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.variant_id, 1)}
-                          className="w-6 h-6 flex items-center justify-center rounded-md bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors"
+                          className="w-6 h-6 flex items-center justify-center rounded-none bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--success-subtle)] hover:text-[var(--success)] hover:border-[var(--success)] transition-colors"
                         >
                           <Plus size={10} />
                         </button>
@@ -576,7 +576,7 @@ export const POSPage: React.FC = () => {
                       </p>
                       <button
                         onClick={() => removeFromCart(item.variant_id)}
-                        className="text-[var(--text-muted)] hover:text-red-500 transition-colors"
+                        className="text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
                       >
                         <X size={14} />
                       </button>
@@ -605,7 +605,7 @@ export const POSPage: React.FC = () => {
                               setShippingType(key as ShippingType);
                               setShowAddress(key === "local_delivery" || key === "national");
                             }}
-                            className={`flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg text-[10px] font-medium border transition-all ${
+                            className={`flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-none text-[10px] font-medium border transition-all ${
                               shippingType === key
                                 ? "bg-wood-900 text-white border-wood-900"
                                 : "bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface2)]"
@@ -621,12 +621,9 @@ export const POSPage: React.FC = () => {
                 </div>
 
                 {/* Address (conditional) */}
-                <AnimatePresence>
+                <>
                   {showAddress && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
+                    <div
                       className="overflow-hidden"
                     >
                       <div className="space-y-2 pt-1">
@@ -635,7 +632,7 @@ export const POSPage: React.FC = () => {
                           value={address.address_1}
                           onChange={(e) => setAddress({ ...address, address_1: e.target.value })}
                           placeholder="Dirección"
-                          className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                          className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-none text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                         />
                         <div className="grid grid-cols-3 gap-2">
                           <input
@@ -643,27 +640,27 @@ export const POSPage: React.FC = () => {
                             value={address.city}
                             onChange={(e) => setAddress({ ...address, city: e.target.value })}
                             placeholder="Ciudad"
-                            className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                            className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-none text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                           />
                           <input
                             type="text"
                             value={address.province}
                             onChange={(e) => setAddress({ ...address, province: e.target.value })}
                             placeholder="Estado"
-                            className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                            className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-none text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                           />
                           <input
                             type="text"
                             value={address.postal_code}
                             onChange={(e) => setAddress({ ...address, postal_code: e.target.value })}
                             placeholder="CP"
-                            className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                            className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-none text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                           />
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
-                </AnimatePresence>
+                </>
 
                 {/* Payment method */}
                 <div>
@@ -678,7 +675,7 @@ export const POSPage: React.FC = () => {
                           <button
                             key={key}
                             onClick={() => setPaymentMethod(key)}
-                            className={`flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg text-[10px] font-medium border transition-all ${
+                            className={`flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-none text-[10px] font-medium border transition-all ${
                               paymentMethod === key
                                 ? cfg.color + " ring-1 ring-current/20"
                                 : "bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)] hover:bg-[var(--surface2)]"
@@ -699,7 +696,7 @@ export const POSPage: React.FC = () => {
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Notas del pedido (opcional)..."
                   rows={2}
-                  className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30 resize-none"
+                  className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-none text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30 resize-none"
                 />
 
                 {/* Totals */}
@@ -709,11 +706,11 @@ export const POSPage: React.FC = () => {
                     <span>{fmtMXN(subtotal)}</span>
                   </div>
                   {discount && (
-                    <div className="flex justify-between text-xs text-green-600">
+                    <div className="flex justify-between text-xs text-[var(--success)]">
                       <span className="flex items-center gap-1">
                         <Tag size={10} />
                         Descuento ({discount.type === "percentage" ? `${discount.value}%` : fmtMXN(discount.value)})
-                        <button onClick={() => setDiscount(null)} className="text-red-400 hover:text-red-600">
+                        <button onClick={() => setDiscount(null)} className="text-red-400 hover:text-[var(--error)]">
                           <X size={10} />
                         </button>
                       </span>
@@ -728,19 +725,16 @@ export const POSPage: React.FC = () => {
                       <Percent size={10} /> Agregar descuento
                     </button>
                   )}
-                  <AnimatePresence>
+                  <>
                     {showDiscount && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
+                      <div
                         className="overflow-hidden"
                       >
                         <div className="flex gap-2 pt-1">
                           <select
                             value={discountType}
                             onChange={(e) => setDiscountType(e.target.value as "percentage" | "fixed")}
-                            className="px-2 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs"
+                            className="px-2 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-none text-xs"
                           >
                             <option value="percentage">%</option>
                             <option value="fixed">$</option>
@@ -750,18 +744,18 @@ export const POSPage: React.FC = () => {
                             value={discountInput}
                             onChange={(e) => setDiscountInput(e.target.value)}
                             placeholder={discountType === "percentage" ? "10" : "100"}
-                            className="flex-1 px-3 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+                            className="flex-1 px-3 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-none text-xs focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
                           />
                           <button
                             onClick={applyDiscount}
-                            className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-lg text-xs font-medium hover:bg-[#B08D55]"
+                            className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-none text-xs font-medium hover:bg-[#B08D55]"
                           >
                             Aplicar
                           </button>
                         </div>
-                      </motion.div>
+                      </div>
                     )}
-                  </AnimatePresence>
+                  </>
                   <div className="flex justify-between text-sm font-bold text-[var(--text)] pt-2 border-t border-[var(--border)]">
                     <span>Total</span>
                     <span className="text-lg">{fmtMXN(total)}</span>
@@ -772,7 +766,7 @@ export const POSPage: React.FC = () => {
                 <button
                   onClick={submitOrder}
                   disabled={submitting || !cart.length}
-                  className="w-full py-3 bg-gradient-to-r from-wood-900 to-[var(--text)] text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:from-[var(--text)] hover:to-wood-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-wood-900/20"
+                  className="w-full py-3 bg-gradient-to-r from-wood-900 to-[var(--text)] text-white rounded-none text-sm font-bold flex items-center justify-center gap-2 hover:from-[var(--text)] hover:to-wood-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-wood-900/20"
                 >
                   {submitting ? (
                     <>
@@ -812,7 +806,7 @@ const ProductCard: React.FC<{
     <button
       onClick={() => !outOfStock && onAdd(product, variant)}
       disabled={outOfStock}
-      className={`relative text-left p-3 rounded-xl border transition-all group ${
+      className={`relative text-left p-3 rounded-none border transition-all group ${
         outOfStock
           ? "bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed"
           : inCart
@@ -821,7 +815,7 @@ const ProductCard: React.FC<{
       }`}
     >
       {inCart && (
-        <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[var(--accent)] text-white rounded-full text-[9px] font-bold flex items-center justify-center shadow-sm">
+        <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[var(--accent)] text-white rounded-none text-[9px] font-bold flex items-center justify-center shadow-sm">
           {inCart.quantity}
         </span>
       )}
@@ -829,10 +823,10 @@ const ProductCard: React.FC<{
         <img
           src={product.thumbnail}
           alt=""
-          className="w-full aspect-square rounded-lg object-cover mb-2"
+          className="w-full aspect-square rounded-none object-cover mb-2"
         />
       ) : (
-        <div className="w-full aspect-square rounded-lg bg-[var(--surface2)] flex items-center justify-center mb-2">
+        <div className="w-full aspect-square rounded-none bg-[var(--surface2)] flex items-center justify-center mb-2">
           <Package className="w-6 h-6 text-[var(--text-muted)]" />
         </div>
       )}
@@ -859,12 +853,10 @@ const OrderConfirmation: React.FC<{
   onNewOrder: () => void;
 }> = ({ order, total, customer, onNewOrder }) => (
   <div className="flex-1 flex items-center justify-center p-8">
-    <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+    <div
       className="text-center max-w-md"
     >
-      <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="w-20 h-20 bg-[var(--success-subtle)] rounded-none flex items-center justify-center mx-auto mb-6">
         <CheckCircle className="w-10 h-10 text-green-500" />
       </div>
       <h2 className="text-2xl font-bold text-[var(--text)] mb-2">Pedido Creado</h2>
@@ -873,14 +865,14 @@ const OrderConfirmation: React.FC<{
       </p>
       <p className="text-3xl font-bold text-[var(--accent)] mb-6">{fmtMXN(total)}</p>
       {order.id && (
-        <p className="text-xs text-[var(--text-muted)] bg-[var(--surface2)] px-4 py-2 rounded-lg inline-block mb-6 font-mono">
+        <p className="text-xs text-[var(--text-muted)] bg-[var(--surface2)] px-4 py-2 rounded-none inline-block mb-6 font-mono">
           ID: {order.id}
         </p>
       )}
       <div className="flex gap-3 justify-center">
         <button
           onClick={onNewOrder}
-          className="px-6 py-3 bg-wood-900 text-white rounded-xl text-sm font-bold hover:bg-[var(--text)] transition-colors flex items-center gap-2"
+          className="px-6 py-3 bg-wood-900 text-white rounded-none text-sm font-bold hover:bg-[var(--text)] transition-colors flex items-center gap-2"
         >
           <Plus size={16} /> Nuevo Pedido
         </button>
@@ -891,12 +883,12 @@ const OrderConfirmation: React.FC<{
               toast.success("ID copiado");
             }
           }}
-          className="px-4 py-3 bg-[var(--surface)] text-[var(--text-secondary)] rounded-xl text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-2"
+          className="px-4 py-3 bg-[var(--surface)] text-[var(--text-secondary)] rounded-none text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-2"
         >
           <Copy size={14} /> Copiar ID
         </button>
       </div>
-    </motion.div>
+    </div>
   </div>
 );
 
@@ -907,12 +899,12 @@ const OrderHistory: React.FC<{ orders: any[]; stats?: any }> = ({ orders, stats 
     {stats && (
       <div className="grid grid-cols-4 gap-4 mb-6">
         {[
-          { label: "Ventas hoy", value: fmtMXN(stats.today_revenue), icon: DollarSign, color: "text-green-600" },
-          { label: "Pedidos hoy", value: stats.today_count, icon: Receipt, color: "text-blue-600" },
+          { label: "Ventas hoy", value: fmtMXN(stats.today_revenue), icon: DollarSign, color: "text-[var(--success)]" },
+          { label: "Pedidos hoy", value: stats.today_count, icon: Receipt, color: "text-[var(--info)]" },
           { label: "Pedidos POS", value: stats.pos_count, icon: Zap, color: "text-[var(--accent)]" },
           { label: "Total histórico", value: stats.total_count, icon: BarChart3, color: "text-[var(--text-secondary)]" },
         ].map((s) => (
-          <div key={s.label} className="bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4">
+          <div key={s.label} className="bg-[var(--surface)] rounded-none border border-[var(--border)] p-4">
             <div className="flex items-center gap-2 mb-1">
               <s.icon size={14} className={s.color} />
               <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">{s.label}</span>
@@ -924,7 +916,7 @@ const OrderHistory: React.FC<{ orders: any[]; stats?: any }> = ({ orders, stats 
     )}
 
     {/* Orders table */}
-    <div className="bg-[var(--surface)] rounded-xl border border-[var(--border)] overflow-hidden">
+    <div className="bg-[var(--surface)] rounded-none border border-[var(--border)] overflow-hidden">
       <div className="px-4 py-3 border-b border-[var(--border)]">
         <h3 className="text-sm font-bold text-[var(--text)]">Pedidos recientes</h3>
       </div>
@@ -939,8 +931,8 @@ const OrderHistory: React.FC<{ orders: any[]; stats?: any }> = ({ orders, stats 
 
             return (
               <div key={o.id} className="flex items-center gap-4 px-4 py-3 hover:bg-[var(--surface2)]/50 transition-colors">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isPos ? "bg-[var(--accent)]/10" : o.source === "quote" ? "bg-purple-50" : "bg-blue-50"}`}>
-                  {isPos ? <Zap size={14} className="text-[var(--accent)]" /> : o.source === "quote" ? <FileText size={14} className="text-purple-500" /> : <Globe size={14} className="text-blue-500" />}
+                <div className={`w-8 h-8 rounded-none flex items-center justify-center ${isPos ? "bg-[var(--accent)]/10" : o.source === "quote" ? "bg-[var(--accent-subtle)]" : "bg-[var(--info-subtle)]"}`}>
+                  {isPos ? <Zap size={14} className="text-[var(--accent)]" /> : o.source === "quote" ? <FileText size={14} className="text-[var(--accent)]" /> : <Globe size={14} className="text-[var(--info)]" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

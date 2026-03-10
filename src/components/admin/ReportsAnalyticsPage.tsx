@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion,  } from 'motion/react';
 import {
   BarChart3, ShoppingCart, Users, Package, Settings2, Plus,
   Download, AlertTriangle, Lightbulb,
@@ -249,7 +249,7 @@ const widgetCategories = [
 // ===== SHARED COMPONENTS =====
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={'bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ' + className}>
+    <div className={'bg-[var(--surface)] rounded-none border border-[var(--border)] shadow-sm ' + className}>
       {children}
     </div>
   );
@@ -265,9 +265,9 @@ function STitle({ children }: { children: React.ReactNode }) {
 
 function Insight({ text, type = 'info' }: { text: string; type?: 'info' | 'warning' | 'success' }) {
   const styles: Record<string, string> = {
-    info: 'bg-blue-50 border-blue-200 text-blue-800',
-    warning: 'bg-amber-50 border-amber-200 text-amber-800',
-    success: 'bg-green-50 border-green-200 text-green-800',
+    info: 'bg-[var(--info-subtle)] border-[var(--info)] text-blue-800',
+    warning: 'bg-[var(--warning-subtle)] border-[var(--warning)] text-amber-800',
+    success: 'bg-[var(--success-subtle)] border-[var(--success)] text-[var(--success)]',
   };
   const icons: Record<string, React.ElementType> = {
     info: Lightbulb,
@@ -276,7 +276,7 @@ function Insight({ text, type = 'info' }: { text: string; type?: 'info' | 'warni
   };
   const Icon = icons[type];
   return (
-    <div className={'flex items-start gap-2 p-3 rounded-lg border text-xs ' + styles[type]}>
+    <div className={'flex items-start gap-2 p-3 rounded-none border text-xs ' + styles[type]}>
       <Icon size={14} className="mt-0.5 shrink-0" />
       <span>{text}</span>
     </div>
@@ -284,8 +284,8 @@ function Insight({ text, type = 'info' }: { text: string; type?: 'info' | 'warni
 }
 
 function StatusDot({ status }: { status: 'green' | 'yellow' | 'red' }) {
-  const c = status === 'green' ? 'bg-green-500' : status === 'yellow' ? 'bg-amber-400' : 'bg-red-500';
-  return <span className={'inline-block w-3 h-3 rounded-full ' + c} />;
+  const c = status === 'green' ? 'bg-[var(--success-subtle)]0' : status === 'yellow' ? 'bg-[var(--warning)]' : 'bg-[var(--error-subtle)]0';
+  return <span className={'inline-block w-3 h-3 rounded-none ' + c} />;
 }
 
 // ===== TAB 1: RESUMEN EJECUTIVO =====
@@ -296,24 +296,21 @@ function ResumenTab() {
       <Card className="p-5">
         <STitle>Scorecard de Negocio - Febrero 2026</STitle>
         <p className="text-[10px] text-[var(--text-muted)] mb-4 -mt-2 flex items-center gap-3">
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-green-500" /> En meta</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Cerca (&lt;10% debajo)</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Debajo de meta</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-none bg-[var(--success-subtle)]0" /> En meta</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-none bg-[var(--warning)]" /> Cerca (&lt;10% debajo)</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-none bg-[var(--error-subtle)]0" /> Debajo de meta</span>
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {scorecardItems.map((s, i) => (
-            <motion.div
+            <div
               key={s.area}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
               className={
-                'p-3 rounded-xl border ' +
+                'p-3 rounded-none border ' +
                 (s.status === 'green'
-                  ? 'border-green-200 bg-green-50/30'
+                  ? 'border-[var(--success)] bg-[var(--success-subtle)]/30'
                   : s.status === 'yellow'
-                  ? 'border-amber-200 bg-amber-50/30'
-                  : 'border-red-200 bg-red-50/30')
+                  ? 'border-[var(--warning)] bg-[var(--warning-subtle)]/30'
+                  : 'border-[var(--error)] bg-[var(--error-subtle)]/30')
               }
             >
               <div className="flex items-center gap-1.5 mb-1.5">
@@ -323,7 +320,7 @@ function ResumenTab() {
               <p className="text-sm font-semibold text-[var(--text)]">{s.value}</p>
               <p className="text-[10px] text-[var(--text-secondary)]">{s.metric} {s.met ? '(ok)' : '(!)'}</p>
               <p className="text-[10px] text-[var(--text-muted)]">{s.delta}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </Card>
@@ -333,7 +330,7 @@ function ResumenTab() {
         <STitle>Tendencias clave (30 dias)</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sparklineData.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-lg">
+            <div key={i} className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-none">
               <div className="w-24 h-8 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={s.data.map((v, j) => ({ v, i: j }))}>
@@ -388,10 +385,10 @@ function ResumenTab() {
                   <td className="px-5 py-2.5 text-xs text-[var(--text)] text-right font-mono">{r.actual}</td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right font-mono">{r.prev}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className={r.up ? 'text-green-600' : 'text-red-500'}>{r.change}</span>
+                    <span className={r.up ? 'text-[var(--success)]' : 'text-[var(--error)]'}>{r.change}</span>
                   </td>
                   <td className="px-5 py-2.5 text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
-                    {r.up ? <ArrowUpRight size={10} className="text-green-600" /> : <ArrowDownRight size={10} className="text-red-500" />}
+                    {r.up ? <ArrowUpRight size={10} className="text-[var(--success)]" /> : <ArrowDownRight size={10} className="text-[var(--error)]" />}
                     {r.trend}
                   </td>
                 </tr>
@@ -420,16 +417,13 @@ function VentasTab() {
                   {step.value.toLocaleString()} <span className="text-[var(--text-muted)]">({step.pct}%)</span>
                 </span>
               </div>
-              <div className="w-full bg-[var(--surface2)] rounded-full h-6 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: step.pct + '%' }}
-                  transition={{ delay: i * 0.15, duration: 0.5 }}
-                  className="h-6 rounded-full flex items-center justify-end pr-2"
+              <div className="w-full bg-[var(--surface2)] rounded-none h-6 overflow-hidden">
+                <div
+                  className="h-6 rounded-none flex items-center justify-end pr-2"
                   style={{ backgroundColor: step.fill }}
                 >
                   {step.pct > 8 && <span className="text-[10px] text-white font-medium">{step.pct}%</span>}
-                </motion.div>
+                </div>
               </div>
             </div>
           ))}
@@ -484,7 +478,7 @@ function VentasTab() {
                   <td className="px-5 py-2.5 text-xs font-mono text-[var(--text)] text-right">{fmt(t.revenue)}</td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{t.pct}%</td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className={'px-1.5 py-0.5 rounded-full ' + (t.conv >= 4 ? 'bg-green-50 text-green-600' : t.conv >= 2.5 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500')}>
+                    <span className={'px-1.5 py-0.5 rounded-none ' + (t.conv >= 4 ? 'bg-[var(--success-subtle)] text-[var(--success)]' : t.conv >= 2.5 ? 'bg-[var(--warning-subtle)] text-[var(--warning)]' : 'bg-[var(--error-subtle)] text-[var(--error)]')}>
                       {t.conv}%
                     </span>
                   </td>
@@ -509,13 +503,13 @@ function VentasTab() {
           </div>
           <div>
             <p className="text-[10px] text-[var(--text-muted)] uppercase">Valor total abandonado</p>
-            <p className="text-xl font-semibold text-red-500 font-sans">$456,800</p>
+            <p className="text-xl font-semibold text-[var(--error)] font-sans">$456,800</p>
           </div>
         </div>
         <h6 className="text-xs font-medium text-[var(--text)] mb-2">Productos mas abandonados:</h6>
         <div className="space-y-2 mb-4">
           {abandonedProducts.map((p) => (
-            <div key={p.product} className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg text-xs">
+            <div key={p.product} className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-none text-xs">
               <span className="text-[var(--text)]">{p.product} ({fmt(p.price)})</span>
               <span className="text-[var(--text-secondary)]">
                 {p.abandons} abandonos{p.reason && <span className="text-[var(--text-muted)] ml-1">- {p.reason}</span>}
@@ -531,8 +525,8 @@ function VentasTab() {
                 <span className="text-[var(--text-secondary)]">{r.reason}</span>
                 <span className="font-medium text-[var(--text)]">{r.pct}%</span>
               </div>
-              <div className="w-full bg-[var(--surface2)] rounded-full h-2">
-                <div className="bg-[var(--accent)] h-2 rounded-full" style={{ width: r.pct + '%' }} />
+              <div className="w-full bg-[var(--surface2)] rounded-none h-2">
+                <div className="bg-[var(--accent)] h-2 rounded-none" style={{ width: r.pct + '%' }} />
               </div>
             </div>
           ))}
@@ -544,13 +538,13 @@ function VentasTab() {
         <STitle>Dispositivos y plataformas</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {deviceData.map((d) => (
-            <div key={d.device} className="p-4 bg-[var(--surface2)] rounded-xl text-center">
+            <div key={d.device} className="p-4 bg-[var(--surface2)] rounded-none text-center">
               <d.icon size={24} className="mx-auto text-[var(--text-secondary)] mb-2" />
               <p className="text-sm font-semibold text-[var(--text)]">{d.device}</p>
               <div className="mt-2 space-y-1 text-xs text-[var(--text-secondary)]">
                 <p>{d.traffic}% trafico</p>
                 <p>{d.sales}% ventas</p>
-                <p className={'font-medium ' + (d.conv >= 3 ? 'text-green-600' : 'text-amber-600')}>{d.conv}% conversion</p>
+                <p className={'font-medium ' + (d.conv >= 3 ? 'text-[var(--success)]' : 'text-[var(--warning)]')}>{d.conv}% conversion</p>
               </div>
             </div>
           ))}
@@ -570,7 +564,7 @@ function ClientesTab() {
         <STitle>Adquisicion de clientes</STitle>
         <div className="flex items-center gap-4 mb-3 text-xs text-[var(--text-secondary)]">
           <span>Total nuevos (periodo): <span className="font-semibold text-[var(--text)]">18</span></span>
-          <span>Costo de adquisicion est.: <span className="font-semibold text-green-600">$0</span> (organico)</span>
+          <span>Costo de adquisicion est.: <span className="font-semibold text-[var(--success)]">$0</span> (organico)</span>
         </div>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -632,9 +626,9 @@ function ClientesTab() {
         <STitle>Analisis RFM (Recencia, Frecuencia, Monetizacion)</STitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
           {rfmSegments.map((s) => (
-            <div key={s.segment} className="p-3 rounded-xl border border-[var(--border)]">
+            <div key={s.segment} className="p-3 rounded-none border border-[var(--border)]">
               <div className="flex items-center gap-2 mb-1.5">
-                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                <span className="w-3 h-3 rounded-none shrink-0" style={{ backgroundColor: s.color }} />
                 <span className="text-xs font-medium text-[var(--text)]">{s.segment}</span>
                 <span className="text-[10px] text-[var(--text-muted)]">({s.desc})</span>
               </div>
@@ -676,7 +670,7 @@ function ClientesTab() {
         <STitle>Distribucion geografica de clientes</STitle>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {geoData.map((g) => (
-            <div key={g.city} className="p-3 bg-[var(--surface2)] rounded-lg">
+            <div key={g.city} className="p-3 bg-[var(--surface2)] rounded-none">
               <div className="flex items-center gap-1.5 mb-1">
                 <MapPin size={12} className="text-[var(--accent)]" />
                 <span className="text-xs font-medium text-[var(--text)]">{g.city}</span>
@@ -733,7 +727,7 @@ function ProductosTab() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
           {(['star', 'cow', 'question', 'dog'] as const).map((cat) => (
-            <div key={cat} className="p-3 rounded-lg border border-[var(--border)]">
+            <div key={cat} className="p-3 rounded-none border border-[var(--border)]">
               <p className="text-xs font-medium mb-1" style={{ color: catColors[cat] }}>{catLabels[cat]}</p>
               <div className="space-y-1">
                 {bcgProducts.filter((p) => p.category === cat).map((p) => (
@@ -774,7 +768,7 @@ function ProductosTab() {
                   if (active && payload && payload.length) {
                     const d = payload[0].payload;
                     return (
-                      <div className="bg-[var(--text)] text-[var(--surface2)] p-2 rounded-lg text-[10px]">
+                      <div className="bg-[var(--text)] text-[var(--surface2)] p-2 rounded-none text-[10px]">
                         <p className="font-medium">{d.name}</p>
                         <p>Precio: {fmt(d.price)}</p>
                         <p>Uds: {d.units}</p>
@@ -798,7 +792,7 @@ function ProductosTab() {
         <p className="text-xs text-[var(--text-secondary)] mb-3">"Los que compraron X tambien compraron Y"</p>
         <div className="space-y-3">
           {crossSellData.map((c) => (
-            <div key={c.product} className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-lg text-xs">
+            <div key={c.product} className="flex items-center gap-3 p-3 bg-[var(--surface2)] rounded-none text-xs">
               <span className="font-medium text-[var(--text)]">{c.product}</span>
               <ChevronRight size={14} className="text-[var(--text-muted)]" />
               <span className="text-[var(--text)]">{c.pct}% tambien compro <span className="font-medium">{c.related}</span></span>
@@ -831,7 +825,7 @@ function ProductosTab() {
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{p.stockStart}</td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{p.sold}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className={'px-1.5 py-0.5 rounded-full ' + (p.level === 'green' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500')}>
+                    <span className={'px-1.5 py-0.5 rounded-none ' + (p.level === 'green' ? 'bg-[var(--success-subtle)] text-[var(--success)]' : 'bg-[var(--error-subtle)] text-[var(--error)]')}>
                       {p.sellThrough}%
                     </span>
                   </td>
@@ -857,7 +851,7 @@ function OperacionesTab() {
         <STitle>SLA de Tiempos</STitle>
         <div className="space-y-3">
           {slaData.map((s) => (
-            <div key={s.name} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-lg">
+            <div key={s.name} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-none">
               <span className="text-xs text-[var(--text)]">{s.name}</span>
               <div className="flex items-center gap-3">
                 <span className="text-xs font-mono font-medium text-[var(--text)]">{s.actual}</span>
@@ -865,7 +859,7 @@ function OperacionesTab() {
                 {s.met ? (
                   <CheckCircle size={14} className="text-green-500" />
                 ) : (
-                  <AlertTriangle size={14} className="text-amber-500" />
+                  <AlertTriangle size={14} className="text-[var(--warning)]" />
                 )}
               </div>
             </div>
@@ -919,12 +913,12 @@ function OperacionesTab() {
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{c.shipments}</td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{c.avgDelivery}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className={'px-1.5 py-0.5 rounded-full ' + (c.onTime >= 90 ? 'bg-green-50 text-green-600' : c.onTime >= 80 ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500')}>
+                    <span className={'px-1.5 py-0.5 rounded-none ' + (c.onTime >= 90 ? 'bg-[var(--success-subtle)] text-[var(--success)]' : c.onTime >= 80 ? 'bg-[var(--warning-subtle)] text-[var(--warning)]' : 'bg-[var(--error-subtle)] text-[var(--error)]')}>
                       {c.onTime}%
                     </span>
                   </td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className={c.problemPct > 10 ? 'text-red-500' : 'text-[var(--text-secondary)]'}>
+                    <span className={c.problemPct > 10 ? 'text-[var(--error)]' : 'text-[var(--text-secondary)]'}>
                       {c.problems} ({c.problemPct}%)
                     </span>
                   </td>
@@ -949,7 +943,7 @@ function OperacionesTab() {
         <STitle>Tasa de problemas</STitle>
         <div className="space-y-2">
           {problemRates.map((p) => (
-            <div key={p.name} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-lg text-xs">
+            <div key={p.name} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-none text-xs">
               <span className="text-[var(--text)]">{p.name}</span>
               <div className="flex items-center gap-3">
                 <span className="font-mono font-medium text-[var(--text)]">{p.actual}</span>
@@ -957,7 +951,7 @@ function OperacionesTab() {
                 {p.met ? (
                   <CheckCircle size={14} className="text-green-500" />
                 ) : (
-                  <AlertTriangle size={14} className="text-red-500" />
+                  <AlertTriangle size={14} className="text-[var(--error)]" />
                 )}
               </div>
             </div>
@@ -983,11 +977,11 @@ function OperacionesTab() {
           </div>
           <div>
             <p className="text-[10px] text-[var(--text-muted)] uppercase">Utilizacion</p>
-            <p className="text-lg font-semibold text-green-600 font-sans">67%</p>
+            <p className="text-lg font-semibold text-[var(--success)] font-sans">67%</p>
           </div>
         </div>
-        <div className="w-full bg-[var(--surface2)] rounded-full h-4 mb-3">
-          <div className="bg-green-500 h-4 rounded-full flex items-center justify-center" style={{ width: '67%' }}>
+        <div className="w-full bg-[var(--surface2)] rounded-none h-4 mb-3">
+          <div className="bg-[var(--success-subtle)]0 h-4 rounded-none flex items-center justify-center" style={{ width: '67%' }}>
             <span className="text-[10px] text-white font-medium">67%</span>
           </div>
         </div>
@@ -1012,7 +1006,7 @@ function CustomTab() {
             <button
               key={d.id}
               onClick={() => toast.success('Abriendo "' + d.name + '"...')}
-              className="p-4 bg-[var(--surface2)] rounded-xl text-left hover:bg-[var(--surface2)] transition-colors border border-transparent hover:border-[var(--accent)]/30"
+              className="p-4 bg-[var(--surface2)] rounded-none text-left hover:bg-[var(--surface2)] transition-colors border border-transparent hover:border-[var(--accent)]/30"
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-medium bg-[var(--accent)]/10 text-[var(--accent)] px-1.5 py-0.5 rounded">{d.icon}</span>
@@ -1032,18 +1026,18 @@ function CustomTab() {
           <input
             type="text"
             defaultValue="Mi Resumen Diario"
-            className="w-full max-w-md border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]"
+            className="w-full max-w-md border border-[var(--border)] rounded-none px-3 py-2 text-xs bg-[var(--surface)]"
           />
         </div>
 
         <h6 className="text-xs font-medium text-[var(--text)] mb-3">Widgets disponibles (arrastrar al canvas)</h6>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           {widgetCategories.map((cat) => (
-            <div key={cat.category} className="p-3 bg-[var(--surface2)] rounded-xl">
+            <div key={cat.category} className="p-3 bg-[var(--surface2)] rounded-none">
               <p className="text-xs font-medium text-[var(--text)] mb-2">{cat.category}</p>
               <div className="space-y-1.5">
                 {cat.items.map((item) => (
-                  <div key={item} className="flex items-center gap-2 p-2 bg-[var(--surface)] rounded-lg border border-[var(--border)] text-[10px] text-[var(--text-secondary)] hover:border-[var(--accent)]/40 transition-colors">
+                  <div key={item} className="flex items-center gap-2 p-2 bg-[var(--surface)] rounded-none border border-[var(--border)] text-[10px] text-[var(--text-secondary)] hover:border-[var(--accent)]/40 transition-colors">
                     <GripVertical size={10} className="text-[var(--text-muted)]" />
                     <span>{item}</span>
                   </div>
@@ -1054,14 +1048,14 @@ function CustomTab() {
         </div>
 
         {/* Placeholder canvas */}
-        <div className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
+        <div className="border-2 border-dashed border-[var(--border)] rounded-none p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl mb-4">
             {[
               { title: 'Ingresos Hoy', value: '$5,200', type: 'KPI' },
               { title: 'Pedidos Pendientes', value: '8', type: 'KPI' },
               { title: 'Stock Bajo', value: '3 productos', type: 'Alerta' },
             ].map((w, i) => (
-              <div key={i} className="bg-[var(--surface)] p-3 rounded-lg border border-[var(--border)] shadow-sm text-left">
+              <div key={i} className="bg-[var(--surface)] p-3 rounded-none border border-[var(--border)] shadow-sm text-left">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[9px] text-[var(--text-muted)] uppercase">{w.type}</span>
                   <GripVertical size={10} className="text-[var(--text-muted)]" />
@@ -1076,18 +1070,18 @@ function CustomTab() {
         </div>
 
         <div className="flex items-center justify-end gap-2 mt-4">
-          <button className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] rounded-lg transition-colors">
+          <button className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] rounded-none transition-colors">
             Cancelar
           </button>
           <button
             onClick={() => toast.success('Dashboard guardado')}
-            className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors"
+            className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-none hover:bg-[var(--accent)]/90 transition-colors"
           >
             Guardar dashboard
           </button>
           <button
             onClick={() => toast.success('Establecido como inicio')}
-            className="px-4 py-2 text-xs border border-[var(--accent)] text-[var(--accent)] rounded-lg hover:bg-[var(--accent)]/10 transition-colors"
+            className="px-4 py-2 text-xs border border-[var(--accent)] text-[var(--accent)] rounded-none hover:bg-[var(--accent)]/10 transition-colors"
           >
             Establecer como mi inicio
           </button>
@@ -1131,13 +1125,13 @@ export const ReportsAnalyticsPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => toast.success('Creando nuevo dashboard...')}
-            className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs bg-[var(--accent)] text-white rounded-none hover:bg-[var(--accent)]/90 transition-colors flex items-center gap-1.5"
           >
             <Plus size={12} /> Nuevo Dashboard
           </button>
           <button
             onClick={() => toast.success('Exportando...')}
-            className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-none hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5"
           >
             <Download size={12} /> Exportar
           </button>
@@ -1172,7 +1166,7 @@ export const ReportsAnalyticsPage: React.FC = () => {
           <select
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
-            className="border border-[var(--border)] rounded-lg px-2 py-1 text-xs bg-[var(--surface)]"
+            className="border border-[var(--border)] rounded-none px-2 py-1 text-xs bg-[var(--surface)]"
           >
             {periods.map((p) => (
               <option key={p}>{p}</option>
@@ -1181,7 +1175,7 @@ export const ReportsAnalyticsPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
           <span>Comparar:</span>
-          <select className="border border-[var(--border)] rounded-lg px-2 py-1 text-xs bg-[var(--surface)]">
+          <select className="border border-[var(--border)] rounded-none px-2 py-1 text-xs bg-[var(--surface)]">
             <option>Mes anterior</option>
             <option>Mismo periodo ano anterior</option>
             <option>Sin comparar</option>
@@ -1190,17 +1184,13 @@ export const ReportsAnalyticsPage: React.FC = () => {
       </div>
 
       {/* Tab content */}
-      <AnimatePresence mode="wait">
-        <motion.div
+      <>
+        <div
           key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.2 }}
         >
           {tabContent[activeTab]}
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </>
     </div>
   );
 };

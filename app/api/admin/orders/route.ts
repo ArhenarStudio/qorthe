@@ -17,11 +17,15 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status"); // e.g. "pending", "completed"
     const q = searchParams.get("q"); // search query
 
-    // Build Medusa query string
-    let query = `/admin/orders?limit=${limit}&offset=${offset}&order=-created_at`;
-    query += `&fields=id,display_id,email,total,currency_code,status,fulfillment_status,payment_status,created_at,updated_at`;
-    query += `&fields=+items.id,+items.title,+items.quantity,+items.unit_price,+items.thumbnail`;
-    query += `&fields=+shipping_address.first_name,+shipping_address.last_name,+shipping_address.city,+shipping_address.province`;
+    // Build Medusa query string — single &fields= param (comma-separated, Medusa v2)
+    const fields = [
+      "id","display_id","email","total","currency_code","status",
+      "fulfillment_status","payment_status","created_at","updated_at",
+      "+items.id","+items.title","+items.quantity","+items.unit_price","+items.thumbnail",
+      "+shipping_address.first_name","+shipping_address.last_name",
+      "+shipping_address.city","+shipping_address.province",
+    ].join(",");
+    let query = `/admin/orders?limit=${limit}&offset=${offset}&order=-created_at&fields=${encodeURIComponent(fields)}`;
 
     if (status && status !== "all") {
       if (status === "pending") {

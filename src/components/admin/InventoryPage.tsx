@@ -217,9 +217,9 @@ export const InventoryPage: React.FC = () => {
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
           <KpiCard icon={<Boxes size={16} className="text-[var(--accent)]" />} value={String(stats.total_items)} label="Productos" sub={`${stats.total_units} unidades`} accent />
-          <KpiCard icon={<DollarSign size={16} className="text-green-600" />} value={fmt(stats.total_cost_value)} label="Valor costo" sub={`Retail: ${fmt(stats.total_retail_value)}`} />
+          <KpiCard icon={<DollarSign size={16} style={{color:"var(--accent)"}} />} value={fmt(stats.total_cost_value)} label="Valor costo" sub={`Retail: ${fmt(stats.total_retail_value)}`} />
           <KpiCard icon={<AlertTriangle size={16} className="text-amber-500" />} value={String(stats.low_stock_count)} label="Stock bajo" sub={`${stats.out_of_stock_count} agotados`} />
-          <KpiCard icon={<Bell size={16} className="text-red-500" />} value={String(stats.unresolved_alerts)} label="Alertas" sub="Sin resolver" />
+          <KpiCard icon={<Bell size={16} style={{color:"var(--error)"}} />} value={String(stats.unresolved_alerts)} label="Alertas" sub="Sin resolver" />
           <KpiCard icon={<Truck size={16} className="text-indigo-500" />} value={String(stats.pending_transfers)} label="Transferencias" sub="Pendientes" />
           <KpiCard icon={<ClipboardList size={16} className="text-teal-600" />} value={String(stats.pending_counts)} label="Conteos" sub="Programados" />
         </div>
@@ -237,7 +237,7 @@ export const InventoryPage: React.FC = () => {
               }`}>
               <Icon size={14} /> {t.label}
               {badgeCount > 0 && (
-                <span className={`ml-1 px-1.5 py-0.5 rounded-none text-[10px] ${tab === t.id ? 'bg-red-500 text-white' : 'bg-red-50 text-red-500'}`}>
+                <span className={`ml-1 px-1.5 py-0.5 rounded-none text-[10px] ${tab === t.id ? '' : ''}`}>
                   {badgeCount}
                 </span>
               )}
@@ -312,7 +312,7 @@ export const InventoryPage: React.FC = () => {
                   className="w-full px-3 py-2 text-sm bg-[var(--surface2)] border-2 border-[var(--border)] rounded-none focus:border-[var(--accent)] outline-none" />
               </div>
               {quickQty && (
-                <div className="bg-blue-50 rounded-none p-3 text-xs text-blue-700">
+                <div className="rounded-none p-3 text-xs" style={{backgroundColor:"var(--info-subtle)",color:"var(--info)",border:"1px solid var(--info)"}}>
                   Stock resultante: <strong>{quickAction.item.current_stock} → {Math.max(0, quickAction.item.current_stock + (["purchase", "return", "production"].includes(quickAction.type) ? parseInt(quickQty) || 0 : -(parseInt(quickQty) || 0)))}</strong>
                 </div>
               )}
@@ -454,7 +454,7 @@ const OverviewTab: React.FC<{
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-bold text-[var(--text)]">{item.current_stock}</span>
                           {item.reserved_stock > 0 && (
-                            <span className="text-[9px] px-1 py-0.5 bg-orange-50 text-orange-600 rounded font-bold" title={`${item.reserved_stock} reservados`}>
+                            <span className="text-[9px] px-1 py-0.5 font-bold" style={{backgroundColor:"var(--warning-subtle)",color:"var(--warning)",border:"1px solid var(--warning)"}} title={`${item.reserved_stock} reservados`}>
                               R:{item.reserved_stock}
                             </span>
                           )}
@@ -491,13 +491,13 @@ const OverviewTab: React.FC<{
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1">
                           <button onClick={() => onQuickAction(item, "purchase")} title="Entrada (compra)"
-                            className="p-1.5 rounded-none bg-green-50 text-green-600 hover:bg-green-100 transition-colors"><Plus size={12} /></button>
+                            className="p-1.5" style={{border:"1px solid var(--border)",background:"var(--surface2)",color:"var(--text)"}}><Plus size={12} /></button>
                           <button onClick={() => onQuickAction(item, "sale")} title="Salida (venta)"
-                            className="p-1.5 rounded-none bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"><Minus size={12} /></button>
+                            className="p-1.5" style={{border:"1px solid var(--border)",background:"var(--surface2)",color:"var(--text)"}}><Minus size={12} /></button>
                           <button onClick={() => onQuickAction(item, "adjustment")} title="Ajuste"
-                            className="p-1.5 rounded-none bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"><ArrowUpDown size={12} /></button>
+                            className="p-1.5" style={{border:"1px solid var(--border)",background:"var(--surface2)",color:"var(--text)"}}><ArrowUpDown size={12} /></button>
                           <button onClick={() => onQuickAction(item, "damage")} title="Daño/Merma"
-                            className="p-1.5 rounded-none bg-red-50 text-red-500 hover:bg-red-100 transition-colors"><AlertTriangle size={12} /></button>
+                            className="p-1.5" style={{border:"1px solid var(--error)",background:"var(--error-subtle)",color:"var(--error)"}}><AlertTriangle size={12} /></button>
                         </div>
                       </td>
                     </tr>
@@ -509,7 +509,7 @@ const OverviewTab: React.FC<{
                             <div><span className="text-[var(--text-muted)] block">Precio venta</span><span className="text-[var(--text)] font-bold">{fmt(item.unit_price)}</span></div>
                             <div><span className="text-[var(--text-muted)] block">Margen</span><span className="text-[var(--text)] font-bold">{item.unit_price > 0 ? Math.round((item.unit_price - item.unit_cost) / item.unit_price * 100) : 0}%</span></div>
                             <div><span className="text-[var(--text-muted)] block">Reservado</span><span className="text-[var(--text)]">{item.reserved_stock} → disponible: {item.available_stock}</span></div>
-                            <div><span className="text-[var(--text-muted)] block">Días de inventario</span><span className={`font-bold ${(item.days_of_inventory || 999) > 90 ? 'text-red-500' : (item.days_of_inventory || 999) > 30 ? 'text-amber-600' : 'text-green-600'}`}>{(item.days_of_inventory || 0) >= 999 ? '∞' : item.days_of_inventory || '—'}</span></div>
+                            <div><span className="text-[var(--text-muted)] block">Días de inventario</span><span className={`font-bold ${(item.days_of_inventory || 999) > 90 ? '' : (item.days_of_inventory || 999) > 30 ? '' : ''}`}>{(item.days_of_inventory || 0) >= 999 ? '∞' : item.days_of_inventory || '—'}</span></div>
                             <div><span className="text-[var(--text-muted)] block">Ventas 90d</span><span className="text-[var(--text)] font-bold">{item.total_sold_90d || 0}</span></div>
                             <div><span className="text-[var(--text-muted)] block">Venta diaria prom.</span><span className="text-[var(--text)]">{(item.avg_daily_sales || 0).toFixed(2)}</span></div>
                             <div><span className="text-[var(--text-muted)] block">Stock máximo</span><span className="text-[var(--text)]">{item.max_stock} uds</span></div>
@@ -612,7 +612,7 @@ const MovementsTab: React.FC<{ movements: StockMovement[] }> = ({ movements }) =
                     <td className="px-4 py-3"><span className={`text-[10px] font-bold flex items-center gap-1 ${cfg.color}`}>{getMovementIcon(m.type, 12, cfg.color)} {cfg.label}</span></td>
                     <td className="px-4 py-3 text-xs text-[var(--text)]">{m.product_title}</td>
                     <td className="px-4 py-3 text-xs text-[var(--text-secondary)] font-mono">{m.sku}</td>
-                    <td className="px-4 py-3"><span className={`text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}>{isPositive ? '+' : ''}{m.quantity}</span></td>
+                    <td className="px-4 py-3"><span className="text-xs font-bold" style={{color:isPositive?"var(--success)":"var(--error)"}}>{isPositive ? '+' : ''}{m.quantity}</span></td>
                     <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{m.previous_stock} → <span className="font-bold text-[var(--text)]">{m.new_stock}</span></td>
                     <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{m.reference || "—"}</td>
                     <td className="px-4 py-3 text-[11px] text-[var(--text-muted)]">{m.created_by}</td>
@@ -662,7 +662,7 @@ const AlertsTab: React.FC<{ alerts: InventoryAlert[]; onResolve: (id: string) =>
   <div className="space-y-3">
     {alerts.length === 0 ? (
       <div className="bg-[var(--surface)] rounded-none border-2 border-[var(--border)]  p-12 text-center">
-        <CheckCircle size={32} className="text-green-400 mx-auto mb-3" />
+        <CheckCircle size={32} style={{color:"var(--success)"}} className="mx-auto mb-3" />
         <p className="text-sm text-[var(--text-secondary)]">Sin alertas pendientes</p>
       </div>
     ) : alerts.map(a => (
@@ -670,20 +670,20 @@ const AlertsTab: React.FC<{ alerts: InventoryAlert[]; onResolve: (id: string) =>
         a.severity === 'critical' ? 'border-red-200' : a.severity === 'warning' ? 'border-amber-200' : 'border-blue-200'
       }`}>
         <div className={`w-10 h-10 rounded-none flex items-center justify-center shrink-0 ${
-          a.severity === 'critical' ? 'bg-red-50 text-red-500' : a.severity === 'warning' ? 'bg-amber-50 text-amber-500' : 'bg-blue-50 text-blue-500'
+          a.severity === 'critical' ? '' : a.severity === 'warning' ? '' : ''
         }`}><AlertTriangle size={18} /></div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold text-[var(--text)]">{a.product_title}</span>
             <span className="text-[10px] text-[var(--text-muted)] font-mono">{a.sku}</span>
             <span className={`text-[9px] px-1.5 py-0.5 rounded-none font-bold uppercase ${
-              a.severity === 'critical' ? 'bg-red-50 text-red-500' : a.severity === 'warning' ? 'bg-amber-50 text-amber-500' : 'bg-blue-50 text-blue-500'
+              a.severity === 'critical' ? '' : a.severity === 'warning' ? '' : ''
             }`}>{a.severity}</span>
           </div>
           <p className="text-xs text-[var(--text-secondary)] mt-1">{a.message}</p>
           <p className="text-[10px] text-[var(--text-muted)] mt-1">{fmtDateTime(a.created_at)}</p>
         </div>
-        <button onClick={() => onResolve(a.id)} className="px-3 py-1.5 text-[10px] font-bold text-green-600 bg-green-50 rounded-none hover:bg-green-100 transition-colors shrink-0">
+        <button onClick={() => onResolve(a.id)} className="px-3 py-1.5 text-[10px] font-bold shrink-0" style={{border:"1px solid var(--success)",backgroundColor:"var(--success-subtle)",color:"var(--success)"}}>
           Resolver
         </button>
       </div>

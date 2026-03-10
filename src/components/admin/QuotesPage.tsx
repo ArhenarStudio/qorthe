@@ -45,9 +45,9 @@ function getClientBadge(q: AdminQuote) {
   const { tier, orders } = q.customer;
   const badges: { text: string; cls: string }[] = [];
   if (tier === 'parota' || tier === 'ebano' || tier === 'oro' || tier === 'platino') badges.push({ text: '⚡ Cliente VIP', cls: 'bg-[var(--accent)]/15 text-[var(--accent)]' });
-  if (orders === 0) badges.push({ text: '🆕 Cliente nuevo', cls: 'bg-blue-50 text-blue-600' });
+  if (orders === 0) badges.push({ text: 'Cliente nuevo', cls: 'bg-blue-50 text-blue-600' });
   const usage = q.pieces[0]?.usage;
-  if (usage === 'Evento / regalo corporativo' || usage === 'Restaurante / volumen alto') badges.push({ text: '🏢 Corporativo', cls: 'bg-purple-50 text-purple-600' });
+  if (usage === 'Evento / regalo corporativo' || usage === 'Restaurante / volumen alto') badges.push({ text: 'Corporativo', cls: 'bg-purple-50 text-purple-600' });
   return badges;
 }
 
@@ -218,7 +218,7 @@ export const QuotesPage: React.FC = () => {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <KpiCard icon={<FileText size={16} className="text-[var(--accent)]" />} value={String(activeQuotes.length)} label="Cotizaciones activas" sub={`${expiringThisWeek} vencen esta semana`} accent />
-        <KpiCard icon={<Clock size={16} className="text-amber-600" />} value={String(newQuotes.length)} label="Nuevas sin responder" sub={`${urgentNew.length} hace +48h ⚠️`} />
+        <KpiCard icon={<Clock size={16} className="text-amber-600" />} value={String(newQuotes.length)} label="Nuevas sin responder" sub={`${urgentNew.length} hace +48h`} />
         <KpiCard icon={<DollarSign size={16} className="text-green-600" />} value={fmt(pipelineValue)} label="Valor en pipeline" sub="+15% vs prev" />
         <KpiCard icon={<BarChart3 size={16} className="text-blue-600" />} value={`${conversionRate}%`} label="Tasa de conversión" sub="Cot → Pedido" />
         <KpiCard icon={<Target size={16} className="text-purple-600" />} value={fmt(avgTicket)} label="Ticket promedio" sub="vs $881 catálogo" />
@@ -298,7 +298,7 @@ const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
                   {badges.map((b, i) => (
                     <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded-none ${b.cls}`}>{b.text}</span>
                   ))}
-                  {isUrgent && <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-amber-100 text-amber-700">⚠️ +48h sin responder</span>}
+                  {isUrgent && <span className="text-[10px] px-1.5 py-0.5 rounded-none" style={{backgroundColor:'var(--warning-subtle)',color:'var(--warning)',border:'1px solid var(--warning)'}}>+48h sin responder</span>}
                 </div>
                 <p className="text-xs text-[var(--text)] mt-1">
                   {q.customer.name}
@@ -312,7 +312,7 @@ const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
 
             {/* Pieces */}
             <div className="mb-3">
-              <p className="text-[11px] text-[var(--text-secondary)] mb-1.5">📦 {q.pieces.length} pieza{q.pieces.length > 1 ? 's' : ''} solicitada{q.pieces.length > 1 ? 's' : ''}:</p>
+              <p className="text-[11px] text-[var(--text-secondary)] mb-1.5">{q.pieces.length} pieza{q.pieces.length > 1 ? 's' : ''} solicitada{q.pieces.length > 1 ? 's' : ''}:</p>
               <div className="space-y-1.5">
                 {q.pieces.map((p, i) => (
                   <div key={p.id} className="text-xs text-[var(--text)] pl-3 border-l-2 border-[var(--border)]">
@@ -331,9 +331,9 @@ const NewQuotesList: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
 
             {/* Footer */}
             <div className="flex flex-wrap items-center gap-3 text-[11px] text-[var(--text-secondary)] pt-3 border-t border-[var(--border)]">
-              <span>💰 Estimado: <span className="text-[var(--text)]">{fmt(getQuoteTotal(q))}</span></span>
+              <span>Estimado: <span className="text-[var(--text)]">{fmt(getQuoteTotal(q))}</span></span>
               <span>📅 Validez: hasta {fmtDate(q.validUntil)}</span>
-              {q.pieces[0]?.usage && <span>🏢 Uso: {q.pieces[0].usage}</span>}
+              {q.pieces[0]?.usage && <span>Uso: {q.pieces[0].usage}</span>}
             </div>
 
             {/* Actions */}
@@ -392,7 +392,7 @@ const NegotiationTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuot
                   {lastMsg ? (
                     <div>
                       <span className={isStale ? 'text-amber-600' : 'text-[var(--text-secondary)]'}>
-                        Hace {Math.max(1, Math.round(hoursAgo(lastMsg.date) / 24))}d {isStale && '⚠️'}
+                        Hace {Math.max(1, Math.round(hoursAgo(lastMsg.date) / 24))}d
                       </span>
                       <br />
                       <span className="text-[10px] text-[var(--text-muted)]">({lastMsg.sender === 'client' ? 'cliente' : 'admin'})</span>
@@ -440,7 +440,7 @@ const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
                 <td className="px-4 py-3 text-xs text-[var(--text)]">{fmt(total)}</td>
                 <td className="px-4 py-3">
                   {q.depositPaid ? (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-green-50 text-green-600">✅ {fmt(q.depositPaid.amount)}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-none" style={{backgroundColor:'var(--success-subtle)',color:'var(--success)',border:'1px solid var(--success)'}}>{fmt(q.depositPaid.amount)}</span>
                   ) : (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-none bg-amber-50 text-amber-600">Pendiente {fmt(deposit)}</span>
                   )}
@@ -452,7 +452,7 @@ const ApprovedTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote) 
                 <td className="px-4 py-3 flex items-center gap-1">
                   {!q.depositPaid && (
                     <button onClick={() => onSelect(q)} className="text-[10px] px-2 py-1 bg-green-50 text-green-600 rounded-none hover:bg-green-100 transition-colors">
-                      💰 Registrar anticipo
+                      Registrar anticipo
                     </button>
                   )}
                   <button onClick={() => onSelect(q)} className="text-[11px] text-[var(--accent)] hover:underline ml-1">Ver</button>
@@ -495,7 +495,7 @@ const ProductionTable: React.FC<{ quotes: AdminQuote[]; onSelect: (q: AdminQuote
                 <td className="px-4 py-3 text-xs text-[var(--text)]">{fmt(getQuoteTotal(q))}</td>
                 <td className="px-4 py-3">
                   {q.depositPaid ? (
-                    <span className="text-[10px] text-green-600">✅ {fmt(q.depositPaid.amount)}</span>
+                    <span className="text-[10px]" style={{color:'var(--success)'}}>{fmt(q.depositPaid.amount)}</span>
                   ) : '—'}
                 </td>
                 <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{prog ? `${prog.completed}/${prog.total}` : q.pieces.length}</td>
@@ -658,9 +658,9 @@ const AnalyticsTab: React.FC<{ quotes: AdminQuote[] }> = ({ quotes }) => {
         </div>
         <div className="mt-4 p-3 bg-blue-50 rounded-none">
           {hasData ? (
-            <p className="text-xs text-blue-700">💡 {funnelData[4].pct > 30 ? `Buena tasa de conversión (${funnelData[4].pct}%). ` : `Tasa de conversión: ${funnelData[4].pct}%. `}{rejected.length > 0 ? `Principal motivo de rechazo: ${rejectionData[0]?.name || 'N/A'}.` : 'Aún sin rechazos registrados.'}</p>
+            <p className="text-xs" style={{color:'var(--info)'}}>Análisis: {funnelData[4].pct > 30 ? `Buena tasa de conversión (${funnelData[4].pct}%). ` : `Tasa de conversión: ${funnelData[4].pct}%. `}{rejected.length > 0 ? `Principal motivo de rechazo: ${rejectionData[0]?.name || 'N/A'}.` : 'Aún sin rechazos registrados.'}</p>
           ) : (
-            <p className="text-xs text-blue-700">💡 Los datos del funnel se poblarán conforme recibas y gestiones cotizaciones.</p>
+            <p className="text-xs" style={{color:'var(--info)'}}>Los datos del funnel se poblarán conforme recibas y gestiones cotizaciones.</p>
           )}
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion,  } from 'motion/react';
 import {
   DollarSign, TrendingUp, TrendingDown, Package, CreditCard, ArrowUpRight, ArrowDownRight,
   BarChart3, PieChart as PieChartIcon, Wallet, Receipt, FileText, Settings2,
@@ -45,15 +45,15 @@ const fmtK = (n: number) => `$${(n / 1000).toFixed(0)}k`;
 
 // ===== SHARED COMPONENTS =====
 const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm ${className}`}>{children}</div>
+  <div className={`bg-[var(--surface)] rounded-none border border-[var(--border)] shadow-sm ${className}`}>{children}</div>
 );
 
 const Insight: React.FC<{ text: string; type?: 'info' | 'warning' | 'success' }> = ({ text, type = 'info' }) => {
-  const styles = { info: 'bg-blue-50 border-blue-200 text-blue-800', warning: 'bg-amber-50 border-amber-200 text-amber-800', success: 'bg-green-50 border-green-200 text-green-800' };
+  const styles = { info: 'bg-[var(--info-subtle)] border-[var(--info)] text-blue-800', warning: 'bg-[var(--warning-subtle)] border-[var(--warning)] text-amber-800', success: 'bg-[var(--success-subtle)] border-[var(--success)] text-[var(--success)]' };
   const icons = { info: Lightbulb, warning: AlertTriangle, success: CheckCircle };
   const Icon = icons[type];
   return (
-    <div className={`flex items-start gap-2 p-3 rounded-lg border text-xs ${styles[type]}`}>
+    <div className={`flex items-start gap-2 p-3 rounded-none border text-xs ${styles[type]}`}>
       <Icon size={14} className="mt-0.5 shrink-0" /><span>{text}</span>
     </div>
   );
@@ -81,7 +81,7 @@ const DonutChart: React.FC<{ data: { name: string; value: number; pct: number }[
       {data.map((d, i) => (
         <div key={d.name} className="flex items-center justify-between text-[11px]">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }} />
+            <span className="w-2 h-2 rounded-none shrink-0" style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }} />
             <span className="text-[var(--text-secondary)] truncate">{d.name}</span>
           </div>
           <span className="font-medium text-[var(--text)]">{d.pct}%</span>
@@ -146,11 +146,11 @@ const PanelGeneral: React.FC = () => {
           <table className="w-full text-left">
             <tbody>
               {plRows.map((r, i) => (
-                <tr key={i} className={`${r.bold ? 'border-t border-[var(--border)]' : ''} ${r.highlight ? 'bg-green-50' : ''}`}>
+                <tr key={i} className={`${r.bold ? 'border-t border-[var(--border)]' : ''} ${r.highlight ? 'bg-[var(--success-subtle)]' : ''}`}>
                   <td className={`py-1.5 pr-4 text-xs ${r.indent ? 'pl-6' : 'pl-0'} ${r.bold ? 'font-semibold text-[var(--text)]' : 'text-[var(--text-secondary)]'}`}>
                     {r.label}
                   </td>
-                  <td className={`py-1.5 text-xs text-right font-mono tabular-nums ${r.bold ? 'font-semibold text-[var(--text)]' : r.value < 0 ? 'text-red-600' : 'text-[var(--text)]'}`}>
+                  <td className={`py-1.5 text-xs text-right font-mono tabular-nums ${r.bold ? 'font-semibold text-[var(--text)]' : r.value < 0 ? 'text-[var(--error)]' : 'text-[var(--text)]'}`}>
                     {r.value < 0 ? `-${fmt(Math.abs(r.value))}` : fmt(r.value)}
                   </td>
                   <td className="py-1.5 text-[10px] text-right text-[var(--text-muted)] pl-3 w-16">{r.pct}%</td>
@@ -209,7 +209,7 @@ const PanelGeneral: React.FC = () => {
           {businessMetrics.map((m, i) => (
             <Card key={i} className="p-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-none bg-[var(--accent)]/10 flex items-center justify-center shrink-0">
                   <m.icon size={16} className="text-[var(--accent)]" />
                 </div>
                 <div className="min-w-0">
@@ -315,13 +315,13 @@ const IngresosTab: React.FC = () => {
                   <td className="px-5 py-2.5 text-xs font-medium text-[var(--text)] text-right font-mono">{fmt(p.revenue)}</td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{p.pct}%</td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    <span className="px-1.5 py-0.5 rounded-full bg-green-50 text-green-600">{p.margin}%</span>
+                    <span className="px-1.5 py-0.5 rounded-none bg-[var(--success-subtle)] text-[var(--success)]">{p.margin}%</span>
                   </td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    {p.trendDir === 'up' && <span className="text-green-600">+{p.trend}%</span>}
-                    {p.trendDir === 'down' && <span className="text-red-500">{p.trend}%</span>}
+                    {p.trendDir === 'up' && <span className="text-[var(--success)]">+{p.trend}%</span>}
+                    {p.trendDir === 'down' && <span className="text-[var(--error)]">{p.trend}%</span>}
                     {p.trendDir === 'flat' && <span className="text-[var(--text-muted)]">+{p.trend}%</span>}
-                    {p.trendDir === 'new' && <span className="px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px]">Nuevo</span>}
+                    {p.trendDir === 'new' && <span className="px-1.5 py-0.5 rounded-none bg-[var(--info-subtle)] text-[var(--info)] text-[10px]">Nuevo</span>}
                   </td>
                 </tr>
               ))}
@@ -345,8 +345,8 @@ const IngresosTab: React.FC = () => {
                 <span className="text-[var(--text)] font-medium">{cat.name}</span>
                 <span className="text-[var(--text)] font-mono">{fmt(cat.total)} ({cat.pct}%)</span>
               </div>
-              <div className="w-full bg-[var(--surface2)] rounded-full h-2.5">
-                <div className="bg-[var(--accent)] h-2.5 rounded-full transition-all" style={{ width: `${cat.pct}%` }} />
+              <div className="w-full bg-[var(--surface2)] rounded-none h-2.5">
+                <div className="bg-[var(--accent)] h-2.5 rounded-none transition-all" style={{ width: `${cat.pct}%` }} />
               </div>
               {'sub' in cat && cat.sub && (
                 <div className="ml-4 mt-1.5 space-y-1">
@@ -418,7 +418,7 @@ const IngresosTab: React.FC = () => {
           </div>
           <div>
             <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Margen del grabado</p>
-            <p className="text-lg font-semibold text-green-600 font-sans">{d.engravingStats.engravingMargin}%</p>
+            <p className="text-lg font-semibold text-[var(--success)] font-sans">{d.engravingStats.engravingMargin}%</p>
           </div>
         </div>
         <Insight text={`El grabado sube el ticket promedio en $${d.engravingStats.avgIncrease} con margen del ${d.engravingStats.engravingMargin}%. Cada pedido con grabado es significativamente más rentable.`} type="success" />
@@ -455,7 +455,7 @@ const CostosTab: React.FC = () => {
             {d.totalCostDonut.map((c: any, i: number) => (
               <div key={c.name} className="flex items-center justify-between text-[11px]">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i] }} />
+                  <span className="w-2 h-2 rounded-none" style={{ backgroundColor: COLORS[i] }} />
                   <span className="text-[var(--text-secondary)]">{c.name}</span>
                 </div>
                 <span className="font-medium text-[var(--text)]">{fmt(c.value)} ({c.pct}%)</span>
@@ -489,7 +489,7 @@ const CostosTab: React.FC = () => {
                       <td className="px-4 py-2 text-xs font-medium text-[var(--text)] text-right font-mono">{fmt(p.costTotal)}</td>
                       <td className="px-4 py-2 text-xs text-[var(--text-secondary)] text-right">{p.pctCogs}%</td>
                       <td className="px-4 py-2 text-xs text-right">
-                        {p.margin > 0 ? <span className="text-green-600">{p.margin}%</span> : <span className="text-[var(--text-muted)]">—</span>}
+                        {p.margin > 0 ? <span className="text-[var(--success)]">{p.margin}%</span> : <span className="text-[var(--text-muted)]">—</span>}
                       </td>
                     </tr>
                   ))}
@@ -519,7 +519,7 @@ const CostosTab: React.FC = () => {
                   <td className="py-2 pr-4 text-xs text-[var(--text)]">{c.concept}</td>
                   <td className="py-2 text-xs font-medium text-[var(--text)] text-right pr-4 font-mono">{fmt(c.cost)}</td>
                   <td className="py-2 pr-4 text-xs">
-                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${c.type === 'Fijo' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}>{c.type}</span>
+                    <span className={`px-1.5 py-0.5 rounded-none text-[10px] ${c.type === 'Fijo' ? 'bg-[var(--info-subtle)] text-[var(--info)]' : 'bg-[var(--warning-subtle)] text-[var(--warning)]'}`}>{c.type}</span>
                   </td>
                   <td className="py-2 text-xs text-[var(--text-secondary)]">
                     {c.notes}
@@ -535,10 +535,10 @@ const CostosTab: React.FC = () => {
           </table>
         </div>
 
-        <AnimatePresence>
+        <>
           {showWebDetail && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="mt-4 p-4 bg-[var(--surface2)] rounded-lg border border-[var(--border)]">
+            <div className="overflow-hidden">
+              <div className="mt-4 p-4 bg-[var(--surface2)] rounded-none border border-[var(--border)]">
                 <h6 className="text-xs font-medium text-[var(--text)] mb-2">Desglose hosting y servicios web</h6>
                 <table className="w-full text-left">
                   <thead>
@@ -555,15 +555,15 @@ const CostosTab: React.FC = () => {
                         <td className="py-1.5 text-xs text-[var(--text)]">{s.service}</td>
                         <td className="py-1.5 text-xs font-mono text-right text-[var(--text)]">{s.cost > 0 ? fmt(s.cost) : '$0'}</td>
                         <td className="py-1.5 text-[10px] text-[var(--text-secondary)]">{s.plan}</td>
-                        <td className="py-1.5 text-center"><span className="inline-block w-2 h-2 rounded-full bg-green-500" /></td>
+                        <td className="py-1.5 text-center"><span className="inline-block w-2 h-2 rounded-none bg-[var(--success-subtle)]0" /></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
       </Card>
 
       {/* Shipping costs */}
@@ -590,7 +590,7 @@ const CostosTab: React.FC = () => {
                   <td className="px-5 py-2.5 text-xs font-mono text-[var(--text-secondary)] text-right">{fmt(c.avgCost)}</td>
                   <td className="px-5 py-2.5 text-xs font-mono text-[var(--text-secondary)] text-right">{fmt(c.charged)}</td>
                   <td className="px-5 py-2.5 text-xs font-mono text-right">
-                    {c.diff < 0 ? <span className="text-red-500 flex items-center justify-end gap-1"><AlertTriangle size={11} />{fmt(c.diff)}</span> : <span className="text-green-600">{fmt(c.diff)}</span>}
+                    {c.diff < 0 ? <span className="text-[var(--error)] flex items-center justify-end gap-1"><AlertTriangle size={11} />{fmt(c.diff)}</span> : <span className="text-[var(--success)]">{fmt(c.diff)}</span>}
                   </td>
                 </tr>
               ))}
@@ -621,9 +621,9 @@ const CostosTab: React.FC = () => {
                 <tr key={ds.source} className="hover:bg-[var(--surface2)]/50 transition-colors">
                   <td className="px-5 py-2.5 text-xs font-medium font-mono text-[var(--text)]">{ds.source}</td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{ds.uses}</td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-red-500 text-right">-{fmt(ds.discounted)}</td>
-                  <td className="px-5 py-2.5 text-xs font-mono text-green-600 text-right">{fmt(ds.salesGenerated)}</td>
-                  <td className="px-5 py-2.5 text-xs text-right"><span className="px-1.5 py-0.5 rounded-full bg-green-50 text-green-600">{ds.roi}x</span></td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--error)] text-right">-{fmt(ds.discounted)}</td>
+                  <td className="px-5 py-2.5 text-xs font-mono text-[var(--success)] text-right">{fmt(ds.salesGenerated)}</td>
+                  <td className="px-5 py-2.5 text-xs text-right"><span className="px-1.5 py-0.5 rounded-none bg-[var(--success-subtle)] text-[var(--success)]">{ds.roi}x</span></td>
                 </tr>
               ))}
             </tbody>
@@ -640,11 +640,11 @@ const CostosTab: React.FC = () => {
 // ===== TAB: INVENTARIO =====
 const InventarioTab: React.FC = () => {
   const d = useFinanceData();
-  const rotColor = (l: string) => l === 'green' ? 'text-green-600 bg-green-50' : l === 'yellow' ? 'text-amber-600 bg-amber-50' : 'text-red-600 bg-red-50';
+  const rotColor = (l: string) => l === 'green' ? 'text-[var(--success)] bg-[var(--success-subtle)]' : l === 'yellow' ? 'text-[var(--warning)] bg-[var(--warning-subtle)]' : 'text-[var(--error)] bg-[var(--error-subtle)]';
   const alertBadge = (a: string) => {
-    if (a === 'low') return <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-50 text-amber-600">Stock bajo</span>;
-    if (a === 'slow') return <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-orange-50 text-orange-600">Lento</span>;
-    if (a === 'out') return <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-red-50 text-red-600">Agotado</span>;
+    if (a === 'low') return <span className="px-1.5 py-0.5 rounded-none text-[10px] bg-[var(--warning-subtle)] text-[var(--warning)]">Stock bajo</span>;
+    if (a === 'slow') return <span className="px-1.5 py-0.5 rounded-none text-[10px] bg-[var(--warning-subtle)] text-[var(--warning)]">Lento</span>;
+    if (a === 'out') return <span className="px-1.5 py-0.5 rounded-none text-[10px] bg-[var(--error-subtle)] text-[var(--error)]">Agotado</span>;
     return null;
   };
 
@@ -662,7 +662,7 @@ const InventarioTab: React.FC = () => {
         {summaryKpis.map((k, i) => (
           <Card key={i} className="p-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-none bg-[var(--accent)]/10 flex items-center justify-center">
                 <k.icon size={18} className="text-[var(--accent)]" />
               </div>
               <div>
@@ -724,13 +724,13 @@ const InventarioTab: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-wood-50">
               {d.inventoryByProduct.map((p: any) => (
-                <tr key={p.product} className={`hover:bg-[var(--surface2)]/50 transition-colors ${p.alert ? 'bg-red-50/30' : ''}`}>
+                <tr key={p.product} className={`hover:bg-[var(--surface2)]/50 transition-colors ${p.alert ? 'bg-[var(--error-subtle)]/30' : ''}`}>
                   <td className="px-5 py-2.5 text-xs font-medium text-[var(--text)]">{p.product}</td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{p.stock}</td>
                   <td className="px-5 py-2.5 text-xs font-mono text-[var(--text-secondary)] text-right">{fmt(p.costUnit)}</td>
                   <td className="px-5 py-2.5 text-xs font-mono text-[var(--text)] text-right">{fmt(p.costValue)}</td>
                   <td className="px-5 py-2.5 text-xs text-right">
-                    {p.rotation > 0 ? <span className={`px-1.5 py-0.5 rounded-full ${rotColor(p.rotLevel)}`}>{p.rotation}x</span> : <span className="text-[var(--text-muted)]">—</span>}
+                    {p.rotation > 0 ? <span className={`px-1.5 py-0.5 rounded-none ${rotColor(p.rotLevel)}`}>{p.rotation}x</span> : <span className="text-[var(--text-muted)]">—</span>}
                   </td>
                   <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)] text-right">{p.daysStock > 0 ? `${p.daysStock} días` : '—'}</td>
                   <td className="px-5 py-2.5 text-right">{alertBadge(p.alert)}</td>
@@ -741,9 +741,9 @@ const InventarioTab: React.FC = () => {
         </div>
         <div className="p-4 bg-[var(--surface2)] border-t border-[var(--border)] space-y-1">
           <div className="flex items-center gap-4 text-[10px] text-[var(--text-secondary)]">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /> &gt;4x/año (excelente)</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> 2-4x/año (aceptable)</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> &lt;2x/año (lento)</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-none bg-[var(--success-subtle)]0" /> &gt;4x/año (excelente)</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-none bg-[var(--warning-subtle)]0" /> 2-4x/año (aceptable)</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-none bg-[var(--error-subtle)]0" /> &lt;2x/año (lento)</span>
           </div>
         </div>
       </Card>
@@ -773,9 +773,9 @@ const InventarioTab: React.FC = () => {
       </Card>
 
       {/* Stuck capital */}
-      <Card className="p-5 border-amber-200 bg-amber-50/30">
+      <Card className="p-5 border-[var(--warning)] bg-[var(--warning-subtle)]/30">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="text-amber-600 shrink-0 mt-0.5" size={18} />
+          <AlertTriangle className="text-[var(--warning)] shrink-0 mt-0.5" size={18} />
           <div>
             <h5 className="text-sm font-medium text-[var(--text)]">Capital atrapado en inventario lento</h5>
             <p className="text-xs text-[var(--text-secondary)] mt-1">Productos con rotación &lt;2x/año: <span className="font-semibold">{fmt(d.stuckCapital)}</span> ({d.stuckCapitalPct}% del inventario)</p>
@@ -783,7 +783,7 @@ const InventarioTab: React.FC = () => {
               <li>Crear venta flash para Tabla Nogal Med (20 uds × $380 = $7,600 atrapados)</li>
               <li>Incluir Mini Tabla en un bundle/set con descuento</li>
             </ul>
-            <button onClick={() => toast.success('Redirigiendo a Ventas Flash...')} className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--accent)] text-white text-xs rounded-lg hover:bg-[var(--accent)]/90 transition-colors">
+            <button onClick={() => toast.success('Redirigiendo a Ventas Flash...')} className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--accent)] text-white text-xs rounded-none hover:bg-[var(--accent)]/90 transition-colors">
               <Zap size={12} /> Crear venta flash para inventario lento
             </button>
           </div>
@@ -814,7 +814,7 @@ const PagosTab: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Transacciones</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{d.stripe.transactions}</p></div>
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Monto procesado</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{fmt(d.stripe.processed)}</p></div>
-          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Comisión total</p><p className="text-lg font-semibold text-red-500 font-sans">{fmt(d.stripe.commission)} ({d.stripe.effectiveRate}%)</p></div>
+          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Comisión total</p><p className="text-lg font-semibold text-[var(--error)] font-sans">{fmt(d.stripe.commission)} ({d.stripe.effectiveRate}%)</p></div>
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Prom. por transacción</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{fmt(d.stripe.avgPerTransaction)}</p></div>
         </div>
         <div className="text-xs text-[var(--text-secondary)] space-y-1 border-t border-[var(--border)] pt-3">
@@ -824,7 +824,7 @@ const PagosTab: React.FC = () => {
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {d.stripe.cardBreakdown.map((c: any) => (
-            <span key={c.type} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--surface2)] text-[var(--text-secondary)]">{c.type}: {c.pct}%</span>
+            <span key={c.type} className="text-[10px] px-2 py-0.5 rounded-none bg-[var(--surface2)] text-[var(--text-secondary)]">{c.type}: {c.pct}%</span>
           ))}
         </div>
       </ProcessorCard>
@@ -834,7 +834,7 @@ const PagosTab: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Transacciones</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{d.mercadoPago.transactions}</p></div>
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Monto procesado</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{fmt(d.mercadoPago.processed)}</p></div>
-          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Comisión total</p><p className="text-lg font-semibold text-red-500 font-sans">{fmt(d.mercadoPago.commission)} ({d.mercadoPago.effectiveRate}%)</p></div>
+          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Comisión total</p><p className="text-lg font-semibold text-[var(--error)] font-sans">{fmt(d.mercadoPago.commission)} ({d.mercadoPago.effectiveRate}%)</p></div>
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Disponible</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{fmt(d.mercadoPago.available)}</p></div>
         </div>
         <div className="text-xs text-[var(--text-secondary)] space-y-1 border-t border-[var(--border)] pt-3">
@@ -843,7 +843,7 @@ const PagosTab: React.FC = () => {
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {d.mercadoPago.methodBreakdown.map((c: any) => (
-            <span key={c.type} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--surface2)] text-[var(--text-secondary)]">{c.type}: {c.pct}%</span>
+            <span key={c.type} className="text-[10px] px-2 py-0.5 rounded-none bg-[var(--surface2)] text-[var(--text-secondary)]">{c.type}: {c.pct}%</span>
           ))}
         </div>
       </ProcessorCard>
@@ -853,11 +853,11 @@ const PagosTab: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Transacciones</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{d.bankTransfer.transactions}</p></div>
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Monto recibido</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{fmt(d.bankTransfer.received)}</p></div>
-          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Comisión</p><p className="text-lg font-semibold text-green-600 font-sans">{fmt(0)}</p></div>
+          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Comisión</p><p className="text-lg font-semibold text-[var(--success)] font-sans">{fmt(0)}</p></div>
         </div>
         <div className="text-xs text-[var(--text-secondary)] space-y-1 border-t border-[var(--border)] pt-3">
-          <p>Anticipos pendientes: <span className="font-medium text-amber-600">{fmt(d.bankTransfer.pendingAdvances)}</span></p>
-          <p>Saldos por cobrar: <span className="font-medium text-red-500">{fmt(d.bankTransfer.pendingBalances)}</span></p>
+          <p>Anticipos pendientes: <span className="font-medium text-[var(--warning)]">{fmt(d.bankTransfer.pendingAdvances)}</span></p>
+          <p>Saldos por cobrar: <span className="font-medium text-[var(--error)]">{fmt(d.bankTransfer.pendingBalances)}</span></p>
         </div>
       </ProcessorCard>
 
@@ -878,7 +878,7 @@ const PagosTab: React.FC = () => {
             <tbody className="divide-y divide-wood-50">
               <tr><td className="px-5 py-2.5 text-xs text-[var(--text)]">Stripe</td><td className="px-5 py-2.5 text-xs text-right">72%</td><td className="px-5 py-2.5 text-xs text-right">{d.stripe.effectiveRate}%</td><td className="px-5 py-2.5 text-xs font-mono text-right">$871</td><td className="px-5 py-2.5 text-xs font-mono text-right">{fmt(d.stripe.avgPerTransaction)}</td></tr>
               <tr><td className="px-5 py-2.5 text-xs text-[var(--text)]">MercadoPago</td><td className="px-5 py-2.5 text-xs text-right">20%</td><td className="px-5 py-2.5 text-xs text-right">{d.mercadoPago.effectiveRate}%</td><td className="px-5 py-2.5 text-xs font-mono text-right">$840</td><td className="px-5 py-2.5 text-xs font-mono text-right">{fmt(d.mercadoPago.avgPerTransaction)}</td></tr>
-              <tr><td className="px-5 py-2.5 text-xs text-[var(--text)]">Transferencia</td><td className="px-5 py-2.5 text-xs text-right">8%</td><td className="px-5 py-2.5 text-xs text-right text-green-600">0.00%</td><td className="px-5 py-2.5 text-xs font-mono text-right">$1,430</td><td className="px-5 py-2.5 text-xs font-mono text-right text-green-600">$0</td></tr>
+              <tr><td className="px-5 py-2.5 text-xs text-[var(--text)]">Transferencia</td><td className="px-5 py-2.5 text-xs text-right">8%</td><td className="px-5 py-2.5 text-xs text-right text-[var(--success)]">0.00%</td><td className="px-5 py-2.5 text-xs font-mono text-right">$1,430</td><td className="px-5 py-2.5 text-xs font-mono text-right text-[var(--success)]">$0</td></tr>
             </tbody>
           </table>
         </div>
@@ -893,10 +893,10 @@ const PagosTab: React.FC = () => {
         <SectionTitle>Pagos pendientes y cuentas por cobrar</SectionTitle>
         <div className="space-y-4">
           <div>
-            <h6 className="text-xs font-medium text-[var(--text)] mb-2">Anticipos de cotizaciones por cobrar: <span className="text-amber-600">{fmt(d.bankTransfer.pendingAdvances)}</span></h6>
+            <h6 className="text-xs font-medium text-[var(--text)] mb-2">Anticipos de cotizaciones por cobrar: <span className="text-[var(--warning)]">{fmt(d.bankTransfer.pendingAdvances)}</span></h6>
             <div className="space-y-2">
               {d.pendingPayments.filter((p: any) => p.type === 'anticipo').map((p: any) => (
-                <div key={p.ref} className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-lg text-xs">
+                <div key={p.ref} className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-none text-xs">
                   <div className="flex items-center gap-3">
                     <span className="font-mono font-medium text-[var(--text)]">{p.ref}</span>
                     <span className="text-[var(--text-secondary)]">{p.client}</span>
@@ -913,16 +913,16 @@ const PagosTab: React.FC = () => {
             </div>
           </div>
           <div>
-            <h6 className="text-xs font-medium text-[var(--text)] mb-2">Saldos por cobrar (ya entregados): <span className="text-red-500">{fmt(d.bankTransfer.pendingBalances)}</span></h6>
+            <h6 className="text-xs font-medium text-[var(--text)] mb-2">Saldos por cobrar (ya entregados): <span className="text-[var(--error)]">{fmt(d.bankTransfer.pendingBalances)}</span></h6>
             <div className="space-y-2">
               {d.pendingPayments.filter((p: any) => p.type === 'saldo').map((p: any) => (
-                <div key={p.ref} className="flex items-center justify-between p-2.5 bg-red-50/50 rounded-lg text-xs">
+                <div key={p.ref} className="flex items-center justify-between p-2.5 bg-[var(--error-subtle)]/50 rounded-none text-xs">
                   <div className="flex items-center gap-3">
                     <span className="font-mono font-medium text-[var(--text)]">{p.ref}</span>
                     <span className="text-[var(--text-secondary)]">{p.client}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-mono font-medium text-red-600">{fmt(p.amount)}</span>
+                    <span className="font-mono font-medium text-[var(--error)]">{fmt(p.amount)}</span>
                     <span className="text-[10px] text-[var(--text-muted)]">{p.status} {p.date}</span>
                     <button onClick={() => toast.success(`Recordatorio enviado a ${p.client}`)} className="text-[var(--accent)] hover:underline text-[10px]">
                       <Mail size={12} />
@@ -941,7 +941,7 @@ const PagosTab: React.FC = () => {
         <SectionTitle>Reembolsos y devoluciones</SectionTitle>
         <div className="grid grid-cols-3 gap-4">
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Reembolsos del período</p><p className="text-lg font-semibold text-[var(--text)] font-sans">{d.refunds.count} ({fmt(d.refunds.total)})</p></div>
-          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Tasa de reembolso</p><p className="text-lg font-semibold text-green-600 font-sans">{d.refunds.rate}% <span className="text-[10px] text-[var(--text-muted)]">(meta &lt;3%)</span></p></div>
+          <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Tasa de reembolso</p><p className="text-lg font-semibold text-[var(--success)] font-sans">{d.refunds.rate}% <span className="text-[10px] text-[var(--text-muted)]">(meta &lt;3%)</span></p></div>
           <div><p className="text-[10px] text-[var(--text-muted)] uppercase">Motivos</p><p className="text-xs text-[var(--text-secondary)]">{d.refunds.reasons.join(', ')}</p></div>
         </div>
       </Card>
@@ -954,9 +954,9 @@ const FlujoTab: React.FC = () => {
   const d = useFinanceData();
 
   const flowKpis = [
-    { label: 'Entradas', value: fmt(d.cashFlowEntries), delta: `+${d.cashFlowEntriesDelta}%`, up: true, icon: ArrowUpRight, color: 'text-green-600' },
-    { label: 'Salidas', value: fmt(d.cashFlowExits), delta: `+${d.cashFlowExitsDelta}%`, up: false, icon: ArrowDownRight, color: 'text-red-500' },
-    { label: 'Flujo neto', value: fmt(d.cashFlowNet), delta: `+${d.cashFlowNetDelta}%`, up: true, icon: TrendingUp, color: 'text-green-600', highlight: true },
+    { label: 'Entradas', value: fmt(d.cashFlowEntries), delta: `+${d.cashFlowEntriesDelta}%`, up: true, icon: ArrowUpRight, color: 'text-[var(--success)]' },
+    { label: 'Salidas', value: fmt(d.cashFlowExits), delta: `+${d.cashFlowExitsDelta}%`, up: false, icon: ArrowDownRight, color: 'text-[var(--error)]' },
+    { label: 'Flujo neto', value: fmt(d.cashFlowNet), delta: `+${d.cashFlowNetDelta}%`, up: true, icon: TrendingUp, color: 'text-[var(--success)]', highlight: true },
   ];
 
   return (
@@ -964,14 +964,14 @@ const FlujoTab: React.FC = () => {
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {flowKpis.map((k, i) => (
-          <Card key={i} className={`p-5 ${k.highlight ? 'border-green-200 bg-green-50/30' : ''}`}>
+          <Card key={i} className={`p-5 ${k.highlight ? 'border-[var(--success)] bg-[var(--success-subtle)]/30' : ''}`}>
             <div className="flex items-center justify-between mb-2">
               <k.icon size={20} className={k.color} />
-              <span className={`text-xs font-medium ${k.up ? 'text-green-600' : 'text-red-500'}`}>{k.delta}</span>
+              <span className={`text-xs font-medium ${k.up ? 'text-[var(--success)]' : 'text-[var(--error)]'}`}>{k.delta}</span>
             </div>
             <p className="text-2xl font-semibold text-[var(--text)] font-sans">{k.value}</p>
             <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-1">{k.label}</p>
-            {k.highlight && <p className="text-[10px] text-green-600 mt-1">POSITIVO ✓</p>}
+            {k.highlight && <p className="text-[10px] text-[var(--success)] mt-1">POSITIVO ✓</p>}
           </Card>
         ))}
       </div>
@@ -998,28 +998,28 @@ const FlujoTab: React.FC = () => {
       {/* Entries detail */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="overflow-hidden">
-          <div className="px-5 py-3 border-b border-[var(--border)]"><h5 className="text-xs font-medium text-green-600 uppercase tracking-wider">Detalle de entradas</h5></div>
+          <div className="px-5 py-3 border-b border-[var(--border)]"><h5 className="text-xs font-medium text-[var(--success)] uppercase tracking-wider">Detalle de entradas</h5></div>
           <table className="w-full text-left">
             <thead><tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
               <th className="px-5 py-2">Fuente</th><th className="px-5 py-2 text-right">Monto</th><th className="px-5 py-2 text-right">%</th><th className="px-5 py-2">Frecuencia</th>
             </tr></thead>
             <tbody className="divide-y divide-wood-50">
               {d.cashFlowEntriesDetail.map((e: any) => (
-                <tr key={e.source}><td className="px-5 py-2 text-xs text-[var(--text)]">{e.source}</td><td className="px-5 py-2 text-xs font-mono text-right text-green-600">{fmt(e.amount)}</td><td className="px-5 py-2 text-xs text-right text-[var(--text-secondary)]">{e.pct}%</td><td className="px-5 py-2 text-[10px] text-[var(--text-muted)]">{e.freq}</td></tr>
+                <tr key={e.source}><td className="px-5 py-2 text-xs text-[var(--text)]">{e.source}</td><td className="px-5 py-2 text-xs font-mono text-right text-[var(--success)]">{fmt(e.amount)}</td><td className="px-5 py-2 text-xs text-right text-[var(--text-secondary)]">{e.pct}%</td><td className="px-5 py-2 text-[10px] text-[var(--text-muted)]">{e.freq}</td></tr>
               ))}
             </tbody>
           </table>
         </Card>
 
         <Card className="overflow-hidden">
-          <div className="px-5 py-3 border-b border-[var(--border)]"><h5 className="text-xs font-medium text-red-500 uppercase tracking-wider">Detalle de salidas</h5></div>
+          <div className="px-5 py-3 border-b border-[var(--border)]"><h5 className="text-xs font-medium text-[var(--error)] uppercase tracking-wider">Detalle de salidas</h5></div>
           <table className="w-full text-left">
             <thead><tr className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
               <th className="px-5 py-2">Concepto</th><th className="px-5 py-2 text-right">Monto</th><th className="px-5 py-2 text-right">%</th><th className="px-5 py-2">Frecuencia</th>
             </tr></thead>
             <tbody className="divide-y divide-wood-50">
               {d.cashFlowExitsDetail.map((e: any) => (
-                <tr key={e.concept}><td className="px-5 py-2 text-xs text-[var(--text)]">{e.concept}</td><td className="px-5 py-2 text-xs font-mono text-right text-red-500">{fmt(e.amount)}</td><td className="px-5 py-2 text-xs text-right text-[var(--text-secondary)]">{e.pct}%</td><td className="px-5 py-2 text-[10px] text-[var(--text-muted)]">{e.freq}</td></tr>
+                <tr key={e.concept}><td className="px-5 py-2 text-xs text-[var(--text)]">{e.concept}</td><td className="px-5 py-2 text-xs font-mono text-right text-[var(--error)]">{fmt(e.amount)}</td><td className="px-5 py-2 text-xs text-right text-[var(--text-secondary)]">{e.pct}%</td><td className="px-5 py-2 text-[10px] text-[var(--text-muted)]">{e.freq}</td></tr>
               ))}
             </tbody>
           </table>
@@ -1031,7 +1031,7 @@ const FlujoTab: React.FC = () => {
         <SectionTitle>Calendario de pagos próximos</SectionTitle>
         <div className="space-y-2">
           {d.upcomingPayments.map((p: any, i: any) => (
-            <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-[var(--surface2)] text-xs">
+            <div key={i} className="flex items-center justify-between p-3 rounded-none bg-[var(--surface2)] text-xs">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-[var(--text-secondary)] w-12">{p.date}</span>
                 <span className="text-[var(--text)]">{p.concept}</span>
@@ -1040,18 +1040,18 @@ const FlujoTab: React.FC = () => {
                 <span className="font-mono font-medium text-[var(--text)]">{fmt(p.amount)}</span>
                 <span className="text-[10px] text-[var(--text-muted)]">{p.type}</span>
                 {p.paid ? (
-                  <span className="px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px] flex items-center gap-0.5"><CheckCircle size={10} /> Pagado</span>
+                  <span className="px-1.5 py-0.5 rounded-none bg-[var(--success-subtle)] text-[var(--success)] text-[10px] flex items-center gap-0.5"><CheckCircle size={10} /> Pagado</span>
                 ) : (
-                  <span className="px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 text-[10px] flex items-center gap-0.5"><Clock size={10} /> Pend.</span>
+                  <span className="px-1.5 py-0.5 rounded-none bg-[var(--warning-subtle)] text-[var(--warning)] text-[10px] flex items-center gap-0.5"><Clock size={10} /> Pend.</span>
                 )}
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-200">
+        <div className="mt-4 p-3 bg-[var(--error-subtle)] rounded-none border border-[var(--error)]">
           <div className="flex items-start gap-2">
-            <AlertTriangle size={14} className="text-red-500 mt-0.5 shrink-0" />
-            <div className="text-xs text-red-800">
+            <AlertTriangle size={14} className="text-[var(--error)] mt-0.5 shrink-0" />
+            <div className="text-xs text-[var(--error)]">
               <p>Total compromisos próximos 30 días: <span className="font-semibold">{fmt(d.upcomingTotal)}</span></p>
               <p>Saldo disponible actual: <span className="font-semibold">{fmt(d.currentBalance)}</span></p>
               <p className="font-semibold mt-1">Déficit proyectado: {fmt(d.projectedDeficit)} — Necesitas cobrar anticipos pendientes ({fmt(d.bankTransfer.pendingAdvances)})</p>
@@ -1108,7 +1108,7 @@ const ReportesTab: React.FC = () => {
             return (
               <Card key={r.id} className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-none bg-[var(--accent)]/10 flex items-center justify-center shrink-0">
                     <Icon size={16} className="text-[var(--accent)]" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1124,7 +1124,7 @@ const ReportesTab: React.FC = () => {
                       ))}
                       <button
                         onClick={() => toast.success(`Generando ${r.name} en formato ${selectedFormat[r.id] || r.formats[0]}...`)}
-                        className="ml-auto inline-flex items-center gap-1 px-3 py-1 bg-[var(--accent)] text-white text-[10px] rounded-lg hover:bg-[var(--accent)]/90 transition-colors"
+                        className="ml-auto inline-flex items-center gap-1 px-3 py-1 bg-[var(--accent)] text-white text-[10px] rounded-none hover:bg-[var(--accent)]/90 transition-colors"
                       >
                         <Download size={10} /> Generar reporte
                       </button>
@@ -1149,7 +1149,7 @@ const ReportesTab: React.FC = () => {
         <SectionTitle>Reportes programados</SectionTitle>
         <div className="space-y-2">
           {d.scheduledReports.map((r: any, i: any) => (
-            <div key={i} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-lg text-xs">
+            <div key={i} className="flex items-center justify-between p-3 bg-[var(--surface2)] rounded-none text-xs">
               <div className="flex items-center gap-3">
                 <input type="checkbox" defaultChecked={r.active} className="rounded border-wood-300 text-[var(--accent)]" />
                 <span className="text-[var(--text)]">{r.name}</span>
@@ -1183,7 +1183,7 @@ const ReportesTab: React.FC = () => {
                 <td className="px-5 py-2.5 text-xs font-medium text-[var(--text)]">{r.name}</td>
                 <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)]">{r.period}</td>
                 <td className="px-5 py-2.5 text-xs text-[var(--text-secondary)]">{r.generated}</td>
-                <td className="px-5 py-2.5"><span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--surface2)] text-[var(--text-secondary)]">{r.format}</span></td>
+                <td className="px-5 py-2.5"><span className="text-[10px] px-1.5 py-0.5 rounded-none bg-[var(--surface2)] text-[var(--text-secondary)]">{r.format}</span></td>
                 <td className="px-5 py-2.5 text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     <button onClick={() => toast.success('Descargando...')} className="p-1 hover:bg-[var(--surface2)] rounded"><Download size={12} className="text-[var(--text-secondary)]" /></button>
@@ -1204,7 +1204,7 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} onClick={e => e.stopPropagation()} className="bg-[var(--surface)] rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto m-4">
+      <div onClick={e => e.stopPropagation()} className="bg-[var(--surface)] rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto m-4">
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] sticky top-0 bg-[var(--surface)] z-10">
           <h3 className="font-serif text-lg text-[var(--text)]">Configuración Financiera</h3>
           <button onClick={onClose} className="p-1 hover:bg-[var(--surface2)] rounded"><X size={18} className="text-[var(--text-secondary)]" /></button>
@@ -1212,7 +1212,7 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
         <div className="p-6 space-y-6">
           <div>
             <h4 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider mb-3">Moneda</h4>
-            <select className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs bg-[var(--surface)]">
+            <select className="w-full border border-[var(--border)] rounded-none px-3 py-2 text-xs bg-[var(--surface)]">
               <option>MXN — Peso Mexicano</option>
               <option>USD — Dólar</option>
             </select>
@@ -1220,17 +1220,17 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
           <div>
             <h4 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider mb-3">Impuestos</h4>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-[10px] text-[var(--text-muted)]">IVA (%)</label><input type="number" defaultValue={16} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs" /></div>
+              <div><label className="text-[10px] text-[var(--text-muted)]">IVA (%)</label><input type="number" defaultValue={16} className="w-full border border-[var(--border)] rounded-none px-3 py-2 text-xs" /></div>
               <div><label className="text-[10px] text-[var(--text-muted)]">IVA incluido en precios</label><div className="flex gap-3 mt-1"><label className="text-xs text-[var(--text-secondary)]"><input type="radio" name="iva" defaultChecked className="mr-1" />Sí</label><label className="text-xs text-[var(--text-secondary)]"><input type="radio" name="iva" className="mr-1" />No</label></div></div>
             </div>
           </div>
           <div>
             <h4 className="text-xs font-medium text-[var(--text)] uppercase tracking-wider mb-3">Metas financieras</h4>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-[10px] text-[var(--text-muted)]">Meta ingresos mensual</label><input type="number" defaultValue={150000} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs" /></div>
-              <div><label className="text-[10px] text-[var(--text-muted)]">Meta margen bruto (%)</label><input type="number" defaultValue={60} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs" /></div>
-              <div><label className="text-[10px] text-[var(--text-muted)]">Meta margen neto (%)</label><input type="number" defaultValue={25} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs" /></div>
-              <div><label className="text-[10px] text-[var(--text-muted)]">Meta rotación inventario</label><input type="number" defaultValue={4} className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-xs" /></div>
+              <div><label className="text-[10px] text-[var(--text-muted)]">Meta ingresos mensual</label><input type="number" defaultValue={150000} className="w-full border border-[var(--border)] rounded-none px-3 py-2 text-xs" /></div>
+              <div><label className="text-[10px] text-[var(--text-muted)]">Meta margen bruto (%)</label><input type="number" defaultValue={60} className="w-full border border-[var(--border)] rounded-none px-3 py-2 text-xs" /></div>
+              <div><label className="text-[10px] text-[var(--text-muted)]">Meta margen neto (%)</label><input type="number" defaultValue={25} className="w-full border border-[var(--border)] rounded-none px-3 py-2 text-xs" /></div>
+              <div><label className="text-[10px] text-[var(--text-muted)]">Meta rotación inventario</label><input type="number" defaultValue={4} className="w-full border border-[var(--border)] rounded-none px-3 py-2 text-xs" /></div>
             </div>
           </div>
           <div>
@@ -1244,10 +1244,10 @@ const ConfigModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, o
           </div>
         </div>
         <div className="px-6 py-4 border-t border-[var(--border)] sticky bottom-0 bg-[var(--surface)] flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] rounded-lg transition-colors">Cancelar</button>
-          <button onClick={() => { toast.success('Configuración guardada'); onClose(); }} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors">Guardar configuración</button>
+          <button onClick={onClose} className="px-4 py-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface2)] rounded-none transition-colors">Cancelar</button>
+          <button onClick={() => { toast.success('Configuración guardada'); onClose(); }} className="px-4 py-2 text-xs bg-[var(--accent)] text-white rounded-none hover:bg-[var(--accent)]/90 transition-colors">Guardar configuración</button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -1303,11 +1303,11 @@ export const FinancesPage: React.FC = () => {
 
   const kpis = [
     { label: 'Ingresos brutos', value: fmt(d.grossRevenue), delta: `+${d.grossRevenueDelta}%`, up: true, icon: DollarSign, color: 'bg-[var(--accent)]/10 text-[var(--accent)]' },
-    { label: 'Costo de ventas (COGS)', value: fmt(d.cogs), delta: `+${d.cogsDelta}%`, up: false, icon: Package, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Ganancia bruta', value: fmt(d.grossProfit), delta: `+${d.grossProfitDelta}%`, up: true, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
-    { label: 'Margen bruto', value: `${d.grossMargin}%`, delta: `+${d.grossMarginDelta}pp`, up: true, icon: BarChart3, color: 'bg-purple-50 text-purple-600' },
+    { label: 'Costo de ventas (COGS)', value: fmt(d.cogs), delta: `+${d.cogsDelta}%`, up: false, icon: Package, color: 'bg-[var(--info-subtle)] text-[var(--info)]' },
+    { label: 'Ganancia bruta', value: fmt(d.grossProfit), delta: `+${d.grossProfitDelta}%`, up: true, icon: TrendingUp, color: 'bg-[var(--success-subtle)] text-[var(--success)]' },
+    { label: 'Margen bruto', value: `${d.grossMargin}%`, delta: `+${d.grossMarginDelta}pp`, up: true, icon: BarChart3, color: 'bg-[var(--accent-subtle)] text-[var(--accent)]' },
     { label: 'Ganancia neta', value: fmt(d.netProfit), delta: `+${d.netProfitDelta}%`, up: true, icon: Wallet, color: 'bg-emerald-50 text-emerald-600' },
-    { label: 'Valor inventario', value: fmt(d.inventoryCostValue), delta: `${d.inventoryUnits} productos`, up: true, icon: Layers, color: 'bg-amber-50 text-amber-600', note: '(a costo)' },
+    { label: 'Valor inventario', value: fmt(d.inventoryCostValue), delta: `${d.inventoryUnits} productos`, up: true, icon: Layers, color: 'bg-[var(--warning-subtle)] text-[var(--warning)]', note: '(a costo)' },
   ];
 
   const tabContent: Record<TabId, React.ReactNode> = {
@@ -1329,13 +1329,13 @@ export const FinancesPage: React.FC = () => {
           <DollarSign size={20} className="text-[var(--accent)]" /> Finanzas
         </h3>
         <div className="flex items-center gap-2">
-          <button onClick={() => toast.success('Exportando reporte...')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
+          <button onClick={() => toast.success('Exportando reporte...')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-none hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
             <Download size={12} /> Exportar
           </button>
-          <button onClick={() => toast.success('Preparando impresión...')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
+          <button onClick={() => toast.success('Preparando impresión...')} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-none hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
             <Printer size={12} /> Imprimir
           </button>
-          <button onClick={() => setShowConfig(true)} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-lg hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
+          <button onClick={() => setShowConfig(true)} className="px-3 py-1.5 text-xs border border-[var(--border)] rounded-none hover:bg-[var(--surface2)] transition-colors flex items-center gap-1.5">
             <Settings2 size={12} /> Configuración
           </button>
         </div>
@@ -1359,13 +1359,13 @@ export const FinancesPage: React.FC = () => {
         <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
           <Calendar size={12} className="text-[var(--text-muted)]" />
           <span>Período:</span>
-          <select value={period} onChange={e => setPeriod(e.target.value)} className="border border-[var(--border)] rounded-lg px-2 py-1 text-xs bg-[var(--surface)]">
+          <select value={period} onChange={e => setPeriod(e.target.value)} className="border border-[var(--border)] rounded-none px-2 py-1 text-xs bg-[var(--surface)]">
             {periods.map(p => <option key={p}>{p}</option>)}
           </select>
         </div>
         <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
           <span>Comparar con:</span>
-          <select className="border border-[var(--border)] rounded-lg px-2 py-1 text-xs bg-[var(--surface)]">
+          <select className="border border-[var(--border)] rounded-none px-2 py-1 text-xs bg-[var(--surface)]">
             <option>Mes anterior</option>
             <option>Mismo período año anterior</option>
             <option>Sin comparar</option>
@@ -1376,26 +1376,26 @@ export const FinancesPage: React.FC = () => {
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {kpis.map((kpi, idx) => (
-          <motion.div key={idx} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.06 }} className="bg-[var(--surface)] p-4 rounded-xl border border-[var(--border)] shadow-sm">
+          <div key={idx} className="bg-[var(--surface)] p-4 rounded-none border border-[var(--border)] shadow-sm">
             <div className="flex items-center justify-between mb-2">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${kpi.color}`}><kpi.icon size={16} /></div>
-              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${kpi.up ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+              <div className={`w-8 h-8 rounded-none flex items-center justify-center ${kpi.color}`}><kpi.icon size={16} /></div>
+              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-none flex items-center gap-0.5 ${kpi.up ? 'bg-[var(--success-subtle)] text-[var(--success)]' : 'bg-[var(--warning-subtle)] text-[var(--warning)]'}`}>
                 {kpi.up && <ArrowUpRight size={10} />}{kpi.delta}
               </span>
             </div>
             <h4 className="text-xl font-semibold text-[var(--text)] font-sans">{kpi.value}</h4>
             <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-0.5">{kpi.label}</p>
             {kpi.note && <p className="text-[10px] text-[var(--text-muted)]">{kpi.note}</p>}
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* Tab content */}
-      <AnimatePresence mode="wait">
-        <motion.div key={activeTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+      <>
+        <div key={activeTab}>
           {tabContent[activeTab]}
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </>
 
       {/* Config Modal */}
       <ConfigModal open={showConfig} onClose={() => setShowConfig(false)} />
