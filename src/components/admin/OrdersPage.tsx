@@ -172,125 +172,161 @@ export const OrdersPage: React.FC = () => {
     return <OrderDetail order={selectedOrder} onBack={() => setSelectedOrder(null)} />;
   }
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-serif text-lg text-[var(--admin-text)]">Pedidos</h3>
-        <span className="text-xs text-[var(--admin-muted)]">{orders.length} pedidos totales</span>
-      </div>
+  const badgeStyle = (variant: 'success'|'warning'|'error'|'info') => {
+    const map = {
+      success: { bg: 'var(--success-subtle)', color: 'var(--success)', border: 'var(--success)' },
+      warning: { bg: 'var(--warning-subtle)', color: 'var(--warning)', border: 'var(--warning)' },
+      error:   { bg: 'var(--error-subtle)',   color: 'var(--error)',   border: 'var(--error)' },
+      info:    { bg: 'var(--info-subtle)',     color: 'var(--info)',    border: 'var(--info)' },
+    };
+    return map[variant];
+  };
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-1 flex items-center bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg overflow-hidden">
-          <Search size={16} className="ml-3 text-[var(--admin-muted)]" />
-          <input
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Buscar por # pedido o cliente..."
-            className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none text-[var(--admin-text)] placeholder:text-[var(--admin-muted)]"
-          />
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setEngravingFilter(!engravingFilter)}
-            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs transition-colors ${engravingFilter ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:border-wood-300'}`}
-          >
-            <span className="text-sm">🔴</span> Grabado
-          </button>
-          <div className="relative">
-            <button
-              onClick={() => setFilterOpen(!filterOpen)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg text-xs text-[var(--admin-text-secondary)] hover:border-wood-300 transition-colors"
-            >
-              <Filter size={14} />
-              {statusFilter === 'all' ? 'Todos' : shippingLabels[statusFilter]}
-              <ChevronDown size={12} />
-            </button>
-            {filterOpen && (
-              <div className="absolute right-0 mt-1 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-lg shadow-lg py-1 z-20 min-w-[160px]">
-                <button onClick={() => { setStatusFilter('all'); setFilterOpen(false); }} className={`w-full text-left px-3 py-2 text-xs hover:bg-[var(--admin-surface2)] ${statusFilter === 'all' ? 'text-[var(--admin-accent)] font-medium' : 'text-[var(--admin-text-secondary)]'}`}>
-                  Todos
-                </button>
-                {Object.entries(shippingConfig).map(([key, val]) => (
-                  <button key={key} onClick={() => { setStatusFilter(key); setFilterOpen(false); }} className={`w-full text-left px-3 py-2 text-xs hover:bg-[var(--admin-surface2)] ${statusFilter === key ? 'text-[var(--admin-accent)] font-medium' : 'text-[var(--admin-text-secondary)]'}`}>
-                    {val.label}
-                  </button>
-                ))}
-              </div>
-            )}
+  const orderTabs = ['Todos', 'Pendiente', 'En producción', 'Enviado', 'Entregado', 'Cancelado'];
+  const orderTabKeys = ['all', 'pending', 'production', 'shipped', 'delivered', 'cancelled'];
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-heading)', marginBottom: '2px' }}>
+            Pedidos
+          </h1>
+          <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+            {orders.length} pedidos totales
           </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-[var(--admin-surface)] rounded-xl border border-[var(--admin-border)] shadow-sm overflow-hidden">
+      {/* Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {orderTabs.map((tab, i) => (
+          <button
+            key={tab}
+            onClick={() => setStatusFilter(orderTabKeys[i])}
+            style={{
+              padding: '6px 14px',
+              fontSize: '13px',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              backgroundColor: statusFilter === orderTabKeys[i] ? 'var(--accent)' : 'var(--surface)',
+              color: statusFilter === orderTabKeys[i] ? 'var(--accent-text)' : 'var(--text)',
+              border: `1px solid ${statusFilter === orderTabKeys[i] ? 'var(--accent)' : 'var(--border)'}`,
+              borderRadius: 'var(--radius-button)',
+              cursor: 'pointer',
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* Búsqueda + grabado */}
+      <div className="flex gap-3">
+        <div
+          className="flex-1 flex items-center gap-2 px-3 py-2"
+          style={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-input)' }}
+        >
+          <Search size={15} style={{ color: 'var(--text-muted)' }} />
+          <input
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Buscar por # pedido o cliente..."
+            className="flex-1 bg-transparent outline-none"
+            style={{ fontSize: '13px', color: 'var(--text)' }}
+          />
+        </div>
+        <button
+          onClick={() => setEngravingFilter(!engravingFilter)}
+          style={{
+            padding: '6px 14px',
+            fontSize: '12px',
+            fontWeight: 600,
+            backgroundColor: engravingFilter ? 'var(--error-subtle)' : 'var(--surface)',
+            color: engravingFilter ? 'var(--error)' : 'var(--text-secondary)',
+            border: `1px solid ${engravingFilter ? 'var(--error)' : 'var(--border)'}`,
+            borderRadius: 'var(--radius-button)',
+            cursor: 'pointer',
+          }}
+        >
+          Grabado láser
+        </button>
+      </div>
+
+      {/* Tabla */}
+      <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-card)', overflow: 'hidden' }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full">
             <thead>
-              <tr className="text-[10px] text-[var(--admin-muted)] uppercase tracking-wider border-b border-[var(--admin-border)] bg-[var(--admin-surface2)]/50">
-                <th className="px-5 py-3">#Pedido</th>
-                <th className="px-5 py-3">Fecha</th>
-                <th className="px-5 py-3">Cliente</th>
-                <th className="px-5 py-3 hidden md:table-cell">Items</th>
-                <th className="px-5 py-3">Total</th>
-                <th className="px-5 py-3">Pago</th>
-                <th className="px-5 py-3">Estado</th>
-                <th className="px-5 py-3 hidden lg:table-cell">Envío</th>
-                <th className="px-5 py-3 w-8">🔴</th>
-                <th className="px-5 py-3"></th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                {['#', 'Fecha', 'Cliente', 'Items', 'Total', 'Pago', 'Estado', 'Envío', ''].map(h => (
+                  <th key={h} className="text-left px-5 py-3" style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-wood-50">
-              {filteredOrders.map((order, idx) => (
-                <motion.tr
-                  key={order.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: idx * 0.03 }}
-                  className="hover:bg-[var(--admin-surface2)]/50 transition-colors cursor-default"
-                  onClick={() => setSelectedOrder(order)}
-                >
-                  <td className="px-5 py-3.5 text-xs font-medium text-[var(--admin-text)]">{order.number}</td>
-                  <td className="px-5 py-3.5 text-xs text-[var(--admin-text-secondary)]">{new Date(order.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}</td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-[var(--admin-surface2)] flex items-center justify-center text-[var(--admin-text-secondary)] text-[10px] font-bold flex-shrink-0">
-                        {order.customer.avatar}
+            <tbody>
+              {filteredOrders.map((order, idx) => {
+                const pvBadge = badgeStyle(paymentVariant(order.paymentStatus));
+                const ovBadge = badgeStyle(orderVariant(order.orderStatus));
+                return (
+                  <tr
+                    key={order.id}
+                    style={{ borderBottom: idx < filteredOrders.length - 1 ? '1px solid var(--border)' : 'none', cursor: 'pointer' }}
+                    onClick={() => setSelectedOrder(order)}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--surface2)')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <td className="px-5 py-3" style={{ fontSize: '13px', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--text)' }}>{order.number}</td>
+                    <td className="px-5 py-3" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      {new Date(order.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--surface2)', borderRadius: '50%', fontSize: '10px', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                          {order.customer.avatar}
+                        </div>
+                        <span style={{ fontSize: '13px', color: 'var(--text)', fontWeight: 600 }} className="truncate max-w-[120px]">{order.customer.name}</span>
                       </div>
-                      <span className="text-xs text-[var(--admin-text)] truncate max-w-[120px]">{order.customer.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-xs text-[var(--admin-text-secondary)] hidden md:table-cell">{order.items.length} {order.items.length === 1 ? 'pza' : 'pzs'}</td>
-                  <td className="px-5 py-3.5 text-xs font-medium text-[var(--admin-text)]">${order.total.toLocaleString()}</td>
-                  <td className="px-5 py-3.5">
-                    <TBadge text={statusLabels[order.paymentStatus] || order.paymentStatus} variant={paymentVariant(order.paymentStatus)} />
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <TBadge text={orderStatusLabels[order.orderStatus] || order.orderStatus} variant={orderVariant(order.orderStatus)} />
-                  </td>
-                  <td className="px-5 py-3.5 hidden lg:table-cell">
-                    {order.tracking ? (
-                      <span className="text-[10px] font-mono text-[var(--admin-text-secondary)]">{order.carrier} {order.tracking.slice(0, 10)}...</span>
-                    ) : (
-                      <span className="text-[10px] text-[var(--admin-muted)]">Sin guía</span>
-                    )}
-                  </td>
-                  <td className="px-5 py-3.5 text-center">
-                    {order.hasEngraving && <span className="text-sm" title="Incluye grabado láser">🔴</span>}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <button className="text-[10px] font-bold text-[var(--admin-accent)] uppercase tracking-wider hover:underline">
-                      Ver
-                    </button>
-                  </td>
-                </motion.tr>
-              ))}
+                    </td>
+                    <td className="px-5 py-3" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      {order.items.length} {order.items.length === 1 ? 'pza' : 'pzs'}
+                    </td>
+                    <td className="px-5 py-3" style={{ fontSize: '13px', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--accent)' }}>
+                      ${order.total.toLocaleString()}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="px-2 py-1" style={{ fontSize: '10px', fontWeight: 700, backgroundColor: pvBadge.bg, color: pvBadge.color, border: `1px solid ${pvBadge.border}`, borderRadius: 'var(--radius-badge)' }}>
+                        {statusLabels[order.paymentStatus] || order.paymentStatus}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="px-2 py-1" style={{ fontSize: '10px', fontWeight: 700, backgroundColor: ovBadge.bg, color: ovBadge.color, border: `1px solid ${ovBadge.border}`, borderRadius: 'var(--radius-badge)' }}>
+                        {orderStatusLabels[order.orderStatus] || order.orderStatus}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3" style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                      {order.tracking
+                        ? <span>{order.carrier} {order.tracking.slice(0, 10)}...</span>
+                        : <span style={{ color: 'var(--text-muted)' }}>Sin guía</span>
+                      }
+                    </td>
+                    <td className="px-5 py-3">
+                      <button style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em', background: 'none', border: 'none', cursor: 'pointer' }}>
+                        Ver
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
         {filteredOrders.length === 0 && (
-          <div className="p-12 text-center text-[var(--admin-muted)] text-sm">
-            <Package className="w-8 h-8 mx-auto mb-2 opacity-20" />
+          <div className="p-12 flex flex-col items-center gap-2" style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
+            <Package size={28} style={{ opacity: 0.2 }} />
             <p>No se encontraron pedidos</p>
           </div>
         )}
