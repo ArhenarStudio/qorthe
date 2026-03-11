@@ -40,8 +40,8 @@ const defaultComponents: Required<AdminThemeComponents> = {
 };
 
 const AdminThemeContext = createContext<AdminThemeContextType>({
-  theme: getTheme('dsd-classic'),
-  themeId: 'dsd-classic',
+  theme: getTheme('rocksage-teal-dark'),
+  themeId: 'rocksage-teal-dark',
   setTheme: () => {},
   themes: allThemes,
   loading: true,
@@ -52,7 +52,7 @@ const AdminThemeContext = createContext<AdminThemeContextType>({
 export const useAdminTheme = () => useContext(AdminThemeContext);
 
 // ── Token defaults — fallback si un tema parcial omite tokens ──
-const DEFAULT_TOKENS = getTheme('dsd-classic').tokens;
+const DEFAULT_TOKENS = getTheme('rocksage-teal-dark').tokens;
 
 // ── Helper: aplica un token con fallback y warn en dev ─────────
 function applyToken(r: HTMLElement, cssVar: string, value: string | undefined, fallback: string) {
@@ -153,7 +153,7 @@ function applyTokensToDOM(theme: AdminUITheme) {
 
 // ── Provider ───────────────────────────────────────────────────
 export const AdminThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [themeId, setThemeId] = useState('dsd-classic');
+  const [themeId, setThemeId] = useState('rocksage-teal-dark');
   const [loading, setLoading] = useState(true);
   const theme = getTheme(themeId);
 

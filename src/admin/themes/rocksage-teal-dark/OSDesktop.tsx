@@ -16,6 +16,7 @@ import {
 import { useAdmin } from '@/contexts/AdminContext';
 import type { AdminPage } from '@/src/admin/navigation';
 import { OSWindow } from './OSWindow';
+import { OSModuleRegistry } from './OSModuleRegistry';
 
 // ── Paleta OS (CSS vars inline) ──────────────────────────────
 const C = {
@@ -375,7 +376,7 @@ function GroupBadge({ group }: { group: GroupDef }) {
 }
 
 // ── Componente principal ──────────────────────────────────────
-export function OSDesktop({ children }: { children?: React.ReactNode }) {
+export function OSDesktop({ children: _children }: { children?: React.ReactNode }) {
   const { navigate, currentPage } = useAdmin();
   const [clock, setClock] = useState('');
   const [openWindow, setOpenWindow] = useState<AdminPage | null>(null);
@@ -627,8 +628,8 @@ export function OSDesktop({ children }: { children?: React.ReactNode }) {
         isOpen={openWindow !== null}
         onClose={handleCloseWindow}
         title={windowTitle}
-        subtitle="RockSage OS — módulo"
-        width="880px"
+        subtitle={OSModuleRegistry[openWindow ?? 'dashboard']?.subtitle ?? 'RockSage OS — módulo'}
+        width={OSModuleRegistry[openWindow ?? 'dashboard']?.width ?? '880px'}
         maxHeight="84vh"
         actions={
           <button
@@ -647,7 +648,9 @@ export function OSDesktop({ children }: { children?: React.ReactNode }) {
           </button>
         }
       >
-        {children}
+        {openWindow && OSModuleRegistry[openWindow]
+          ? React.createElement(OSModuleRegistry[openWindow].component)
+          : null}
       </OSWindow>
 
     </div>
