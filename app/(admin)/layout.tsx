@@ -26,6 +26,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const t = theme.tokens;
+  const isOSPanel = theme.layout === 'os-panel';
 
   useEffect(() => {
     const onResize = () => setIsDesktop(window.innerWidth >= 1024);
@@ -43,6 +44,49 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   };
 
+  // ── OS Panel layout (RockSage OS: menubar top + dock bottom) ─
+  if (isOSPanel) {
+    return (
+      <div
+        id="admin-root"
+        data-theme={theme.id}
+        data-mode={theme.mode}
+        className="min-h-screen"
+        style={{ backgroundColor: t.bg, fontFamily: t.fontBody, fontSize: t.fontSizeBase }}
+      >
+        {/* Sidebar actúa como menubar top + dock bottom */}
+        <Sidebar
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          collapsed={false}
+          onToggleCollapse={() => {}}
+          navigation={adminNavigation}
+        />
+        {/* Barra de contexto (Header) */}
+        <Header
+          period={period}
+          onPeriodChange={setPeriod}
+          onNavigate={handleNavigate}
+          onMobileMenuToggle={() => {}}
+        />
+        {/* Contenido principal: espacio para menubar (40px) + header + dock (80px) */}
+        <main style={{ paddingTop: '40px', paddingBottom: '80px', paddingLeft: 0 }}
+          className="px-4 sm:px-6 lg:px-8 pt-2">
+          <AdminErrorBoundary context="panel de administración">
+            <AnimatePresence mode="wait">
+              <motion.div key={currentPage}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
+                {children}
+              </motion.div>
+            </AnimatePresence>
+          </AdminErrorBoundary>
+        </main>
+      </div>
+    );
+  }
+
+  // ── Sidebar clásico (DSD Classic y todos los temas con sidebar lateral) ─
   return (
     <div
       id="admin-root"

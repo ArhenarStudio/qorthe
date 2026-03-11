@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Playfair_Display, Inter, Sora, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import ClientProviders from "./providers";
 import { OrganizationJsonLd } from "@/components/seo/JsonLd";
@@ -15,6 +15,27 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+});
+
+// Fuentes del tema RockSage OS (Template 01)
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 const SITE_URL = "https://davidsonsdesign.com";
@@ -88,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#2d2419" />
         <OrganizationJsonLd />
       </head>
-      <body className={`${playfair.variable} ${inter.variable} antialiased`}>
+      <body className={`${playfair.variable} ${inter.variable} ${sora.variable} ${dmSans.variable} ${jetbrainsMono.variable} antialiased`}>
         <ClientProviders>
           {children}
           <Toaster position="bottom-right" />

@@ -104,6 +104,9 @@ export interface AdminUITheme {
   mode: 'light' | 'dark';
   preview: { sidebar: string; bg: string; accent: string; card: string };
 
+  /** Layout del shell: 'sidebar' = clásico vertical | 'os-panel' = menubar top + dock bottom */
+  layout?: 'sidebar' | 'os-panel';
+
   // Layout components
   Sidebar: React.ComponentType<AdminSidebarProps>;
   Header: React.ComponentType<AdminHeaderProps>;

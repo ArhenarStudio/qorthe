@@ -8,6 +8,7 @@ import type { AdminUITheme } from '@/src/admin/types';
 import { DefaultSidebar } from './default/Sidebar';
 import { AdminHeader as DefaultHeader } from './default/Header';
 import { DefaultCard, DefaultBadge, DefaultButton, DefaultTable, DefaultStatCard } from './default/components';
+import { rockSageTealDarkTheme } from './rocksage-teal-dark';
 
 // ── DSD Classic — tema único activo ───────────────────────────
 const dsdClassicTheme: AdminUITheme = {
@@ -80,6 +81,7 @@ const dsdClassicTheme: AdminUITheme = {
 // ── Registro — agregar nuevos temas aquí (RockSage fase futura) ──
 export const adminThemes: Record<string, AdminUITheme> = {
   'dsd-classic': dsdClassicTheme,
+  'rocksage-teal-dark': rockSageTealDarkTheme,
 };
 
 export const getTheme = (id: string): AdminUITheme =>
