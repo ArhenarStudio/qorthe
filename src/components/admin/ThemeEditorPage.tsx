@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 // motion/react removed — using CSS transitions (zero framer-motion rule)
 import {
   Palette, ChevronDown, Monitor, Tablet, Smartphone,
@@ -857,8 +858,29 @@ interface CatalogTheme {
   config: ThemeConfig;
 }
 
-// ── Registro de temas — vacío hasta primer diseño de Figma ──────────────
-const CATALOG_THEMES: CatalogTheme[] = [];
+// ── Registro de temas del panel admin ───────────────────────────────────
+const CATALOG_THEMES: CatalogTheme[] = [
+  {
+    id: 'dsd-classic',
+    name: 'DSD Classic',
+    desc: 'Tema clásico de DavidSon\'s Design. Sidebar oscuro madera + acento ámbar.',
+    author: 'RockSage',
+    tags: ['light', 'sidebar', 'clásico'],
+    mode: 'light',
+    colors: { bg: '#F8F5F0', surface: '#FFFFFF', accent: '#C5A065', text: '#2d2419' },
+    config: {} as ThemeConfig, // no aplica — es tema admin
+  },
+  {
+    id: 'rocksage-teal-dark',
+    name: 'RockSage OS',
+    desc: 'Panel estilo OS. Menubar top + dock inferior. Paleta teal oscura de RockSage Commerce.',
+    author: 'RockSage',
+    tags: ['dark', 'os-panel', 'teal', 'rocksage'],
+    mode: 'dark',
+    colors: { bg: '#08090B', surface: '#0F1114', accent: '#0D9488', text: '#E8ECF0' },
+    config: {} as ThemeConfig, // no aplica — es tema admin
+  },
+];
 
 // Mini-thumbnail de un tema
 function ThemeThumbnail({ colors }: { colors: CatalogTheme['colors'] }) {
@@ -890,6 +912,9 @@ function ThemeThumbnail({ colors }: { colors: CatalogTheme['colors'] }) {
 
 // ===== MAIN COMPONENT =====
 export const ThemeEditorPage: React.FC = () => {
+
+  // ── Admin theme context — para activar temas del panel ──
+  const { themeId: adminThemeId, setTheme: setAdminTheme } = useAdminTheme();
 
   // ── Theme state — loaded from API ──
   const [theme, setTheme] = useState<ThemeConfig>(themePresets[0].config);
@@ -1000,22 +1025,11 @@ export const ThemeEditorPage: React.FC = () => {
   const installTheme = async (catalogTheme: CatalogTheme) => {
     setInstallingId(catalogTheme.id);
     try {
-      const res = await fetch('/api/admin/theme', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme: catalogTheme.config }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setTheme(catalogTheme.config);
-        if (data.updated_at) setSavedAt(data.updated_at);
-        toast.success(`Tema "${catalogTheme.name}" instalado correctamente`);
-        setView('editor');
-      } else {
-        toast.error('Error al instalar el tema');
-      }
+      await setAdminTheme(catalogTheme.id);
+      toast.success(`Tema "${catalogTheme.name}" activado correctamente`);
+      setView('editor');
     } catch {
-      toast.error('Error de conexión');
+      toast.error('Error al activar el tema');
     } finally {
       setInstallingId(null);
     }
@@ -1028,7 +1042,7 @@ export const ThemeEditorPage: React.FC = () => {
         <div>
           <h1 className="text-[28px] font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>Temas</h1>
           <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">
-            {view === 'editor' ? 'Personaliza la apariencia de tu tienda sin código' : 'Explora y aplica temas desde el catálogo de RockSage Commerce'}
+            {view === 'editor' ? 'Personaliza colores, tipografía y layout de tu tienda' : 'Selecciona el tema visual del panel de administración'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -1076,8 +1090,8 @@ export const ThemeEditorPage: React.FC = () => {
       {/* Navigation tabs */}
       <div className="flex gap-1 border-b border-[var(--border)]">
         {([
-          { id: 'editor' as ThemeView, label: 'Editor', icon: Paintbrush },
-          { id: 'catalog' as ThemeView, label: 'Catálogo de temas', icon: Store },
+          { id: 'editor' as ThemeView, label: 'Editor de tienda', icon: Paintbrush },
+          { id: 'catalog' as ThemeView, label: 'Temas del panel', icon: Crown },
         ]).map(tab => {
           const TabIcon = tab.icon;
           return (
@@ -1106,7 +1120,7 @@ export const ThemeEditorPage: React.FC = () => {
           {CATALOG_THEMES.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {CATALOG_THEMES.map(catalogTheme => {
-                const isActive = theme.id === catalogTheme.id;
+                const isActive = adminThemeId === catalogTheme.id;
                 const isInstalling = installingId === catalogTheme.id;
                 return (
                   <div
@@ -1168,7 +1182,7 @@ export const ThemeEditorPage: React.FC = () => {
               <Store size={40} className="text-[var(--text-muted)] mb-4 opacity-30" />
               <p className="text-sm font-medium text-[var(--text-secondary)]">No hay temas disponibles aún</p>
               <p className="text-xs text-[var(--text-muted)] mt-1 max-w-xs">
-                Los temas aparecerán aquí cuando sean diseñados en Figma y convertidos al ecosistema.
+                Los temas del panel aparecerán aquí cuando sean diseñados y registrados en el sistema.
               </p>
             </div>
           )}
