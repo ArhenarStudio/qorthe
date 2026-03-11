@@ -21,7 +21,6 @@
 import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
 import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { motion,  } from "motion/react";
 import {
   Search, Plus, Minus, Trash2, ShoppingCart, DollarSign,
   User, Phone, Mail, MapPin, MessageSquare, CreditCard,
