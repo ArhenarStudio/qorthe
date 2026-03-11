@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { AdminUITheme } from '@/src/admin/types';
-import { RockSageOSSidebar } from './Sidebar';
+import RockSageOSSidebar from './Sidebar';
 import { RockSageOSHeader } from './Header';
 import { OSCard, OSBadge, OSButton, OSTable, OSStatCard } from './components';
 

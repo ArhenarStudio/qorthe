@@ -12,6 +12,7 @@ import { AdminThemeProvider, useAdminTheme } from '@/src/contexts/AdminThemeCont
 import { AdminErrorBoundary } from '@/components/ErrorBoundary';
 import { adminNavigation } from '@/src/admin/navigation';
 import type { AdminPage } from '@/src/admin/navigation';
+import { OSDesktop } from '@/src/admin/themes/rocksage-teal-dark/OSDesktop';
 
 const ADMIN_EMAILS = [
   'admin@davidsonsdesign.com',
@@ -44,44 +45,21 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   };
 
-  // ── OS Panel layout (RockSage OS: menubar top + dock bottom) ─
+  // ── OS Panel layout (RockSage OS: escritorio pantalla completa) ─
   if (isOSPanel) {
     return (
       <div
         id="admin-root"
         data-theme={theme.id}
         data-mode={theme.mode}
-        className="min-h-screen"
-        style={{ backgroundColor: t.bg, fontFamily: t.fontBody, fontSize: t.fontSizeBase }}
+        style={{ fontFamily: t.fontBody, fontSize: t.fontSizeBase }}
       >
-        {/* Sidebar actúa como menubar top + dock bottom */}
-        <Sidebar
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          collapsed={false}
-          onToggleCollapse={() => {}}
-          navigation={adminNavigation}
-        />
-        {/* Barra de contexto (Header) */}
-        <Header
-          period={period}
-          onPeriodChange={setPeriod}
-          onNavigate={handleNavigate}
-          onMobileMenuToggle={() => {}}
-        />
-        {/* Contenido principal: espacio para menubar (40px) + header + dock (80px) */}
-        <main style={{ paddingTop: '40px', paddingBottom: '80px', paddingLeft: 0 }}
-          className="px-4 sm:px-6 lg:px-8 pt-2">
-          <AdminErrorBoundary context="panel de administración">
-            <AnimatePresence mode="wait">
-              <motion.div key={currentPage}
-                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
-                {children}
-              </motion.div>
-            </AnimatePresence>
-          </AdminErrorBoundary>
-        </main>
+        <AdminErrorBoundary context="panel de administración">
+          {/* OSDesktop ocupa toda la pantalla y maneja su propio layout */}
+          <OSDesktop>
+            {children}
+          </OSDesktop>
+        </AdminErrorBoundary>
       </div>
     );
   }
