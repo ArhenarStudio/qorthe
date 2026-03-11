@@ -13,6 +13,7 @@ import { AdminErrorBoundary } from '@/components/ErrorBoundary';
 import { adminNavigation } from '@/src/admin/navigation';
 import type { AdminPage } from '@/src/admin/navigation';
 import { OSDesktop } from '@/src/admin/themes/rocksage-teal-dark/OSDesktop';
+import NintendoDesktop from '@/src/admin/themes/nintendo-retro/NintendoDesktop';
 
 const ADMIN_EMAILS = [
   'admin@davidsonsdesign.com',
@@ -47,18 +48,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
 
   // ── OS Panel layout (RockSage OS: escritorio pantalla completa) ─
   if (isOSPanel) {
+    const DesktopShell = theme.id === 'nintendo-retro' ? NintendoDesktop : OSDesktop;
     return (
-      <div
-        id="admin-root"
-        data-theme={theme.id}
-        data-mode={theme.mode}
-        style={{ fontFamily: t.fontBody, fontSize: t.fontSizeBase }}
-      >
+      <div id="admin-root" data-theme={theme.id} data-mode={theme.mode}
+        style={{ fontFamily: t.fontBody, fontSize: t.fontSizeBase }}>
         <AdminErrorBoundary context="panel de administración">
-          {/* OSDesktop ocupa toda la pantalla y maneja su propio layout */}
-          <OSDesktop>
-            {children}
-          </OSDesktop>
+          <DesktopShell>{children}</DesktopShell>
         </AdminErrorBoundary>
       </div>
     );
