@@ -33,6 +33,7 @@ import {
   RefreshCw, BarChart3, TrendingUp, ArrowRight
 } from "lucide-react";
 import { useAdminData } from "@/hooks/useAdminData";
+import { useShippingConfig } from "@/src/hooks/useShippingConfig";
 import { toast } from "sonner";
 
 // ═══════ TYPES ═══════
@@ -75,7 +76,9 @@ interface POSCustomer {
 
 type Channel = "whatsapp" | "phone" | "instagram" | "facebook" | "in_person" | "other";
 type PaymentMethod = "cash" | "transfer" | "terminal" | "online";
-type ShippingType = "local_delivery" | "pickup" | "national" | null;
+type ShippingType = string | null;
+
+// shippingConfig se reemplaza por posOptions del hook — ver useShippingConfig()
 
 // ═══════ CONFIG ═══════
 const channelConfig: Record<Channel, { label: string; icon: React.ElementType; color: string }> = {
@@ -94,17 +97,16 @@ const paymentConfig: Record<PaymentMethod, { label: string; icon: React.ElementT
   online: { label: "Pago en línea", icon: Smartphone, color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
 };
 
-const shippingConfig: Record<string, { label: string; icon: React.ElementType }> = {
-  local_delivery: { label: "Entrega local", icon: Truck },
-  pickup: { label: "Recoger en tienda", icon: Store },
-  national: { label: "Envío nacional", icon: Package },
-};
+// shippingConfig estático eliminado — reemplazado por posOptions dinámico desde useShippingConfig()
 
 const fmtMXN = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
 
 // ═══════ MAIN COMPONENT ═══════
 export const POSPage: React.FC = () => {
+  // ── Shipping config desde Supabase ──
+  const { posOptions, loading: shippingLoading } = useShippingConfig();
+
   // ── State ──
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customer, setCustomer] = useState<POSCustomer>({ email: "", first_name: "", last_name: "", phone: "" });
@@ -236,7 +238,9 @@ export const POSPage: React.FC = () => {
       ? subtotal * (discount.value / 100)
       : discount.value
     : 0;
-  const total = Math.max(0, subtotal - discountAmount);
+  const selectedPosOption = posOptions.find((o) => o.id === shippingType);
+  const shippingCost = selectedPosOption ? selectedPosOption.price / 100 : 0;
+  const total = Math.max(0, subtotal - discountAmount) + shippingCost;
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const applyDiscount = () => {
@@ -589,35 +593,49 @@ export const POSPage: React.FC = () => {
             {/* Checkout section */}
             {cart.length > 0 && (
               <div className="border-t border-[var(--border)] p-4 space-y-3 bg-[var(--surface2)]/30">
-                {/* Shipping type */}
+                {/* Shipping type — dinámico desde useShippingConfig() */}
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5 block">
-                    Tipo de entrega
-                  </label>
-                  <div className="flex gap-1.5">
-                    {(Object.entries(shippingConfig) as [string, { label: string; icon: React.ElementType }][]).map(
-                      ([key, cfg]) => {
-                        const Icon = cfg.icon;
-                        return (
-                          <button
-                            key={key}
-                            onClick={() => {
-                              setShippingType(key as ShippingType);
-                              setShowAddress(key === "local_delivery" || key === "national");
-                            }}
-                            className={`flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-none text-[10px] font-medium border transition-all ${
-                              shippingType === key
-                                ? "bg-wood-900 text-white border-wood-900"
-                                : "bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface2)]"
-                            }`}
-                          >
-                            <Icon size={12} />
-                            {cfg.label}
-                          </button>
-                        );
-                      }
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      Tipo de entrega
+                    </label>
+                    {shippingLoading && (
+                      <span className="text-[9px] text-[var(--text-muted)] flex items-center gap-0.5">
+                        <RefreshCw size={8} className="animate-spin" /> cargando
+                      </span>
                     )}
                   </div>
+                  {posOptions.length === 0 && !shippingLoading ? (
+                    <p className="text-[10px] text-[var(--text-muted)] py-2 text-center"
+                      style={{ border: "1px dashed var(--border)" }}>
+                      Sin opciones — configura en Envíos → Configuración
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {posOptions.map((opt) => (
+                        <button
+                          key={opt.id}
+                          onClick={() => {
+                            setShippingType(opt.id);
+                            setShowAddress(opt.price > 0);
+                          }}
+                          className={`flex items-center gap-1 px-2.5 py-2 rounded-none text-[10px] font-medium border transition-all ${
+                            shippingType === opt.id
+                              ? "bg-[var(--primary)] text-white border-[var(--primary)]"
+                              : "bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface2)]"
+                          }`}
+                        >
+                          <Package size={10} />
+                          {opt.label}
+                          {opt.price > 0 && (
+                            <span className={`text-[9px] ml-0.5 ${shippingType === opt.id ? "text-white/70" : "text-[var(--text-muted)]"}`}>
+                              +${opt.price / 100}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Address (conditional) */}
@@ -705,6 +723,18 @@ export const POSPage: React.FC = () => {
                     <span>Subtotal ({itemCount} items)</span>
                     <span>{fmtMXN(subtotal)}</span>
                   </div>
+                  {(() => {
+                    const selOpt = posOptions.find((o) => o.id === shippingType);
+                    if (!selOpt || selOpt.price === 0) return null;
+                    return (
+                      <div className="flex justify-between text-xs text-[var(--text-secondary)]">
+                        <span className="flex items-center gap-1">
+                          <Truck size={10} />{selOpt.label}
+                        </span>
+                        <span>{fmtMXN(selOpt.price / 100)}</span>
+                      </div>
+                    );
+                  })()}
                   {discount && (
                     <div className="flex justify-between text-xs text-[var(--success)]">
                       <span className="flex items-center gap-1">

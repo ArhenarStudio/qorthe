@@ -75,13 +75,13 @@ const WIZARD_STEPS: WizardStep[] = [
     title: "Envíos",
     subtitle: "Logística y entregas",
     icon: <Truck size={20} />,
-    linkTo: "shipping",
+    linkTo: "shipping?tab=config",
     fields: [
       { key: "shipping_provider", label: "Proveedor de envíos", type: "select", options: [{ label: "Envia.com (DHL, Estafeta, FedEx)", value: "envia" }, { label: "Manual (tarifas fijas)", value: "manual" }] },
       { key: "local_delivery", label: "Entrega local", type: "toggle", description: "Ofrecer entrega en tu ciudad" },
-      { key: "free_shipping_threshold", label: "Envío gratis a partir de (MXN)", type: "text", placeholder: "1500" },
+      { key: "free_shipping_threshold", label: "Envío gratis a partir de (MXN)", type: "text", placeholder: "2500" },
     ],
-    helpText: "Envia.com conecta con DHL, Estafeta y FedEx. Configura tu API key en Integraciones.",
+    helpText: "Configura zonas, tarifas y condiciones avanzadas en el módulo de Envíos → Configuración.",
   },
   {
     id: "legal",

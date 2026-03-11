@@ -31,7 +31,9 @@ import {
   AlertCircle,
   MapPin,
   FileText,
+  Settings,
 } from "lucide-react";
+import { ShippingConfigPanel } from "@/src/components/admin/ShippingConfigPanel";
 
 // Use frontend API proxy routes (handles Medusa admin auth server-side)
 const API_BASE = ""; // Same origin — /api/admin/*
@@ -137,7 +139,7 @@ export default function AdminShippingPage() {
   const [shippedOrders, setShippedOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"pending" | "shipped">("pending");
+  const [activeTab, setActiveTab] = useState<"pending" | "shipped" | "config">("pending");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [generatingLabel, setGeneratingLabel] = useState<string | null>(null);
   const [labelResults, setLabelResults] = useState<Record<string, LabelResult>>({});
@@ -321,17 +323,31 @@ export default function AdminShippingPage() {
         >
           Enviados ({shippedOrders.length})
         </button>
+        <button
+          onClick={() => setActiveTab("config")}
+          className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-medium transition-colors ${
+            activeTab === "config"
+              ? "bg-[var(--text)] text-white"
+              : "text-[var(--text-secondary)] hover:bg-[var(--surface2)]"
+          }`}
+        >
+          <Settings size={13} />
+          Configuración
+        </button>
       </div>
 
+      {/* Config tab — renderiza el panel completo */}
+      {activeTab === "config" && <ShippingConfigPanel />}
+
       {/* Error */}
-      {error && (
+      {activeTab !== "config" && error && (
         <div className="p-4 mb-6" style={{background:"var(--error-subtle)",border:"1px solid var(--error)"}}>
           <p className="text-[14px]" style={{color:"var(--error)"}}>{error}</p>
         </div>
       )}
 
       {/* Loading */}
-      {loading && (
+      {activeTab !== "config" && loading && (
         <div className="text-center py-16">
           <div className="animate-spin w-8 h-8 border-2 border-[var(--text-secondary)] border-t-transparent rounded-none mx-auto mb-4" />
           <p className="text-[14px] text-[var(--text-secondary)]">Cargando órdenes...</p>
@@ -339,7 +355,7 @@ export default function AdminShippingPage() {
       )}
 
       {/* Empty state */}
-      {!loading && orders.length === 0 && (
+      {activeTab !== "config" && !loading && orders.length === 0 && (
         <div className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-none p-12 text-center">
           {activeTab === "pending" ? (
             <>
@@ -366,7 +382,7 @@ export default function AdminShippingPage() {
       )}
 
       {/* Orders list */}
-      {!loading && orders.length > 0 && (
+      {activeTab !== "config" && !loading && orders.length > 0 && (
         <div className="space-y-3">
           {orders.map((order) => {
             const isExpanded = expandedOrder === order.id;
