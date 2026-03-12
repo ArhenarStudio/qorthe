@@ -3,94 +3,89 @@
 // OSModuleRegistry.tsx — Mapa AdminPage → componente de ventana OS
 //
 // Cada entrada define:
-//   component : React.ComponentType renderizado dentro de OSWindow
-//   subtitle  : texto bajo el título de la ventana
-//   width     : ancho de la OSWindow (default "880px")
+//   component : React.ComponentType montado dentro de OSWindow
+//   subtitle  : texto bajo el título en la chrome de la ventana
+//   width     : ancho de la OSWindow (default "920px")
 //
-// Para módulos sin ventana OS dedicada se muestra OSFallbackModule
-// con un iframe del panel clásico (fallback temporal).
+// Regla: siempre usar el componente real existente.
+// Fallback solo para módulos sin componente aún implementado.
 // ═══════════════════════════════════════════════════════════════
 
 import React from 'react';
 import type { AdminPage } from '@/src/admin/navigation';
-import { POSWindowModule } from './modules/POSWindowModule';
+import { useAdmin } from '@/contexts/AdminContext';
 
-// ── Fallback genérico ─────────────────────────────────────────
-function OSFallbackModule({ page }: { page: AdminPage }) {
-  const C = {
-    bg: '#08090B', surface: '#0F1114', border: '#1A2228',
-    text: '#E8ECF0', text2: '#6B7A85', primary: '#0D9488', primaryL: '#2DD4BF',
-  };
-  return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      height: '380px', gap: '14px',
-    }}>
-      <div style={{
-        width: '56px', height: '56px', borderRadius: '16px',
-        background: 'rgba(13,148,136,0.1)', border: '1px solid rgba(13,148,136,0.2)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <svg viewBox="0 0 24 24" fill="none" stroke={C.primaryL} strokeWidth="1.5" width="26" height="26">
-          <path d="M12 2L21.5 7.5V16.5L12 22L2.5 16.5V7.5L12 2Z"/>
-          <circle cx="12" cy="12" r="3" fill={C.primary} opacity="0.5"/>
-        </svg>
-      </div>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: '15px', fontWeight: 700, color: C.text, fontFamily: "'Sora', sans-serif", marginBottom: '6px' }}>
-          Módulo en construcción
-        </div>
-        <div style={{ fontSize: '12px', color: C.text2, maxWidth: '280px', lineHeight: 1.6 }}>
-          La ventana OS para <span style={{ color: C.primaryL, fontFamily: "'JetBrains Mono', monospace" }}>{page}</span> está siendo implementada.
-        </div>
-      </div>
-      <a
-        href={`/admin/${page}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          marginTop: '8px', padding: '8px 20px', borderRadius: '9px',
-          fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-          background: 'rgba(13,148,136,0.12)', color: C.primaryL,
-          border: '1px solid rgba(13,148,136,0.25)',
-          textDecoration: 'none',
-          transition: 'all 0.15s',
-        }}
-      >
-        Abrir en vista completa →
-      </a>
-    </div>
-  );
-}
+// ── Imports de componentes reales ────────────────────────────
+import { DashboardHome }          from '@/components/admin/DashboardHome';
+import { POSPage }                from '@/components/admin/POSPage';
+import { OrdersPage }             from '@/components/admin/OrdersPage';
+import ShippingPageLive            from '@/components/admin/ShippingPageLive';
+import { ProductsPage }           from '@/components/admin/ProductsPage';
+import { CategoriesPage }         from '@/components/admin/CategoriesPage';
+import { InventoryPage }          from '@/components/admin/InventoryPage';
+import { CustomersPage }          from '@/components/admin/CustomersPage';
+import { ReviewsPage }            from '@/components/admin/ReviewsPage';
+import { QuotesPage }             from '@/components/admin/QuotesPage';
+import { MarketingPage }          from '@/components/admin/MarketingPage';
+import { AdminChatPage }          from '@/components/admin/AdminChatPage';
+import { FinancesPage }           from '@/components/admin/FinancesPage';
+import { ReportsAnalyticsPage }   from '@/components/admin/ReportsAnalyticsPage';
+import { CmsPage }                from '@/components/admin/CmsPage';
+import { NotificationsPage }      from '@/components/admin/NotificationsPage';
+import { AutomationsPage }        from '@/components/admin/AutomationsPage';
+import { IntegrationsStorePage }  from '@/components/admin/IntegrationsStorePage';
+import { ThemeEditorPage }        from '@/components/admin/ThemeEditorPage';
+import { AdminThemeSelector }     from '@/components/admin/AdminThemeSelector';
+import { ReturnsRmaPage }         from '@/components/admin/ReturnsRmaPage';
+import { HelpDeskPage }           from '@/components/admin/HelpDeskPage';
+import { ImportExportPage }       from '@/components/admin/ImportExportPage';
+import { GoalsOkrsPage }          from '@/components/admin/GoalsOkrsPage';
+import { SettingsPage }           from '@/components/admin/SettingsPage';
+import { UsersPage }              from '@/components/admin/UsersPage';
+import { LoyaltyConfigPanel }     from '@/components/admin/LoyaltyConfigPanel';
 
-// ── Tipo del registry ─────────────────────────────────────────
+// ── Tipo de entrada ──────────────────────────────────────────
 interface OSModuleEntry {
   component: React.ComponentType;
   subtitle: string;
   width?: string;
 }
 
-// ── Registry principal ────────────────────────────────────────
-// Módulos con ventana OS dedicada van aquí.
-// El resto cae en el fallback dinámico (ver abajo).
-const DEDICATED: Partial<Record<AdminPage, OSModuleEntry>> = {
-  pos: {
-    component: POSWindowModule,
-    subtitle: 'Venta directa y presencial',
-    width: '1100px',
-  },
+// ── Wrappers para componentes con props requeridas ───────────
+function DashboardWrapper() {
+  const { period, navigate } = useAdmin();
+  return <DashboardHome period={period} onNavigate={navigate} />;
+}
+
+// ── Registry completo ────────────────────────────────────────
+const REGISTRY: Record<AdminPage, OSModuleEntry> = {
+  dashboard:    { component: DashboardWrapper,         subtitle: 'Resumen general del negocio',         width: '1100px' },
+  pos:          { component: POSPage,               subtitle: 'Venta directa y presencial',          width: '1100px' },
+  orders:       { component: OrdersPage,            subtitle: 'Gestión de órdenes',                  width: '1100px' },
+  shipping:     { component: ShippingPageLive,      subtitle: 'Envíos y configuración de zonas',     width: '1100px' },
+  products:     { component: ProductsPage,          subtitle: 'Catálogo de productos',               width: '1100px' },
+  categories:   { component: CategoriesPage,        subtitle: 'Categorías y colecciones',            width: '960px'  },
+  inventory:    { component: InventoryPage,         subtitle: 'Control de stock e inventario',       width: '1100px' },
+  customers:    { component: CustomersPage,         subtitle: 'Clientes y segmentos',                width: '1100px' },
+  reviews:      { component: ReviewsPage,           subtitle: 'Reseñas y calificaciones',            width: '960px'  },
+  quotes:       { component: QuotesPage,            subtitle: 'Cotizaciones y presupuestos',         width: '1100px' },
+  marketing:    { component: MarketingPage,         subtitle: 'Campañas y descuentos',               width: '1100px' },
+  chat:         { component: AdminChatPage,         subtitle: 'Chat en vivo con clientes',           width: '1100px' },
+  finances:     { component: FinancesPage,          subtitle: 'Finanzas y flujo de caja',            width: '1100px' },
+  reports:      { component: ReportsAnalyticsPage,  subtitle: 'Analíticas y reportes',               width: '1100px' },
+  cms:          { component: CmsPage,               subtitle: 'Contenido y páginas del sitio',       width: '1100px' },
+  notifications:{ component: NotificationsPage,     subtitle: 'Notificaciones y alertas',            width: '860px'  },
+  automations:  { component: AutomationsPage,       subtitle: 'Flujos automáticos y triggers',       width: '1100px' },
+  integrations: { component: IntegrationsStorePage, subtitle: 'Integraciones y apps externas',       width: '1100px' },
+  theme:        { component: ThemeEditorPage,       subtitle: 'Editor visual de temas',              width: '1100px' },
+  appearance:   { component: AdminThemeSelector,    subtitle: 'Apariencia del panel admin',          width: '960px'  },
+  returns:      { component: ReturnsRmaPage,        subtitle: 'Devoluciones y garantías',            width: '1100px' },
+  helpdesk:     { component: HelpDeskPage,          subtitle: 'Soporte y tickets',                   width: '1100px' },
+  importexport: { component: ImportExportPage,      subtitle: 'Importar y exportar datos',           width: '960px'  },
+  goals:        { component: GoalsOkrsPage,         subtitle: 'Objetivos y metas OKR',               width: '960px'  },
+  settings:     { component: SettingsPage,          subtitle: 'Configuración general',               width: '960px'  },
+  users:        { component: UsersPage,             subtitle: 'Usuarios y roles de acceso',          width: '960px'  },
+  loyalty:      { component: LoyaltyConfigPanel,    subtitle: 'Programa de lealtad y membresías',    width: '1100px' },
 };
 
-// ── Proxy que genera fallback dinámico ────────────────────────
-export const OSModuleRegistry = new Proxy(DEDICATED, {
-  get(target, prop: string) {
-    const page = prop as AdminPage;
-    if (target[page]) return target[page];
-    // Fallback dinámico: componente anónimo con la page inyectada
-    return {
-      component: () => React.createElement(OSFallbackModule, { page }),
-      subtitle: 'RockSage OS — módulo',
-      width: '680px',
-    } satisfies OSModuleEntry;
-  },
-}) as Record<AdminPage, OSModuleEntry>;
+export const OSModuleRegistry = REGISTRY;
