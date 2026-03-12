@@ -102,7 +102,7 @@ const fmtMXN = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
 
 // ═══════ MAIN COMPONENT ═══════
-export const POSPage: React.FC = () => {
+export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false }) => {
   // ── Shipping config desde Supabase ──
   const { posOptions, loading: shippingLoading } = useShippingConfig();
 
@@ -325,7 +325,7 @@ export const POSPage: React.FC = () => {
 
   // ═══════ RENDER ═══════
   return (
-    <div className="h-[calc(100vh-65px)] flex flex-col">
+    <div className={`${windowMode ? "h-full" : "h-[calc(100vh-65px)]"} flex flex-col overflow-hidden`}>
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-[var(--border)] bg-[var(--surface)]">
         <div className="flex items-center gap-3">
@@ -348,7 +348,7 @@ export const POSPage: React.FC = () => {
             onClick={() => setView(view === "pos" ? "history" : "pos")}
             className={`px-3 py-1.5 text-xs font-medium rounded-none border transition-colors ${
               view === "history"
-                ? "bg-wood-900 text-white border-wood-900"
+                ? "bg-[var(--primary)] text-white border-[var(--primary)]"
                 : "bg-[var(--surface)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface2)]"
             }`}
           >
@@ -795,7 +795,7 @@ export const POSPage: React.FC = () => {
                 <button
                   onClick={submitOrder}
                   disabled={submitting || !cart.length}
-                  className="w-full py-3 bg-gradient-to-r from-wood-900 to-[var(--text)] text-white rounded-none text-sm font-bold flex items-center justify-center gap-2 hover:from-[var(--text)] hover:to-wood-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-wood-900/20"
+                  className="w-full py-3 text-white rounded-none text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all" style={{ background: "var(--primary)", boxShadow: "0 4px 14px rgba(13,148,136,0.3)" }}
                 >
                   {submitting ? (
                     <>
@@ -818,29 +818,36 @@ export const POSPage: React.FC = () => {
 
 // ═══════ SUB-COMPONENTS ═══════
 
-// Product Card
+// Product Card — soporta múltiples variantes con selector inline
 const ProductCard: React.FC<{
   product: POSProduct;
   onAdd: (product: POSProduct, variant: POSVariant) => void;
   cartItems: CartItem[];
 }> = ({ product, onAdd, cartItems }) => {
-  const variant = product.variants[0];
+  const hasMultipleVariants = product.variants.length > 1;
+  const [selectedVariantId, setSelectedVariantId] = React.useState<string>(
+    product.variants[0]?.id ?? ""
+  );
+
+  const variant = product.variants.find((v) => v.id === selectedVariantId) ?? product.variants[0];
   if (!variant) return null;
 
   const price = variant.prices[0]?.amount || 0;
   const inCart = cartItems.find((i) => i.variant_id === variant.id);
+  // FIX 5: Validación de stock — bloquear si qty en carrito >= stock disponible
+  const cartQty = inCart?.quantity ?? 0;
   const outOfStock = variant.inventory_quantity <= 0;
+  const stockExhausted = cartQty >= variant.inventory_quantity && !outOfStock;
+  const disabled = outOfStock || stockExhausted;
 
   return (
-    <button
-      onClick={() => !outOfStock && onAdd(product, variant)}
-      disabled={outOfStock}
-      className={`relative text-left p-3 rounded-none border transition-all group ${
+    <div
+      className={`relative text-left p-3 rounded-none border transition-all ${
         outOfStock
-          ? "bg-[var(--surface2)] border-[var(--border)] opacity-60 cursor-not-allowed"
+          ? "bg-[var(--surface2)] border-[var(--border)] opacity-60"
           : inCart
             ? "bg-[var(--accent)]/5 border-[var(--accent)]/30 ring-1 ring-[var(--accent)]/20"
-            : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--accent)]/40 hover:shadow-sm"
+            : "bg-[var(--surface)] border-[var(--border)]"
       }`}
     >
       {inCart && (
@@ -849,11 +856,7 @@ const ProductCard: React.FC<{
         </span>
       )}
       {product.thumbnail ? (
-        <img
-          src={product.thumbnail}
-          alt=""
-          className="w-full aspect-square rounded-none object-cover mb-2"
-        />
+        <img src={product.thumbnail} alt="" className="w-full aspect-square rounded-none object-cover mb-2" />
       ) : (
         <div className="w-full aspect-square rounded-none bg-[var(--surface2)] flex items-center justify-center mb-2">
           <Package className="w-6 h-6 text-[var(--text-muted)]" />
@@ -862,15 +865,46 @@ const ProductCard: React.FC<{
       <p className="text-[11px] font-medium text-[var(--text)] leading-tight line-clamp-2 mb-1">
         {product.title}
       </p>
-      <div className="flex items-center justify-between">
+
+      {/* FIX 4: Selector de variante cuando hay más de una */}
+      {hasMultipleVariants && (
+        <select
+          value={selectedVariantId}
+          onChange={(e) => setSelectedVariantId(e.target.value)}
+          onClick={(e) => e.stopPropagation()}
+          className="w-full mb-1.5 px-1.5 py-1 text-[10px] bg-[var(--surface2)] border border-[var(--border)] rounded-none text-[var(--text)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+        >
+          {product.variants.map((v) => (
+            <option key={v.id} value={v.id} disabled={v.inventory_quantity <= 0}>
+              {v.title}{v.inventory_quantity <= 0 ? " — Agotado" : ` (${v.inventory_quantity})`}
+            </option>
+          ))}
+        </select>
+      )}
+
+      <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs font-bold text-[var(--accent)]">{fmtMXN(price)}</span>
         {outOfStock ? (
           <span className="text-[9px] text-[var(--error)] font-medium">Agotado</span>
+        ) : stockExhausted ? (
+          <span className="text-[9px] text-[var(--warning)] font-medium">Máx. en carrito</span>
         ) : (
-          <span className="text-[9px] text-[var(--text-muted)]">{variant.inventory_quantity} en stock</span>
+          <span className="text-[9px] text-[var(--text-muted)]">{variant.inventory_quantity - cartQty} disponibles</span>
         )}
       </div>
-    </button>
+
+      <button
+        onClick={() => !disabled && onAdd(product, variant)}
+        disabled={disabled}
+        className={`w-full py-1 text-[10px] font-semibold rounded-none border transition-all ${
+          disabled
+            ? "bg-[var(--surface2)] border-[var(--border)] text-[var(--text-muted)] cursor-not-allowed"
+            : "bg-[var(--primary)] border-[var(--primary)] text-white hover:opacity-90 cursor-pointer"
+        }`}
+      >
+        {outOfStock ? "Agotado" : stockExhausted ? "Límite alcanzado" : "Agregar"}
+      </button>
+    </div>
   );
 };
 
@@ -901,7 +935,7 @@ const OrderConfirmation: React.FC<{
       <div className="flex gap-3 justify-center">
         <button
           onClick={onNewOrder}
-          className="px-6 py-3 bg-wood-900 text-white rounded-none text-sm font-bold hover:bg-[var(--text)] transition-colors flex items-center gap-2"
+          className="px-6 py-3 bg-[var(--primary)] text-white rounded-none text-sm font-bold hover:bg-[var(--primary-hover,var(--primary))] transition-colors flex items-center gap-2"
         >
           <Plus size={16} /> Nuevo Pedido
         </button>
@@ -949,7 +983,7 @@ const OrderHistory: React.FC<{ orders: any[]; stats?: any }> = ({ orders, stats 
       <div className="px-4 py-3 border-b border-[var(--border)]">
         <h3 className="text-sm font-bold text-[var(--text)]">Pedidos recientes</h3>
       </div>
-      <div className="divide-y divide-wood-50">
+      <div className="divide-y divide-[var(--border)]">
         {orders.length === 0 ? (
           <div className="p-8 text-center text-[var(--text-muted)] text-sm">No hay pedidos aún</div>
         ) : (

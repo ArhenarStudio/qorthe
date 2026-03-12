@@ -57,10 +57,14 @@ function DashboardWrapper() {
   return <DashboardHome period={period} onNavigate={navigate} />;
 }
 
+function POSWrapper() {
+  return <POSPage windowMode />;
+}
+
 // ── Registry completo ────────────────────────────────────────
 const REGISTRY: Record<AdminPage, OSModuleEntry> = {
   dashboard:    { component: DashboardWrapper,         subtitle: 'Resumen general del negocio',         width: '1100px' },
-  pos:          { component: POSPage,               subtitle: 'Venta directa y presencial',          width: '1100px' },
+  pos:          { component: POSWrapper,            subtitle: 'Venta directa y presencial',          width: '1100px' },
   orders:       { component: OrdersPage,            subtitle: 'Gestión de órdenes',                  width: '1100px' },
   shipping:     { component: ShippingPageLive,      subtitle: 'Envíos y configuración de zonas',     width: '1100px' },
   products:     { component: ProductsPage,          subtitle: 'Catálogo de productos',               width: '1100px' },
