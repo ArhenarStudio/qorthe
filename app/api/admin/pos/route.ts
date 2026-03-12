@@ -35,15 +35,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Customer email required" }, { status: 400 });
     }
 
-    // 1. Build Medusa draft order payload
-    // Medusa v2 uses POST /admin/draft-orders
+    // 1. Calcular descuento server-side para metadata
+    // unit_price viene en centavos desde Medusa (amount: 85000 = $850 MXN)
+    const subtotalCents = items.reduce(
+      (sum: number, i: any) => sum + (i.unit_price || 0) * i.quantity,
+      0
+    );
+    const discountAmountCents = discount
+      ? discount.type === "percentage"
+        ? Math.round(subtotalCents * discount.value / 100)
+        : Math.round(discount.value * 100) // pesos fijos → centavos
+      : 0;
+    const posTotalCents = Math.max(0, subtotalCents - discountAmountCents);
+
+    // 2. Build Medusa draft order payload
+    // Medusa v2 usa POST /admin/draft-orders
+    // NOTA: unit_price ya viene en centavos del frontend — NO multiplicar por 100
     const draftPayload: any = {
       email: customer.email,
       region_id: REGION_ID,
       items: items.map((item: any) => ({
         variant_id: item.variant_id,
         quantity: item.quantity,
-        ...(item.unit_price !== undefined && { unit_price: Math.round(item.unit_price * 100) }),
+        ...(item.unit_price !== undefined && { unit_price: Math.round(item.unit_price) }),
         ...(item.metadata && { metadata: item.metadata }),
       })),
       shipping_methods: [],
@@ -53,8 +67,47 @@ export async function POST(req: NextRequest) {
         payment_method: payment_method || "cash",
         notes: notes || "",
         created_by: "admin",
+        // Descuento registrado para reportes (Medusa draft orders no soportan adjustments directos)
+        discount_type: discount?.type || null,
+        discount_value: discount?.value || 0,
+        discount_amount_cents: discountAmountCents,
+        pos_subtotal_cents: subtotalCents,
+        pos_total_cents: posTotalCents,
       },
     };
+
+    // 3. Crear/vincular cliente en Medusa CRM (non-blocking)
+    const email = customer.email;
+    let customerId: string | null = null;
+    try {
+      const searchResp = await medusaAdminFetch(
+        `/admin/customers?q=${encodeURIComponent(email)}&limit=5`
+      );
+      if (searchResp.ok) {
+        const searchData = await searchResp.json();
+        const existing = searchData.customers?.find((c: any) => c.email === email);
+        if (existing) customerId = existing.id;
+      }
+      if (!customerId) {
+        const createResp = await medusaAdminFetch("/admin/customers", {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            first_name: customer.first_name || "",
+            last_name: customer.last_name || "",
+            phone: customer.phone || "",
+            metadata: { source: "pos", channel: channel || "in_person" },
+          }),
+        });
+        if (createResp.ok) {
+          const createData = await createResp.json();
+          customerId = createData.customer?.id || null;
+        }
+      }
+      if (customerId) draftPayload.customer_id = customerId;
+    } catch {
+      // Non-blocking: continuar sin customer_id si falla el CRM lookup
+    }
 
     // Add shipping address if provided
     if (shipping_address) {
@@ -79,55 +132,12 @@ export async function POST(req: NextRequest) {
     if (!resp.ok) {
       const errText = await resp.text();
       console.error("[POS] Draft order creation failed:", resp.status, errText);
-      
-      // Fallback: create regular order via admin API if draft orders not available
-      // Medusa v2 draft order API may vary — try alternative
-      const orderResp = await medusaAdminFetch("/admin/orders", {
-        method: "POST",
-        body: JSON.stringify({
-          email: customer.email,
-          region_id: draftPayload.region_id,
-          items: items.map((item: any) => ({
-            variant_id: item.variant_id,
-            quantity: item.quantity,
-            unit_price: item.unit_price ? Math.round(item.unit_price * 100) : undefined,
-          })),
-          shipping_address: draftPayload.shipping_address,
-          metadata: draftPayload.metadata,
-        }),
-      });
-
-      if (!orderResp.ok) {
-        const orderErr = await orderResp.text();
-        console.error("[POS] Order creation also failed:", orderResp.status, orderErr);
-        
-        // Final fallback: store as a "pending POS order" that can be manually processed
-        return NextResponse.json({
-          success: true,
-          type: "pending",
-          order: {
-            id: `pos_${Date.now()}`,
-            status: "pending_sync",
-            email: customer.email,
-            customer_name: `${customer.first_name || ""} ${customer.last_name || ""}`.trim(),
-            items: items,
-            total: items.reduce((sum: number, i: any) => sum + (i.unit_price || 0) * i.quantity, 0),
-            payment_method,
-            channel,
-            notes,
-            created_at: new Date().toISOString(),
-            metadata: draftPayload.metadata,
-          },
-          message: "Order saved locally — will sync to Medusa when API supports draft orders",
-        });
-      }
-
-      const orderData = await orderResp.json();
+      // Reportar error real — no crear datos fantasma con ID inventado
       return NextResponse.json({
-        success: true,
-        type: "order",
-        order: orderData.order,
-      });
+        success: false,
+        error: "No se pudo crear el pedido en Medusa. Verifica que el backend esté disponible.",
+        details: errText.substring(0, 300),
+      }, { status: 502 });
     }
 
     const data = await resp.json();

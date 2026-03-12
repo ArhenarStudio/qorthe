@@ -18,24 +18,57 @@
 //   - Daily stats (revenue, order count)
 // ═══════════════════════════════════════════════════════════════
 
-import { useAdminTheme } from '@/src/contexts/AdminThemeContext';
-import { Card, Badge, Button, StatCard } from '@/src/theme/primitives';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   Search, Plus, Minus, Trash2, ShoppingCart, DollarSign,
-  User, Phone, Mail, MapPin, MessageSquare, CreditCard,
+  User, Phone, Mail, MessageSquare, CreditCard,
   Banknote, ArrowRightLeft, Smartphone, Tag, Percent,
-  Package, X, ChevronDown, ChevronRight, CheckCircle,
-  Clock, Truck, Store, Receipt, Wifi, WifiOff, Loader2,
-  Hash, Send, Instagram, Facebook, Globe, UserPlus,
-  Zap, AlertCircle, FileText, Copy, Printer, Eye,
-  RefreshCw, BarChart3, TrendingUp, ArrowRight
+  Package, X, CheckCircle,
+  Clock, Truck, Store, Receipt, Wifi, Loader2,
+  Instagram, Facebook, Globe,
+  Zap, AlertCircle, FileText, Copy,
+  RefreshCw, BarChart3, TrendingUp
 } from "lucide-react";
 import { useAdminData } from "@/hooks/useAdminData";
 import { useShippingConfig } from "@/src/hooks/useShippingConfig";
 import { toast } from "sonner";
 
 // ═══════ TYPES ═══════
+
+// Tipos estrictos para respuestas del API POS
+interface POSOrderResult {
+  id: string;
+  display_id?: number;
+  status: string;
+  email: string;
+  customer_name?: string;
+  total?: number;
+  created_at: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface POSOrderHistoryItem {
+  id: string;
+  display_id: number;
+  email: string;
+  total: number;
+  status: string;
+  payment_status: string;
+  fulfillment_status: string;
+  items_count: number;
+  source: string;
+  channel: string;
+  payment_method: string;
+  created_at: string;
+  customer_name: string;
+}
+
+interface POSDailyStats {
+  today_revenue: number;
+  today_count: number;
+  pos_count: number;
+  total_count: number;
+}
 interface POSProduct {
   id: string;
   title: string;
@@ -83,8 +116,8 @@ type ShippingType = string | null;
 const channelConfig: Record<Channel, { label: string; icon: React.ElementType; color: string }> = {
   whatsapp: { label: "WhatsApp", icon: MessageSquare, color: "bg-[var(--success-subtle)] text-[var(--success)] border-[var(--success)]" },
   phone: { label: "Teléfono", icon: Phone, color: "bg-[var(--info-subtle)] text-[var(--info)] border-[var(--info)]" },
-  instagram: { label: "Instagram", icon: Instagram, color: "bg-pink-50 text-pink-600 border-pink-200" },
-  facebook: { label: "Facebook", icon: Facebook, color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
+  instagram: { label: "Instagram", icon: Instagram, color: "bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent)]" },
+  facebook: { label: "Facebook", icon: Facebook, color: "bg-[var(--info-subtle)] text-[var(--info)] border-[var(--info)]" },
   in_person: { label: "En persona", icon: Store, color: "bg-[var(--warning-subtle)] text-[var(--warning)] border-[var(--warning)]" },
   other: { label: "Otro", icon: Globe, color: "bg-[var(--surface2)] text-[var(--text-secondary)] border-[var(--border)]" },
 };
@@ -93,7 +126,7 @@ const paymentConfig: Record<PaymentMethod, { label: string; icon: React.ElementT
   cash: { label: "Efectivo", icon: Banknote, color: "bg-[var(--success-subtle)] text-[var(--success)] border-[var(--success)]" },
   transfer: { label: "Transferencia", icon: ArrowRightLeft, color: "bg-[var(--info-subtle)] text-[var(--info)] border-[var(--info)]" },
   terminal: { label: "Terminal", icon: CreditCard, color: "bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent)]" },
-  online: { label: "Pago en línea", icon: Smartphone, color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
+  online: { label: "Pago en línea", icon: Smartphone, color: "bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent)]" },
 };
 
 // shippingConfig estático eliminado — reemplazado por posOptions dinámico desde useShippingConfig()
@@ -102,7 +135,8 @@ const fmtMXN = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
 
 // ═══════ MAIN COMPONENT ═══════
-export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false }) => {
+// Componente interno — wrapeado por POSErrorBoundary abajo
+const POSPageInner: React.FC<{ windowMode?: boolean }> = ({ windowMode = false }) => {
   // ── Shipping config desde Supabase ──
   const { posOptions, loading: shippingLoading } = useShippingConfig();
 
@@ -119,11 +153,13 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
   const [showDiscount, setShowDiscount] = useState(false);
   const [productSearch, setProductSearch] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [lastOrder, setLastOrder] = useState<any>(null);
+  const [lastOrder, setLastOrder] = useState<POSOrderResult | null>(null);
   const [view, setView] = useState<"pos" | "history">("pos");
   const [showAddress, setShowAddress] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [address, setAddress] = useState({ address_1: "", city: "", province: "", postal_code: "" });
   const searchRef = useRef<HTMLInputElement>(null);
+  const [flashItem, setFlashItem] = useState<string | null>(null);
 
   // ── Live products from Medusa ──
   const { data: productsData, loading: loadingProducts } = useAdminData<{
@@ -180,7 +216,7 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
   // ── Cart operations ──
   const addToCart = useCallback(
     (product: POSProduct, variant: POSVariant) => {
-      const price = variant.prices[0]?.amount || 0;
+      const price = variant.prices.find(p => p.currency_code === 'mxn')?.amount ?? variant.prices[0]?.amount ?? 0;
       setCart((prev) => {
         const existing = prev.find((i) => i.variant_id === variant.id);
         if (existing) {
@@ -202,8 +238,11 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
           },
         ];
       });
+      // Flash visual al agregar
+      setFlashItem(variant.id);
+      setTimeout(() => setFlashItem(null), 400);
     },
-    []
+    [setFlashItem]
   );
 
   const updateQuantity = useCallback((variantId: string, delta: number) => {
@@ -265,7 +304,24 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
 
     setSubmitting(true);
     try {
-      const resp = await fetch("/api/admin/pos", {
+      const fetchWithRetry = async (url: string, opts: RequestInit, retries = 1): Promise<Response> => {
+        try {
+          const r = await fetch(url, opts);
+          if (!r.ok && retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return fetchWithRetry(url, opts, retries - 1);
+          }
+          return r;
+        } catch (e) {
+          if (retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return fetchWithRetry(url, opts, retries - 1);
+          }
+          throw e;
+        }
+      };
+
+      const resp = await fetchWithRetry("/api/admin/pos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -304,8 +360,8 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
       } else {
         toast.error("Error al crear pedido", { description: data.error });
       }
-    } catch (err: any) {
-      toast.error("Error de conexión", { description: err.message });
+    } catch (err: unknown) {
+      toast.error("Error de conexión", { description: err instanceof Error ? err.message : "Error desconocido" });
     } finally {
       setSubmitting(false);
     }
@@ -524,7 +580,7 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
                 </label>
                 {cart.length > 0 && (
                   <button
-                    onClick={clearCart}
+                    onClick={() => setShowClearConfirm(true)}
                     className="text-[10px] text-[var(--error)] hover:text-[var(--error)] flex items-center gap-0.5"
                   >
                     <Trash2 size={10} /> Limpiar
@@ -542,7 +598,11 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
                   {cart.map((item) => (
                     <div
                       key={item.variant_id}
-                      className="flex items-center gap-3 p-2.5 bg-[var(--surface2)]/50 rounded-none border border-[var(--border)]/50"
+                      className={`flex items-center gap-3 p-2.5 rounded-none border transition-colors ${
+                        flashItem === item.variant_id
+                          ? "bg-[var(--success-subtle)] border-[var(--success)]/30"
+                          : "bg-[var(--surface2)]/50 border-[var(--border)]/50"
+                      }`}
                     >
                       {item.thumbnail && (
                         <img
@@ -777,7 +837,7 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
                           />
                           <button
                             onClick={applyDiscount}
-                            className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-none text-xs font-medium hover:bg-[#B08D55]"
+                            className="px-3 py-1.5 bg-[var(--accent)] text-white rounded-none text-xs font-medium hover:bg-[var(--accent)]"
                           >
                             Aplicar
                           </button>
@@ -812,9 +872,79 @@ export const POSPage: React.FC<{ windowMode?: boolean }> = ({ windowMode = false
           </div>
         </div>
       )}
+      {/* Modal confirmación limpiar carrito */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-[var(--surface)] border border-[var(--border)] p-6 max-w-sm w-full mx-4">
+            <h3 className="text-sm font-semibold text-[var(--text)] mb-2">¿Limpiar carrito?</h3>
+            <p className="text-xs text-[var(--text-secondary)] mb-4">
+              Se eliminarán {itemCount} artículo{itemCount !== 1 ? "s" : ""} y los datos del cliente. Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="px-3 py-1.5 text-xs border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface2)] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => { clearCart(); setShowClearConfirm(false); }}
+                className="px-3 py-1.5 text-xs text-white transition-colors"
+                style={{ background: "var(--error)" }}
+              >
+                Limpiar todo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+export const POSPage: React.FC<{ windowMode?: boolean }> = (props) => (
+  <POSErrorBoundary>
+    <POSPageInner {...props} />
+  </POSErrorBoundary>
+);
+
+// ═══════ ERROR BOUNDARY ═══════
+
+class POSErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; errorMsg: string }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, errorMsg: "" };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, errorMsg: error.message };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+          <AlertCircle className="w-10 h-10 mb-4" style={{ color: "var(--error)" }} />
+          <h2 className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>
+            Error en el Punto de Venta
+          </h2>
+          <p className="text-xs mb-6 max-w-sm" style={{ color: "var(--text-secondary)" }}>
+            {this.state.errorMsg || "Ocurrió un error inesperado."}
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false, errorMsg: "" })}
+            className="px-4 py-2 text-xs font-medium text-white"
+            style={{ background: "var(--primary)" }}
+          >
+            Reintentar
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // ═══════ SUB-COMPONENTS ═══════
 
@@ -832,7 +962,7 @@ const ProductCard: React.FC<{
   const variant = product.variants.find((v) => v.id === selectedVariantId) ?? product.variants[0];
   if (!variant) return null;
 
-  const price = variant.prices[0]?.amount || 0;
+  const price = variant.prices.find(p => p.currency_code === 'mxn')?.amount ?? variant.prices[0]?.amount ?? 0;
   const inCart = cartItems.find((i) => i.variant_id === variant.id);
   // FIX 5: Validación de stock — bloquear si qty en carrito >= stock disponible
   const cartQty = inCart?.quantity ?? 0;
@@ -908,17 +1038,51 @@ const ProductCard: React.FC<{
   );
 };
 
+// Función para imprimir recibo estilo ticket
+const printReceipt = (order: POSOrderResult, total: number, customer: POSCustomer) => {
+  const w = window.open("", "_blank", "width=380,height=600");
+  if (!w) return;
+  const date = new Date().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" });
+  const orderNum = order.display_id ? "<div class=\"row\"><span>Pedido:</span><span class=\"bold\">#" + order.display_id + "</span></div>" : "";
+  const clientName = [customer.first_name, customer.last_name].filter(Boolean).join(" ") || customer.email || "—";
+  const html = [
+    "<!DOCTYPE html><html><head><title>Recibo POS</title>",
+    "<style>",
+    "* { margin: 0; padding: 0; box-sizing: border-box; }",
+    "body { font-family: monospace; font-size: 12px; width: 300px; padding: 16px; color: #111; }",
+    ".center { text-align: center; } .bold { font-weight: bold; }",
+    ".line { border-top: 1px dashed #999; margin: 8px 0; }",
+    ".row { display: flex; justify-content: space-between; margin: 3px 0; }",
+    ".total { font-size: 15px; font-weight: bold; }",
+    "@media print { .no-print { display: none; } }",
+    "</style></head><body>",
+    "<div class=\"center bold\" style=\"font-size:14px;margin-bottom:4px\">DavidSon's Design</div>",
+    "<div class=\"center\" style=\"color:#666;margin-bottom:12px\">davidsonsdesign.com</div>",
+    "<div class=\"line\"></div>",
+    "<div class=\"row\"><span>Fecha:</span><span>" + date + "</span></div>",
+    orderNum,
+    "<div class=\"row\"><span>Cliente:</span><span>" + clientName + "</span></div>",
+    "<div class=\"line\"></div>",
+    "<div class=\"row bold\"><span>TOTAL</span><span class=\"total\">$" + total.toFixed(0) + " MXN</span></div>",
+    "<div class=\"line\"></div>",
+    "<div class=\"center\" style=\"color:#666;margin-top:12px;font-size:10px\">Gracias por su compra!</div>",
+    "<div class=\"no-print center\" style=\"margin-top:16px\">",
+    "<button onclick=\"window.print()\" style=\"padding:8px 20px;cursor:pointer\">Imprimir</button>",
+    "</div></body></html>",
+  ].join("\n");
+  w.document.write(html);
+  w.document.close();
+};
+
 // Order Confirmation
 const OrderConfirmation: React.FC<{
-  order: any;
+  order: POSOrderResult;
   total: number;
   customer: POSCustomer;
   onNewOrder: () => void;
 }> = ({ order, total, customer, onNewOrder }) => (
   <div className="flex-1 flex items-center justify-center p-8">
-    <div
-      className="text-center max-w-md"
-    >
+    <div className="text-center max-w-md">
       <div className="w-20 h-20 bg-[var(--success-subtle)] rounded-none flex items-center justify-center mx-auto mb-6">
         <CheckCircle className="w-10 h-10 text-[var(--success)]" />
       </div>
@@ -932,12 +1096,20 @@ const OrderConfirmation: React.FC<{
           ID: {order.id}
         </p>
       )}
-      <div className="flex gap-3 justify-center">
+      <div className="flex flex-wrap gap-3 justify-center">
         <button
           onClick={onNewOrder}
-          className="px-6 py-3 bg-[var(--primary)] text-white rounded-none text-sm font-bold hover:bg-[var(--primary-hover,var(--primary))] transition-colors flex items-center gap-2"
+          className="px-6 py-3 text-white rounded-none text-sm font-bold flex items-center gap-2 transition-colors"
+          style={{ background: "var(--primary)" }}
         >
           <Plus size={16} /> Nuevo Pedido
+        </button>
+        <button
+          onClick={() => printReceipt(order, total, customer)}
+          className="px-4 py-3 rounded-none text-sm font-medium border flex items-center gap-2 transition-colors"
+          style={{ background: "var(--surface)", color: "var(--text-secondary)", borderColor: "var(--border)" }}
+        >
+          <FileText size={14} /> Recibo
         </button>
         <button
           onClick={() => {
@@ -946,7 +1118,8 @@ const OrderConfirmation: React.FC<{
               toast.success("ID copiado");
             }
           }}
-          className="px-4 py-3 bg-[var(--surface)] text-[var(--text-secondary)] rounded-none text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface2)] transition-colors flex items-center gap-2"
+          className="px-4 py-3 rounded-none text-sm font-medium border flex items-center gap-2 transition-colors"
+          style={{ background: "var(--surface)", color: "var(--text-secondary)", borderColor: "var(--border)" }}
         >
           <Copy size={14} /> Copiar ID
         </button>
@@ -955,9 +1128,75 @@ const OrderConfirmation: React.FC<{
   </div>
 );
 
-// Order History
-const OrderHistory: React.FC<{ orders: any[]; stats?: any }> = ({ orders, stats }) => (
+// Order History — con búsqueda y filtros client-side
+const OrderHistory: React.FC<{ orders: POSOrderHistoryItem[]; stats?: POSDailyStats }> = ({ orders, stats }) => {
+  const [histSearch, setHistSearch] = React.useState("");
+  const [histChannel, setHistChannel] = React.useState<string>("all");
+  const [histPeriod, setHistPeriod] = React.useState<string>("all");
+
+  const filteredOrders = React.useMemo(() => {
+    let result = orders;
+    if (histSearch.trim()) {
+      const q = histSearch.toLowerCase();
+      result = result.filter(o =>
+        o.customer_name.toLowerCase().includes(q) ||
+        o.email.toLowerCase().includes(q) ||
+        String(o.display_id).includes(q)
+      );
+    }
+    if (histChannel !== "all") {
+      result = result.filter(o => o.channel === histChannel);
+    }
+    if (histPeriod !== "all") {
+      const now = new Date();
+      const cutoff = new Date();
+      if (histPeriod === "today") cutoff.setHours(0, 0, 0, 0);
+      else if (histPeriod === "week") cutoff.setDate(now.getDate() - 7);
+      else if (histPeriod === "month") cutoff.setDate(now.getDate() - 30);
+      result = result.filter(o => new Date(o.created_at) >= cutoff);
+    }
+    return result;
+  }, [orders, histSearch, histChannel, histPeriod]);
+
+  return (
   <div className="flex-1 overflow-y-auto p-6">
+    {/* Filtros historial */}
+    <div className="flex flex-wrap gap-2 mb-4">
+      <div className="relative flex-1 min-w-[200px]">
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-muted)]" />
+        <input
+          type="text"
+          value={histSearch}
+          onChange={e => setHistSearch(e.target.value)}
+          placeholder="Buscar por nombre, email o #pedido..."
+          className="w-full pl-8 pr-3 py-2 text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/30"
+        />
+      </div>
+      <select
+        value={histChannel}
+        onChange={e => setHistChannel(e.target.value)}
+        className="px-2 py-2 text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)]"
+      >
+        <option value="all">Todos los canales</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="phone">Teléfono</option>
+        <option value="instagram">Instagram</option>
+        <option value="facebook">Facebook</option>
+        <option value="in_person">En persona</option>
+        <option value="other">Otro</option>
+      </select>
+      <select
+        value={histPeriod}
+        onChange={e => setHistPeriod(e.target.value)}
+        className="px-2 py-2 text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)]"
+      >
+        <option value="all">Todo el tiempo</option>
+        <option value="today">Hoy</option>
+        <option value="week">Última semana</option>
+        <option value="month">Último mes</option>
+      </select>
+    </div>
+
     {/* Stats */}
     {stats && (
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -1026,6 +1265,7 @@ const OrderHistory: React.FC<{ orders: any[]; stats?: any }> = ({ orders, stats 
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default POSPage;
