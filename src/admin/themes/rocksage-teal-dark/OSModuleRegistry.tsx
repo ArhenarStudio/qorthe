@@ -77,7 +77,7 @@ const DEDICATED: Partial<Record<AdminPage, OSModuleEntry>> = {
   pos: {
     component: POSWindowModule,
     subtitle: 'Venta directa y presencial',
-    width: '960px',
+    width: '1100px',
   },
 };
 
