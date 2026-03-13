@@ -17,7 +17,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 
 // ── Imports de componentes reales ────────────────────────────
 import { DashboardHome }          from '@/components/admin/DashboardHome';
-import { POSPage }                from '@/components/admin/POSPage';
+import { POSPage }                from '@/src/components/admin/pos/POSPage';
 import { OrdersPage }             from '@/components/admin/OrdersPage';
 import ShippingPageLive            from '@/components/admin/ShippingPageLive';
 import { ProductsPage }           from '@/components/admin/ProductsPage';
