@@ -43,6 +43,7 @@ import { GoalsOkrsPage }          from '@/components/admin/GoalsOkrsPage';
 import { SettingsPage }           from '@/components/admin/SettingsPage';
 import { UsersPage }              from '@/components/admin/UsersPage';
 import { LoyaltyConfigPanel }     from '@/components/admin/LoyaltyConfigPanel';
+import ModuleManagerPage            from '@/src/components/admin/ModuleManagerPage';
 
 // ── Tipo de entrada ──────────────────────────────────────────
 interface OSModuleEntry {
@@ -90,6 +91,7 @@ const REGISTRY: Record<AdminPage, OSModuleEntry> = {
   settings:     { component: SettingsPage,          subtitle: 'Configuración general',               width: '960px'  },
   users:        { component: UsersPage,             subtitle: 'Usuarios y roles de acceso',          width: '960px'  },
   loyalty:      { component: LoyaltyConfigPanel,    subtitle: 'Programa de lealtad y membresías',    width: '1100px' },
+  modules:      { component: ModuleManagerPage,      subtitle: 'Módulos activos de tu plan',          width: '1200px' },
 };
 
 export const OSModuleRegistry = REGISTRY;

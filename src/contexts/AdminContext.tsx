@@ -46,6 +46,7 @@ const pathToPage: Record<string, AdminPage> = {
   chat: "chat",
   inventory: "inventory",
   users: "users",
+  modules: "modules",
 };
 
 // Map AdminPage IDs to URL segments
@@ -77,6 +78,7 @@ const pageToPath: Record<AdminPage, string> = {
   chat: "chat",
   inventory: "inventory",
   users: "users",
+  modules: "modules",
 };
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {

@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import {
-  LayoutDashboard, ShoppingBag, Truck, Package, FolderTree, Boxes,
+  LayoutDashboard, ShoppingBag, Truck, Package, FolderTree, Boxes, LayoutGrid,
   Users, Star, FileText, Megaphone, DollarSign,
   BarChart3, FileEdit, Bell, Settings,
   Zap, Plug, Palette, RotateCcw, Headphones, ArrowUpDown,
@@ -17,7 +17,7 @@ export type AdminPage =
   | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
   | 'integrations' | 'theme' | 'appearance' | 'returns' | 'helpdesk'
-  | 'importexport' | 'goals' | 'settings' | 'pos' | 'users' | 'loyalty';
+  | 'importexport' | 'goals' | 'settings' | 'pos' | 'users' | 'loyalty' | 'modules';
 
 export interface NavItem {
   id: AdminPage;
@@ -59,6 +59,7 @@ export const adminIcons: Record<AdminPage, LucideIcon> = {
   automations: Zap,
   integrations: Plug,
   importexport: ArrowUpDown,
+  modules: LayoutGrid,
   notifications: Bell,
   users: Users,
   settings: Settings,
@@ -137,6 +138,7 @@ export const adminNavigation: NavGroup[] = [
       { id: 'integrations', label: 'Integraciones', icon: adminIcons.integrations },
       { id: 'importexport', label: 'Importar / Exportar', icon: adminIcons.importexport },
       { id: 'notifications', label: 'Notificaciones', icon: adminIcons.notifications },
+      { id: 'modules', label: 'Módulos del Plan', icon: adminIcons.modules },
       { id: 'users', label: 'Equipo', icon: adminIcons.users },
       { id: 'settings', label: 'Configuracion', icon: adminIcons.settings },
     ],

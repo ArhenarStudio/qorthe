@@ -17,7 +17,7 @@ export type AdminPage =
   | 'customers' | 'reviews' | 'quotes' | 'marketing' | 'chat'
   | 'finances' | 'reports' | 'cms' | 'notifications' | 'automations'
   | 'integrations' | 'theme' | 'appearance' | 'returns' | 'helpdesk' | 'importexport' | 'goals' | 'settings'
-  | 'pos' | 'users' | 'loyalty';
+  | 'pos' | 'users' | 'loyalty' | 'modules';
 
 interface NavItem {
   id: AdminPage;
