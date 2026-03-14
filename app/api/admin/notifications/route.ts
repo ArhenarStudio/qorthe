@@ -152,6 +152,65 @@ export async function GET(req: NextRequest) {
         console.warn("[Notifications] Reviews fetch error:", err);
       }
 
+
+      // ── 3.5 Quotes — new/pending in last 48h ──────────────
+      try {
+        const supabase = getSupabaseAdmin();
+        const since48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
+        // New quotes (draft/pending) in last 48h
+        const { data: newQuotes } = await supabase
+          .from("quotes")
+          .select("id, number, status, customer_name, customer_email, total, created_at")
+          .in("status", ["draft", "pending"])
+          .gte("created_at", since48h)
+          .order("created_at", { ascending: false })
+          .limit(5);
+
+        for (const q of newQuotes || []) {
+          const totalFmt = q.total ? `$${Number(q.total).toLocaleString("es-MX", { maximumFractionDigits: 0 })} MXN` : "—";
+          const timeStr = new Date(q.created_at).toLocaleString("es-MX", {
+            day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+          });
+          notifications.push({
+            id: `quote-new-${q.id}`,
+            time: timeStr,
+            category: "quote",
+            title: `Nueva cotización ${q.number || q.id.slice(0, 8)} — ${q.customer_name || q.customer_email || "Cliente"} — ${totalFmt}`,
+            detail: `Estado: ${q.status === "draft" ? "Borrador" : "Pendiente de aprobación"}`,
+            action: "Ver cotización",
+            read: false,
+            priority: false,
+          });
+        }
+
+        // Quotes expiring in next 3 days
+        const in3Days = new Date(Date.now() + 3 * 86400000).toISOString();
+        const { data: expiringQuotes } = await supabase
+          .from("quotes")
+          .select("id, number, customer_name, valid_until, total")
+          .in("status", ["sent", "pending"])
+          .lte("valid_until", in3Days)
+          .gte("valid_until", new Date().toISOString())
+          .limit(3);
+
+        for (const q of expiringQuotes || []) {
+          const daysLeft = Math.ceil((new Date(q.valid_until).getTime() - Date.now()) / 86400000);
+          notifications.push({
+            id: `quote-expiring-${q.id}`,
+            time: "Cotizaciones",
+            category: "quote",
+            title: `Cotización ${q.number || q.id.slice(0, 8)} vence en ${daysLeft} día${daysLeft !== 1 ? "s" : ""}`,
+            detail: `Cliente: ${q.customer_name || "—"} | Total: $${Number(q.total || 0).toLocaleString("es-MX", { maximumFractionDigits: 0 })} MXN`,
+            action: "Ver cotización",
+            read: false,
+            priority: daysLeft <= 1,
+          });
+        }
+      } catch (err) {
+        console.warn("[Notifications] Quotes fetch error:", err);
+      }
+
       // ── 4. New customers (last 48h) ────────────────────────
       try {
         const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
