@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Komerzly OS — Tema "rocksage-teal-dark"
+// Komerzly OS — Tema "komerzly-teal-dark"
 // Template 01 de Komerzly
 // Paleta: Sage Teal Dark (fuente: rocksage-os-v3.html)
 // ═══════════════════════════════════════════════════════════════
@@ -9,8 +9,8 @@ import RockSageOSSidebar from './Sidebar';
 import { RockSageOSHeader } from './Header';
 import { OSCard, OSBadge, OSButton, OSTable, OSStatCard } from './components';
 
-export const rockSageTealDarkTheme: AdminUITheme = {
-  id: 'rocksage-teal-dark',
+export const komerzlyTealDarkTheme: AdminUITheme = {
+  id: 'komerzly-teal-dark',
   name: 'Komerzly OS',
   mode: 'dark',
   layout: 'os-panel',

@@ -871,7 +871,7 @@ const CATALOG_THEMES: CatalogTheme[] = [
     config: {} as ThemeConfig, // no aplica — es tema admin
   },
   {
-    id: 'rocksage-teal-dark',
+    id: 'komerzly-teal-dark',
     name: 'Komerzly OS',
     desc: 'Panel estilo OS. Menubar top + dock inferior. Paleta teal oscura de Komerzly.',
     author: 'RockSage',

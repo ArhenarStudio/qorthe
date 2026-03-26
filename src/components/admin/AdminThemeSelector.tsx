@@ -13,14 +13,14 @@ import { allThemes } from '@/src/admin/themes/themeRegistry';
 // Colores de preview por tema (visuales del thumbnail)
 const PREVIEW_COLORS: Record<string, { bg: string; surface: string; accent: string; text: string }> = {
   'dsd-classic':        { bg: '#F8F5F0', surface: '#FFFFFF',  accent: '#C5A065', text: '#2d2419' },
-  'rocksage-teal-dark': { bg: '#08090B', surface: '#0F1114',  accent: '#0D9488', text: '#E8ECF0' },
+  'komerzly-teal-dark': { bg: '#08090B', surface: '#0F1114',  accent: '#0D9488', text: '#E8ECF0' },
   'nintendo-retro':     { bg: '#0D0D1A', surface: '#1A1A2E',  accent: '#E52521', text: '#F8F8F8' },
 };
 
 // Descripciones por tema
 const DESCRIPTIONS: Record<string, string> = {
   'dsd-classic':        "Tema clásico de Qorthe. Sidebar oscuro madera + acento ámbar.",
-  'rocksage-teal-dark': 'Panel estilo OS. Menubar top + dock inferior. Paleta teal oscura de Komerzly.',
+  'komerzly-teal-dark': 'Panel estilo OS. Menubar top + dock inferior. Paleta teal oscura de Komerzly.',
   'nintendo-retro':     'Escritorio retro pixel-art. Colores Mario Bros: rojo, verde Luigi, moneda dorada. Ventanas estilo NES.',
 };
 

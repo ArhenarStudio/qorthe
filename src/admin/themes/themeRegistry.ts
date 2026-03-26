@@ -8,7 +8,7 @@ import type { AdminUITheme } from '@/src/admin/types';
 import { DefaultSidebar } from './default/Sidebar';
 import { AdminHeader as DefaultHeader } from './default/Header';
 import { DefaultCard, DefaultBadge, DefaultButton, DefaultTable, DefaultStatCard } from './default/components';
-import { rockSageTealDarkTheme } from './rocksage-teal-dark';
+import { komerzlyTealDarkTheme } from './komerzly-teal-dark';
 import nintendoRetroTheme from './nintendo-retro';
 
 // ── DSD Classic — tema único activo ───────────────────────────
@@ -82,7 +82,7 @@ const dsdClassicTheme: AdminUITheme = {
 // ── Registro — agregar nuevos temas aquí (RockSage fase futura) ──
 export const adminThemes: Record<string, AdminUITheme> = {
   'dsd-classic': dsdClassicTheme,
-  'rocksage-teal-dark': rockSageTealDarkTheme,
+  'komerzly-teal-dark': komerzlyTealDarkTheme,
   'nintendo-retro': nintendoRetroTheme,
 };
 

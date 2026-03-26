@@ -12,7 +12,7 @@ import { AdminThemeProvider, useAdminTheme } from '@/src/contexts/AdminThemeCont
 import { AdminErrorBoundary } from '@/components/ErrorBoundary';
 import { adminNavigation } from '@/src/admin/navigation';
 import type { AdminPage } from '@/src/admin/navigation';
-import { OSDesktop } from '@/src/admin/themes/rocksage-teal-dark/OSDesktop';
+import { OSDesktop } from '@/src/admin/themes/komerzly-teal-dark/OSDesktop';
 import NintendoDesktop from '@/src/admin/themes/nintendo-retro/NintendoDesktop';
 
 const ADMIN_EMAILS = [
