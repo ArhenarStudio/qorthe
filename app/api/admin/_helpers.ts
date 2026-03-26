@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "";
-const ADMIN_EMAIL = "admin@davidsonsdesign.com";
+const ADMIN_EMAIL = "admin@qorthe.com";
 const ADMIN_PASSWORD = "Admin123!";
 
 let cachedToken: string | null = null;
