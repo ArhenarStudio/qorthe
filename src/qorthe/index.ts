@@ -1,11 +1,11 @@
 /**
- * RockSage Commerce — Public API
+ * Komerzly — Public API
  *
  * Punto de entrada único para el runtime de la plataforma.
- * Importar desde '@/src/rockstage' en lugar de sub-archivos.
+ * Importar desde '@/src/qorthe' en lugar de sub-archivos.
  *
  * @example
- *   import { isModuleActive, ACTIVE_TENANT, TENANT_0 } from '@/src/rockstage';
+ *   import { isModuleActive, ACTIVE_TENANT, TENANT_0 } from '@/src/qorthe';
  */
 
 // Tenant model
@@ -19,12 +19,12 @@ export type { TenantConfig, TenantPlan } from './tenant';
 
 // Module manifest
 export {
-  ROCKSAGE_MODULES,
+  KOMERZLY_MODULES,
   getModule,
   getModulesByCategory,
   getModulesForPlan,
 } from './manifest';
-export type { RockSageModule, ModuleStatus, ModuleCategory } from './manifest';
+export type { KomerzlyModule, ModuleStatus, ModuleCategory } from './manifest';
 
 // Platform config
 export {

@@ -42,7 +42,7 @@ interface IntegrationApp {
   version: string;
   lastUpdate: string;
   developer: string;
-  isRockStage: boolean;
+  isKomerzly: boolean;
   rating: number;
   reviewCount: number;
   installs: string;
@@ -77,7 +77,7 @@ const apps: IntegrationApp[] = [
     category: 'pagos', categoryLabel: 'Pagos', shortDesc: 'Pagos con tarjeta de credito y debito',
     longDesc: 'Acepta pagos globales con tarjeta de credito, debito, Apple Pay y Google Pay. Soporte completo para suscripciones, facturacion recurrente y payouts. Dashboard unificado con reportes de ingresos en tiempo real.',
     pricing: 'Gratis', pricingType: 'free', status: 'installed', enabled: true,
-    version: '3.2.1', lastUpdate: '15 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '3.2.1', lastUpdate: '15 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.9, reviewCount: 1247, installs: '12,400+',
     permissions: ['Leer/escribir pedidos', 'Leer clientes', 'Procesar pagos', 'Gestionar reembolsos'],
     reviews: [
@@ -103,7 +103,7 @@ const apps: IntegrationApp[] = [
     category: 'pagos', categoryLabel: 'Pagos', shortDesc: 'Pagos MX: debito, OXXO, transferencia',
     longDesc: 'Solucion de pagos lider en Mexico y LATAM. Acepta tarjetas, OXXO Pay, transferencia bancaria (SPEI), y pagos a meses sin intereses. Ideal para el mercado mexicano con altas tasas de conversion.',
     pricing: 'Gratis', pricingType: 'free', status: 'installed', enabled: true,
-    version: '2.8.0', lastUpdate: '10 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '2.8.0', lastUpdate: '10 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.7, reviewCount: 892, installs: '8,900+',
     permissions: ['Leer/escribir pedidos', 'Leer clientes', 'Procesar pagos'],
     reviews: [
@@ -125,7 +125,7 @@ const apps: IntegrationApp[] = [
     category: 'pagos', categoryLabel: 'Pagos', shortDesc: 'Pagos internacionales con PayPal',
     longDesc: 'Acepta pagos de clientes internacionales con PayPal. Soporte para Express Checkout, suscripciones y proteccion al comprador. Ideal para ventas cross-border.',
     pricing: 'Gratis', pricingType: 'free', status: 'not_installed', enabled: false,
-    version: '2.1.0', lastUpdate: '01 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '2.1.0', lastUpdate: '01 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.5, reviewCount: 2103, installs: '15,600+',
     permissions: ['Leer/escribir pedidos', 'Procesar pagos', 'Gestionar disputas'],
     reviews: [
@@ -137,7 +137,7 @@ const apps: IntegrationApp[] = [
     category: 'pagos', categoryLabel: 'Pagos', shortDesc: 'Pagos online para Mexico (tarjeta, OXXO, SPEI)',
     longDesc: 'Plataforma de pagos mexicana con soporte para tarjetas, OXXO, SPEI y meses sin intereses. Certificacion PCI DSS nivel 1.',
     pricing: 'Gratis', pricingType: 'free', status: 'not_installed', enabled: false,
-    version: '1.9.2', lastUpdate: '20 Ene 2026', developer: 'Conekta Inc.', isRockStage: false,
+    version: '1.9.2', lastUpdate: '20 Ene 2026', developer: 'Conekta Inc.', isKomerzly: false,
     rating: 4.3, reviewCount: 456, installs: '3,200+',
     permissions: ['Leer/escribir pedidos', 'Procesar pagos'],
     reviews: [],
@@ -148,7 +148,7 @@ const apps: IntegrationApp[] = [
     category: 'envios', categoryLabel: 'Envios', shortDesc: 'Multi-carrier: Fedex, DHL, Estafeta, Redpack',
     longDesc: 'Conecta con +30 paqueterias desde un solo dashboard. Compara tarifas en tiempo real, genera guias automaticamente y rastrea todos tus envios. Las mejores tarifas negociadas para pymes mexicanas.',
     pricing: 'Gratis', pricingType: 'free', status: 'installed', enabled: true,
-    version: '4.1.0', lastUpdate: '20 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '4.1.0', lastUpdate: '20 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.6, reviewCount: 678, installs: '6,700+',
     permissions: ['Leer pedidos', 'Leer direcciones de clientes', 'Generar guias de envio'],
     reviews: [
@@ -170,7 +170,7 @@ const apps: IntegrationApp[] = [
     category: 'envios', categoryLabel: 'Envios', shortDesc: 'Plataforma de envios con IA',
     longDesc: 'Envios inteligentes con seleccion automatica del mejor carrier basada en destino, peso y urgencia. Dashboard de tracking en tiempo real.',
     pricing: '$299/mes', pricingType: 'paid', status: 'not_installed', enabled: false,
-    version: '2.5.0', lastUpdate: '05 Feb 2026', developer: 'Skydropx SA', isRockStage: false,
+    version: '2.5.0', lastUpdate: '05 Feb 2026', developer: 'Skydropx SA', isKomerzly: false,
     rating: 4.4, reviewCount: 321, installs: '2,800+',
     permissions: ['Leer pedidos', 'Leer direcciones', 'Generar guias'],
     reviews: [],
@@ -180,7 +180,7 @@ const apps: IntegrationApp[] = [
     category: 'envios', categoryLabel: 'Envios', shortDesc: 'Entrega mismo dia en CDMX, GDL, MTY',
     longDesc: 'Servicio de entrega express en las principales ciudades de Mexico. Ideal para entregas urgentes y same-day delivery.',
     pricing: 'Por uso', pricingType: 'usage', status: 'not_installed', enabled: false,
-    version: '1.3.0', lastUpdate: '15 Ene 2026', developer: '99 Minutos SA', isRockStage: false,
+    version: '1.3.0', lastUpdate: '15 Ene 2026', developer: '99 Minutos SA', isKomerzly: false,
     rating: 4.2, reviewCount: 189, installs: '1,400+',
     permissions: ['Leer pedidos', 'Leer direcciones'],
     reviews: [],
@@ -191,7 +191,7 @@ const apps: IntegrationApp[] = [
     category: 'email', categoryLabel: 'Email', shortDesc: 'Email transaccional moderno para developers',
     longDesc: 'API de email de nueva generacion con las mejores tasas de entrega. Plantillas React, analytics detallados y logs en tiempo real. La opcion preferida por equipos modernos.',
     pricing: 'Gratis (3K/mes)', pricingType: 'free', status: 'installed', enabled: true,
-    version: '1.5.0', lastUpdate: '25 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '1.5.0', lastUpdate: '25 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.8, reviewCount: 567, installs: '5,200+',
     permissions: ['Leer clientes (email)', 'Enviar emails', 'Leer plantillas'],
     reviews: [
@@ -212,7 +212,7 @@ const apps: IntegrationApp[] = [
     category: 'email', categoryLabel: 'Email', shortDesc: 'Email marketing + SMS con IA',
     longDesc: 'Plataforma lider de email marketing para ecommerce. Segmentacion avanzada, flujos automatizados, A/B testing y predicciones con IA. Integracion nativa con datos de pedidos.',
     pricing: '$45/mes', pricingType: 'paid', status: 'not_installed', enabled: false,
-    version: '3.0.1', lastUpdate: '10 Feb 2026', developer: 'Klaviyo Inc.', isRockStage: false,
+    version: '3.0.1', lastUpdate: '10 Feb 2026', developer: 'Klaviyo Inc.', isKomerzly: false,
     rating: 4.7, reviewCount: 3421, installs: '28,000+',
     permissions: ['Leer clientes', 'Leer pedidos', 'Leer productos', 'Enviar emails'],
     reviews: [
@@ -225,7 +225,7 @@ const apps: IntegrationApp[] = [
     category: 'facturacion', categoryLabel: 'Facturacion MX', shortDesc: 'Facturacion electronica CFDI 4.0 automatizada',
     longDesc: 'Genera facturas CFDI 4.0 automaticamente desde cada pedido. Complementos de pago, notas de credito, y retenciones. Cumple 100% con SAT. API moderna y dashboard para tu contador.',
     pricing: '$199/mes', pricingType: 'paid', status: 'needs_config', enabled: false,
-    version: '2.2.0', lastUpdate: '18 Feb 2026', developer: 'Facturapi MX', isRockStage: false,
+    version: '2.2.0', lastUpdate: '18 Feb 2026', developer: 'Facturapi MX', isKomerzly: false,
     rating: 4.6, reviewCount: 892, installs: '7,400+',
     permissions: ['Leer pedidos', 'Leer datos fiscales de clientes', 'Generar CFDI'],
     reviews: [
@@ -244,7 +244,7 @@ const apps: IntegrationApp[] = [
     category: 'analytics', categoryLabel: 'Analytics', shortDesc: 'Tracking de trafico, conversiones y comportamiento',
     longDesc: 'Conecta GA4 con tu tienda para trackear visitas, funnel de compra, conversiones y comportamiento de usuarios. Enhanced ecommerce tracking automatico.',
     pricing: 'Gratis', pricingType: 'free', status: 'installed', enabled: true,
-    version: '2.0.0', lastUpdate: '01 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '2.0.0', lastUpdate: '01 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.5, reviewCount: 4521, installs: '42,000+',
     permissions: ['Leer datos de sesion', 'Enviar eventos ecommerce'],
     reviews: [],
@@ -263,7 +263,7 @@ const apps: IntegrationApp[] = [
     category: 'analytics', categoryLabel: 'Analytics', shortDesc: 'Conversion tracking para Meta Ads',
     longDesc: 'Trackea conversiones de Facebook e Instagram Ads. Optimiza campanas con datos de compra y crea audiencias personalizadas basadas en comportamiento de compra.',
     pricing: 'Gratis', pricingType: 'free', status: 'not_installed', enabled: false,
-    version: '1.8.0', lastUpdate: '20 Ene 2026', developer: 'RockStage', isRockStage: true,
+    version: '1.8.0', lastUpdate: '20 Ene 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.4, reviewCount: 3210, installs: '35,000+',
     permissions: ['Leer datos de sesion', 'Enviar eventos de conversion'],
     reviews: [],
@@ -273,7 +273,7 @@ const apps: IntegrationApp[] = [
     category: 'analytics', categoryLabel: 'Analytics', shortDesc: 'Heatmaps, grabaciones y encuestas',
     longDesc: 'Entiende como navegan tus clientes con heatmaps, grabaciones de sesion y encuestas. Identifica puntos de friccion y optimiza la experiencia de compra.',
     pricing: '$39/mes', pricingType: 'paid', status: 'not_installed', enabled: false,
-    version: '1.2.0', lastUpdate: '10 Ene 2026', developer: 'Hotjar Ltd.', isRockStage: false,
+    version: '1.2.0', lastUpdate: '10 Ene 2026', developer: 'Hotjar Ltd.', isKomerzly: false,
     rating: 4.5, reviewCount: 1890, installs: '14,000+',
     permissions: ['Leer datos de sesion'],
     reviews: [],
@@ -284,7 +284,7 @@ const apps: IntegrationApp[] = [
     category: 'chat', categoryLabel: 'Chat', shortDesc: 'Atencion al cliente por WhatsApp',
     longDesc: 'Conecta tu numero de WhatsApp Business para recibir consultas de clientes, enviar confirmaciones de pedido y notificaciones de envio directamente por WhatsApp.',
     pricing: 'Por uso', pricingType: 'usage', status: 'not_installed', enabled: false,
-    version: '1.5.0', lastUpdate: '15 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '1.5.0', lastUpdate: '15 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.6, reviewCount: 1234, installs: '9,800+',
     permissions: ['Leer pedidos', 'Leer clientes (telefono)', 'Enviar mensajes'],
     reviews: [
@@ -297,7 +297,7 @@ const apps: IntegrationApp[] = [
     category: 'redes', categoryLabel: 'Redes Sociales', shortDesc: 'Vende desde Instagram con catalogo sincronizado',
     longDesc: 'Sincroniza tu catalogo de productos con Instagram Shopping. Etiqueta productos en posts y stories, y permite compras directas desde la app.',
     pricing: 'Gratis', pricingType: 'free', status: 'not_installed', enabled: false,
-    version: '2.0.0', lastUpdate: '05 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '2.0.0', lastUpdate: '05 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.3, reviewCount: 2456, installs: '18,000+',
     permissions: ['Leer productos', 'Leer inventario', 'Sincronizar catalogo'],
     reviews: [],
@@ -307,7 +307,7 @@ const apps: IntegrationApp[] = [
     category: 'redes', categoryLabel: 'Redes Sociales', shortDesc: 'Vende en TikTok con catalogo integrado',
     longDesc: 'Conecta tu tienda con TikTok Shop para vender directamente en la plataforma. Sincronizacion de productos, pedidos y tracking automatico.',
     pricing: 'Gratis', pricingType: 'free', status: 'not_installed', enabled: false,
-    version: '1.0.0', lastUpdate: '20 Feb 2026', developer: 'TikTok Commerce', isRockStage: false,
+    version: '1.0.0', lastUpdate: '20 Feb 2026', developer: 'TikTok Commerce', isKomerzly: false,
     rating: 4.0, reviewCount: 567, installs: '4,500+',
     permissions: ['Leer/escribir productos', 'Leer/escribir pedidos'],
     reviews: [],
@@ -318,7 +318,7 @@ const apps: IntegrationApp[] = [
     category: 'crm', categoryLabel: 'CRM', shortDesc: 'CRM completo con marketing automation',
     longDesc: 'Sincroniza clientes y pedidos con HubSpot. Automatiza follow-ups, nurture leads y gestiona el pipeline de ventas desde un solo lugar.',
     pricing: 'Gratis (basico)', pricingType: 'free', status: 'not_installed', enabled: false,
-    version: '2.1.0', lastUpdate: '01 Feb 2026', developer: 'HubSpot Inc.', isRockStage: false,
+    version: '2.1.0', lastUpdate: '01 Feb 2026', developer: 'HubSpot Inc.', isKomerzly: false,
     rating: 4.6, reviewCount: 4567, installs: '32,000+',
     permissions: ['Leer clientes', 'Leer pedidos', 'Crear/editar contactos CRM'],
     reviews: [],
@@ -329,7 +329,7 @@ const apps: IntegrationApp[] = [
     category: 'ia', categoryLabel: 'IA', shortDesc: 'Recomendaciones de producto con IA',
     longDesc: 'Motor de recomendaciones basado en machine learning. Sugiere productos relevantes a cada cliente basandose en su historial de compra, navegacion y clientes similares. Aumenta el AOV hasta un 25%.',
     pricing: '$99/mes', pricingType: 'paid', status: 'not_installed', enabled: false,
-    version: '1.0.0', lastUpdate: '25 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '1.0.0', lastUpdate: '25 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.8, reviewCount: 234, installs: '1,800+',
     permissions: ['Leer productos', 'Leer pedidos', 'Leer comportamiento de usuarios'],
     reviews: [
@@ -341,7 +341,7 @@ const apps: IntegrationApp[] = [
     category: 'ia', categoryLabel: 'IA', shortDesc: 'Chatbot IA entrenado con tus productos',
     longDesc: 'Chatbot inteligente que conoce tu catalogo, politicas y procesos. Responde preguntas de clientes 24/7, sugiere productos y escala a humano cuando es necesario.',
     pricing: '$149/mes', pricingType: 'paid', status: 'not_installed', enabled: false,
-    version: '1.2.0', lastUpdate: '20 Feb 2026', developer: 'RockStage', isRockStage: true,
+    version: '1.2.0', lastUpdate: '20 Feb 2026', developer: 'Komerzly', isKomerzly: true,
     rating: 4.7, reviewCount: 178, installs: '1,200+',
     permissions: ['Leer productos', 'Leer pedidos', 'Leer FAQ/CMS', 'Chat con clientes'],
     reviews: [],
@@ -352,7 +352,7 @@ const apps: IntegrationApp[] = [
     category: 'erp', categoryLabel: 'ERP', shortDesc: 'Contabilidad y facturacion sincronizada',
     longDesc: 'Sincroniza ventas, gastos e inventario con QuickBooks. Automatiza la conciliacion bancaria y genera reportes financieros precisos.',
     pricing: 'Gratis', pricingType: 'free', status: 'not_installed', enabled: false,
-    version: '1.8.0', lastUpdate: '10 Feb 2026', developer: 'Intuit Inc.', isRockStage: false,
+    version: '1.8.0', lastUpdate: '10 Feb 2026', developer: 'Intuit Inc.', isKomerzly: false,
     rating: 4.4, reviewCount: 2345, installs: '19,000+',
     permissions: ['Leer pedidos', 'Leer productos', 'Crear transacciones contables'],
     reviews: [],
@@ -410,7 +410,7 @@ function AppCard({ app, onSelect }: { app: IntegrationApp; onSelect: () => void 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <h4 className="text-xs font-medium text-[var(--text)] truncate">{app.name}</h4>
-              {app.isRockStage && (
+              {app.isKomerzly && (
                 <BadgeCheck size={12} className="text-[var(--accent)] shrink-0" />
               )}
             </div>
@@ -527,7 +527,7 @@ function InstalledView({ onSelect, onToggle }: { onSelect: (app: IntegrationApp)
           { label: 'Apps instaladas', value: installed.length.toString() },
           { label: 'Activas', value: installed.filter(a => a.enabled).length.toString() },
           { label: 'Requieren config', value: installed.filter(a => a.status === 'needs_config').length.toString() },
-          { label: 'By RockStage', value: installed.filter(a => a.isRockStage).length.toString() },
+          { label: 'By RockStage', value: installed.filter(a => a.isKomerzly).length.toString() },
         ].map(k => (
           <Card key={k.label} className="p-3 text-center">
             <p className="text-[28px] font-bold font-mono text-[var(--text)]">{k.value}</p>
@@ -551,7 +551,7 @@ function InstalledView({ onSelect, onToggle }: { onSelect: (app: IntegrationApp)
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <h4 className="text-xs font-medium text-[var(--text)]">{app.name}</h4>
-                    {app.isRockStage && <BadgeCheck size={11} className="text-[var(--accent)]" />}
+                    {app.isKomerzly && <BadgeCheck size={11} className="text-[var(--accent)]" />}
                     <StatusBadge status={app.status} />
                   </div>
                   <p className="text-[10px] text-[var(--text-muted)] truncate">{app.shortDesc}</p>
@@ -634,7 +634,7 @@ function AppDetailView({ app, onBack }: { app: IntegrationApp; onBack: () => voi
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-lg font-serif text-[var(--text)]">{app.name}</h2>
-            {app.isRockStage && (
+            {app.isKomerzly && (
               <span className="flex items-center gap-1 text-[9px] bg-[var(--accent)]/15 text-[var(--accent)] px-2 py-0.5 rounded-[var(--radius-badge)] font-medium">
                 <BadgeCheck size={10} /> By RockStage
               </span>

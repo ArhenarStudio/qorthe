@@ -1,5 +1,5 @@
 /**
- * RockSage Commerce — Tenant Model
+ * Komerzly — Tenant Model
  *
  * Define el modelo de tenant para la plataforma multi-tenant.
  * Qorthe es TENANT 0 — la plantilla base y proof-of-concept.
@@ -72,11 +72,11 @@ export interface TenantConfig {
 
 // ─── Tenant 0 — Qorthe ────────────────────────────────────────────
 //
-// Este es el tenant raíz de RockSage Commerce.
+// Este es el tenant raíz de Komerzly.
 // Tiene plan 'full' — acceso completo a todos los módulos.
 // Sus datos viven en la misma DB que el sistema (no hay separación aún).
 //
-// Futuro: cuando RockSage Commerce tenga múltiples tenants, este objeto
+// Futuro: cuando Komerzly tenga múltiples tenants, este objeto
 // se leerá desde la Platform Database en lugar de estar hardcodeado.
 
 export const TENANT_0: TenantConfig = {

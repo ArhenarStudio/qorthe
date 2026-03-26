@@ -1,5 +1,5 @@
 /**
- * RockSage Commerce — Module Manifest
+ * Komerzly — Module Manifest
  *
  * Inventario canónico de todos los módulos disponibles en la plataforma.
  * Cada módulo tiene un ID único, metadatos, plan mínimo requerido,
@@ -23,7 +23,7 @@ export type ModuleCategory =
 
 import type { TenantPlan } from './tenant';
 
-export interface RockSageModule {
+export interface KomerzlyModule {
   /** ID único — kebab-case, estable en el tiempo */
   id: string;
   /** Nombre visible en el marketplace */
@@ -50,7 +50,7 @@ export interface RockSageModule {
 
 // ─── Módulos del sistema ───────────────────────────────────────────────────────
 
-export const ROCKSAGE_MODULES: RockSageModule[] = [
+export const KOMERZLY_MODULES: KomerzlyModule[] = [
 
   // ── CORE ────────────────────────────────────────────────────────────────────
   {
@@ -370,20 +370,20 @@ export const ROCKSAGE_MODULES: RockSageModule[] = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Busca un módulo por ID. Lanza si no existe. */
-export function getModule(id: string): RockSageModule {
-  const mod = ROCKSAGE_MODULES.find(m => m.id === id);
-  if (!mod) throw new Error(`[RockSage] Module not found: ${id}`);
+export function getModule(id: string): KomerzlyModule {
+  const mod = KOMERZLY_MODULES.find(m => m.id === id);
+  if (!mod) throw new Error(`[Komerzly] Module not found: ${id}`);
   return mod;
 }
 
 /** Filtra módulos por categoría */
-export function getModulesByCategory(category: ModuleCategory): RockSageModule[] {
-  return ROCKSAGE_MODULES.filter(m => m.category === category);
+export function getModulesByCategory(category: ModuleCategory): KomerzlyModule[] {
+  return KOMERZLY_MODULES.filter(m => m.category === category);
 }
 
 /** Filtra módulos disponibles para un plan dado */
-export function getModulesForPlan(plan: TenantPlan): RockSageModule[] {
+export function getModulesForPlan(plan: TenantPlan): KomerzlyModule[] {
   const order: TenantPlan[] = ['starter', 'growth', 'pro', 'full'];
   const planIndex = order.indexOf(plan);
-  return ROCKSAGE_MODULES.filter(m => order.indexOf(m.minPlan) <= planIndex);
+  return KOMERZLY_MODULES.filter(m => order.indexOf(m.minPlan) <= planIndex);
 }

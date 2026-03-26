@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // src/admin/themes/themeRegistry.ts
-// RockSage Commerce — Registro de temas del panel admin
+// Komerzly — Registro de temas del panel admin
 // Tema activo: dsd-classic (Tenant 0 — Qorthe)
 // ═══════════════════════════════════════════════════════════════
 

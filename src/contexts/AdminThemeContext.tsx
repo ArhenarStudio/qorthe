@@ -1,7 +1,7 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
 // src/contexts/AdminThemeContext.tsx
-// RockSage Commerce — Fuente única de verdad para el tema admin
+// Komerzly — Fuente única de verdad para el tema admin
 // Un solo sistema. Un solo hook: useAdminTheme()
 // ═══════════════════════════════════════════════════════════════
 

@@ -17,7 +17,7 @@ const inter = Inter({
   display: "swap",
 });
 
-// Fuentes del tema RockSage OS (Template 01)
+// Fuentes del tema Komerzly OS (Template 01)
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",

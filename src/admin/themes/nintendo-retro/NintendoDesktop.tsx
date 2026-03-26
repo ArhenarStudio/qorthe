@@ -1,6 +1,6 @@
 "use client";
 // =================================================================
-// NintendoDesktop.tsx — RockSage OS: tema Nintendo Retro
+// NintendoDesktop.tsx — Komerzly OS: tema Nintendo Retro
 // Canvas: estrellas parpadeantes + bloques pixelados flotantes
 // Paleta: Rojo Mario, Verde Luigi, Amarillo Coin, Azul Cielo
 // =================================================================

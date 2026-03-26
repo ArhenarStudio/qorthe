@@ -1,6 +1,6 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
-// OSDesktop.tsx — Escritorio principal RockSage OS
+// OSDesktop.tsx — Escritorio principal Komerzly OS
 // Replica fiel de rocksage-os-v3.html
 // Pantalla completa: menubar + KPI bar + app grid + dock
 // Módulos abren como ventanas modales (OSWindow)
@@ -628,7 +628,7 @@ export function OSDesktop({ children: _children }: { children?: React.ReactNode 
         isOpen={openWindow !== null}
         onClose={handleCloseWindow}
         title={windowTitle}
-        subtitle={OSModuleRegistry[openWindow ?? 'dashboard']?.subtitle ?? 'RockSage OS — módulo'}
+        subtitle={OSModuleRegistry[openWindow ?? 'dashboard']?.subtitle ?? 'Komerzly OS — módulo'}
         width={OSModuleRegistry[openWindow ?? 'dashboard']?.width ?? '880px'}
         maxHeight="84vh"
         actions={

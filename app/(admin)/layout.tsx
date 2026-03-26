@@ -1,5 +1,5 @@
 "use client";
-// app/(admin)/layout.tsx — RockSage Commerce admin layout
+// app/(admin)/layout.tsx — Komerzly admin layout
 // Un solo sistema de temas: AdminThemeProvider
 
 import React, { useEffect, useState } from 'react';
@@ -46,7 +46,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   };
 
-  // ── OS Panel layout (RockSage OS: escritorio pantalla completa) ─
+  // ── OS Panel layout (Komerzly OS: escritorio pantalla completa) ─
   if (isOSPanel) {
     const DesktopShell = theme.id === 'nintendo-retro' ? NintendoDesktop : OSDesktop;
     return (

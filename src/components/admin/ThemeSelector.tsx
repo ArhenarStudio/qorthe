@@ -1,7 +1,7 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
 // src/components/admin/ThemeSelector.tsx
-// Indicador del tema activo — RockSage Commerce
+// Indicador del tema activo — Komerzly
 // Con 1 solo tema activo (dsd-classic), muestra badge informativo.
 // ═══════════════════════════════════════════════════════════════
 import React from 'react';

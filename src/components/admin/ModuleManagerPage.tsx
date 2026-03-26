@@ -317,7 +317,7 @@ export default function ModuleManagerPage() {
               Módulos del Plan
             </h1>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: t.textSecondary }}>
-              Activa, desactiva y administra los módulos de tu suscripción RockSage Commerce
+              Activa, desactiva y administra los módulos de tu suscripción Komerzly
             </p>
           </div>
           {/* Plan badge */}

@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
-// RockSage OS — Tema "rocksage-teal-dark"
-// Template 01 de RockSage Commerce
+// Komerzly OS — Tema "rocksage-teal-dark"
+// Template 01 de Komerzly
 // Paleta: Sage Teal Dark (fuente: rocksage-os-v3.html)
 // ═══════════════════════════════════════════════════════════════
 
@@ -11,10 +11,10 @@ import { OSCard, OSBadge, OSButton, OSTable, OSStatCard } from './components';
 
 export const rockSageTealDarkTheme: AdminUITheme = {
   id: 'rocksage-teal-dark',
-  name: 'RockSage OS',
+  name: 'Komerzly OS',
   mode: 'dark',
   layout: 'os-panel',
-  description: 'Panel estilo OS dark con menubar superior y dock. Paleta Sage Teal. Template 01 de RockSage Commerce.',
+  description: 'Panel estilo OS dark con menubar superior y dock. Paleta Sage Teal. Template 01 de Komerzly.',
   preview: {
     sidebar: '#0D9488',
     bg: '#08090B',

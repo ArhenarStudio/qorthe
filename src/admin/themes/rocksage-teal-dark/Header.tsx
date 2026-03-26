@@ -1,6 +1,6 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
-// RockSage OS — Header (barra de contexto de ventana activa)
+// Komerzly OS — Header (barra de contexto de ventana activa)
 // Muestra: página activa, período, búsqueda, notificaciones
 // ═══════════════════════════════════════════════════════════════
 

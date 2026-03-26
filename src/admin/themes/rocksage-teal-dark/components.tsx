@@ -1,6 +1,6 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
-// RockSage OS — UI Components (dark glassmorphism + teal glow)
+// Komerzly OS — UI Components (dark glassmorphism + teal glow)
 // Card, Badge, Button, Table, StatCard
 // ═══════════════════════════════════════════════════════════════
 

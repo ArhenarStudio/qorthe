@@ -843,7 +843,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
 
 // ===== THEME CATALOG =====
 // Los temas se agregan aquí cuando llegan de Figma → conversión → registro.
-// Flujo: Figma export → /Plantillas Admin RockSage Commerce/{n}/ → yo convierto → CatalogTheme aquí.
+// Flujo: Figma export → /Plantillas Admin Komerzly/{n}/ → yo convierto → CatalogTheme aquí.
 
 type ThemeView = 'editor' | 'catalog';
 
@@ -872,8 +872,8 @@ const CATALOG_THEMES: CatalogTheme[] = [
   },
   {
     id: 'rocksage-teal-dark',
-    name: 'RockSage OS',
-    desc: 'Panel estilo OS. Menubar top + dock inferior. Paleta teal oscura de RockSage Commerce.',
+    name: 'Komerzly OS',
+    desc: 'Panel estilo OS. Menubar top + dock inferior. Paleta teal oscura de Komerzly.',
     author: 'RockSage',
     tags: ['dark', 'os-panel', 'teal', 'rocksage'],
     mode: 'dark',

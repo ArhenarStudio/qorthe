@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// nintendo-retro/index.ts — Tema Nintendo Retro para RockSage OS
+// nintendo-retro/index.ts — Tema Nintendo Retro para Komerzly OS
 // Inspirado en Mario Bros, paleta Nintendo, estilo pixel-art
 // ═══════════════════════════════════════════════════════════════
 

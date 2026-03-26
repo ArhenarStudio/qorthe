@@ -1,12 +1,12 @@
 /**
- * RockSage Commerce — Platform Config
+ * Komerzly — Platform Config
  *
  * Configuración central de la plataforma. Lee el tenant activo
  * y expone helpers para feature-gating y resolución de módulos.
  *
  * ARQUITECTURA:
  *   - En DSD (Tenant 0): ACTIVE_TENANT = TENANT_0 (hardcoded, plan full)
- *   - En RockSage multi-tenant: ACTIVE_TENANT se resolverá desde
+ *   - En Komerzly multi-tenant: ACTIVE_TENANT se resolverá desde
  *     Platform Database por domain/subdomain en el middleware.
  *
  * REGLA: Todo código que necesite saber "¿está activo este módulo?"
@@ -14,7 +14,7 @@
  */
 
 import { TENANT_0, isTenantModuleEnabled, type TenantConfig } from './tenant';
-import { ROCKSAGE_MODULES, getModule, type RockSageModule } from './manifest';
+import { KOMERZLY_MODULES, getModule, type KomerzlyModule } from './manifest';
 
 // ─── Tenant activo ────────────────────────────────────────────────────────────
 //
@@ -44,7 +44,7 @@ export function isModuleActive(moduleId: string): boolean {
  * Retorna el módulo completo si está activo, null si no.
  * Útil para renderizado condicional con metadatos del módulo.
  */
-export function getActiveModule(moduleId: string): RockSageModule | null {
+export function getActiveModule(moduleId: string): KomerzlyModule | null {
   if (!isModuleActive(moduleId)) return null;
   try {
     return getModule(moduleId);
@@ -56,8 +56,8 @@ export function getActiveModule(moduleId: string): RockSageModule | null {
 /**
  * Lista todos los módulos activos para el tenant actual.
  */
-export function getActiveTenantModules(): RockSageModule[] {
-  return ROCKSAGE_MODULES.filter(m => isModuleActive(m.id));
+export function getActiveTenantModules(): KomerzlyModule[] {
+  return KOMERZLY_MODULES.filter(m => isModuleActive(m.id));
 }
 
 // ─── Context para inyección futura ───────────────────────────────────────────

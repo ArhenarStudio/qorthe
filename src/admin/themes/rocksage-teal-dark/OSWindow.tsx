@@ -1,6 +1,6 @@
 "use client";
 // ═══════════════════════════════════════════════════════════════
-// OSWindow.tsx — Ventana modal tipo macOS para RockSage OS
+// OSWindow.tsx — Ventana modal tipo macOS para Komerzly OS
 // Chrome: botones rojo/amarillo/verde + título + drawer lateral
 // ═══════════════════════════════════════════════════════════════
 

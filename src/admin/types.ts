@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // src/admin/types.ts
-// RockSage Commerce — Tipos del sistema de temas admin
+// Komerzly — Tipos del sistema de temas admin
 // Fuente única de verdad para tokens, componentes y layouts
 // ═══════════════════════════════════════════════════════════════
 
