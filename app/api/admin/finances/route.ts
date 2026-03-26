@@ -21,3 +21,15 @@ export async function GET(req: NextRequest) {
     const days = daysMap[period] || 30;
     const since = daysAgo(days);
 
+    // TODO: Implement full finances data from Medusa + Supabase
+    return NextResponse.json({
+      revenue: { total: 0, period: period, since },
+      payments: [],
+      summary: { orders: 0, avgTicket: 0, refunds: 0 }
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
