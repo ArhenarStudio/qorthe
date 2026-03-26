@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 const BRAND = {
   name: process.env.NEXT_PUBLIC_STORE_NAME || "Qorthe",
   url: process.env.NEXT_PUBLIC_STORE_URL || "qorthe.com",
-  email: process.env.NEXT_PUBLIC_STORE_EMAIL || "hola@qorthe.com",
+  email: process.env.NEXT_PUBLIC_STORE_EMAIL || "qorthedesign@gmail.com",
   logo: process.env.NEXT_PUBLIC_STORE_LOGO || "/images/logo-dsd.png",
   goldColor: "#C5A065",
   darkColor: "#1a1208",

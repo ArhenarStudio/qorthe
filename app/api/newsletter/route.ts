@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Qorthe <hola@qorthe.com>",
+            from: "Qorthe <qorthedesign@gmail.com>",
             to: email,
             subject: "¡Bienvenido a Qorthe! 🌿",
             html: `

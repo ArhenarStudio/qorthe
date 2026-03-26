@@ -269,7 +269,7 @@ export async function POST(req: NextRequest) {
       body.customer_email,
       `Cotización ${number} — Qorthe`,
       buildCustomerEmail(body.customer_name, number, pieces, total, validUntil),
-      "Qorthe <hola@qorthe.com>"
+      "Qorthe <qorthedesign@gmail.com>"
     ).catch(() => {});
 
     // 2. Notification to admin

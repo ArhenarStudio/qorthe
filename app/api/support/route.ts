@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
             body: JSON.stringify({
-              from: "Qorthe <hola@qorthe.com>",
+              from: "Qorthe <qorthedesign@gmail.com>",
               to: ["pedidos@qorthe.com"],
               reply_to: ticketData.email,
               subject: `[Ticket #${data.ticket_number}] ${ticketData.subject}`,

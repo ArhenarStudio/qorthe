@@ -41,8 +41,8 @@ export const PrivacyPolicyPage = () => {
             </div>
             <div className="md:col-span-2">
               <p className="text-wood-500 dark:text-sand-100/60 uppercase tracking-widest text-xs mb-1">Contacto de Privacidad</p>
-              <a href="mailto:contacto@qorthe.com" className="text-wood-900 dark:text-sand-100 font-medium hover:text-wood-600 dark:hover:text-sand-300 transition-colors border-b border-wood-900/30 dark:border-sand-100/30 pb-0.5">
-                contacto@qorthe.com
+              <a href="mailto:qorthedesign@gmail.com" className="text-wood-900 dark:text-sand-100 font-medium hover:text-wood-600 dark:hover:text-sand-300 transition-colors border-b border-wood-900/30 dark:border-sand-100/30 pb-0.5">
+                qorthedesign@gmail.com
               </a>
             </div>
           </div>

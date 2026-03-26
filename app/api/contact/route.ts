@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from '@/src/lib/logger';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = "hola@qorthe.com";
+const FROM_EMAIL = "qorthedesign@gmail.com";
 const ADMIN_EMAIL = "pedidos@qorthe.com";
 
 export async function POST(req: NextRequest) {

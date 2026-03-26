@@ -200,11 +200,11 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
         toast.success('Solicitud de eliminación enviada');
       } else {
         // Fallback: even if API fails, notify user of alternative
-        toast.error('No se pudo enviar la solicitud. Contacta a hola@qorthe.com');
+        toast.error('No se pudo enviar la solicitud. Contacta a qorthedesign@gmail.com');
       }
     } catch (error) {
       console.error('[Privacy] Deletion request error:', error);
-      toast.error('Error de conexión. Contacta a hola@qorthe.com');
+      toast.error('Error de conexión. Contacta a qorthedesign@gmail.com');
     } finally {
       setIsRequestingDeletion(false);
     }
@@ -335,7 +335,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
                             Tu solicitud de eliminación ha sido enviada a nuestro equipo. Procesaremos tu petición dentro de los próximos 30 días y te notificaremos por email a <span className="font-medium">{user?.email}</span>.
                           </p>
                           <p className="text-xs text-amber-600 dark:text-amber-500 mt-2">
-                            Si necesitas asistencia adicional, contacta a <span className="font-medium">hola@qorthe.com</span>
+                            Si necesitas asistencia adicional, contacta a <span className="font-medium">qorthedesign@gmail.com</span>
                           </p>
                         </div>
                       </div>

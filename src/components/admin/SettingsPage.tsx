@@ -124,7 +124,7 @@ function GeneralTab() {
       <Card className="p-5">
         <STitle>Contacto</STitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Email principal"><Input defaultValue="contacto@qorthe.com" className="w-full" /></Field>
+          <Field label="Email principal"><Input defaultValue="qorthedesign@gmail.com" className="w-full" /></Field>
           <Field label="Email de soporte"><Input defaultValue="soporte@qorthe.com" className="w-full" /></Field>
           <Field label="Email de pedidos"><Input defaultValue="pedidos@qorthe.com" className="w-full" /></Field>
           <Field label="Telefono"><Input defaultValue="662-361-0742" className="w-full" /></Field>
