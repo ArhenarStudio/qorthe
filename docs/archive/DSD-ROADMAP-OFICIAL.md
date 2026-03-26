@@ -514,6 +514,6 @@ LARGO PLAZO (1-2 meses):
 ## INSTRUCCIONES PARA CHATS NUEVOS
 
 Al iniciar cada chat nuevo, di:
-"Lee /Users/davidalejandroperezrea/Documents/DSD-Project/DSD-ROADMAP-OFICIAL.md y continúa con la Fase [X], paso [X.Y]"
+"Lee /Users/davidalejandroperezrea/Documents/DSD-Project/QORTHE-ROADMAP.md y continúa con la Fase [X], paso [X.Y]"
 
 Esto le da a Claude el contexto completo sin necesidad de adjuntar archivos.

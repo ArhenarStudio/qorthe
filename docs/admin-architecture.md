@@ -1,7 +1,7 @@
-# Arhenar Commerce — Admin Panel Architecture
+# Komerzly — Admin Panel Architecture
 
 > **Última actualización:** 2026-03-10
-> **Aplica a:** Qorthe (Tenant 0) y cualquier tenant futuro de Arhenar Commerce
+> **Aplica a:** Qorthe (Tenant 0) y cualquier tenant futuro de Komerzly
 
 ---
 
@@ -214,15 +214,15 @@ Nunca anidar otro ThemeProvider dentro del panel admin.
 
 ---
 
-## 9. DSD como Tenant 0 de Arhenar Commerce
+## 9. DSD como Tenant 0 de Komerzly
 
 `Qorthe` es el Tenant 0 — corre sobre la misma infraestructura
-que cualquier tenant futuro de Arhenar Commerce.
+que cualquier tenant futuro de Komerzly.
 
 - El tema `dsd-classic` es la identidad visual de DSD
 - Otros tenants tendrán sus propios temas registrados en `themeRegistry.ts`
 - La arquitectura ya soporta múltiples temas — solo falta registrarlos
-- Los módulos admin son productos de **Arhenar Commerce**, no de DSD
+- Los módulos admin son productos de **Komerzly**, no de DSD
 
 Para escalar a multi-tenant, el `themeRegistry` se migrará a una fuente
 dinámica (DB por tenant) sin modificar ningún módulo existente.
