@@ -32,7 +32,7 @@ export const BrandValues = () => {
       {/* Encabezado */}
       <div className="text-center mb-[80px]">
         <h3 className="font-sans text-[10px] uppercase tracking-[3px] text-[#C5A065] mb-[12px]">
-          La Diferencia DavidSon's
+          La Diferencia Qorthe
         </h3>
         <h2 className="font-serif text-[48px] text-[#2d2419]">
           Compromiso con la Excelencia

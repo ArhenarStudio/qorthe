@@ -219,7 +219,7 @@ export const QuoteBuilderModule = () => {
             </button>
             <button
               onClick={() => {
-                const msg = `Hola, acabo de solicitar la cotizaci\u00f3n ${submitted} en DavidSon's Design. Me gustar\u00eda recibir m\u00e1s informaci\u00f3n.`;
+                const msg = `Hola, acabo de solicitar la cotizaci\u00f3n ${submitted} en Qorthe. Me gustar\u00eda recibir m\u00e1s informaci\u00f3n.`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
               }}
               className="w-full py-4 bg-green-600 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-green-700 transition-colors"

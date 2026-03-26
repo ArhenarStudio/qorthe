@@ -82,11 +82,11 @@ function toStateCode(state: string): string {
   return trimmed.slice(0, 2).toUpperCase();
 }
 
-// Origin: DavidSon's Design workshop in Hermosillo
+// Origin: Qorthe workshop in Hermosillo
 const ORIGIN = {
-  name: "DavidSon's Design",
-  company: "DavidSon's Design",
-  email: "designdavidsons@gmail.com",
+  name: "Qorthe",
+  company: "Qorthe",
+  email: "arhenarstudio@gmail.com",
   phone: "6623610742",
   street: "Blvd Rodriguez",
   number: "100",

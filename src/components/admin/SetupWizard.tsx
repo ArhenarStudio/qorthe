@@ -37,7 +37,7 @@ const WIZARD_STEPS: WizardStep[] = [
     icon: <Store size={20} />,
     linkTo: "settings",
     fields: [
-      { key: "store_name", label: "Nombre de la tienda", type: "text", placeholder: "DavidSon's Design" },
+      { key: "store_name", label: "Nombre de la tienda", type: "text", placeholder: "Qorthe" },
       { key: "store_email", label: "Email de contacto", type: "email", placeholder: "contacto@tutienda.com" },
       { key: "store_url", label: "URL del sitio", type: "url", placeholder: "https://tutienda.com" },
       { key: "store_description", label: "Descripción corta", type: "textarea", placeholder: "Describe tu tienda en 1-2 frases..." },
@@ -91,7 +91,7 @@ const WIZARD_STEPS: WizardStep[] = [
     linkTo: "cms",
     fields: [
       { key: "legal_info", label: "", type: "info", description: "Tu tienda incluye 10 páginas legales pre-configuradas (Términos, Privacidad, Cookies, Envíos, Devoluciones, Garantía, etc.) que puedes personalizar desde el CMS." },
-      { key: "company_name", label: "Razón social", type: "text", placeholder: "DavidSon's Co." },
+      { key: "company_name", label: "Razón social", type: "text", placeholder: "Qorthe Co." },
       { key: "company_address", label: "Domicilio fiscal", type: "text", placeholder: "Hermosillo, Sonora, México" },
       { key: "company_rfc", label: "RFC (opcional)", type: "text", placeholder: "XAXX010101000" },
     ],

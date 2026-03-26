@@ -26,7 +26,7 @@ export const CheckoutFooter = () => {
         </div>
 
         <div className="flex flex-col gap-3 text-[10px] text-wood-400 font-medium">
-           <p>© {new Date().getFullYear()} DavidSon&apos;s Design. Todos los derechos reservados.</p>
+           <p>© {new Date().getFullYear()} Qorthe. Todos los derechos reservados.</p>
            <div className="flex justify-center gap-4 text-wood-500">
              <a href="/privacy-policy" className="hover:text-wood-800 transition-colors">Privacidad</a>
              <span className="text-wood-200">|</span>

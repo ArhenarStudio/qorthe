@@ -6,9 +6,9 @@ import { useSearchParams } from "next/navigation";
 // ── Brand Config (SaaS-ready: override per tenant) ──────
 
 const BRAND = {
-  name: process.env.NEXT_PUBLIC_STORE_NAME || "DavidSon's Design",
-  url: process.env.NEXT_PUBLIC_STORE_URL || "davidsonsdesign.com",
-  email: process.env.NEXT_PUBLIC_STORE_EMAIL || "hola@davidsonsdesign.com",
+  name: process.env.NEXT_PUBLIC_STORE_NAME || "Qorthe",
+  url: process.env.NEXT_PUBLIC_STORE_URL || "qorthe.com",
+  email: process.env.NEXT_PUBLIC_STORE_EMAIL || "hola@qorthe.com",
   logo: process.env.NEXT_PUBLIC_STORE_LOGO || "/images/logo-dsd.png",
   goldColor: "#C5A065",
   darkColor: "#1a1208",

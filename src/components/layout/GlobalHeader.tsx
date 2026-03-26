@@ -42,7 +42,7 @@ const CONTENT = {
     financing: "Financiamiento",
     help: "Ayuda & FAQ",
     theme_light: "Claro",
-    copyright: "© 2026 DavidSon's Design"
+    copyright: "© 2026 Qorthe"
   }
 };
 
@@ -88,7 +88,7 @@ export const GlobalHeader = () => {
     CONTENT.topbar.shipping,
     CONTENT.topbar.customization,
     CONTENT.topbar.warranty,
-    "Usa el código DAVIDSON10 para 10% OFF"
+    "Usa el código QORTHE10 para 10% OFF"
   ];
 
   const isAuthenticated = !!user;
@@ -220,7 +220,7 @@ export const GlobalHeader = () => {
                  <div className="relative w-[76px] md:w-[106px] lg:w-[137px] transition-transform duration-500 ease-out group-hover:scale-105 group-hover:rotate-1">
                    <img 
                       src={logoDSD} 
-                      alt="DavidSon's Design Seal" 
+                      alt="Qorthe Seal" 
                       className="w-full h-auto drop-shadow-[0_4px_6px_rgba(45,36,25,0.4)] hover:drop-shadow-[0_8px_12px_rgba(45,36,25,0.5)] transition-all duration-500"
                    />
                  </div>
@@ -267,7 +267,7 @@ export const GlobalHeader = () => {
              <div className="w-px h-4 bg-wood-900/15 dark:bg-sand-100/15"></div>
 
              <button onClick={onNavigateHome} className="shrink-0 mx-1">
-                <img src={logoDSD} alt="DavidSon's" className="h-8 w-auto" />
+                <img src={logoDSD} alt="Qorthe" className="h-8 w-auto" />
              </button>
 
              <div className="w-px h-4 bg-wood-900/15 dark:bg-sand-100/15"></div>
@@ -302,7 +302,7 @@ export const GlobalHeader = () => {
              <div className="w-px h-5 bg-wood-900/15 dark:bg-sand-100/15"></div>
 
              <button onClick={onNavigateHome} className="shrink-0 mx-2 hover:opacity-80 transition-opacity">
-                <img src={logoDSD} alt="DavidSon's" className="h-10 w-auto" />
+                <img src={logoDSD} alt="Qorthe" className="h-10 w-auto" />
              </button>
 
              <div className="w-px h-5 bg-wood-900/15 dark:bg-sand-100/15"></div>

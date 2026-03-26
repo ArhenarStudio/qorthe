@@ -7,7 +7,7 @@ Tu trabajo es copiar y convertir TODOS los componentes.
 
 ## FUENTE
 ```
-~/Documents/DavidSons Design - Figma/DSD V1.1/src/
+~/Documents/Qorthe - Figma/DSD V1.1/src/
 ```
 
 ## DESTINO
@@ -41,7 +41,7 @@ Tu trabajo es copiar y convertir TODOS los componentes.
 
 ### PASO 1: Assets
 Copiar todos los archivos de:
-`~/Documents/DavidSons Design - Figma/DSD V1.1/src/assets/`
+`~/Documents/Qorthe - Figma/DSD V1.1/src/assets/`
 a:
 `~/Documents/davidsons-design/public/images/`
 Renombrar cada archivo hash a un nombre descriptivo (ej: `02a0220e...png` → `logo-dsd.png`). Abrir los componentes que los importan para entender qué es cada imagen.

@@ -70,7 +70,7 @@ export interface POSShippingOption {
 
 export const DEFAULT_SHIPPING_CONFIG: ShippingConfig = {
   provider: "envia",
-  origin_name: "DavidSon's Design",
+  origin_name: "Qorthe",
   origin_phone: "662-361-0742",
   origin_street: "",
   origin_city: "Hermosillo",

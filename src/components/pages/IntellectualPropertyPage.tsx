@@ -39,7 +39,7 @@ export const IntellectualPropertyPage = () => {
             <li>Identidad visual y elementos de marca</li>
           </ul>
           <p className="mt-4">
-            son propiedad exclusiva de DavidSon´s Co., y se encuentran protegidos por la legislación aplicable en materia de propiedad intelectual e industrial, tanto en México como en el ámbito internacional.
+            son propiedad exclusiva de Qorthe´s Co., y se encuentran protegidos por la legislación aplicable en materia de propiedad intelectual e industrial, tanto en México como en el ámbito internacional.
           </p>
         </section>
 
@@ -70,7 +70,7 @@ export const IntellectualPropertyPage = () => {
         <section id="marca" className="scroll-mt-32">
           <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100 mb-4">4. Marca</h3>
           <p>
-            El nombre comercial DavidSon´s Design, así como cualquier signo distintivo asociado, constituye un activo protegido. El uso no autorizado de la marca, logotipo o identidad visual está prohibido.
+            El nombre comercial Qorthe´s Design, así como cualquier signo distintivo asociado, constituye un activo protegido. El uso no autorizado de la marca, logotipo o identidad visual está prohibido.
           </p>
         </section>
 

@@ -13,7 +13,7 @@ export const CheckoutHeader = () => {
     <header className="flex items-center justify-between py-6 mb-8">
       <img 
         src={logoDSD} 
-        alt="DavidSon's Design" 
+        alt="Qorthe" 
         className="h-8 md:h-10 w-auto cursor-pointer" 
         onClick={() => router.push('/')}
       />

@@ -30,7 +30,7 @@ export const SalesConditionsPage = () => {
         <section id="alcance" className="scroll-mt-32">
           <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100 mb-4">1. Alcance</h3>
           <p>
-            Las presentes Condiciones de Venta regulan la adquisición de productos ofrecidos a través del sitio web operado por DavidSon´s Co. (en adelante, el “Titular”).
+            Las presentes Condiciones de Venta regulan la adquisición de productos ofrecidos a través del sitio web operado por Qorthe´s Co. (en adelante, el “Titular”).
           </p>
           <p className="mt-4">
             Al realizar una compra, el cliente acepta expresamente estas Condiciones de Venta.

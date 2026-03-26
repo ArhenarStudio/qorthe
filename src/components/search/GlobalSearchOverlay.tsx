@@ -308,7 +308,7 @@ export const GlobalSearchOverlay: React.FC<GlobalSearchOverlayProps> = ({ isOpen
               {/* FOOTER */}
               <div className="shrink-0 py-4 border-t border-wood-900/5 dark:border-sand-100/5 bg-sand-50 dark:bg-wood-900/50">
                 <div className="container mx-auto px-6 md:px-12 flex justify-between items-center text-[10px] uppercase tracking-widest text-wood-900/40 dark:text-sand-100/40">
-                   <span>DavidSon&apos;s Design</span>
+                   <span>Qorthe</span>
                    <span className="hidden md:inline">Presiona ESC para cerrar</span>
                 </div>
               </div>

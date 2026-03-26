@@ -538,7 +538,7 @@ function TemplatesTab() {
             <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-2">Preview</label>
             <div className="border border-[var(--border)] rounded-[var(--radius-card)] overflow-hidden shadow-sm">
               <div className="bg-[var(--text)] p-5 text-center">
-                <div className="text-[var(--accent)] font-serif">DavidSon's Design</div>
+                <div className="text-[var(--accent)] font-serif">Qorthe</div>
               </div>
               <div className="bg-[var(--bg)] p-6">
                 <div className="bg-[var(--surface)] rounded-[var(--radius-card)] p-5 max-w-xs mx-auto space-y-3">
@@ -559,9 +559,9 @@ function TemplatesTab() {
                     <span key={s} className="w-5 h-5 rounded-[var(--radius-badge)] bg-[var(--bg)]/10 flex items-center justify-center text-[8px] text-[var(--bg)]/50">{s}</span>
                   ))}
                 </div>
-                <p className="text-[8px] text-[var(--bg)]/40">DavidSon's Design | Hermosillo, Sonora, Mexico</p>
+                <p className="text-[8px] text-[var(--bg)]/40">Qorthe | Hermosillo, Sonora, Mexico</p>
                 <p className="text-[8px] text-[var(--accent)]/40">Gestionar preferencias | Darse de baja</p>
-                <p className="text-[8px] text-[var(--bg)]/30">Recibiste este email porque eres cliente de DavidSon's Design</p>
+                <p className="text-[8px] text-[var(--bg)]/30">Recibiste este email porque eres cliente de Qorthe</p>
               </div>
             </div>
           </div>
@@ -768,7 +768,7 @@ function ConfigTab() {
             </div>
             <div>
               <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider block mb-1">Enviar a</label>
-              <input defaultValue="admin@davidsonsdesign.com" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1.5 text-xs bg-[var(--surface)]" />
+              <input defaultValue="admin@qorthe.com" className="w-full border border-[var(--border)] rounded-[var(--radius-card)] px-2 py-1.5 text-xs bg-[var(--surface)]" />
             </div>
           </div>
           <p className="text-[10px] text-[var(--text-muted)] pl-6">Incluye: pedidos, ingresos, reviews, cotizaciones, alertas</p>

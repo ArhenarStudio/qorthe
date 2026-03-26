@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         currency: 'mxn',
         metadata: {
           cart_id,
-          source: 'davidsons_design',
+          source: 'qorthe',
           verified_cart_total: String(cartTotalCentavos),
           verified_subtotal: String(cartSubtotalCentavos),
           tier_discount: String(discounts.tierDiscountCentavos),
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
           points_were_capped: String(discounts.pointsWereCapped),
         },
         receipt_email: email || undefined,
-        description: `DavidSon's Design — Orden (Cart: ${cart_id})`,
+        description: `Qorthe — Orden (Cart: ${cart_id})`,
         statement_descriptor_suffix: 'DSD',
         automatic_payment_methods: { enabled: true },
       },

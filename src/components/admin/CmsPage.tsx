@@ -511,7 +511,7 @@ function MenusTabLive() {
           <div className="px-4 py-2 bg-[var(--surface2)]/50 border-b border-[var(--border)]"><p className="text-[10px] text-[var(--text-muted)]">Preview del header</p></div>
           <div style={{ background: 'white', colorScheme: 'light', color: '#1a1a1a' }} className="px-6 py-4">
             <div className="flex items-center justify-between border border-[var(--border)] rounded-[var(--radius-card)] px-5 py-3 bg-[var(--surface)] shadow-sm">
-              <div className="text-sm font-bold text-[var(--text)]">DavidSon&apos;s Design</div>
+              <div className="text-sm font-bold text-[var(--text)]">Qorthe</div>
               <div className="flex items-center gap-5">
                 {headerItems.filter(i => i.is_visible).map((item, idx) => (
                   <div key={idx} className="text-xs text-[var(--text-secondary)]">{item.label}</div>
@@ -771,7 +771,7 @@ function HomepageTabLive() {
             <div className="rounded-[var(--radius-card)] border border-[var(--border)] overflow-hidden sticky top-4">
               <div className="px-4 py-2.5 bg-[var(--surface2)]/50 border-b border-[var(--border)] flex items-center gap-2">
                 <div className="flex gap-1"><div className="w-2.5 h-2.5 rounded-[var(--radius-badge)] bg-red-400"/><div className="w-2.5 h-2.5 rounded-[var(--radius-badge)] bg-amber-400"/><div className="w-2.5 h-2.5 rounded-[var(--radius-badge)] bg-green-400"/></div>
-                <span className="text-[10px] text-[var(--text-muted)] flex-1 text-center">davidsonsdesign.com</span>
+                <span className="text-[10px] text-[var(--text-muted)] flex-1 text-center">qorthe.com</span>
               </div>
               <div style={{background:'white',colorScheme:'light',color:'#1a1a1a',minHeight:'400px'}} className="overflow-y-auto max-h-[600px]">
                 {blocks.filter(b=>b.is_visible).length===0 ? <div className="flex items-center justify-center h-64 text-[var(--text-muted)] text-sm">Sin bloques visibles</div>
@@ -858,7 +858,7 @@ function BlogTabLive() {
             <div className="space-y-4">
               <h4 className="font-serif text-lg text-[var(--text)]">Título y URL</h4>
               <div><FieldLabel>Título del post</FieldLabel><CmsInput value={form.title} onChange={v=>setForm(f=>({...f,title:v,slug:v.toLowerCase().replace(/[^a-z0-9áéíóúñ]+/g,'-').replace(/(^-|-$)/g,'')}))} placeholder="Cómo elegir la mejor madera..."/></div>
-              <div><FieldLabel>Slug (URL)</FieldLabel><CmsInput value={form.slug} onChange={v=>setForm(f=>({...f,slug:v}))} placeholder="como-elegir-la-mejor-madera" mono/><p className="text-[10px] text-[var(--text-muted)] mt-1">davidsonsdesign.com/blog/<strong className="text-[var(--text-secondary)]">{form.slug||'slug-del-post'}</strong></p></div>
+              <div><FieldLabel>Slug (URL)</FieldLabel><CmsInput value={form.slug} onChange={v=>setForm(f=>({...f,slug:v}))} placeholder="como-elegir-la-mejor-madera" mono/><p className="text-[10px] text-[var(--text-muted)] mt-1">qorthe.com/blog/<strong className="text-[var(--text-secondary)]">{form.slug||'slug-del-post'}</strong></p></div>
               <div><FieldLabel>Extracto</FieldLabel><textarea value={form.excerpt} onChange={e=>setForm(f=>({...f,excerpt:e.target.value}))} rows={3} className="w-full px-3 py-2.5 border border-[var(--border)] rounded-[var(--radius-card)] text-sm bg-[var(--surface)] focus:ring-2 focus:ring-[var(--accent)]/30 outline-none resize-none" placeholder="Descripción breve del post..."/></div>
             </div>
           )}
@@ -913,7 +913,7 @@ function BlogTabLive() {
               <div>
                 <FieldLabel>Preview en Google</FieldLabel>
                 <div className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)]" style={{colorScheme:'light'}}>
-                  <p className="text-[10px] text-[var(--text-muted)] mb-1">davidsonsdesign.com › blog › {form.slug||'slug'}</p>
+                  <p className="text-[10px] text-[var(--text-muted)] mb-1">qorthe.com › blog › {form.slug||'slug'}</p>
                   <p className="text-base text-[var(--info)] font-medium">{(form.seo_title||form.title||'Título').substring(0,60)}</p>
                   <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">{(form.seo_description||form.excerpt||'Descripción...').substring(0,160)}</p>
                 </div>
@@ -1416,7 +1416,7 @@ function SeoTabLive() {
             <h4 className="font-serif text-lg text-[var(--text)]">Meta título global</h4>
             <div>
               <FieldLabel>Título (60 caracteres máx.)</FieldLabel>
-              <CmsInput value={form.meta_title} onChange={v=>setForm(f=>({...f,meta_title:v}))} placeholder="DavidSon's Design — Tablas artesanales de madera"/>
+              <CmsInput value={form.meta_title} onChange={v=>setForm(f=>({...f,meta_title:v}))} placeholder="Qorthe — Tablas artesanales de madera"/>
               <div className="flex items-center gap-2 mt-2">
                 <div className="flex-1 h-1.5 bg-[var(--border)] rounded-[var(--radius-badge)] overflow-hidden"><div className={`h-full rounded-[var(--radius-badge)] transition-all ${form.meta_title.length>60?'bg-red-500':form.meta_title.length>50?'bg-amber-500':'bg-green-500'}`} style={{width:`${Math.min(100,form.meta_title.length/60*100)}%`}}/></div>
                 <span className={`text-[10px] font-medium ${form.meta_title.length>60?'text-[var(--error)]':'text-[var(--text-muted)]'}`}>{form.meta_title.length}/60</span>
@@ -1425,9 +1425,9 @@ function SeoTabLive() {
             <div>
               <FieldLabel>Preview en Google</FieldLabel>
               <div className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)]" style={{colorScheme:'light'}}>
-                <p className="text-[11px] text-[var(--text-muted)] mb-0.5">davidsonsdesign.com</p>
+                <p className="text-[11px] text-[var(--text-muted)] mb-0.5">qorthe.com</p>
                 <p className="text-base text-[var(--info)] font-medium">{form.meta_title||'Título de tu tienda'}</p>
-                <p className="text-[11px] text-[var(--text-muted)]">davidsonsdesign.com · México</p>
+                <p className="text-[11px] text-[var(--text-muted)]">qorthe.com · México</p>
               </div>
             </div>
           </div>
@@ -1446,8 +1446,8 @@ function SeoTabLive() {
             <div>
               <FieldLabel>Preview en Google</FieldLabel>
               <div className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-card)]" style={{colorScheme:'light'}}>
-                <p className="text-[11px] text-[var(--text-muted)] mb-0.5">davidsonsdesign.com</p>
-                <p className="text-base text-[var(--info)] font-medium">{form.meta_title||"DavidSon's Design"}</p>
+                <p className="text-[11px] text-[var(--text-muted)] mb-0.5">qorthe.com</p>
+                <p className="text-base text-[var(--info)] font-medium">{form.meta_title||"Qorthe"}</p>
                 <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">{form.meta_description||'Descripción de tu tienda...'}</p>
               </div>
             </div>
@@ -1464,7 +1464,7 @@ function SeoTabLive() {
                 <FieldLabel>Preview Facebook / WhatsApp</FieldLabel>
                 <div className="rounded-[var(--radius-card)] overflow-hidden border border-[var(--border)] bg-[var(--surface2)] max-w-sm" style={{colorScheme:'light'}}>
                   <img src={form.og_image} alt="OG" className="w-full h-32 object-cover"/>
-                  <div className="p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase mb-0.5">DAVIDSONSDESIGN.COM</p><p className="text-sm font-bold text-[var(--text)]">{form.og_title||form.meta_title}</p><p className="text-[11px] text-[var(--text-muted)]">{form.og_description||form.meta_description}</p></div>
+                  <div className="p-3"><p className="text-[9px] text-[var(--text-muted)] uppercase mb-0.5">QORTHESDESIGN.COM</p><p className="text-sm font-bold text-[var(--text)]">{form.og_title||form.meta_title}</p><p className="text-[11px] text-[var(--text-muted)]">{form.og_description||form.meta_description}</p></div>
                 </div>
               </div>
             )}
@@ -1493,7 +1493,7 @@ function SeoTabLive() {
           <div className="space-y-4">
             <h4 className="font-serif text-lg text-[var(--text)]">Archivos SEO y resumen</h4>
             <div className="grid grid-cols-2 gap-3">
-              {[{label:'Sitemap',url:seo?.sitemap||'https://www.davidsonsdesign.com/sitemap.xml',desc:'Generado automáticamente'},{label:'Robots.txt',url:seo?.robots||'https://www.davidsonsdesign.com/robots.txt',desc:'next-sitemap config'}].map(f=>(
+              {[{label:'Sitemap',url:seo?.sitemap||'https://www.qorthe.com/sitemap.xml',desc:'Generado automáticamente'},{label:'Robots.txt',url:seo?.robots||'https://www.qorthe.com/robots.txt',desc:'next-sitemap config'}].map(f=>(
                 <a key={f.label} href={f.url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-4 bg-[var(--surface2)] rounded-[var(--radius-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors group">
                   <Globe size={16} className="text-[var(--accent)] mt-0.5 shrink-0"/><div><p className="text-xs font-semibold text-[var(--text)] group-hover:text-[var(--accent)]">{f.label}</p><p className="text-[10px] text-[var(--text-muted)]">{f.desc}</p></div><ExternalLink size={12} className="text-[var(--text-muted)] ml-auto"/>
                 </a>
@@ -1502,7 +1502,7 @@ function SeoTabLive() {
             <div className="p-4 bg-[var(--surface2)] rounded-[var(--radius-card)]">
               <p className="text-xs font-medium text-[var(--text)] mb-3">Resumen actual</p>
               <div className="grid grid-cols-2 gap-3">
-                {[{label:'Dominio',value:seo?.domain||'davidsonsdesign.com'},{label:'Páginas indexadas',value:`${seo?.indexedPages||20}`},{label:'JSON-LD',value:seo?.jsonLd?'Activo':'Inactivo'},{label:'OG Image',value:seo?.ogImage?'Configurada':'No configurada'}].map(item=>(
+                {[{label:'Dominio',value:seo?.domain||'qorthe.com'},{label:'Páginas indexadas',value:`${seo?.indexedPages||20}`},{label:'JSON-LD',value:seo?.jsonLd?'Activo':'Inactivo'},{label:'OG Image',value:seo?.ogImage?'Configurada':'No configurada'}].map(item=>(
                   <div key={item.label}><p className="text-[9px] uppercase font-bold text-[var(--text-muted)]">{item.label}</p><p className="text-xs text-[var(--text)]">{item.value}</p></div>
                 ))}
               </div>

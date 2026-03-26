@@ -295,7 +295,7 @@ export const DEFAULT_INVENTORY_CONFIG: InventoryConfig = {
   movement_requires_notes: false,
   locations: ['Taller Hermosillo', 'Almacén Principal'],
   alert_email_enabled: true,
-  alert_email: 'designdavidsons@gmail.com',
+  alert_email: 'arhenarstudio@gmail.com',
   valuation_method: 'weighted_average',
   cyclic_count_frequency_days: 30,
   enable_sound_alerts: false,

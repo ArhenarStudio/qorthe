@@ -126,7 +126,7 @@ export const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
               </button>
               <div className="flex items-baseline gap-2">
                 <span className="text-lg text-wood-900 dark:text-sand-100 font-bold tracking-tight">
-                  DavidSon&apos;s
+                  Qorthe
                 </span>
                 <span className="text-sm text-wood-900/80 dark:text-sand-100/80 tracking-widest">
                   Design

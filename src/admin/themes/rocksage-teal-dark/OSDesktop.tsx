@@ -506,7 +506,7 @@ export function OSDesktop({ children: _children }: { children?: React.ReactNode 
             Rock<span style={{ color: C.primaryL }}>Sage</span>&nbsp;OS
           </span>
           <div style={{ width: '1px', height: '14px', background: C.border2 }} />
-          <span style={{ fontSize: '11px', color: C.text2, fontWeight: 400 }}>DavidSon&apos;s Design</span>
+          <span style={{ fontSize: '11px', color: C.text2, fontWeight: 400 }}>Qorthe</span>
         </div>
         {/* Right */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>

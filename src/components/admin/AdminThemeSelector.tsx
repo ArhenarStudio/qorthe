@@ -19,7 +19,7 @@ const PREVIEW_COLORS: Record<string, { bg: string; surface: string; accent: stri
 
 // Descripciones por tema
 const DESCRIPTIONS: Record<string, string> = {
-  'dsd-classic':        "Tema clásico de DavidSon's Design. Sidebar oscuro madera + acento ámbar.",
+  'dsd-classic':        "Tema clásico de Qorthe. Sidebar oscuro madera + acento ámbar.",
   'rocksage-teal-dark': 'Panel estilo OS. Menubar top + dock inferior. Paleta teal oscura de RockSage Commerce.',
   'nintendo-retro':     'Escritorio retro pixel-art. Colores Mario Bros: rojo, verde Luigi, moneda dorada. Ventanas estilo NES.',
 };

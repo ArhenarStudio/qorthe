@@ -38,8 +38,8 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-const SITE_URL = "https://davidsonsdesign.com";
-const SITE_NAME = "DavidSon's Design";
+const SITE_URL = "https://qorthe.com";
+const SITE_NAME = "Qorthe";
 const SITE_DESC = "Tablas artesanales de madera mexicana con grabado láser personalizado. Piezas únicas en Parota, Cedro y Rosa Morada, hechas a mano en México.";
 
 export const metadata: Metadata = {
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     "tablas de madera", "tablas para cortar", "charcuterie board", "grabado láser",
     "madera artesanal", "parota", "cedro", "rosa morada", "hecho en méxico",
     "muebles artesanales", "regalo personalizado", "tabla personalizada",
-    "cocina gourmet", "tabla de quesos", "davidsons design",
+    "cocina gourmet", "tabla de quesos", "qorthe",
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "DavidSon's Design — Tablas artesanales de madera mexicana",
+        alt: "Qorthe — Tablas artesanales de madera mexicana",
       },
     ],
   },

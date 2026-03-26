@@ -131,7 +131,7 @@ const POSPageInner: React.FC<{ windowMode?: boolean }> = ({ windowMode = false }
   const submitOrder = async () => {
     if (!cart.length) { toast.error("Agrega al menos un producto"); return; }
     if (!customer.email && !customer.phone && !customer.first_name) { toast.error("Agrega datos del cliente"); return; }
-    const email = customer.email || `pos_${Date.now()}@davidsonsdesign.com`;
+    const email = customer.email || `pos_${Date.now()}@qorthe.com`;
     setSubmitting(true);
     try {
       const fetchWithRetry = async (url: string, opts: RequestInit, retries = 1): Promise<Response> => {

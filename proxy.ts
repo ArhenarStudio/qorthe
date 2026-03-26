@@ -6,9 +6,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Emails con acceso al panel de administración
 const ADMIN_EMAILS = [
-  "admin@davidsonsdesign.com",
-  "designdavidsons@gmail.com",
-  "studiorockstage@gmail.com",
+  "admin@qorthe.com",
+  "arhenarstudio@gmail.com",
+  "arhenarstudio@gmail.com",
 ];
 
 export async function proxy(request: NextRequest) {

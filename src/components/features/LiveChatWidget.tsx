@@ -8,7 +8,7 @@ export const LiveChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ text: string; isUser: boolean; time: string }[]>([
-    { text: "Hola, bienvenido a DavidSon's Design. ¿En qué podemos ayudarte hoy?", isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+    { text: "Hola, bienvenido a Qorthe. ¿En qué podemos ayudarte hoy?", isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
   ]);
 
   const handleSend = (e: React.FormEvent) => {
@@ -45,7 +45,7 @@ export const LiveChatWidget = () => {
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-wood-900 rounded-full"></span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Soporte DavidSon&apos;s</h3>
+                  <h3 className="font-bold text-sm">Soporte Qorthe</h3>
                   <p className="text-xs text-wood-300">En línea</p>
                 </div>
               </div>

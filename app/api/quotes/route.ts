@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "designdavidsons@gmail.com";
-const STORE_URL = "https://davidsonsdesign.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "arhenarstudio@gmail.com";
+const STORE_URL = "https://qorthe.com";
 
 function getSupabase() {
   return createClient(
@@ -33,7 +33,7 @@ async function sendResendEmail(to: string, subject: string, html: string, from?:
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: from || "DavidSon's Design <pedidos@davidsonsdesign.com>",
+        from: from || "Qorthe <pedidos@qorthe.com>",
         to: [to],
         subject,
         html,
@@ -76,7 +76,7 @@ function buildCustomerEmail(name: string, number: string, pieces: QuotePiece[], 
 <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
   <!-- Header -->
   <tr><td style="background:#1a1208;padding:32px;text-align:center;">
-    <img src="https://www.davidsonsdesign.com/images/logo-dsd.png" width="100" alt="DavidSon's Design" style="display:block;margin:0 auto;"/>
+    <img src="https://www.qorthe.com/images/logo-dsd.png" width="100" alt="Qorthe" style="display:block;margin:0 auto;"/>
   </td></tr>
   <!-- Body -->
   <tr><td style="padding:32px;">
@@ -113,9 +113,9 @@ function buildCustomerEmail(name: string, number: string, pieces: QuotePiece[], 
   </td></tr>
   <!-- Footer -->
   <tr><td style="background:#f5f0e8;padding:20px 32px;text-align:center;">
-    <p style="font-size:12px;color:#9e8562;margin:0;">DavidSon's Design — Madera con Alma</p>
+    <p style="font-size:12px;color:#9e8562;margin:0;">Qorthe — Madera con Alma</p>
     <p style="font-size:11px;color:#9e8562;margin:4px 0 0;">
-      <a href="${STORE_URL}" style="color:#c5a065;">davidsonsdesign.com</a>
+      <a href="${STORE_URL}" style="color:#c5a065;">qorthe.com</a>
     </p>
   </td></tr>
 </table>
@@ -267,9 +267,9 @@ export async function POST(req: NextRequest) {
     // 1. Confirmation to customer
     sendResendEmail(
       body.customer_email,
-      `Cotización ${number} — DavidSon's Design`,
+      `Cotización ${number} — Qorthe`,
       buildCustomerEmail(body.customer_name, number, pieces, total, validUntil),
-      "DavidSon's Design <hola@davidsonsdesign.com>"
+      "Qorthe <hola@qorthe.com>"
     ).catch(() => {});
 
     // 2. Notification to admin

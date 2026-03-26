@@ -1,14 +1,14 @@
 // ═══════════════════════════════════════════════════════════════
 // POST /api/contact — Send support ticket via Resend
-// Sends email to admin (pedidos@davidsonsdesign.com) with ticket details
+// Sends email to admin (pedidos@qorthe.com) with ticket details
 // ═══════════════════════════════════════════════════════════════
 
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from '@/src/lib/logger';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = "hola@davidsonsdesign.com";
-const ADMIN_EMAIL = "pedidos@davidsonsdesign.com";
+const FROM_EMAIL = "hola@qorthe.com";
+const ADMIN_EMAIL = "pedidos@qorthe.com";
 
 export async function POST(req: NextRequest) {
   try {
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: `DavidSon's Design <${FROM_EMAIL}>`,
+        from: `Qorthe <${FROM_EMAIL}>`,
         to: [ADMIN_EMAIL],
         reply_to: email || undefined,
         subject: `[Soporte] ${subject}`,

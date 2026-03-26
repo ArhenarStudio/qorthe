@@ -249,7 +249,7 @@ export const CartPage = () => {
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Ej. DAVIDSON10"
+                    placeholder="Ej. QORTHE10"
                     disabled={couponLoading}
                     className="flex-1 px-4 py-2 bg-white dark:bg-wood-800 border border-wood-200 dark:border-wood-700 text-wood-900 dark:text-sand-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-wood-200 dark:focus:ring-wood-600 focus:border-wood-400 dark:focus:border-wood-500 text-sm placeholder:text-wood-400 dark:placeholder:text-wood-600 uppercase disabled:opacity-50"
                     onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}

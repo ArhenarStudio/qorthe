@@ -43,7 +43,7 @@ const FAQS = [
 ];
 
 const INITIAL_CHAT = [
-  { id: 1, sender: 'bot', text: '¡Hola! Soy el asistente virtual de DavidSon\'s. ¿En qué puedo ayudarte hoy?', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+  { id: 1, sender: 'bot', text: '¡Hola! Soy el asistente virtual de Qorthe. ¿En qué puedo ayudarte hoy?', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
 ];
 
 export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
@@ -543,7 +543,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 
             {/* Footer */}
             <div className="px-6 py-4 bg-wood-50 dark:bg-wood-900 border-t border-wood-100 dark:border-wood-800 flex justify-between items-center text-xs text-wood-500 dark:text-wood-400">
-              <span>DavidSon's Support Team</span>
+              <span>Qorthe Support Team</span>
               <div className="flex gap-4">
                  <a href="#" className="hover:text-wood-900 dark:hover:text-sand-100 hover:underline">Política de Privacidad</a>
                  <a href="#" className="hover:text-wood-900 dark:hover:text-sand-100 hover:underline">Términos de Servicio</a>

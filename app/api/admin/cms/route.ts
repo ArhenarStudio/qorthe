@@ -83,12 +83,12 @@ export async function GET(req: NextRequest) {
     if (type === "seo") {
       return jsonOk({
         seo: {
-          sitemap: "https://www.davidsonsdesign.com/sitemap.xml",
-          robots: "https://www.davidsonsdesign.com/robots.txt",
+          sitemap: "https://www.qorthe.com/sitemap.xml",
+          robots: "https://www.qorthe.com/robots.txt",
           ogImage: "/images/og-image.jpg",
           jsonLd: true,
           favicon: "/favicon.ico",
-          domain: "davidsonsdesign.com",
+          domain: "qorthe.com",
           indexedPages: 20,
           metaDescription: "Tablas artesanales de madera hechas a mano en México. Personalización láser incluida.",
         },
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
         excerpt: body.excerpt || "",
         body: body.body || "",
         status: body.status || "draft",
-        author: body.author || "DavidSons Design",
+        author: body.author || "Qorthe",
         tags: body.tags || [],
         featured_image: body.featured_image || "",
         category: body.category || "",

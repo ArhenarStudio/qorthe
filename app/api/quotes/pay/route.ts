@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
-const STORE_URL = process.env.NEXT_PUBLIC_STORE_URL || "https://davidsonsdesign.com";
+const STORE_URL = process.env.NEXT_PUBLIC_STORE_URL || "https://qorthe.com";
 
 function getSupabase() {
   return createClient(

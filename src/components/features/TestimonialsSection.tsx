@@ -14,7 +14,7 @@ export const TestimonialsSection = () => {
       name: "Roberto Sánchez"
     },
     {
-      text: "Tengo tres tablas DavidSon's en mi restaurante. La calidad es consistente y el servicio al cliente es excepcional.",
+      text: "Tengo tres tablas Qorthe en mi restaurante. La calidad es consistente y el servicio al cliente es excepcional.",
       name: "Chef Daniel Ortega"
     }
   ];

@@ -18,7 +18,7 @@ import { ROCKSAGE_MODULES, getModule, type RockSageModule } from './manifest';
 
 // ─── Tenant activo ────────────────────────────────────────────────────────────
 //
-// Hoy: siempre TENANT_0 (DavidSon's Design).
+// Hoy: siempre TENANT_0 (Qorthe).
 // Futuro: se resolverá desde el request context (domain → tenant lookup).
 
 export const ACTIVE_TENANT: TenantConfig = TENANT_0;

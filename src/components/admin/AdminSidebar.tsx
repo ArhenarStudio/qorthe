@@ -299,7 +299,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 className="flex-1 min-w-0"
               >
                 <h1 className="text-[13px] text-stone-800 tracking-wide truncate" style={{ fontFamily: 'Playfair Display, serif' }}>
-                  DavidSon's Design
+                  Qorthe
                 </h1>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className={`w-[5px] h-[5px] rounded-[var(--radius-badge)] ring-2 ${siteOnline ? 'bg-emerald-400 ring-emerald-100' : 'bg-red-400 ring-red-100'}`} />

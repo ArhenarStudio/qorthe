@@ -33,7 +33,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
       const exportData: Record<string, unknown> = {
         _meta: {
           exported_at: new Date().toISOString(),
-          platform: "DavidSon's Design",
+          platform: "Qorthe",
           user_id: user.id,
         },
         profile: {
@@ -151,7 +151,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `davidsons-design-mis-datos-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `qorthe-mis-datos-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -200,11 +200,11 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
         toast.success('Solicitud de eliminación enviada');
       } else {
         // Fallback: even if API fails, notify user of alternative
-        toast.error('No se pudo enviar la solicitud. Contacta a hola@davidsonsdesign.com');
+        toast.error('No se pudo enviar la solicitud. Contacta a hola@qorthe.com');
       }
     } catch (error) {
       console.error('[Privacy] Deletion request error:', error);
-      toast.error('Error de conexión. Contacta a hola@davidsonsdesign.com');
+      toast.error('Error de conexión. Contacta a hola@qorthe.com');
     } finally {
       setIsRequestingDeletion(false);
     }
@@ -335,7 +335,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
                             Tu solicitud de eliminación ha sido enviada a nuestro equipo. Procesaremos tu petición dentro de los próximos 30 días y te notificaremos por email a <span className="font-medium">{user?.email}</span>.
                           </p>
                           <p className="text-xs text-amber-600 dark:text-amber-500 mt-2">
-                            Si necesitas asistencia adicional, contacta a <span className="font-medium">hola@davidsonsdesign.com</span>
+                            Si necesitas asistencia adicional, contacta a <span className="font-medium">hola@qorthe.com</span>
                           </p>
                         </div>
                       </div>

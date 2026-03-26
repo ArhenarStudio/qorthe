@@ -200,7 +200,7 @@ const apps: IntegrationApp[] = [
     syncData: '4,218 emails enviados', lastSync: 'Hace 2 min',
     configFields: [
       { label: 'API Key', type: 'text', value: 're_live_...', masked: true },
-      { label: 'Dominio verificado', type: 'text', value: 'mail.davidsonsdesign.com' },
+      { label: 'Dominio verificado', type: 'text', value: 'mail.qorthe.com' },
     ],
     logs: [
       { time: '10:35', type: 'success', message: 'Email confirmacion enviado a cliente #248' },

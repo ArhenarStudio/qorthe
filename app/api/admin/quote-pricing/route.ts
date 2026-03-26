@@ -5,9 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const ADMIN_EMAILS = [
-  "designdavidsons@gmail.com",
-  "studiorockstage@gmail.com",
-  "admin@davidsonsdesign.com",
+  "arhenarstudio@gmail.com",
+  "arhenarstudio@gmail.com",
+  "admin@qorthe.com",
 ];
 
 function getSupabase() {

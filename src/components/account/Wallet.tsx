@@ -39,7 +39,7 @@ export const Wallet = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* DavidSon's Design Member Card (Real Data) */}
+        {/* Qorthe Member Card (Real Data) */}
         <motion.div 
            whileHover={{ y: -5 }}
            className="relative aspect-[1.58/1] max-w-md rounded-2xl p-8 border shadow-xl overflow-hidden group/card"
@@ -54,7 +54,7 @@ export const Wallet = () => {
                 {/* Header */}
                 <div className="flex justify-between items-start">
                    <div>
-                      <h3 className="font-serif text-xl tracking-wide leading-none text-wood-900">DavidSon&apos;s</h3>
+                      <h3 className="font-serif text-xl tracking-wide leading-none text-wood-900">Qorthe</h3>
                       <p className="text-[9px] uppercase tracking-widest mt-1.5 text-wood-600 font-medium">Design Member</p>
                    </div>
                    <span className="px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm" style={tierStyles.badge}>

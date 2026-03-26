@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { QuotePDFView } from "@/components/quote/QuotePDFView";
 
 export const metadata: Metadata = {
-  title: "Cotización — DavidSon's Design",
+  title: "Cotización — Qorthe",
   robots: "noindex, nofollow",
 };
 

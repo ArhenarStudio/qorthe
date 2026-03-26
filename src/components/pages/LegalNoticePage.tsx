@@ -27,11 +27,11 @@ export const LegalNoticePage = () => {
         
         {/* Intro / Company Info */}
         <div className="bg-wood-900/5 dark:bg-sand-100/5 p-8 rounded-lg border border-wood-900/10 dark:border-sand-100/10 mb-12">
-          <h2 className="font-serif text-xl text-wood-900 dark:text-sand-100 mb-4">DavidSon´s Co.</h2>
+          <h2 className="font-serif text-xl text-wood-900 dark:text-sand-100 mb-4">Qorthe´s Co.</h2>
           <div className="grid md:grid-cols-2 gap-6 text-sm">
             <div>
               <p className="text-wood-900/60 dark:text-sand-100/60 uppercase tracking-widest text-xs mb-1">Nombre Comercial</p>
-              <p className="text-wood-900 dark:text-sand-100 font-medium">DavidSon´s Design</p>
+              <p className="text-wood-900 dark:text-sand-100 font-medium">Qorthe´s Design</p>
             </div>
             <div>
               <p className="text-wood-900/60 dark:text-sand-100/60 uppercase tracking-widest text-xs mb-1">Domicilio</p>
@@ -39,8 +39,8 @@ export const LegalNoticePage = () => {
             </div>
             <div className="md:col-span-2">
               <p className="text-wood-900/60 dark:text-sand-100/60 uppercase tracking-widest text-xs mb-1">Contacto</p>
-              <a href="mailto:contacto@davidsonsdesign.com" className="text-wood-900 dark:text-sand-100 font-medium hover:text-wood-600 dark:hover:text-sand-300 transition-colors border-b border-wood-900/30 dark:border-sand-100/30 pb-0.5">
-                contacto@davidsonsdesign.com
+              <a href="mailto:contacto@qorthe.com" className="text-wood-900 dark:text-sand-100 font-medium hover:text-wood-600 dark:hover:text-sand-300 transition-colors border-b border-wood-900/30 dark:border-sand-100/30 pb-0.5">
+                contacto@qorthe.com
               </a>
             </div>
           </div>
@@ -49,7 +49,7 @@ export const LegalNoticePage = () => {
         <section id="identificacion" className="scroll-mt-32">
           <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100 mb-4">1. Identificación del Titular</h3>
           <p>
-            El presente sitio web (en adelante, el “Sitio”) es operado por DavidSon´s Co., empresa constituida conforme a las leyes de los Estados Unidos Mexicanos, con domicilio parcial en El Conquistador, Hermosillo, Sonora, México.
+            El presente sitio web (en adelante, el “Sitio”) es operado por Qorthe´s Co., empresa constituida conforme a las leyes de los Estados Unidos Mexicanos, con domicilio parcial en El Conquistador, Hermosillo, Sonora, México.
           </p>
           <p className="mt-4">
             El acceso, navegación y uso del Sitio atribuye la condición de usuario e implica la aceptación plena y sin reservas del presente Aviso Legal.
@@ -127,7 +127,7 @@ export const LegalNoticePage = () => {
             ))}
           </div>
           <p className="mt-6">
-            son propiedad exclusiva de DavidSon´s Co. y se encuentran protegidos por la legislación aplicable en materia de propiedad intelectual e industrial.
+            son propiedad exclusiva de Qorthe´s Co. y se encuentran protegidos por la legislación aplicable en materia de propiedad intelectual e industrial.
           </p>
           <p className="mt-4">
             Queda prohibida su reproducción, distribución, comunicación pública, modificación o uso comercial sin autorización previa y por escrito.

@@ -53,9 +53,9 @@ export async function POST(req: NextRequest) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "DavidSon's Design <hola@davidsonsdesign.com>",
+            from: "Qorthe <hola@qorthe.com>",
             to: email,
-            subject: "¡Bienvenido a DavidSon's Design! 🌿",
+            subject: "¡Bienvenido a Qorthe! 🌿",
             html: `
               <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                 <h1 style="color: #2d2419; font-size: 28px; margin-bottom: 16px;">
@@ -70,14 +70,14 @@ export async function POST(req: NextRequest) {
                   y grabado láser personalizado.
                 </p>
                 <div style="margin-top: 30px;">
-                  <a href="https://davidsonsdesign.com/shop" 
+                  <a href="https://qorthe.com/shop" 
                      style="background-color: #2d2419; color: white; padding: 12px 30px; 
                             text-decoration: none; border-radius: 8px; font-size: 14px;">
                     Explorar colección
                   </a>
                 </div>
                 <p style="color: #9a8c7a; font-size: 12px; margin-top: 40px;">
-                  DavidSon's Design — Muebles artesanales de madera hechos en México
+                  Qorthe — Muebles artesanales de madera hechos en México
                 </p>
               </div>
             `,

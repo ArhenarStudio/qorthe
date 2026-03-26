@@ -33,7 +33,7 @@ interface DesignItem {
 const MOCK_DESIGNS: DesignItem[] = [
   {
     id: 'des-001',
-    name: 'Logo DavidSon Corp',
+    name: 'Logo Qorthe Corp',
     type: 'corporate',
     format: 'SVG',
     dimensions: { width: 150, height: 50, unit: 'mm' },

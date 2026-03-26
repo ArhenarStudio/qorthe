@@ -71,7 +71,7 @@ export const ShopPage = () => {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-6xl font-serif mb-6"
           >
-            Colección DavidSon&apos;s
+            Colección Qorthe
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}

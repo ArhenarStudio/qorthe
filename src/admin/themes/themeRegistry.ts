@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // src/admin/themes/themeRegistry.ts
 // RockSage Commerce — Registro de temas del panel admin
-// Tema activo: dsd-classic (Tenant 0 — DavidSon's Design)
+// Tema activo: dsd-classic (Tenant 0 — Qorthe)
 // ═══════════════════════════════════════════════════════════════
 
 import type { AdminUITheme } from '@/src/admin/types';
@@ -16,7 +16,7 @@ const dsdClassicTheme: AdminUITheme = {
   id: 'dsd-classic',
   name: 'DSD Classic',
   mode: 'light',
-  description: "Tonos cálidos de madera artesanal con acentos dorados. Tema oficial de DavidSon's Design.",
+  description: "Tonos cálidos de madera artesanal con acentos dorados. Tema oficial de Qorthe.",
   preview: { sidebar: '#2D2419', bg: '#FAF8F5', accent: '#C5A065', card: '#FFFFFF' },
   Sidebar: DefaultSidebar,
   Header: DefaultHeader,

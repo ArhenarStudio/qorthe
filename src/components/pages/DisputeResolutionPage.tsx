@@ -75,7 +75,7 @@ export const DisputeResolutionPage = () => {
         <section id="limitacion" className="scroll-mt-32">
           <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100 mb-4">6. Limitación Integral de Responsabilidad</h3>
           <p>
-            La responsabilidad total de DavidSon´s Co., por cualquier reclamación derivada del uso del Sitio o de la adquisición de productos, se limitará estrictamente al monto efectivamente pagado por el producto objeto de la reclamación.
+            La responsabilidad total de Qorthe´s Co., por cualquier reclamación derivada del uso del Sitio o de la adquisición de productos, se limitará estrictamente al monto efectivamente pagado por el producto objeto de la reclamación.
           </p>
           <p className="mt-4 font-medium text-wood-900 dark:text-sand-100">En ningún caso el Titular será responsable por:</p>
           <ul className="list-disc pl-5 mt-4 space-y-2 marker:text-wood-900/50 dark:marker:text-sand-100/50">

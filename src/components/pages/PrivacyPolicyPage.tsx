@@ -29,11 +29,11 @@ export const PrivacyPolicyPage = () => {
 
         {/* Intro / Company Info */}
         <div className="bg-wood-900/5 dark:bg-sand-100/5 p-8 rounded-lg border border-wood-900/10 dark:border-sand-100/10 mb-12">
-          <h2 className="font-serif text-xl text-wood-900 dark:text-sand-100 mb-4">DavidSon´s Co.</h2>
+          <h2 className="font-serif text-xl text-wood-900 dark:text-sand-100 mb-4">Qorthe´s Co.</h2>
           <div className="grid md:grid-cols-2 gap-6 text-sm">
             <div>
               <p className="text-wood-500 dark:text-sand-100/60 uppercase tracking-widest text-xs mb-1">Nombre Comercial</p>
-              <p className="text-wood-900 dark:text-sand-100 font-medium">DavidSon´s Design</p>
+              <p className="text-wood-900 dark:text-sand-100 font-medium">Qorthe´s Design</p>
             </div>
             <div>
               <p className="text-wood-500 dark:text-sand-100/60 uppercase tracking-widest text-xs mb-1">Domicilio</p>
@@ -41,8 +41,8 @@ export const PrivacyPolicyPage = () => {
             </div>
             <div className="md:col-span-2">
               <p className="text-wood-500 dark:text-sand-100/60 uppercase tracking-widest text-xs mb-1">Contacto de Privacidad</p>
-              <a href="mailto:contacto@davidsonsdesign.com" className="text-wood-900 dark:text-sand-100 font-medium hover:text-wood-600 dark:hover:text-sand-300 transition-colors border-b border-wood-900/30 dark:border-sand-100/30 pb-0.5">
-                contacto@davidsonsdesign.com
+              <a href="mailto:contacto@qorthe.com" className="text-wood-900 dark:text-sand-100 font-medium hover:text-wood-600 dark:hover:text-sand-300 transition-colors border-b border-wood-900/30 dark:border-sand-100/30 pb-0.5">
+                contacto@qorthe.com
               </a>
             </div>
           </div>
@@ -51,7 +51,7 @@ export const PrivacyPolicyPage = () => {
         <section id="responsable" className="scroll-mt-32">
           <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100 mb-4">1. Responsable del Tratamiento</h3>
           <p>
-            DavidSon´s Co. (en adelante, el “Responsable”) es el encargado del tratamiento de los datos personales recabados a través del sitio web. El tratamiento de datos se realiza conforme a la legislación aplicable en México y principios internacionales de protección de datos.
+            Qorthe´s Co. (en adelante, el “Responsable”) es el encargado del tratamiento de los datos personales recabados a través del sitio web. El tratamiento de datos se realiza conforme a la legislación aplicable en México y principios internacionales de protección de datos.
           </p>
         </section>
 

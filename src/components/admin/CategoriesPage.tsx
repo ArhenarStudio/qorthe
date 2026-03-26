@@ -52,7 +52,7 @@ const mockCategories: Category[] = [
     products: 12, salesMonth: 48200, status: 'active', hasImage: true, hasSeo: true,
     icon: '🪵', order: 1,
     description: 'Descubre nuestra coleccion de tablas artesanales para cortar, picar y presentar alimentos. Cada pieza esta tallada a mano con maderas mexicanas sustentables como parota, cedro rojo y rosa morada.',
-    metaTitle: 'Tablas para Cortar Artesanales | DavidSon\'s Design',
+    metaTitle: 'Tablas para Cortar Artesanales | Qorthe',
     metaDescription: 'Tablas artesanales de madera mexicana para cortar, picar y presentar. Hechas a mano con parota, cedro rojo y rosa morada.',
     layout: 'grid', productsPerPage: 12, sortDefault: 'manual',
     filters: { wood: true, price: true, finish: true, size: false },
@@ -65,7 +65,7 @@ const mockCategories: Category[] = [
     products: 5, salesMonth: 22100, status: 'active', hasImage: true, hasSeo: true,
     icon: '🧀', order: 1,
     description: 'Tablas ideales para presentar quesos, embutidos y botanas con estilo artesanal.',
-    metaTitle: 'Tablas de Charcuteria | DavidSon\'s Design',
+    metaTitle: 'Tablas de Charcuteria | Qorthe',
     metaDescription: 'Tablas artesanales para charcuteria y presentacion. Perfectas para quesos, embutidos y botanas.',
     layout: 'grid', productsPerPage: 12, sortDefault: 'bestsellers',
     filters: { wood: true, price: true, finish: true, size: false },
@@ -102,7 +102,7 @@ const mockCategories: Category[] = [
     products: 3, salesMonth: 28900, status: 'active', hasImage: true, hasSeo: true,
     icon: '🎁', order: 2,
     description: 'Combinaciones curadas de nuestras mejores piezas artesanales, ideales para regalo.',
-    metaTitle: 'Sets de Tablas Artesanales | DavidSon\'s Design',
+    metaTitle: 'Sets de Tablas Artesanales | Qorthe',
     metaDescription: 'Sets y colecciones de tablas artesanales para regalo. Combinaciones curadas con las mejores maderas mexicanas.',
     layout: 'featured', productsPerPage: 8, sortDefault: 'price-desc',
     filters: { wood: false, price: true, finish: false, size: false },
@@ -1034,8 +1034,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
             {/* Google preview */}
             <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 space-y-1">
               <p className="text-[10px] text-[var(--text-muted)] mb-2">Preview de Google</p>
-              <p className="text-sm text-[var(--info)] truncate">{form.metaTitle || form.name || 'Titulo de la categoria'} | DavidSon's Design</p>
-              <p className="text-[11px] text-[var(--success)] truncate">davidsonsdesign.com/shop/{form.slug || 'categoria'}</p>
+              <p className="text-sm text-[var(--info)] truncate">{form.metaTitle || form.name || 'Titulo de la categoria'} | Qorthe</p>
+              <p className="text-[11px] text-[var(--success)] truncate">qorthe.com/shop/{form.slug || 'categoria'}</p>
               <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2">{form.metaDescription || form.description || 'Descripcion de la categoria...'}</p>
             </div>
 
@@ -1054,7 +1054,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category, onBack, allCatego
             <div>
               <label className="text-xs text-[var(--text-secondary)] block mb-1.5">URL (slug)</label>
               <div className="flex items-center gap-1">
-                <span className="text-xs text-[var(--text-muted)]">davidsonsdesign.com/shop/</span>
+                <span className="text-xs text-[var(--text-muted)]">qorthe.com/shop/</span>
                 <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]/40" />
               </div>
               <p className="text-[10px] text-[var(--text-muted)] mt-1">Se genera automaticamente del nombre. Editable.</p>
@@ -1417,8 +1417,8 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
         <div className="bg-[var(--surface)] rounded-[var(--radius-card)] border border-[var(--border)] p-6 space-y-4">
           <h4 className="text-xs text-[var(--text-muted)] uppercase tracking-wider">SEO</h4>
           <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4 space-y-1">
-            <p className="text-sm text-[var(--info)] truncate">{form.metaTitle || form.name || 'Titulo'} | DavidSon's Design</p>
-            <p className="text-[11px] text-[var(--success)] truncate">davidsonsdesign.com/shop/coleccion/{form.slug || 'slug'}</p>
+            <p className="text-sm text-[var(--info)] truncate">{form.metaTitle || form.name || 'Titulo'} | Qorthe</p>
+            <p className="text-[11px] text-[var(--success)] truncate">qorthe.com/shop/coleccion/{form.slug || 'slug'}</p>
             <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2">{form.metaDescription || form.description || 'Descripcion...'}</p>
           </div>
           <div>
@@ -1432,7 +1432,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onBack }) =
           <div>
             <label className="text-xs text-[var(--text-secondary)] block mb-1.5">URL (slug)</label>
             <div className="flex items-center gap-1">
-              <span className="text-xs text-[var(--text-muted)]">davidsonsdesign.com/shop/coleccion/</span>
+              <span className="text-xs text-[var(--text-muted)]">qorthe.com/shop/coleccion/</span>
               <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="flex-1 px-3 py-2 border border-[var(--border)] rounded-[var(--radius-card)] text-sm text-[var(--text)] outline-none" />
             </div>
           </div>

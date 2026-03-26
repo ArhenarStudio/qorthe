@@ -35,7 +35,7 @@ export const NewsletterAndCTA = () => {
               Exclusivo
             </h3>
             <h2 className="font-serif text-[36px] text-[#2d2419] mb-[16px]">
-              Únete a la Comunidad DavidSon's
+              Únete a la Comunidad Qorthe
             </h2>
             <p className="font-sans text-[16px] font-normal text-[#795548] leading-[1.6] mb-[32px]">
               Recibe acceso anticipado a nuevas colecciones, ofertas exclusivas y contenido sobre el mundo de la madera artesanal.

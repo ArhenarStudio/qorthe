@@ -70,7 +70,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         // Login
         let loginEmail = formData.email;
         if (loginEmail.trim().toLowerCase() === 'admin') {
-          loginEmail = 'admin@davidsonsdesign.com';
+          loginEmail = 'admin@qorthe.com';
         }
 
         const { error } = await supabase.auth.signInWithPassword({
@@ -140,7 +140,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   {isForgot
                     ? 'Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.'
                     : isRegister 
-                    ? 'Únete a DavidSon\'s Design para una experiencia personalizada.' 
+                    ? 'Únete a Qorthe para una experiencia personalizada.' 
                     : 'Ingresa a tu cuenta para gestionar tus pedidos.'}
                 </p>
               </div>

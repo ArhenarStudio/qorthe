@@ -96,7 +96,7 @@ function GeneralTab() {
       <Card className="p-5">
         <STitle>Identidad</STitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Nombre del negocio"><Input defaultValue="DavidSon's Design" className="w-full" /></Field>
+          <Field label="Nombre del negocio"><Input defaultValue="Qorthe" className="w-full" /></Field>
           <Field label="Nombre legal"><Input defaultValue="David Alejandro Perez Rea" className="w-full" /></Field>
           <Field label="RFC"><Input defaultValue="PERD000000XXX" className="w-full font-mono" /></Field>
           <Field label="Regimen fiscal">
@@ -124,9 +124,9 @@ function GeneralTab() {
       <Card className="p-5">
         <STitle>Contacto</STitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Email principal"><Input defaultValue="contacto@davidsonsdesign.com" className="w-full" /></Field>
-          <Field label="Email de soporte"><Input defaultValue="soporte@davidsonsdesign.com" className="w-full" /></Field>
-          <Field label="Email de pedidos"><Input defaultValue="pedidos@davidsonsdesign.com" className="w-full" /></Field>
+          <Field label="Email principal"><Input defaultValue="contacto@qorthe.com" className="w-full" /></Field>
+          <Field label="Email de soporte"><Input defaultValue="soporte@qorthe.com" className="w-full" /></Field>
+          <Field label="Email de pedidos"><Input defaultValue="pedidos@qorthe.com" className="w-full" /></Field>
           <Field label="Telefono"><Input defaultValue="662-361-0742" className="w-full" /></Field>
           <Field label="WhatsApp"><Input defaultValue="+52 662 361 0742" className="w-full" /></Field>
           <Field label="Horario de atencion">
@@ -168,8 +168,8 @@ function GeneralTab() {
       <Card className="p-5">
         <STitle>Redes Sociales</STitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Facebook"><Input defaultValue="https://facebook.com/davidsonsdesign" className="w-full" /></Field>
-          <Field label="Instagram"><Input defaultValue="https://instagram.com/davidsonsdesign" className="w-full" /></Field>
+          <Field label="Facebook"><Input defaultValue="https://facebook.com/qorthe" className="w-full" /></Field>
+          <Field label="Instagram"><Input defaultValue="https://instagram.com/qorthe" className="w-full" /></Field>
           <Field label="TikTok"><Input placeholder="https://tiktok.com/@..." className="w-full" /></Field>
           <Field label="YouTube"><Input placeholder="https://youtube.com/..." className="w-full" /></Field>
           <Field label="Pinterest"><Input placeholder="https://pinterest.com/..." className="w-full" /></Field>
@@ -221,12 +221,12 @@ function StoreTab() {
         <div className="space-y-2 text-xs">
           <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">Dominio principal</span>
-            <span className="font-medium text-[var(--text)] font-mono">davidsonsdesign.com</span>
+            <span className="font-medium text-[var(--text)] font-mono">qorthe.com</span>
             <Badge text="Cloudflare" variant="blue" />
           </div>
           <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">URL tienda</span>
-            <span className="font-mono text-[var(--text)]">https://davidsonsdesign.com</span>
+            <span className="font-mono text-[var(--text)]">https://qorthe.com</span>
           </div>
           <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">Estado SSL</span>
@@ -234,7 +234,7 @@ function StoreTab() {
           </div>
           <div className="flex items-center justify-between p-2.5 bg-[var(--surface2)] rounded-[var(--radius-card)]">
             <span className="text-[var(--text-secondary)]">URL admin</span>
-            <span className="font-mono text-[var(--text)]">https://davidsonsdesign.com/admin</span>
+            <span className="font-mono text-[var(--text)]">https://qorthe.com/admin</span>
           </div>
         </div>
       </Card>
@@ -492,13 +492,13 @@ function PaymentsTab() {
         name="Stripe" displayName="Tarjeta de credito o debito" mode="Test"
         methods={['Visa', 'Mastercard', 'Amex']}
         commission="3.6% + $3 MXN por transaccion"
-        dashboardUrl="https://dashboard.stripe.com" webhookUrl="https://api.davidsonsdesign.com/webhooks/stripe"
+        dashboardUrl="https://dashboard.stripe.com" webhookUrl="https://api.qorthe.com/webhooks/stripe"
       />
       <PaymentProvider
         name="MercadoPago" displayName="MercadoPago - Debito, credito, OXXO, SPEI" mode="Test"
         methods={['Tarjeta credito', 'Tarjeta debito', 'OXXO', 'SPEI']}
         commission="3.49% + IVA por transaccion"
-        dashboardUrl="https://mercadopago.com.mx" webhookUrl="https://api.davidsonsdesign.com/webhooks/mercadopago"
+        dashboardUrl="https://mercadopago.com.mx" webhookUrl="https://api.qorthe.com/webhooks/mercadopago"
       />
 
       <Card className="p-5">
@@ -645,7 +645,7 @@ function ShippingTab() {
       <Card className="p-5">
         <STitle>Direccion de origen (remitente)</STitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Nombre"><Input defaultValue="DavidSon's Design" className="w-full" /></Field>
+          <Field label="Nombre"><Input defaultValue="Qorthe" className="w-full" /></Field>
           <Field label="Telefono"><Input defaultValue="662-361-0742" className="w-full" /></Field>
           <Field label="Calle"><Input placeholder="Calle y numero" className="w-full" /></Field>
           <Field label="CP"><Input defaultValue="83000" className="w-full" /></Field>
@@ -786,9 +786,9 @@ function IntegrationsTab() {
     { name: 'MercadoPago', desc: 'Pagos MX (debito, OXXO, transferencia)', status: 'Conectado', mode: 'Test', detail: 'Modo test — cambiar a produccion en Fase 15' },
     { name: 'Supabase Auth', desc: 'Autenticacion, lealtad, reviews, wishlist', status: 'Conectado', mode: 'Produccion', detail: 'Providers: Email + Google OAuth' },
     { name: 'Envia.com', desc: 'Cotizador de envíos (DHL, Estafeta, FedEx)', status: 'Conectado', mode: 'Sandbox', detail: 'Sandbox activo — quotes DHL funcionando' },
-    { name: 'Cloudflare', desc: 'DNS + CDN para davidsonsdesign.com', status: 'Conectado', mode: 'Produccion', detail: 'SSL activo | Dominio: davidsonsdesign.com' },
+    { name: 'Cloudflare', desc: 'DNS + CDN para qorthe.com', status: 'Conectado', mode: 'Produccion', detail: 'SSL activo | Dominio: qorthe.com' },
     { name: 'Neon PostgreSQL', desc: 'Base de datos serverless', status: 'Conectado', mode: 'Produccion', detail: 'Free tier | Region: us-east-1' },
-    { name: 'Resend', desc: 'Emails transaccionales', status: 'Conectado', mode: 'Produccion', detail: 'Dominio: davidsonsdesign.com verificado' },
+    { name: 'Resend', desc: 'Emails transaccionales', status: 'Conectado', mode: 'Produccion', detail: 'Dominio: qorthe.com verificado' },
     { name: 'Meta Pixel + CAPI', desc: 'Tracking de conversiones para Meta Ads', status: 'Conectado', mode: 'Produccion', detail: 'Pixel ID configurado | CAPI activo' },
   ];
 

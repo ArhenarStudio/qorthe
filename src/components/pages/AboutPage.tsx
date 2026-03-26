@@ -20,7 +20,7 @@ export const AboutPage = () => {
         <div className="absolute inset-0 z-0">
           <ImageWithFallback 
             src={IMG_HERO} 
-            alt="DavidSon's Design Interior" 
+            alt="Qorthe Interior" 
             className="w-full h-full object-cover opacity-60 dark:opacity-40 grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-sand-100 dark:from-black via-transparent to-transparent" />
@@ -33,11 +33,11 @@ export const AboutPage = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl mb-6 tracking-tight">
-              Sobre DavidSon's
+              Sobre Qorthe
             </h1>
             <div className="h-1 w-24 bg-accent-gold mx-auto mb-8" />
             <p className="text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
-              DavidSon´s Design no nace como un negocio.<br />
+              Qorthe´s Design no nace como un negocio.<br />
               <span className="italic font-serif text-wood-600 dark:text-sand-400">Nace como una herencia.</span>
             </p>
           </motion.div>

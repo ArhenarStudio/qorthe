@@ -98,7 +98,7 @@ export const ContactPage = () => {
                 </div>
                 <div>
                   <h3 className="font-serif text-xl text-wood-900 dark:text-sand-100 mb-2">Correo Electrónico</h3>
-                  <p className="text-wood-600 dark:text-wood-400 leading-relaxed">concierge@davidsons.design</p>
+                  <p className="text-wood-600 dark:text-wood-400 leading-relaxed">hola@qorthe.com</p>
                 </div>
               </div>
             </div>

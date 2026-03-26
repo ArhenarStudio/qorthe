@@ -30,7 +30,7 @@ export const ReturnsPolicyPage = () => {
         <section id="alcance" className="scroll-mt-32">
           <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100 mb-4">1. Alcance</h3>
           <p>
-            La presente Política de Devoluciones regula las condiciones bajo las cuales los clientes podrán solicitar la devolución de productos adquiridos a través del sitio web operado por DavidSon´s Co. (en adelante, el “Titular”).
+            La presente Política de Devoluciones regula las condiciones bajo las cuales los clientes podrán solicitar la devolución de productos adquiridos a través del sitio web operado por Qorthe´s Co. (en adelante, el “Titular”).
           </p>
           <p className="mt-4">
             Al realizar una compra, el cliente acepta expresamente esta Política.

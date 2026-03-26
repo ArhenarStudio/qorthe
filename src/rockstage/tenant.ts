@@ -2,7 +2,7 @@
  * RockSage Commerce — Tenant Model
  *
  * Define el modelo de tenant para la plataforma multi-tenant.
- * DavidSon's Design es TENANT 0 — la plantilla base y proof-of-concept.
+ * Qorthe es TENANT 0 — la plantilla base y proof-of-concept.
  *
  * REGLA: No agregar tenant_id a tablas existentes hasta post-lanzamiento DSD.
  * Este archivo define la FORMA del sistema para que el código futuro sea aditivo.
@@ -70,7 +70,7 @@ export interface TenantConfig {
   meta?: Record<string, unknown>;
 }
 
-// ─── Tenant 0 — DavidSon's Design ────────────────────────────────────────────
+// ─── Tenant 0 — Qorthe ────────────────────────────────────────────
 //
 // Este es el tenant raíz de RockSage Commerce.
 // Tiene plan 'full' — acceso completo a todos los módulos.
@@ -80,9 +80,9 @@ export interface TenantConfig {
 // se leerá desde la Platform Database en lugar de estar hardcodeado.
 
 export const TENANT_0: TenantConfig = {
-  id: 'davidsons-design',
-  storeName: "DavidSon's Design",
-  domain: 'davidsonsdesign.com',
+  id: 'qorthe',
+  storeName: "Qorthe",
+  domain: 'qorthe.com',
   plan: 'full',
   locale: 'es-MX',
   currency: 'MXN',

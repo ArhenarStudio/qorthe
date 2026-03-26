@@ -32,7 +32,7 @@ const SPEND_DATA = [
 const BILLING_PROFILES = [
   {
     id: 'bp-01',
-    name: 'DavidSon\'s Corp',
+    name: 'Qorthe Corp',
     rfc: 'DSC123456789',
     address: 'Av. Reforma 222, CDMX',
     default: true

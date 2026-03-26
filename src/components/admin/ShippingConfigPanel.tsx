@@ -558,7 +558,7 @@ export function ShippingConfigPanel() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Field label="Nombre / empresa">
-              <Input value={local.origin_name} onChange={(v) => update({ origin_name: v })} placeholder="DavidSon's Design" />
+              <Input value={local.origin_name} onChange={(v) => update({ origin_name: v })} placeholder="Qorthe" />
             </Field>
             <Field label="Teléfono">
               <Input value={local.origin_phone} onChange={(v) => update({ origin_phone: v })} placeholder="662-361-0742" />

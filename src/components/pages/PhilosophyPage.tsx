@@ -18,7 +18,7 @@ export const PhilosophyPage = () => {
         <div className="absolute inset-0 z-0">
           <ImageWithFallback 
             src={IMG_HERO} 
-            alt="DavidSon's Design Philosophy" 
+            alt="Qorthe Philosophy" 
             className="w-full h-full object-cover opacity-50 dark:opacity-30 grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-sand-100 dark:from-black via-transparent to-transparent" />
@@ -35,7 +35,7 @@ export const PhilosophyPage = () => {
             </h1>
             <div className="h-1 w-24 bg-accent-gold mx-auto mb-8" />
             <p className="text-sm tracking-[0.3em] uppercase mb-2 text-wood-600 dark:text-sand-400 font-bold">
-                DavidSon´s Design
+                Qorthe´s Design
             </p>
           </motion.div>
         </div>
@@ -61,7 +61,7 @@ export const PhilosophyPage = () => {
                 </div>
                 <div className="text-wood-700 dark:text-sand-300 font-light leading-relaxed text-justify md:text-left pt-4 border-l-2 border-accent-gold pl-6">
                     <p>
-                        DavidSon´s Design se fundamenta en la convicción de que los objetos que nos rodean influyen en la manera en que vivimos. Un mueble no es solo funcional; es presencia, equilibrio y carácter dentro de un espacio.
+                        Qorthe´s Design se fundamenta en la convicción de que los objetos que nos rodean influyen en la manera en que vivimos. Un mueble no es solo funcional; es presencia, equilibrio y carácter dentro de un espacio.
                     </p>
                 </div>
             </motion.div>
@@ -115,7 +115,7 @@ export const PhilosophyPage = () => {
              >
                  <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-accent-gold mb-6">Visión a largo plazo</h2>
                  <p className="font-serif text-3xl md:text-4xl mb-8 leading-tight">
-                    DavidSon´s Design proyecta consolidarse como una marca internacional de diseño premium.
+                    Qorthe´s Design proyecta consolidarse como una marca internacional de diseño premium.
                  </p>
                  <p className="text-wood-700 dark:text-sand-300 font-light mb-8 text-lg">
                      La evolución hacia mobiliario de mayor escala y objetos de diseño para el hogar forma parte natural de este crecimiento.
@@ -202,7 +202,7 @@ export const PhilosophyPage = () => {
                 viewport={{ once: true }}
                 className="text-center border-t border-white/10 pt-16"
              >
-                 <p className="text-3xl font-serif mb-6 italic text-white/90">DavidSon´s Design</p>
+                 <p className="text-3xl font-serif mb-6 italic text-white/90">Qorthe´s Design</p>
                  <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-xs uppercase tracking-[0.3em] text-accent-gold font-bold">
                      <span>Sobriedad</span>
                      <span className="hidden md:inline w-1 h-1 bg-white/30 rounded-full" />

@@ -6,9 +6,9 @@ export function OrganizationJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "DavidSon's Design",
-    url: "https://davidsonsdesign.com",
-    logo: "https://davidsonsdesign.com/logo.png",
+    name: "Qorthe",
+    url: "https://qorthe.com",
+    logo: "https://qorthe.com/logo.png",
     description: "Tablas artesanales de madera mexicana con grabado láser personalizado.",
     address: {
       "@type": "PostalAddress",
@@ -47,13 +47,13 @@ export function ProductJsonLd({
     image: image || undefined,
     sku: sku || undefined,
     url,
-    brand: { "@type": "Brand", name: "DavidSon's Design" },
+    brand: { "@type": "Brand", name: "Qorthe" },
     offers: {
       "@type": "Offer",
       price: price.toFixed(2),
       priceCurrency: currency,
       availability: `https://schema.org/${availability}`,
-      seller: { "@type": "Organization", name: "DavidSon's Design" },
+      seller: { "@type": "Organization", name: "Qorthe" },
     },
   };
 

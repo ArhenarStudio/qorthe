@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════
-# DavidSon's Design — ROADMAP OFICIAL
+# Qorthe — ROADMAP OFICIAL
 # Última actualización: 2026-02-24
 # ═══════════════════════════════════════════════════════════════
 
@@ -7,7 +7,7 @@
 
 | Componente | Servicio | Estado |
 |---|---|---|
-| Frontend | Vercel (Next.js 16) | ✅ Live — davidsonsdesign.com |
+| Frontend | Vercel (Next.js 16) | ✅ Live — qorthe.com |
 | Backend | DigitalOcean App Platform (MedusaJS) | ✅ Live — urchin-app |
 | Base de datos | Neon PostgreSQL | ✅ Conectada |
 | Auth | Supabase | ✅ Funcional (login/registro) |
@@ -236,7 +236,7 @@ workflows/   — Vacío (no hay workflows custom)
 
 ```
 5.1  [ ] Elegir proveedor de email (Resend, SendGrid, o Amazon SES)
-5.2  [ ] Configurar dominio de envío (noreply@davidsonsdesign.com)
+5.2  [ ] Configurar dominio de envío (noreply@qorthe.com)
          — DNS records (SPF, DKIM, DMARC) en Cloudflare
 5.3  [ ] Crear templates de email:
          — Confirmación de orden
@@ -454,7 +454,7 @@ Este admin custom es para funcionalidades que Medusa no cubre.
          — Colas de emails y jobs
          — Agregar REDIS_URL en DO env vars
 14.2 [ ] CDN de imágenes (Cloudflare Images o imgproxy)
-14.3 [ ] Dominio personalizado para backend: api.davidsonsdesign.com
+14.3 [ ] Dominio personalizado para backend: api.qorthe.com
          — DNS en Cloudflare
          — SSL automático
          — Actualizar CORS y env vars con nuevo dominio

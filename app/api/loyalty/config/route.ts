@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// DavidSon's Design — Loyalty Config API
+// Qorthe — Loyalty Config API
 // GET: public (read config) | PUT: admin-only (update config)
 // ═══════════════════════════════════════════════════════════
 
@@ -13,9 +13,9 @@ const supabase = createClient(
 
 // Admin emails allowed to modify config
 const ADMIN_EMAILS = [
-  "designdavidsons@gmail.com",
-  "studiorockstage@gmail.com",
-  "admin@davidsonsdesign.com",
+  "arhenarstudio@gmail.com",
+  "arhenarstudio@gmail.com",
+  "admin@qorthe.com",
 ];
 
 // ── GET: Read loyalty config (public) ──────────────────

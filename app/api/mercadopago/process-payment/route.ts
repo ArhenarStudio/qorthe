@@ -177,19 +177,19 @@ export async function POST(request: NextRequest) {
       installments: Number(installments) || 1,
       payment_method_id,
       payer: {
-        email: payer?.email || 'guest@davidsonsdesign.com',
+        email: payer?.email || 'guest@qorthe.com',
         identification: payer?.identification,
         first_name: payer?.first_name,
         last_name: payer?.last_name,
       },
-      description: `DavidSon's Design — Orden (Cart: ${cart_id})`,
-      statement_descriptor: 'DAVIDSONS',
+      description: `Qorthe — Orden (Cart: ${cart_id})`,
+      statement_descriptor: 'QORTHES',
       external_reference: cart_id,
       additional_info: {
         items: [
           {
             id: cart_id,
-            title: "DavidSon's Design - Productos artesanales",
+            title: "Qorthe - Productos artesanales",
             quantity: 1,
             unit_price: mpAmount,
           },

@@ -89,7 +89,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
 
   const handleSendMessage = () => {
     if (!newMsg.trim()) return;
-    const msg = { id: `m_new_${Date.now()}`, sender: 'admin' as const, senderName: "DavidSon's Design", date: new Date().toISOString(), text: newMsg };
+    const msg = { id: `m_new_${Date.now()}`, sender: 'admin' as const, senderName: "Qorthe", date: new Date().toISOString(), text: newMsg };
     const updatedMessages = [...q.messages, msg];
     setQ((prev: AdminQuote) => ({ ...prev, messages: updatedMessages }));
     setNewMsg('');
@@ -333,7 +333,7 @@ const QuoteDetail: React.FC<{ quote: AdminQuote; onBack: () => void; onRefresh?:
               <ActionButton icon={<FileText size={13} />} label="Generar PDF de cotización" onClick={() => { window.print(); }} />
               <ActionButton icon={<Mail size={13} />} label="Enviar cotización al cliente" onClick={async () => {
                 try {
-                  const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subject: `Cotización ${q.number}`, category: 'cotizacion', message: `Estimado/a ${q.customer.name},\n\nAdjunto encontrará su cotización ${q.number} por un total de ${(q.pieces.reduce((s: number, p: { adminPrice?: number; autoPrice: number; quantity: number }) => s + ((p.adminPrice || p.autoPrice) * p.quantity), 0)).toLocaleString()} MXN.\n\nVigencia: ${q.validityDays} días.\nTimeline: ${q.timeline}.\n\nQuedamos a sus órdenes.\nDavidSon's Design`, email: q.customer.email }) });
+                  const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subject: `Cotización ${q.number}`, category: 'cotizacion', message: `Estimado/a ${q.customer.name},\n\nAdjunto encontrará su cotización ${q.number} por un total de ${(q.pieces.reduce((s: number, p: { adminPrice?: number; autoPrice: number; quantity: number }) => s + ((p.adminPrice || p.autoPrice) * p.quantity), 0)).toLocaleString()} MXN.\n\nVigencia: ${q.validityDays} días.\nTimeline: ${q.timeline}.\n\nQuedamos a sus órdenes.\nQorthe`, email: q.customer.email }) });
                   if (res.ok) { setQ((p: AdminQuote) => ({...p, status: p.status === 'nueva' ? 'cotizacion_enviada' : p.status})); persistQuote({ status: q.status === 'nueva' ? 'cotizacion_enviada' : q.status }); toast.success(`Cotización enviada a ${q.customer.email}`); } else throw new Error();
                 } catch { toast.error('Error al enviar email'); }
               }} accent />

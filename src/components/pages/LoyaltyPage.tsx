@@ -28,7 +28,7 @@ const LoyaltyCard = ({ tier }: { tier: LoyaltyTierConfig }) => {
       <div className="relative z-10 h-full flex flex-col justify-between" style={s.cardText}>
         <div className="flex justify-between items-start">
           <div className="flex flex-col">
-            <span className="text-xs font-bold uppercase tracking-widest opacity-80">DavidSon's</span>
+            <span className="text-xs font-bold uppercase tracking-widest opacity-80">Qorthe</span>
             <span className="text-lg font-serif font-bold italic">Membership</span>
           </div>
           <div className="w-10 h-10 rounded-full border border-current opacity-30 flex items-center justify-center">
@@ -205,7 +205,7 @@ export const LoyaltyPage = () => {
             <StepCard 
               number="01"
               title="Compra y Acumula"
-              description={`Por cada $1 MXN que inviertes en piezas DavidSon's, recibes ${config.points_per_mxn} punto${config.points_per_mxn > 1 ? 's' : ''} en tu cuenta automáticamente.`}
+              description={`Por cada $1 MXN que inviertes en piezas Qorthe, recibes ${config.points_per_mxn} punto${config.points_per_mxn > 1 ? 's' : ''} en tu cuenta automáticamente.`}
               icon={CreditCard}
             />
             <StepCard 

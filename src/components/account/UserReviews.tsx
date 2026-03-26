@@ -268,7 +268,7 @@ export const UserReviews = () => {
                   {review.admin_reply && (
                     <div className="mt-6 bg-wood-50 dark:bg-wood-800/50 rounded-xl p-5 border border-wood-100 dark:border-wood-700/50 relative">
                        <div className="absolute top-0 left-6 -translate-y-1/2 bg-wood-200 dark:bg-wood-700 text-wood-800 dark:text-sand-100 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                         <User size={10} /> Respuesta de DavidSon&apos;s
+                         <User size={10} /> Respuesta de Qorthe
                        </div>
                        <p className="text-sm text-wood-600 dark:text-sand-300 italic mt-1">
                          {review.admin_reply}

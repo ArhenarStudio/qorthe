@@ -43,7 +43,7 @@ export const CheckoutSuccessPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           src={logoDSD}
-          alt="DavidSon's Design"
+          alt="Qorthe"
           className="h-16 w-auto mb-8 relative z-10 drop-shadow-md cursor-pointer"
         />
       </Link>

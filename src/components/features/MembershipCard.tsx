@@ -15,7 +15,7 @@ export const MembershipCard = () => {
         {/* Top Row */}
         <div className="flex justify-between items-start z-10">
           <span className="font-sans font-bold text-[11px] text-white opacity-90">
-            DavidSon's Design
+            Qorthe
           </span>
           <span className="font-sans font-bold text-[9px] uppercase tracking-[3px] text-white">
             GOLD MEMBER

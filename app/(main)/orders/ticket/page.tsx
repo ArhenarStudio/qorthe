@@ -113,7 +113,7 @@ function OrderTicketContent() {
         <div className="bg-white shadow-lg print:shadow-none border border-wood-100 print:border-0 overflow-hidden">
           {/* Header band */}
           <div className="bg-wood-900 text-sand-100 px-8 py-6 text-center">
-            <img src="/images/logo-dsd.png" alt="DavidSon's Design" className="h-10 w-auto mx-auto mb-3 brightness-0 invert" />
+            <img src="/images/logo-dsd.png" alt="Qorthe" className="h-10 w-auto mx-auto mb-3 brightness-0 invert" />
             <p className="text-[10px] uppercase tracking-[0.3em] text-sand-300">Comprobante de Compra</p>
           </div>
 
@@ -230,10 +230,10 @@ function OrderTicketContent() {
           {/* Footer */}
           <div className="px-8 py-5 bg-sand-50 text-center">
             <p className="text-[10px] text-wood-400 mb-1">
-              DavidSon&apos;s Design — Tablas Artesanales de Madera
+              Qorthe — Tablas Artesanales de Madera
             </p>
             <p className="text-[9px] text-wood-300">
-              davidsonsdesign.com · pedidos@davidsonsdesign.com · Hermosillo, Sonora, México
+              qorthe.com · pedidos@qorthe.com · Hermosillo, Sonora, México
             </p>
             <p className="text-[9px] text-wood-300 mt-2">
               Conserve este comprobante como referencia de su compra.

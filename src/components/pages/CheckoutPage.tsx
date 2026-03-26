@@ -643,7 +643,7 @@ export const CheckoutPage = () => {
              <button onClick={() => router.push('/')} className="flex items-center text-wood-500 hover:text-wood-900 transition-colors">
                <ArrowLeft className="w-5 h-5" />
              </button>
-             <img src={logoDSD} alt="DavidSon's Design" className="h-12 w-auto cursor-pointer" onClick={() => router.push('/')} />
+             <img src={logoDSD} alt="Qorthe" className="h-12 w-auto cursor-pointer" onClick={() => router.push('/')} />
              <div className="w-5" />
           </div>
 

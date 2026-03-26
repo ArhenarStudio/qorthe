@@ -91,7 +91,7 @@ export const AccountPage = () => {
              </motion.p>
           </div>
           <div className="text-sm text-wood-400 dark:text-sand-500 font-medium tracking-widest uppercase">
-            DavidSon's Member
+            Qorthe Member
           </div>
         </div>
 

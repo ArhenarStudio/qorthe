@@ -110,7 +110,7 @@ const defaultFormData: ProductFormData = {
   laserEngraving: false, engravingMaxWidth: '20', engravingMaxHeight: '15',
   engravingPositions: ['Centro'],
   woodType: 'Parota', finish: 'Aceite mineral grado alimenticio',
-  artisan: 'Taller DavidSons',
+  artisan: 'Taller Qorthe',
   productionTime: 'inStock', productionDays: 5,
   warranty: '1 año', careInstructions: '',
   mainCategory: '', subCategory: '',
@@ -164,7 +164,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
       reorderPoint: product.reorder_point,
       images: [product.thumbnail || "/placeholder.jpg"],
       slug: product.handle,
-      metaTitle: `${product.title} | DavidSon's Design`,
+      metaTitle: `${product.title} | Qorthe`,
       metaDescription: `Pieza artesanal de ${product.material}. Hecha a mano con maderas sustentables.`,
       laserEngraving: product.laser_available,
       woodType: product.material,
@@ -1052,8 +1052,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               <div className="bg-[var(--surface2)] rounded-[var(--radius-card)] p-4">
                 <p className="text-[10px] text-[var(--text-muted)] mb-2">Preview de Google:</p>
                 <div className="space-y-0.5">
-                  <p className="text-sm text-[var(--info)] hover:underline cursor-pointer">{form.metaTitle || `${form.name} | DavidSon's Design`}</p>
-                  <p className="text-[11px] text-[var(--success)]">davidsonsdesign.com/shop/{form.slug || 'producto'}</p>
+                  <p className="text-sm text-[var(--info)] hover:underline cursor-pointer">{form.metaTitle || `${form.name} | Qorthe`}</p>
+                  <p className="text-[11px] text-[var(--success)]">qorthe.com/shop/{form.slug || 'producto'}</p>
                   <p className="text-xs text-[var(--text-secondary)]">{form.metaDescription || form.shortDescription || 'Descripcion del producto...'}</p>
                 </div>
               </div>
@@ -1064,7 +1064,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onBack }) => 
               <div>
                 <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">URL amigable (slug)</label>
                 <div className="flex items-center text-xs text-[var(--text-muted)]">
-                  <span>davidsonsdesign.com/shop/</span>
+                  <span>qorthe.com/shop/</span>
                   <input
                     value={form.slug}
                     onChange={e => update('slug', e.target.value)}

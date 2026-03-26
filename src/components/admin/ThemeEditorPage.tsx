@@ -532,7 +532,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
               style={{ fontFamily: f.heading + ', serif', color: c.secondary, fontSize: f.sizeBase + 2 + 'px' }}
               className="font-medium tracking-wide"
             >
-              DavidSon's Design
+              Qorthe
             </span>
             {lay.megaMenu && lay.headerLayout !== 'center' && (
               <div className="hidden sm:flex items-center gap-3 ml-2">
@@ -796,7 +796,7 @@ function LivePreview({ theme, page, device }: { theme: ThemeConfig; page: Previe
         >
           <div className={'grid gap-4 ' + (isMobile ? 'grid-cols-2' : `grid-cols-${lay.footerColumns}`)}>
             <div>
-              <span style={{ fontFamily: f.heading + ', serif', color: c.secondary, fontSize: '11px' }}>DavidSon's Design</span>
+              <span style={{ fontFamily: f.heading + ', serif', color: c.secondary, fontSize: '11px' }}>Qorthe</span>
               <p style={{ fontSize: '9px', opacity: 0.6 }} className="mt-1">Carpinteria premium hecha a mano</p>
               {lay.footerSocial && (
                 <div className="flex gap-2 mt-2">
@@ -863,7 +863,7 @@ const CATALOG_THEMES: CatalogTheme[] = [
   {
     id: 'dsd-classic',
     name: 'DSD Classic',
-    desc: 'Tema clásico de DavidSon\'s Design. Sidebar oscuro madera + acento ámbar.',
+    desc: 'Tema clásico de Qorthe. Sidebar oscuro madera + acento ámbar.',
     author: 'RockSage',
     tags: ['light', 'sidebar', 'clásico'],
     mode: 'light',
@@ -1325,7 +1325,7 @@ export const ThemeEditorPage: React.FC = () => {
                   {fontOptions.map(f => <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>)}
                 </select>
                 <p style={{ fontFamily: theme.fonts.heading, fontSize: '16px', color: theme.colors.text }} className="mt-1.5 px-1">
-                  DavidSon's Design
+                  Qorthe
                 </p>
               </div>
               <div>

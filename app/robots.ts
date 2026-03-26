@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/api/", "/checkout", "/auth", "/account"],
       },
     ],
-    sitemap: "https://www.davidsonsdesign.com/sitemap.xml",
+    sitemap: "https://www.qorthe.com/sitemap.xml",
   };
 }

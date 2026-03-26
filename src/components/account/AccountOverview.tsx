@@ -105,7 +105,7 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
       {/* Top Row: Loyalty & Wallet */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Loyalty Card */}
-        {/* DavidSon's Premium Member Card Module */}
+        {/* Qorthe Premium Member Card Module */}
         <div className="lg:col-span-3 bg-wood-50 dark:bg-wood-900/50 rounded-3xl p-6 md:p-8 border border-wood-100 dark:border-wood-800 shadow-sm relative overflow-hidden group">
           {/* Background Decor */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-wood-200/20 dark:bg-wood-800/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
@@ -175,7 +175,7 @@ export const AccountOverview: React.FC<AccountOverviewProps> = ({ onChangeSectio
                         {/* Header */}
                         <div className="flex justify-between items-start">
                            <div>
-                              <h3 className="font-serif text-xl tracking-wide leading-none text-wood-900">DavidSon's</h3>
+                              <h3 className="font-serif text-xl tracking-wide leading-none text-wood-900">Qorthe</h3>
                               <p className="text-[9px] uppercase tracking-widest mt-1.5 text-wood-600 font-medium">Design Member</p>
                            </div>
                            <span className="px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm" style={tierStyles.badge}>

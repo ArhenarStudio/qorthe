@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       await supabase.from("chat_messages").insert({
         conversation_id: conv.id,
         sender: "system",
-        text: "¡Hola! Bienvenido al chat de soporte de DavidSon's Design. Un agente te atenderá pronto.",
+        text: "¡Hola! Bienvenido al chat de soporte de Qorthe. Un agente te atenderá pronto.",
         read: true,
       });
     }

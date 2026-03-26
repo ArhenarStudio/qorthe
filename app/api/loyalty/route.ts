@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// DavidSon's Design — Loyalty API
+// Qorthe — Loyalty API
 // GET: profile + transactions | POST: award/redeem points
 // ═══════════════════════════════════════════════════════════
 

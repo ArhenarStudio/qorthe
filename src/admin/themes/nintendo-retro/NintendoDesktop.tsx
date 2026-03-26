@@ -450,7 +450,7 @@ export default function NintendoDesktop({ children }: { children: React.ReactNod
         </div>
         <span style={{ fontSize:'9px', color:C.text, letterSpacing:'0.1em', textShadow:'1px 1px 0 #000' }}>ROCKSAGE OS</span>
         <div style={{ width:1, height:16, background:C.border2 }} />
-        <span style={{ fontSize:'8px', color:C.text2 }}>DAVIDSON&apos;S DESIGN</span>
+        <span style={{ fontSize:'8px', color:C.text2 }}>QORTHE&apos;S DESIGN</span>
         <span style={{ fontSize:'7px', color:'#000', background:C.coin, padding:'2px 7px',
           borderRadius:'2px', border:`2px solid #B8860B`, boxShadow:'2px 2px 0 #000' }}>PLAYER 1</span>
         <div style={{ flex:1 }} />

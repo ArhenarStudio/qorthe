@@ -16,7 +16,7 @@ import { useCms, CmsMenuItem } from '@/contexts/CmsContext';
 const CONTENT = {
   newsletter: {
     title_start: "Únete a la mesa de",
-    brand: "DavidSon's Design",
+    brand: "Qorthe",
     description: "Recibe acceso anticipado a nuevas colecciones de charcutería, invitaciones a eventos exclusivos y consejos de cuidado para tus piezas.",
     placeholder: "Tu correo electrónico",
     cta: "Suscribirse",
@@ -26,7 +26,7 @@ const CONTENT = {
     brand: {
       title: "Marca",
       items: [
-        { label: "Sobre DavidSon's", href: "/about" },
+        { label: "Sobre Qorthe", href: "/about" },
         { label: "Filosofía", href: "/philosophy" },
         { label: "Programa de Lealtad", href: "/loyalty" },
         { label: "Contacto", href: "/contact" }
@@ -61,7 +61,7 @@ const CONTENT = {
     }
   },
   legal_bottom: {
-    copyright: "© 2026 DavidSon's Design. Todos los derechos reservados."
+    copyright: "© 2026 Qorthe. Todos los derechos reservados."
   },
   credits: {
     text: "Desarrollado por",

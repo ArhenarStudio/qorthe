@@ -4,7 +4,7 @@ import { CmsPageRenderer } from "@/components/cms/CmsPageRenderer";
 
 export const metadata: Metadata = {
   title: "Programa de Lealtad",
-  description: "Únete a nuestro programa de membresía. Acumula puntos, sube de nivel y obtén beneficios exclusivos en DavidSon's Design.",
+  description: "Únete a nuestro programa de membresía. Acumula puntos, sube de nivel y obtén beneficios exclusivos en Qorthe.",
 };
 
 export default function Page() {

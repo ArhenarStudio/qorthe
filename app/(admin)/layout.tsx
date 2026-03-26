@@ -16,9 +16,9 @@ import { OSDesktop } from '@/src/admin/themes/rocksage-teal-dark/OSDesktop';
 import NintendoDesktop from '@/src/admin/themes/nintendo-retro/NintendoDesktop';
 
 const ADMIN_EMAILS = [
-  'admin@davidsonsdesign.com',
-  'designdavidsons@gmail.com',
-  'studiorockstage@gmail.com',
+  'admin@qorthe.com',
+  'arhenarstudio@gmail.com',
+  'arhenarstudio@gmail.com',
 ];
 
 function AdminShell({ children }: { children: React.ReactNode }) {

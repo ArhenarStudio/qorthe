@@ -30,7 +30,7 @@ export const TermsPage = () => {
         <section id="objeto" className="scroll-mt-32">
           <h3 className="font-serif text-2xl text-wood-900 dark:text-sand-100 mb-4">1. Objeto</h3>
           <p>
-            Los presentes Términos y Condiciones Generales de Uso (en adelante, los “Términos”) regulan el acceso, navegación y utilización del sitio web operado por DavidSon´s Co. (en adelante, el “Titular”).
+            Los presentes Términos y Condiciones Generales de Uso (en adelante, los “Términos”) regulan el acceso, navegación y utilización del sitio web operado por Qorthe´s Co. (en adelante, el “Titular”).
           </p>
           <p className="mt-4">
             El acceso al Sitio implica la aceptación plena, expresa y sin reservas de los presentes Términos. Si el usuario no está de acuerdo, deberá abstenerse de utilizar el Sitio.

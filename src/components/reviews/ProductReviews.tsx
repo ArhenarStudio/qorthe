@@ -441,7 +441,7 @@ export const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, produ
                         <div className="flex items-center gap-1.5 mb-2">
                           <User size={12} className="text-wood-500" />
                           <span className="text-xs font-bold uppercase tracking-widest text-wood-500">
-                            Respuesta de DavidSon&apos;s
+                            Respuesta de Qorthe
                           </span>
                         </div>
                         <p className="text-sm text-wood-600 dark:text-sand-300 italic">

@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = "https://www.davidsonsdesign.com";
+const BASE_URL = "https://www.qorthe.com";
 
 // Static pages with priorities
 const staticPages = [
